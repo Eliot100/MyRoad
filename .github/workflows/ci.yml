@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-freeze-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure freeze path JSON files exist
+        run: |
+          test -f freeze/v0/01-path-before-feedback.json
+          test -f freeze/v0/02-path-after-feedback.json
+
+      - name: Validate path JSON (python json.tool)
+        run: |
+          python -m json.tool freeze/v0/01-path-before-feedback.json > /dev/null
+          python -m json.tool freeze/v0/02-path-after-feedback.json > /dev/null
+          echo "Both freeze path JSON files are valid."
