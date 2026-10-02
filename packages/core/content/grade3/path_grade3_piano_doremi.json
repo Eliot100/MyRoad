@@ -1,17 +1,21 @@
 {
   "id": "path_grade3_piano_doremi",
-  "title_he": "דו־רה־מי",
-  "title_en": "Do-Re-Mi",
-  "title_ar": "دو-ري-مي",
+  "titles": {
+    "he": "דו־רה־מי",
+    "en": "Do-Re-Mi",
+    "ar": "دو-ري-مي"
+  },
+  "blurbs": {
+    "he": "הכרת שלושה תווים — לחיצה על מקשים וירטואליים.",
+    "en": "Meet three notes — tap virtual keys.",
+    "ar": "التعرّف على ثلاث نغمات — اضغط مفاتيح افتراضية."
+  },
   "subject": "piano",
   "grade": 3,
   "group_ids": [
     "grade3"
   ],
   "emoji": "🎹",
-  "blurb_he": "הכרת שלושה תווים — לחיצה על מקשים וירטואליים.",
-  "blurb_en": "Meet three notes — tap virtual keys.",
-  "blurb_ar": "التعرّف على ثلاث نغمات — اضغط مفاتيح افتراضية.",
   "estimated_minutes": 8,
   "nodes": [
     {

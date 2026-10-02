@@ -1,24 +1,32 @@
 {
   "id": "path_grade3_english_hello",
-  "title_he": "שלום ורגשות באנגלית",
-  "title_en": "Hello & Feelings",
+  "titles": {
+    "he": "שלום ורגשות באנגלית",
+    "en": "Hello & Feelings",
+    "ar": "مرحباً ومشاعر بالإنجليزية"
+  },
+  "blurbs": {
+    "he": "ברכות ורגשות באנגלית: Hello, goodbye, thank you, please, happy, sad, tired.",
+    "en": "Greetings and feelings: Hello, goodbye, thank you, please, happy, sad, tired.",
+    "ar": "تحيات ومشاعر: Hello, goodbye, thank you, please, happy, sad, tired."
+  },
   "subject": "english",
   "grade": 3,
   "group_ids": [
     "grade3"
   ],
   "emoji": "😊",
-  "blurb_he": "ברכות ורגשות באנגלית: Hello, goodbye, thank you, please, happy, sad, tired.",
-  "blurb_en": "Greetings and feelings: Hello, goodbye, thank you, please, happy, sad, tired.",
   "explain_locale": "he",
   "content_locale": "en",
   "estimated_minutes": 12,
   "topics": [
     {
       "id": "topic_hello",
-      "title_he": "שלום ופרידה",
-      "title_en": "Hello & goodbye",
-      "title_ar": "مرحبا ووداعا",
+      "titles": {
+        "he": "שלום ופרידה",
+        "en": "Hello & goodbye",
+        "ar": "مرحبا ووداعا"
+      },
       "emoji": "👋",
       "node_ids": [
         "learn_hello",
@@ -28,9 +36,11 @@
     },
     {
       "id": "topic_polite",
-      "title_he": "נימוסים",
-      "title_en": "Be polite",
-      "title_ar": "أدب",
+      "titles": {
+        "he": "נימוסים",
+        "en": "Be polite",
+        "ar": "أدب"
+      },
       "emoji": "🙏",
       "node_ids": [
         "speak_thanks",
@@ -39,9 +49,11 @@
     },
     {
       "id": "topic_feelings",
-      "title_he": "רגשות",
-      "title_en": "Feelings",
-      "title_ar": "مشاعر",
+      "titles": {
+        "he": "רגשות",
+        "en": "Feelings",
+        "ar": "مشاعر"
+      },
       "emoji": "💭",
       "node_ids": [
         "learn_feelings",
@@ -51,9 +63,11 @@
     },
     {
       "id": "topic_finish",
-      "title_he": "סיכום",
-      "title_en": "Celebrate",
-      "title_ar": "احتفال",
+      "titles": {
+        "he": "סיכום",
+        "en": "Celebrate",
+        "ar": "احتفال"
+      },
       "emoji": "🎉",
       "node_ids": [
         "check_tired",
