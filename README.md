@@ -16,21 +16,19 @@
 | `freeze/v0/04-comparison.md` | Comparison vs first generic scaffold / השוואה לפיגום הגנרי |
 | `docs/design-extraction.md` | Requirements extraction from design docs |
 
-## Phase-1 persistence (`packages/core`)
+## Phase-1+ (`packages/core`)
 
-Python + Pydantic + SQLite store for path/version/status + audit event log.
+Python + Pydantic + SQLite store, plus a thin **AgentTools** facade (callable without HTTP) and an optional FastAPI wrapper.
 
 | Capability | Notes |
 |------------|-------|
-| `create_draft` / `save_version` | Draft path documents |
-| `get_version` / `list_versions` | Read path versions |
-| `revise_draft` | Always creates a **new** `versionId` |
-| `request_publish` | `draft` → `in_review` (does not publish) |
-| `publish` | Human-only; **refuses when `agentId` is set** |
-| `append_event` / `query_events` | Audit by `pathId` or `correlationId` |
-| `seed_golden_quadratic` | Loads freeze/v0 JSON as draft versions |
+| `PathStore` | create/save/get/revise/requestPublish/publish + events |
+| `AgentTools` | Contract ops: createDraft, getPath/getVersion, addBlock, editBlock, addEdge, reviseDraft, validatePath, recordFeedback, requestPublish, publish |
+| `publish` | Human-only; **refuses when `agentId` is set** unless `human_publisher=True` |
+| Audit | Every tool call emits an event via PathStore |
+| FastAPI (optional) | `pip install -e ".[api]"` → `uvicorn myroad_core.api:app` |
 
-### Run persistence tests
+### Run tests
 
 ```bash
 cd packages/core
@@ -49,10 +47,19 @@ uv pip install -e ".[dev]"
 pytest -q
 ```
 
+### Optional HTTP API
+
+```bash
+cd packages/core
+pip install -e ".[api]"
+uvicorn myroad_core.api:app --reload
+# POST /tools/createDraft, /tools/addBlock, … /tools/publish
+```
+
 ## Next build steps / שלבי בנייה הבאים
 
-1. ~~**Persistence** — versions, statuses, event log~~ (this package)
-2. **Agent API** — tool contract + RBAC + audit (HTTP/tool surface)
+1. ~~**Persistence** — versions, statuses, event log~~
+2. ~~**Agent API** — tool contract facade + optional HTTP~~ (this package)
 3. **Thin UI** — learner path + minimal author/editor
 4. **Golden loop** — topic → draft → learn → feedback → revise → human publish
 
@@ -61,8 +68,8 @@ pytest -q
 On push/PR to `main`:
 
 1. Validate both freeze path JSON files with `python -m json.tool`
-2. Install `packages/core` and run `pytest`
+2. Install `packages/core` and run `pytest` (persistence + tool facade)
 
 ## License / note
 
-Freeze artifacts + phase-1 persistence library. No HTTP API or UI yet. No published learning paths in the golden freeze (both are `draft`).
+Freeze artifacts + persistence library + agent-tool facade. Optional FastAPI wrapper; no UI yet. No published learning paths in the golden freeze (both are `draft`).
