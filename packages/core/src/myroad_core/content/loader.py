@@ -131,9 +131,9 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
         status=PathStatus.draft,
         contentLanguage=content,
         uiLocale=ui_locale,
-        name=path.title_he,
-        description=path.blurb_he,
-        goal=path.blurb_he,
+        name=(path.titles or {}).get("he") or path.title_he or path.id,
+        description=(path.blurbs or {}).get("he") or path.blurb_he or "",
+        goal=(path.blurbs or {}).get("he") or path.blurb_he or "",
         audience={
             "level": "elementary" if path.grade else "general",
             "gradeHint": f"כיתה {path.grade}" if path.grade else None,
@@ -167,9 +167,13 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
         groupIds=path.group_ids,
         grade=path.grade,
         estimatedMinutes=path.estimated_minutes,
-        blurbHe=path.blurb_he,
-        blurbEn=path.blurb_en,
-        titleEn=path.title_en,
+        blurbHe=path.blurb_he or (path.blurbs or {}).get("he"),
+        blurbEn=path.blurb_en or (path.blurbs or {}).get("en"),
+        blurbAr=path.blurb_ar or (path.blurbs or {}).get("ar"),
+        titleEn=path.title_en or (path.titles or {}).get("en"),
+        titleAr=path.title_ar or (path.titles or {}).get("ar"),
+        titles=dict(path.titles or {}),
+        blurbs=dict(path.blurbs or {}),
         topics=topics,
         nodeToBlock=node_to_block,
         contentSource="packages/core/content",
@@ -241,8 +245,52 @@ def seed_content_paths(
     }
 
 
-def list_catalog_cards(store: PathStore) -> list[dict[str, Any]]:
-    """Latest version of each path that carries catalog metadata (subject/group)."""
+def apply_catalog_locale(card: dict[str, Any], locale: str) -> dict[str, Any]:
+    """Mutate/return a catalog card so title/blurb/subjectLabel follow UI locale."""
+    from myroad_core.ui.i18n import localize_path_chrome, normalize_locale, pick
+
+    loc = normalize_locale(locale)
+    titles = dict(card.get("titles") or {})
+    blurbs = dict(card.get("blurbs") or {})
+    # Fill from legacy card keys if maps incomplete
+    if card.get("titleHe") and "he" not in titles:
+        titles["he"] = card["titleHe"]
+    if card.get("titleEn") and "en" not in titles:
+        titles["en"] = card["titleEn"]
+    if card.get("titleAr") and "ar" not in titles:
+        titles["ar"] = card["titleAr"]
+    if card.get("title") and "he" not in titles:
+        titles["he"] = card["title"]
+    if card.get("blurbHe") and "he" not in blurbs:
+        blurbs["he"] = card["blurbHe"]
+    if card.get("blurbEn") and "en" not in blurbs:
+        blurbs["en"] = card["blurbEn"]
+    if card.get("blurbAr") and "ar" not in blurbs:
+        blurbs["ar"] = card["blurbAr"]
+    if card.get("blurb") and "he" not in blurbs:
+        blurbs["he"] = card["blurb"]
+    chrome = localize_path_chrome(
+        locale=loc,
+        titles=titles,
+        blurbs=blurbs,
+        subject=card.get("subject"),
+    )
+    out = dict(card)
+    out["titles"] = titles
+    out["blurbs"] = blurbs
+    out["title"] = chrome["title"]
+    out["blurb"] = chrome["blurb"]
+    out["subjectLabel"] = chrome["subjectLabel"] or out.get("subjectLabel") or ""
+    out["uiLocale"] = loc
+    return out
+
+
+def list_catalog_cards(store: PathStore, *, locale: str | None = None) -> list[dict[str, Any]]:
+    """Latest version of each path that carries catalog metadata (subject/group).
+
+    When locale is set, title/blurb/subjectLabel follow the platform UI locale
+    (catalog chrome). Content tokens are not involved here.
+    """
     rows = store._conn.execute(
         "SELECT path_id, document_json FROM versions v "
         "WHERE version_num = ("
@@ -258,30 +306,51 @@ def list_catalog_cards(store: PathStore) -> list[dict[str, Any]]:
             continue  # skip non-catalog paths (e.g. golden quadratic)
         subject_meta = SUBJECTS.get(subject, SUBJECTS["general"])
         topics = raw.get("topics") or []
-        cards.append(
-            {
-                "pathId": doc.pathId,
-                "versionId": doc.versionId,
-                "status": doc.status.value if hasattr(doc.status, "value") else doc.status,
-                "title": doc.name,
-                "titleEn": raw.get("titleEn"),
-                "blurb": raw.get("blurbHe") or doc.description or "",
-                "blurbEn": raw.get("blurbEn") or "",
-                "emoji": raw.get("emoji") or subject_meta["emoji"],
-                "subject": subject,
-                "subjectLabel": raw.get("subjectLabelHe") or subject_meta["he"],
-                "subjectLabelEn": raw.get("subjectLabelEn") or subject_meta.get("en"),
-                "subjectColor": raw.get("subjectColor") or subject_meta["color"],
-                "groupIds": raw.get("groupIds") or [],
-                "grade": raw.get("grade"),
-                "estimatedMinutes": raw.get("estimatedMinutes"),
-                "kidsDemo": bool(raw.get("kidsDemo")),
-                "nodeCount": len(doc.blocks or []),
-                "topicCount": len(topics),
-                "explainLocale": raw.get("explainLocale") or "he",
-                "contentLocale": raw.get("contentLocale") or raw.get("contentLanguage") or "he",
-            }
-        )
+        titles = dict(raw.get("titles") or {})
+        blurbs = dict(raw.get("blurbs") or {})
+        title_he = titles.get("he") or doc.name
+        blurb_he = blurbs.get("he") or raw.get("blurbHe") or doc.description or ""
+        titles.setdefault("he", title_he)
+        if raw.get("titleEn"):
+            titles.setdefault("en", raw.get("titleEn"))
+        if raw.get("titleAr"):
+            titles.setdefault("ar", raw.get("titleAr"))
+        blurbs.setdefault("he", blurb_he)
+        if raw.get("blurbEn"):
+            blurbs.setdefault("en", raw.get("blurbEn"))
+        if raw.get("blurbAr"):
+            blurbs.setdefault("ar", raw.get("blurbAr"))
+        card = {
+            "pathId": doc.pathId,
+            "versionId": doc.versionId,
+            "status": doc.status.value if hasattr(doc.status, "value") else doc.status,
+            "title": title_he,
+            "titles": titles,
+            "titleHe": title_he,
+            "titleEn": titles.get("en") or "",
+            "titleAr": titles.get("ar") or "",
+            "blurb": blurb_he,
+            "blurbs": blurbs,
+            "blurbHe": blurb_he,
+            "blurbEn": blurbs.get("en") or "",
+            "blurbAr": blurbs.get("ar") or "",
+            "emoji": raw.get("emoji") or subject_meta["emoji"],
+            "subject": subject,
+            "subjectLabel": raw.get("subjectLabelHe") or subject_meta["he"],
+            "subjectLabelEn": raw.get("subjectLabelEn") or subject_meta.get("en"),
+            "subjectColor": raw.get("subjectColor") or subject_meta["color"],
+            "groupIds": raw.get("groupIds") or [],
+            "grade": raw.get("grade"),
+            "estimatedMinutes": raw.get("estimatedMinutes"),
+            "kidsDemo": bool(raw.get("kidsDemo")),
+            "nodeCount": len(doc.blocks or []),
+            "topicCount": len(topics),
+            "explainLocale": raw.get("explainLocale") or "he",
+            "contentLocale": raw.get("contentLocale") or raw.get("contentLanguage") or "he",
+        }
+        if locale is not None:
+            card = apply_catalog_locale(card, locale)
+        cards.append(card)
     return cards
 
 

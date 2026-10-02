@@ -26,9 +26,20 @@ SUBJECTS: dict[str, dict[str, str]] = {
     "general": {"he": "כללי", "en": "General", "ar": "عام", "color": "#6b7280", "emoji": "📚"},
 }
 
-GROUPS: dict[str, dict[str, str]] = {
+GROUPS: dict[str, dict[str, Any]] = {
     "grade3": {
         "id": "grade3",
+        "titles": {
+            "he": "דרכים לתלמידי כיתה ג׳",
+            "en": "Paths for Grade 3",
+            "ar": "مسارات للصف الثالث",
+        },
+        "blurbs": {
+            "he": "אוסף קצר של דרכי למידה לדוגמה — מתמטיקה, אנגלית, פיזיקה ופסנתר.",
+            "en": "A short set of sample learning paths — math, English, physics, and piano.",
+            "ar": "مجموعة قصيرة من مسارات التعلم التجريبية — رياضيات وإنجليزي وفيزياء وبيانو.",
+        },
+        # Legacy aliases (templates/tests may still read title_he)
         "title_he": "דרכים לתלמידי כיתה ג׳",
         "title_en": "Paths for Grade 3",
         "title_ar": "مسارات للصف الثالث",
@@ -109,18 +120,45 @@ class ContentTopic(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
-    title_he: str
+    titles: dict[str, str] = Field(default_factory=dict)
+    # Legacy flat fields — merged into titles on validate
+    title_he: str | None = None
     title_en: str | None = None
     title_ar: str | None = None
     emoji: str | None = None
     node_ids: list[str] = Field(min_length=1)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _merge_titles(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        from myroad_core.ui.i18n import merge_locale_fields
+
+        titles = merge_locale_fields(data, map_key="titles", legacy_prefix="title")
+        data = dict(data)
+        data["titles"] = titles
+        # Keep legacy mirrors for callers/tests
+        data["title_he"] = titles.get("he") or data.get("title_he")
+        data["title_en"] = titles.get("en") or data.get("title_en")
+        data["title_ar"] = titles.get("ar") or data.get("title_ar")
+        return data
+
+    @model_validator(mode="after")
+    def _require_he_title(self) -> ContentTopic:
+        if not (self.titles.get("he") or self.title_he or "").strip():
+            raise ValueError(f"topic '{self.id}': titles.he (or title_he) required")
+        if not self.title_he:
+            object.__setattr__(self, "title_he", self.titles.get("he"))
+        return self
 
 
 class ContentPath(BaseModel):
     """Sample path document stored as JSON under content/.
 
     Locale fields:
-      title_he / title_en / title_ar + blurb_* — catalog/card chrome (follow platform UI locale)
+      titles / blurbs — catalog/card chrome maps keyed by UI locale code
+      legacy title_he / title_en / title_ar + blurb_* still accepted and merged into maps
       explain_locale — language of authored explanations (matches UI when possible)
       content_locale — language of tokens being taught (e.g. en for English paths)
     """
@@ -128,14 +166,17 @@ class ContentPath(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
-    title_he: str
+    titles: dict[str, str] = Field(default_factory=dict)
+    blurbs: dict[str, str] = Field(default_factory=dict)
+    # Legacy flat fields (optional) — merged into titles/blurbs
+    title_he: str | None = None
     title_en: str | None = None
     title_ar: str | None = None
     subject: SubjectId
     grade: int | None = None
     group_ids: list[str] = Field(default_factory=lambda: ["grade3"])
     emoji: str
-    blurb_he: str
+    blurb_he: str | None = None
     blurb_en: str | None = None
     blurb_ar: str | None = None
     explain_locale: str = "he"
@@ -143,6 +184,39 @@ class ContentPath(BaseModel):
     estimated_minutes: int = Field(ge=1, le=60)
     topics: list[ContentTopic] | None = None
     nodes: list[ContentNode] = Field(min_length=1)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _merge_chrome_maps(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        from myroad_core.ui.i18n import merge_locale_fields
+
+        data = dict(data)
+        titles = merge_locale_fields(data, map_key="titles", legacy_prefix="title")
+        blurbs = merge_locale_fields(data, map_key="blurbs", legacy_prefix="blurb")
+        data["titles"] = titles
+        data["blurbs"] = blurbs
+        data["title_he"] = titles.get("he") or data.get("title_he")
+        data["title_en"] = titles.get("en") or data.get("title_en")
+        data["title_ar"] = titles.get("ar") or data.get("title_ar")
+        data["blurb_he"] = blurbs.get("he") or data.get("blurb_he")
+        data["blurb_en"] = blurbs.get("en") or data.get("blurb_en")
+        data["blurb_ar"] = blurbs.get("ar") or data.get("blurb_ar")
+        return data
+
+    @model_validator(mode="after")
+    def _require_he_chrome(self) -> ContentPath:
+        if not (self.titles.get("he") or self.title_he or "").strip():
+            raise ValueError(f"{self.id}: titles.he (or title_he) required")
+        if not (self.blurbs.get("he") or self.blurb_he or "").strip():
+            raise ValueError(f"{self.id}: blurbs.he (or blurb_he) required")
+        # Keep mirrors populated for older callers
+        if not self.title_he:
+            object.__setattr__(self, "title_he", self.titles.get("he"))
+        if not self.blurb_he:
+            object.__setattr__(self, "blurb_he", self.blurbs.get("he"))
+        return self
 
     @field_validator("id")
     @classmethod
@@ -219,8 +293,10 @@ def infer_topics(path: ContentPath) -> list[ContentTopic]:
         topics.append(
             ContentTopic(
                 id=f"topic_{topic_idx:02d}",
-                title_he=title_he or first.title,
-                title_en=title_en or first.title_en or first.title,
+                titles={
+                    "he": title_he or first.title,
+                    "en": title_en or first.title_en or first.title,
+                },
                 emoji=emoji or path.emoji,
                 node_ids=[n.id for n in bucket if n.id],
             )

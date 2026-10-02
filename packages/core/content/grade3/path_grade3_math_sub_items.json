@@ -1,21 +1,106 @@
 {
   "id": "path_grade3_math_sub_items",
-  "title_he": "חיסור עם פריטים",
-  "title_en": "Subtraction with items",
-  "title_ar": "الطرح مع عناصر",
+  "titles": {
+    "he": "חיסור עם פריטים",
+    "en": "Subtraction with items",
+    "ar": "الطرح مع عناصر"
+  },
+  "blurbs": {
+    "he": "תפוחים ובלונים נעלמים — לומדים חיסור בלחיצה על תשובה.",
+    "en": "Apples and balloons disappear — learn subtraction by tapping an answer.",
+    "ar": "تفاح وبالونات تختفي — نتعلم الطرح بالنقر على إجابة."
+  },
   "subject": "math",
   "grade": 3,
-  "group_ids": ["grade3"],
+  "group_ids": [
+    "grade3"
+  ],
   "emoji": "🍎",
-  "blurb_he": "תפוחים ובלונים נעלמים — לומדים חיסור בלחיצה על תשובה.",
-  "blurb_en": "Apples and balloons disappear — learn subtraction by tapping an answer.",
-  "blurb_ar": "تفاح وبالونات تختفي — نتعلم الطرح بالنقر على إجابة.",
   "estimated_minutes": 7,
   "nodes": [
-    {"type": "learn", "title": "מה זה חיסור?", "body_he": "חיסור אומר לקחת חלק החוצה. היו 10 תפוחים, אכלנו 3 — נשארו 7.", "speak_text": "חיסור אומר לקחת חלק החוצה. בואו נתרגל עם תפוחים ובלונים."},
-    {"type": "practice", "title": "תפוחים בסל", "body_he": "בסל יש 12 תפוחים. אכלנו 4. כמה נשארו?", "speak_text": "שניים עשר תפוחים, אכלנו ארבעה. כמה נשארו?", "choices": [{"id": "a", "label": "6", "emoji": "🍎"}, {"id": "b", "label": "8", "emoji": "🍎"}, {"id": "c", "label": "9", "emoji": "🍎"}], "correct": "b", "feedback_ok": "נכון! 12 פחות 4 זה 8.", "feedback_try": "דמיינו 12 תפוחים ומורידים 4."},
-    {"type": "practice", "title": "בלונים עפים", "body_he": "היו 15 בלונים. 6 עפו לשמיים. כמה נשארו ביד?", "speak_text": "חמישה עשר בלונים, שישה עפו. כמה נשארו?", "choices": [{"id": "a", "label": "8"}, {"id": "b", "label": "9"}, {"id": "c", "label": "10"}], "correct": "b", "feedback_ok": "מעולה! 15 − 6 = 9.", "feedback_try": "15 פחות 5 זה 10, ואז עוד אחד פחות — 9."},
-    {"type": "check", "title": "בדיקה מהירה", "body_he": "14 − 5 = ?", "speak_text": "ארבעה עשר פחות חמש.", "choices": [{"id": "a", "label": "8"}, {"id": "b", "label": "9"}, {"id": "c", "label": "11"}], "correct": "b", "feedback_ok": "כל הכבוד! 14 − 5 = 9.", "feedback_try": "ספרו אחורה מחמש מ־14."},
-    {"type": "celebrate", "title": "יופי של חיסור!", "body_he": "סיימתם! חיסור עם פריטים עוזר לראות את המספרים בדמיון.", "speak_text": "כל הכבוד על החיסור!"}
+    {
+      "type": "learn",
+      "title": "מה זה חיסור?",
+      "body_he": "חיסור אומר לקחת חלק החוצה. היו 10 תפוחים, אכלנו 3 — נשארו 7.",
+      "speak_text": "חיסור אומר לקחת חלק החוצה. בואו נתרגל עם תפוחים ובלונים."
+    },
+    {
+      "type": "practice",
+      "title": "תפוחים בסל",
+      "body_he": "בסל יש 12 תפוחים. אכלנו 4. כמה נשארו?",
+      "speak_text": "שניים עשר תפוחים, אכלנו ארבעה. כמה נשארו?",
+      "choices": [
+        {
+          "id": "a",
+          "label": "6",
+          "emoji": "🍎"
+        },
+        {
+          "id": "b",
+          "label": "8",
+          "emoji": "🍎"
+        },
+        {
+          "id": "c",
+          "label": "9",
+          "emoji": "🍎"
+        }
+      ],
+      "correct": "b",
+      "feedback_ok": "נכון! 12 פחות 4 זה 8.",
+      "feedback_try": "דמיינו 12 תפוחים ומורידים 4."
+    },
+    {
+      "type": "practice",
+      "title": "בלונים עפים",
+      "body_he": "היו 15 בלונים. 6 עפו לשמיים. כמה נשארו ביד?",
+      "speak_text": "חמישה עשר בלונים, שישה עפו. כמה נשארו?",
+      "choices": [
+        {
+          "id": "a",
+          "label": "8"
+        },
+        {
+          "id": "b",
+          "label": "9"
+        },
+        {
+          "id": "c",
+          "label": "10"
+        }
+      ],
+      "correct": "b",
+      "feedback_ok": "מעולה! 15 − 6 = 9.",
+      "feedback_try": "15 פחות 5 זה 10, ואז עוד אחד פחות — 9."
+    },
+    {
+      "type": "check",
+      "title": "בדיקה מהירה",
+      "body_he": "14 − 5 = ?",
+      "speak_text": "ארבעה עשר פחות חמש.",
+      "choices": [
+        {
+          "id": "a",
+          "label": "8"
+        },
+        {
+          "id": "b",
+          "label": "9"
+        },
+        {
+          "id": "c",
+          "label": "11"
+        }
+      ],
+      "correct": "b",
+      "feedback_ok": "כל הכבוד! 14 − 5 = 9.",
+      "feedback_try": "ספרו אחורה מחמש מ־14."
+    },
+    {
+      "type": "celebrate",
+      "title": "יופי של חיסור!",
+      "body_he": "סיימתם! חיסור עם פריטים עוזר לראות את המספרים בדמיון.",
+      "speak_text": "כל הכבוד על החיסור!"
+    }
   ]
 }

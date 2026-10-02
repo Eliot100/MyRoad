@@ -1,24 +1,32 @@
 {
   "id": "path_grade3_english_colors",
-  "title_he": "צבעים באנגלית",
-  "title_en": "Colors in English",
+  "titles": {
+    "he": "צבעים באנגלית",
+    "en": "Colors in English",
+    "ar": "ألوان بالإنجليزية"
+  },
+  "blurbs": {
+    "he": "מקשיבים, לוחצים ואומרים: red, blue, green, yellow, orange, purple.",
+    "en": "Listen, tap, and say: red, blue, green, yellow, orange, purple.",
+    "ar": "نستمع ونضغط ونقول: red, blue, green, yellow, orange, purple."
+  },
   "subject": "english",
   "grade": 3,
   "group_ids": [
     "grade3"
   ],
   "emoji": "🌈",
-  "blurb_he": "מקשיבים, לוחצים ואומרים: red, blue, green, yellow, orange, purple.",
-  "blurb_en": "Listen, tap, and say: red, blue, green, yellow, orange, purple.",
   "explain_locale": "he",
   "content_locale": "en",
   "estimated_minutes": 12,
   "topics": [
     {
       "id": "topic_meet",
-      "title_he": "הכרות עם צבעים",
-      "title_en": "Meet the colors",
-      "title_ar": "تعرّف على الألوان",
+      "titles": {
+        "he": "הכרות עם צבעים",
+        "en": "Meet the colors",
+        "ar": "تعرّف على الألوان"
+      },
       "emoji": "👋",
       "node_ids": [
         "learn_intro",
@@ -28,9 +36,11 @@
     },
     {
       "id": "topic_speak",
-      "title_he": "אומרים בקול",
-      "title_en": "Say it out loud",
-      "title_ar": "قلها بصوت عالٍ",
+      "titles": {
+        "he": "אומרים בקול",
+        "en": "Say it out loud",
+        "ar": "قلها بصوت عالٍ"
+      },
       "emoji": "🗣️",
       "node_ids": [
         "speak_green",
@@ -39,9 +49,11 @@
     },
     {
       "id": "topic_more",
-      "title_he": "עוד צבעים",
-      "title_en": "More colors",
-      "title_ar": "ألوان إضافية",
+      "titles": {
+        "he": "עוד צבעים",
+        "en": "More colors",
+        "ar": "ألوان إضافية"
+      },
       "emoji": "🎨",
       "node_ids": [
         "learn_more",
@@ -51,9 +63,11 @@
     },
     {
       "id": "topic_finish",
-      "title_he": "סיכום",
-      "title_en": "Celebrate",
-      "title_ar": "احتفال",
+      "titles": {
+        "he": "סיכום",
+        "en": "Celebrate",
+        "ar": "احتفال"
+      },
       "emoji": "🎉",
       "node_ids": [
         "check_mix",
