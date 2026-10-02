@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — קטלוג דרכים</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+<body class="platform">
+  <header class="top">
+    <div class="brand">
+      <strong>{{ product }}</strong>
+      <span class="badge">פלטפורמת למידה</span>
+    </div>
+    <nav class="top-nav">
+      <a href="/">קטלוג</a>
+      <a href="/author" class="muted-link">ממשק מחבר (POC)</a>
+    </nav>
+  </header>
+
+  <section class="hero card">
+    <h1>דרכי למידה</h1>
+    <p class="lede">בחרו קבוצה ונושא, ואז פתחו דרך. התוכן מגיע מקבצי נתונים — לא מקוד קשיח.</p>
+  </section>
+
+  <section class="filters card">
+    <div class="filter-row">
+      <span class="filter-label">קבוצות</span>
+      <div class="chips">
+        <a class="chip {% if active_group == 'all' %}active{% endif %}" href="/?group=all&subject={{ active_subject }}">הכל</a>
+        {% for gid, g in groups.items() %}
+        <a class="chip {% if active_group == gid %}active{% endif %}" href="/?group={{ gid }}&subject={{ active_subject }}">{{ g.title_he }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">נושאים</span>
+      <div class="chips">
+        <a class="chip {% if active_subject == 'all' %}active{% endif %}" href="/?group={{ active_group }}&subject=all">הכל</a>
+        {% for sid, s in subjects.items() %}
+        <a class="chip {% if active_subject == sid %}active{% endif %}" href="/?group={{ active_group }}&subject={{ sid }}" style="--chip-accent: {{ s.color }}">{{ s.emoji }} {{ s.he }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% if catalog.group %}
+  <section class="group-banner card {% if active_group == 'grade3' %}tone-demo{% endif %}">
+    <h2>{{ catalog.group.title_he }}</h2>
+    <p>{{ catalog.group.blurb_he }}</p>
+  </section>
+  {% endif %}
+
+  <section class="grid" aria-label="כרטיסי דרכים">
+    {% for c in catalog.cards %}
+    <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}">
+      <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
+      <div class="path-body">
+        <div class="path-meta">
+          <span class="subject-pill">{{ c.subjectLabel }}</span>
+          {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} דק׳</span>{% endif %}
+        </div>
+        <h3>{{ c.title }}</h3>
+        <p>{{ c.blurb }}</p>
+      </div>
+    </a>
+    {% else %}
+    <p class="empty">אין דרכים בקטלוג הזה עדיין.</p>
+    {% endfor %}
+  </section>
+
+  <footer>
+    <small>{{ product }} · קטלוג מבוסס תוכן · פרסום אנושי לדרכים חדשות · דמו כיתה ג׳ נטען מראש</small>
+  </footer>
+</body>
+</html>
