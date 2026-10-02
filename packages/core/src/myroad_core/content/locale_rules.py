@@ -204,3 +204,18 @@ def resolve_node_display(
         "speak_content": speak_text or body_content,
         "speak_ui": speak_ui or body,
     }
+
+
+def validate_catalog_chrome(path: ContentPath, *, require_en: bool = True) -> list[str]:
+    """Catalog/card chrome must be available for UI locales (titles & blurbs)."""
+    errors: list[str] = []
+    if not (path.title_he or "").strip():
+        errors.append(f"{path.id}: missing title_he")
+    if not (path.blurb_he or "").strip():
+        errors.append(f"{path.id}: missing blurb_he")
+    if require_en:
+        if not (path.title_en or "").strip():
+            errors.append(f"{path.id}: missing title_en for catalog UI locale=en")
+        if not (path.blurb_en or "").strip():
+            errors.append(f"{path.id}: missing blurb_en for catalog UI locale=en")
+    return errors
