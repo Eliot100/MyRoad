@@ -1,6 +1,8 @@
 {
   "id": "path_grade3_math_add20",
   "title_he": "חיבור עד 20",
+  "title_en": "Addition up to 20",
+  "title_ar": "الجمع حتى 20",
   "subject": "math",
   "grade": 3,
   "group_ids": [
@@ -8,7 +10,40 @@
   ],
   "emoji": "➕",
   "blurb_he": "סיפורים קצרים וחיבור מספרים עד 20 — בוחרים תשובה בלחיצה.",
+  "blurb_en": "Short stories and adding numbers up to 20 — tap the answer.",
+  "blurb_ar": "قصص قصيرة وجمع أعداد حتى 20 — اختر الإجابة بالنقر.",
   "estimated_minutes": 9,
+  "topics": [
+    {
+      "id": "topic_learn",
+      "title_he": "מה זה חיבור?",
+      "title_en": "What is addition?",
+      "emoji": "➕",
+      "node_ids": [
+        "learn_add"
+      ]
+    },
+    {
+      "id": "topic_practice",
+      "title_he": "תרגול סיפורים",
+      "title_en": "Story practice",
+      "emoji": "🎈",
+      "node_ids": [
+        "practice_balloons",
+        "practice_candy"
+      ]
+    },
+    {
+      "id": "topic_check",
+      "title_he": "אתגר וסיום",
+      "title_en": "Challenge & finish",
+      "emoji": "🏁",
+      "node_ids": [
+        "check_add",
+        "celebrate"
+      ]
+    }
+  ],
   "nodes": [
     {
       "type": "learn",
@@ -98,37 +133,6 @@
       "body_he": "כל הכבוד! אתם יודעים לחבר מספרים עד 20. אפשר לחזור על הדרך מתי שרוצים.",
       "speak_text": "כל הכבוד! סיימתם את דרך החיבור.",
       "id": "celebrate"
-    }
-  ],
-  "topics": [
-    {
-      "id": "topic_learn",
-      "title_he": "מה זה חיבור?",
-      "title_en": "What is addition?",
-      "emoji": "➕",
-      "node_ids": [
-        "learn_add"
-      ]
-    },
-    {
-      "id": "topic_practice",
-      "title_he": "תרגול סיפורים",
-      "title_en": "Story practice",
-      "emoji": "🎈",
-      "node_ids": [
-        "practice_balloons",
-        "practice_candy"
-      ]
-    },
-    {
-      "id": "topic_check",
-      "title_he": "אתגר וסיום",
-      "title_en": "Challenge & finish",
-      "emoji": "🏁",
-      "node_ids": [
-        "check_add",
-        "celebrate"
-      ]
     }
   ]
 }
