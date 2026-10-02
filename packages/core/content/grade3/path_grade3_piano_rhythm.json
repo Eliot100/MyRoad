@@ -1,11 +1,17 @@
 {
   "id": "path_grade3_piano_rhythm",
   "title_he": "קצב ידיים",
+  "title_en": "Hand rhythm",
+  "title_ar": "إيقاع اليدين",
   "subject": "piano",
   "grade": 3,
-  "group_ids": ["grade3"],
+  "group_ids": [
+    "grade3"
+  ],
   "emoji": "👏",
   "blurb_he": "מחיאות לפי דפוס — רואים, שומעים, ולפי רצון מקליטים.",
+  "blurb_en": "Clap along to a pattern — see, hear, and optionally record.",
+  "blurb_ar": "تصفيق حسب نمط — نرى ونسمع، ويمكن التسجيل إن رغبت.",
   "estimated_minutes": 7,
   "nodes": [
     {
@@ -19,7 +25,12 @@
       "title": "דפוס: טאק טאק שקט טאק",
       "body_he": "לחצו על הפעימות לפי הסדר: מחיאה, מחיאה, שקט, מחיאה. (● ● ○ ●)",
       "speak_text": "מחיאה, מחיאה, שקט, מחיאה.",
-      "pattern": [1, 1, 0, 1],
+      "pattern": [
+        1,
+        1,
+        0,
+        1
+      ],
       "feedback_ok": "קצב מדויק! כל הכבוד.",
       "feedback_try": "זכרו: שתי מחיאות, שקט, מחיאה."
     },
@@ -28,7 +39,12 @@
       "title": "דפוס: טאק שקט טאק שקט",
       "body_he": "עכשיו: מחיאה, שקט, מחיאה, שקט. (● ○ ● ○)",
       "speak_text": "מחיאה, שקט, מחיאה, שקט.",
-      "pattern": [1, 0, 1, 0],
+      "pattern": [
+        1,
+        0,
+        1,
+        0
+      ],
       "feedback_ok": "יופי של קצב!",
       "feedback_try": "מחיאה ואז שקט, שוב ושוב."
     },
