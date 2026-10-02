@@ -49,6 +49,21 @@ uv pip install -e ".[dev,api]"
 pytest -q
 ```
 
+### Platform catalog + path player
+
+Age-agnostic home (groups + subject chips + path cards). Demo Grade-3 paths load from
+`packages/core/content/grade3/*.json` into PathStore as published samples.
+
+```bash
+cd packages/core
+pip install -e ".[api]"
+uvicorn myroad_core.ui.app:app --reload --port 8765
+# http://127.0.0.1:8765/          catalog
+# http://127.0.0.1:8765/author   golden-loop author POC
+```
+
+See `packages/core/docs/kids-platform.md`.
+
 ### Thin learner UI
 
 ```bash
