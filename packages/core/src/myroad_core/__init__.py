@@ -1,4 +1,4 @@
-"""MyRoad core — persistence + agent-tool facade + thin UI + golden loop."""
+"""MyRoad core — persistence + agent-tool facade + platform UI + golden loop."""
 
 from myroad_core.models import (
     BlockType,
@@ -23,4 +23,4 @@ __all__ = [
     "StoreError",
 ]
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

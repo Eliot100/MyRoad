@@ -1,7 +1,7 @@
 [project]
 name = "myroad-core"
-version = "0.4.0"
-description = "MyRoad POC: path/version store + agent-tool facade + thin learner UI + golden loop"
+version = "0.5.0"
+description = "MyRoad POC: path store + agent tools + platform catalog/player + golden loop"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -21,6 +21,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 myroad_core = ["ui/templates/*", "ui/static/*"]
+# content JSON lives at packages/core/content (loaded by path, not package-data)
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
