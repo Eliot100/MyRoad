@@ -49,6 +49,21 @@ uv pip install -e ".[dev,api]"
 pytest -q
 ```
 
+### Platform catalog + path player
+
+Age-agnostic home (groups + subject chips + path cards). Demo Grade-3 paths load from
+`packages/core/content/grade3/*.json` into PathStore as published samples.
+
+```bash
+cd packages/core
+pip install -e ".[api]"
+uvicorn myroad_core.ui.app:app --reload --port 8765
+# http://127.0.0.1:8765/          catalog
+# http://127.0.0.1:8765/author   golden-loop author POC
+```
+
+See `packages/core/docs/kids-platform.md`.
+
 ### Thin learner UI
 
 ```bash
@@ -85,7 +100,7 @@ uvicorn myroad_core.api:app --reload
 ## Next build steps / שלבי בנייה הבאים
 
 1. ~~**Persistence** — versions, statuses, event log~~
-2. ~~**Agent API** — tool contract facade + optional HTTP~~
+2. ~~**Agent API** — tool contract facade~~
 3. ~~**Thin UI** — learner path + feedback / gated publish~~
 4. ~~**Golden loop** — topic → draft → learn → feedback → revise → human publish~~ (demo script + UI one-click revise + version diff)
 5. **Author/editor polish** — richer diff UX, source approval flows, multi-path catalog

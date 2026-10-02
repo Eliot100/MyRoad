@@ -1,0 +1,251 @@
+/* MyRoad platform shell — age-agnostic. Optional .tone-demo for sample Grade-3 paths. */
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --ink: #1f2937;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --line: #e5e7eb;
+  --ok: #047857;
+  --warn: #b45309;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 4px 12px rgba(16, 24, 40, 0.04);
+  font-family: "Segoe UI", "Rubik", "Heebo", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body.platform {
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 1rem 1.25rem 3rem;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.55;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.brand { display: flex; gap: .65rem; align-items: center; flex-wrap: wrap; }
+.badge {
+  font-size: .75rem;
+  background: #eff6ff;
+  color: var(--accent);
+  padding: .15rem .55rem;
+  border-radius: 999px;
+}
+.top-nav { display: flex; gap: 1rem; font-size: .95rem; }
+.top-nav a { color: var(--ink); text-decoration: none; }
+.muted-link { color: var(--muted) !important; }
+.back { color: var(--accent); text-decoration: none; margin-inline-end: .35rem; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+.hero h1, .path-head h1 { margin: 0 0 .4rem; font-size: 1.55rem; }
+.lede { color: var(--muted); margin: 0; }
+.filters .filter-row { margin: .55rem 0; }
+.filter-label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: .35rem; }
+.chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .4rem .75rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #f9fafb;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: .92rem;
+}
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.group-banner h2 { margin: 0 0 .35rem; font-size: 1.15rem; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: .85rem;
+}
+a.path-card {
+  display: flex;
+  gap: .75rem;
+  text-decoration: none;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: .95rem;
+  box-shadow: var(--shadow);
+  border-inline-start: 4px solid var(--subject, var(--accent));
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+a.path-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,24,40,.08); }
+.path-emoji { font-size: 1.8rem; line-height: 1; }
+.path-body h3 { margin: .25rem 0; font-size: 1.05rem; }
+.path-body p { margin: 0; color: var(--muted); font-size: .92rem; }
+.path-meta { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.subject-pill {
+  display: inline-block;
+  font-size: .75rem;
+  background: color-mix(in srgb, var(--subject, var(--accent)) 18%, white);
+  color: var(--ink);
+  padding: .12rem .45rem;
+  border-radius: 6px;
+}
+.mins { font-size: .8rem; color: var(--muted); }
+.empty { color: var(--muted); }
+.flash {
+  padding: .7rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--line);
+}
+.flash.ok { background: #ecfdf5; color: var(--ok); }
+.flash.warn { background: #fffbeb; color: var(--warn); }
+.progress-wrap { margin-top: .85rem; }
+.progress-bar {
+  height: 10px;
+  background: #eef2f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+.progress-label { font-size: .85rem; color: var(--muted); }
+.step-head {
+  display: flex;
+  gap: .55rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: .5rem;
+}
+.step-head h2 { margin: 0; flex: 1; font-size: 1.2rem; }
+.type-pill {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  background: #eff6ff;
+  color: var(--accent);
+  padding: .15rem .45rem;
+  border-radius: 6px;
+}
+.body-text { font-size: 1.05rem; }
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: .65rem;
+  margin: 1rem 0;
+}
+.choice-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  min-height: 88px;
+  padding: .85rem;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: #fafafa;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.05rem;
+}
+.choice-tile:hover { border-color: var(--accent); background: #eff6ff; }
+.choice-emoji { font-size: 1.6rem; }
+button, .primary, .secondary {
+  border: 0;
+  border-radius: 10px;
+  padding: .6rem 1.05rem;
+  cursor: pointer;
+  font: inherit;
+  background: var(--accent);
+  color: #fff;
+}
+button:disabled { background: #9ca3af; cursor: not-allowed; }
+button.secondary { background: #4b5563; }
+.big { font-size: 1.05rem; padding: .75rem 1.25rem; }
+.icon-btn {
+  background: #f3f4f6;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .85rem; }
+.piano {
+  display: flex;
+  gap: .5rem;
+  justify-content: center;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+.piano-key {
+  min-width: 72px;
+  min-height: 110px;
+  border-radius: 0 0 12px 12px;
+  background: #111827;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.piano-key:active, .piano-key.lit { background: var(--accent); }
+.rhythm .pattern-view {
+  display: flex;
+  gap: .55rem;
+  justify-content: center;
+  font-size: 1.6rem;
+  margin: .75rem 0;
+}
+.beat-dot.on { color: var(--accent); }
+.beat-dot.off { color: #d1d5db; }
+.beat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+.beat-btn {
+  min-height: 64px;
+  background: #f3f4f6;
+  color: var(--ink);
+  border: 2px solid var(--line);
+}
+.beat-btn.selected {
+  background: #dbeafe;
+  border-color: var(--accent);
+}
+.speak-tools { margin: .75rem 0; }
+.muted { color: var(--muted); }
+.tiny { font-size: .82rem; }
+footer { color: var(--muted); margin-top: 1.5rem; text-align: center; }
+footer a { color: var(--accent); }
+
+/* Sample Grade-3 demos only — soft accents, not a global kids rebrand */
+.tone-demo.group-banner,
+body.tone-demo .step-card,
+a.path-card.tone-demo {
+  background: linear-gradient(180deg, #fffdf9 0%, #ffffff 55%);
+}
+body.tone-demo {
+  --accent: #3b82f6;
+}
+body.tone-demo .choice-tile {
+  border-radius: 20px;
+  min-height: 96px;
+  font-size: 1.12rem;
+}
+body.tone-demo .progress-fill {
+  background: linear-gradient(90deg, #60a5fa, #34d399);
+}

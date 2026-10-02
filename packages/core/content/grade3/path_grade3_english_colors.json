@@ -1,0 +1,74 @@
+{
+  "id": "path_grade3_english_colors",
+  "title_he": "Colors — צבעים באנגלית",
+  "subject": "english",
+  "grade": 3,
+  "group_ids": ["grade3"],
+  "emoji": "🌈",
+  "blurb_he": "מקשיבים, לוחצים ואומרים: red, blue, green ועוד.",
+  "estimated_minutes": 8,
+  "nodes": [
+    {
+      "type": "learn",
+      "title": "צבעים באנגלית",
+      "body_he": "היום נלמד שמות של צבעים באנגלית. לחצו על הכפתור 🔊 כדי לשמוע, ואחר כך בחרו.",
+      "speak_text": "Hello! Today we learn colors. Red, blue, green, yellow."
+    },
+    {
+      "type": "practice",
+      "title": "מה הצבע? Red",
+      "body_he": "איזה מילה אומרת אדום באנגלית?",
+      "speak_text": "Which word means red? Listen: red.",
+      "choices": [
+        {"id": "a", "label": "blue", "emoji": "🔵"},
+        {"id": "b", "label": "red", "emoji": "🔴"},
+        {"id": "c", "label": "green", "emoji": "🟢"}
+      ],
+      "correct": "b",
+      "feedback_ok": "Yes! Red = אדום.",
+      "feedback_try": "נסו שוב. אדום באנגלית: red."
+    },
+    {
+      "type": "speak",
+      "title": "אמרו: Blue",
+      "body_he": "הקשיבו למילה Blue (כחול), ואז לחצו על 🎤 ונסו להגיד אותה. אין ציון — רק תרגול!",
+      "speak_text": "Blue. Blue. Your turn — say blue!",
+      "record": true,
+      "media_hint": "blue"
+    },
+    {
+      "type": "practice",
+      "title": "Yellow או Green?",
+      "body_he": "מה הצבע של השמש באנגלית?",
+      "speak_text": "The sun is… yellow!",
+      "choices": [
+        {"id": "a", "label": "yellow", "emoji": "🟡"},
+        {"id": "b", "label": "green", "emoji": "🟢"},
+        {"id": "c", "label": "black", "emoji": "⚫"}
+      ],
+      "correct": "a",
+      "feedback_ok": "Great! Yellow = צהוב.",
+      "feedback_try": "השמש צהובה — yellow."
+    },
+    {
+      "type": "check",
+      "title": "בחרו נכון",
+      "body_he": "Green זה…",
+      "speak_text": "Green means…",
+      "choices": [
+        {"id": "a", "label": "אדום"},
+        {"id": "b", "label": "כחול"},
+        {"id": "c", "label": "ירוק"}
+      ],
+      "correct": "c",
+      "feedback_ok": "Excellent! Green = ירוק.",
+      "feedback_try": "Green זה הצבע של הדשא."
+    },
+    {
+      "type": "celebrate",
+      "title": "Color star!",
+      "body_he": "כל הכבוד! אתם יודעים: red, blue, green, yellow. אפשר לחזור ולהקליט שוב.",
+      "speak_text": "Great job with colors!"
+    }
+  ]
+}

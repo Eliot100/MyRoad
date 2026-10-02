@@ -102,3 +102,8 @@ Asserts agent-only publish is denied (`RBAC_DENY`). **Never auto-publish.**
 Thin UI: primary button "שמור משוב ועדכן טיוטה" is one-click feedback→revise;
 version diff banner appears briefly after revise.
 
+
+
+## Content samples
+
+See `content/grade3/` and `docs/kids-platform.md`.

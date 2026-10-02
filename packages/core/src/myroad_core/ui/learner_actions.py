@@ -23,8 +23,12 @@ def register_learner_actions(
     _load_doc: Callable,
     _block_body: Callable,
     _corr: Callable,
+    route_prefix: str = "",
+    redirect_path: str = "/",
 ) -> None:
-    @app.post("/submit", response_class=HTMLResponse)
+    prefix = route_prefix.rstrip("/")
+
+    @app.post(f"{prefix}/submit", response_class=HTMLResponse)
     async def submit_answers(request: Request) -> HTMLResponse:
         sess = _session(request)
         form = await request.form()
@@ -94,7 +98,7 @@ def register_learner_actions(
         sess["last_grade"] = grade
         return _render(request, sess, grade=grade)
 
-    @app.post("/feedback", response_class=HTMLResponse)
+    @app.post(f"{prefix}/feedback", response_class=HTMLResponse)
     def record_feedback(
         request: Request,
         comment: str = Form(""),
@@ -166,7 +170,7 @@ def register_learner_actions(
         sess["flash"] = {"level": "ok", "text": msg}
         return _render(request, sess)
 
-    @app.post("/publish", response_class=HTMLResponse)
+    @app.post(f"{prefix}/publish", response_class=HTMLResponse)
     def publish_path(
         request: Request,
         human_confirm: str | None = Form(None),

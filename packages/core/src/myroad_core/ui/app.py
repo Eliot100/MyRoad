@@ -1,10 +1,11 @@
-"""Thin learner UI over AgentTools + PathStore seed.
+"""MyRoad platform UI: catalog + path player + author POC.
 
 Run:
   cd packages/core && pip install -e ".[api]"
   uvicorn myroad_core.ui.app:app --reload --port 8765
 
-Never auto-publishes. Publish requires an explicit human confirmation checkbox.
+Catalog seeds demo content paths as published (explicit sample allow-list).
+Author/golden-loop UI never auto-publishes new paths.
 """
 from __future__ import annotations
 
@@ -17,10 +18,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.content.loader import default_content_dir, seed_content_paths
 from myroad_core.seed import find_repo_freeze_dir, seed_golden_quadratic
 from myroad_core.store import PathStore
 from myroad_core.tools import AgentTools
 from myroad_core.ui.learner_actions import register_learner_actions
+from myroad_core.ui.platform_routes import register_platform_routes
 
 UI_DIR = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(UI_DIR / "templates"))
@@ -60,19 +63,27 @@ def create_learner_app(
     *,
     db_path: str = ":memory:",
     seed: bool = True,
+    seed_content: bool = True,
 ) -> FastAPI:
     path_store = store or PathStore(db_path)
     tools = AgentTools(path_store)
     seeded: dict[str, Any] = {}
+    content_seed: dict[str, Any] = {}
     if seed:
         freeze = find_repo_freeze_dir(Path(__file__).resolve())
         seeded = seed_golden_quadratic(path_store, freeze_dir=freeze)
+    if seed_content:
+        content_dir = default_content_dir()
+        if content_dir.is_dir():
+            content_seed = seed_content_paths(path_store, content_dir=content_dir)
 
-    app = FastAPI(title="MyRoad Learner UI", version="0.1.0")
+    app = FastAPI(title="MyRoad", version="0.5.0")
     app.state.store = path_store
     app.state.tools = tools
     app.state.seed = seeded
+    app.state.content_seed = content_seed
     app.state.sessions: dict[str, dict[str, Any]] = {}
+    app.state.play_sessions: dict[str, dict[str, Any]] = {}
 
     static_dir = UI_DIR / "static"
     if static_dir.is_dir():
@@ -84,7 +95,6 @@ def create_learner_app(
             sid = uuid.uuid4().hex
             path_id = seeded.get("pathId") or "path_quadratic_he_hs_001"
             version_ids = seeded.get("versionIds") or []
-            # Prefer v1 (before feedback) for the learner loop
             version_id = version_ids[0] if version_ids else "ver_qeq_draft_001"
             app.state.sessions[sid] = {
                 "sid": sid,
@@ -124,7 +134,6 @@ def create_learner_app(
         sess["index"] = idx
         block = blocks[idx] if blocks else None
         flash = sess.pop("flash", None)
-        # Show version diff briefly (one render), then clear — author polish.
         version_diff = sess.pop("version_diff", None)
         ctx: dict[str, Any] = {
             "request": request,
@@ -147,6 +156,7 @@ def create_learner_app(
             "can_next": idx < n - 1,
             "publish_enabled": sess.get("publish_enabled", False),
             "feedback_count": len(doc.get("feedback") or []),
+            "author_base": "/author",
         }
         if extra:
             ctx.update(extra)
@@ -162,47 +172,47 @@ def create_learner_app(
             "product": "MyRoad",
             "pathId": seeded.get("pathId"),
             "versionIds": seeded.get("versionIds"),
+            "contentPaths": (content_seed or {}).get("count", 0),
         }
 
-    @app.get("/", response_class=HTMLResponse)
-    def home(request: Request) -> HTMLResponse:
+    # --- Author / golden-loop POC (never auto-publish) ---
+    @app.get("/author", response_class=HTMLResponse)
+    def author_home(request: Request) -> HTMLResponse:
         sess = _session(request)
         return _render(request, sess)
 
-    @app.post("/nav/prev")
-    def nav_prev(request: Request) -> RedirectResponse:
+    @app.post("/author/nav/prev")
+    def author_nav_prev(request: Request) -> RedirectResponse:
         sess = _session(request)
         sess["index"] = max(0, sess["index"] - 1)
         sess["last_grade"] = None
-        resp = RedirectResponse("/", status_code=303)
+        resp = RedirectResponse("/author", status_code=303)
         resp.set_cookie("myroad_sid", sess["sid"], httponly=True, samesite="lax")
         return resp
 
-    @app.post("/nav/next")
-    def nav_next(request: Request) -> RedirectResponse:
+    @app.post("/author/nav/next")
+    def author_nav_next(request: Request) -> RedirectResponse:
         sess = _session(request)
         doc = _load_doc(sess)
         blocks = doc.get("blocks") or []
         block = blocks[sess["index"]] if blocks else None
-        # Gate advance for practice/assessment until mastered
         if block and block.get("type") in ("practice", "assessment", "experience"):
             if block["blockId"] not in sess["mastered"]:
                 sess["flash"] = {
                     "level": "warn",
                     "text": "יש להשלים את הבלוק (שליטה) לפני מעבר הלאה.",
                 }
-                resp = RedirectResponse("/", status_code=303)
+                resp = RedirectResponse("/author", status_code=303)
                 resp.set_cookie("myroad_sid", sess["sid"], httponly=True, samesite="lax")
                 return resp
         sess["index"] = min(len(blocks) - 1, sess["index"] + 1)
         sess["last_grade"] = None
-        resp = RedirectResponse("/", status_code=303)
+        resp = RedirectResponse("/author", status_code=303)
         resp.set_cookie("myroad_sid", sess["sid"], httponly=True, samesite="lax")
         return resp
 
-    @app.post("/ack")
-    def ack_block(request: Request) -> RedirectResponse:
-        """Mark explanation as viewed/confirmed (mastery view_and_confirm)."""
+    @app.post("/author/ack")
+    def author_ack(request: Request) -> RedirectResponse:
         sess = _session(request)
         doc = _load_doc(sess)
         blocks = doc.get("blocks") or []
@@ -213,7 +223,7 @@ def create_learner_app(
             if sess["index"] < len(blocks) - 1:
                 sess["index"] += 1
                 sess["last_grade"] = None
-        resp = RedirectResponse("/", status_code=303)
+        resp = RedirectResponse("/author", status_code=303)
         resp.set_cookie("myroad_sid", sess["sid"], httponly=True, samesite="lax")
         return resp
 
@@ -224,6 +234,16 @@ def create_learner_app(
         _render=_render,
         _load_doc=_load_doc,
         _block_body=_block_body,
+        _corr=_corr,
+        route_prefix="/author",
+        redirect_path="/author",
+    )
+
+    register_platform_routes(
+        app,
+        templates=TEMPLATES,
+        store=path_store,
+        tools=tools,
         _corr=_corr,
     )
 
