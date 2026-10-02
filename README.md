@@ -16,17 +16,53 @@
 | `freeze/v0/04-comparison.md` | Comparison vs first generic scaffold / השוואה לפיגום הגנרי |
 | `docs/design-extraction.md` | Requirements extraction from design docs |
 
+## Phase-1 persistence (`packages/core`)
+
+Python + Pydantic + SQLite store for path/version/status + audit event log.
+
+| Capability | Notes |
+|------------|-------|
+| `create_draft` / `save_version` | Draft path documents |
+| `get_version` / `list_versions` | Read path versions |
+| `revise_draft` | Always creates a **new** `versionId` |
+| `request_publish` | `draft` → `in_review` (does not publish) |
+| `publish` | Human-only; **refuses when `agentId` is set** |
+| `append_event` / `query_events` | Audit by `pathId` or `correlationId` |
+| `seed_golden_quadratic` | Loads freeze/v0 JSON as draft versions |
+
+### Run persistence tests
+
+```bash
+cd packages/core
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+pytest -q
+```
+
+With uv:
+
+```bash
+cd packages/core
+uv venv && source .venv/bin/activate
+uv pip install -e ".[dev]"
+pytest -q
+```
+
 ## Next build steps / שלבי בנייה הבאים
 
-1. **Persistence** — versions, statuses, event log  
-2. **Agent API** — tool contract + RBAC + audit  
-3. **Thin UI** — learner path + minimal author/editor  
-4. **Golden loop** — topic → draft → learn → feedback → revise → human publish  
+1. ~~**Persistence** — versions, statuses, event log~~ (this package)
+2. **Agent API** — tool contract + RBAC + audit (HTTP/tool surface)
+3. **Thin UI** — learner path + minimal author/editor
+4. **Golden loop** — topic → draft → learn → feedback → revise → human publish
 
 ## CI
 
-On push/PR to `main`: checkout and validate both freeze path JSON files with `python -m json.tool`.
+On push/PR to `main`:
+
+1. Validate both freeze path JSON files with `python -m json.tool`
+2. Install `packages/core` and run `pytest`
 
 ## License / note
 
-Docs and freeze artifacts only in this commit. No published learning paths.
+Freeze artifacts + phase-1 persistence library. No HTTP API or UI yet. No published learning paths in the golden freeze (both are `draft`).
