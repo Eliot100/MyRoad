@@ -1,29 +1,40 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — {{ doc.name }}</title>
+  <title>{{ product }} — {{ meta.title }}</title>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform play {% if meta.kidsDemo %}tone-demo{% endif %}" data-path="{{ doc.pathId }}">
   <header class="top">
     <div class="brand">
-      <a href="/" class="back">→ קטלוג</a>
+      <a href="/play/{{ doc.pathId }}?view=map" class="back">→ {{ t('path_map') }}</a>
       <strong>{{ product }}</strong>
     </div>
-    <div class="meta">
+    <div class="top-tools">
+      <div class="whoami">
+        <a href="/login?next=/play/{{ doc.pathId }}?view=learn" class="who-link">
+          👤 {% if learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
+        </a>
+      </div>
+      <form method="post" action="/locale" class="lang-switch">
+        <input type="hidden" name="next" value="/play/{{ doc.pathId }}?view=learn" />
+        {% for loc in locales %}
+        <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
+        {% endfor %}
+      </form>
       <span class="subject-pill" style="--subject: {{ meta.subjectColor }}">{{ meta.emoji }} {{ meta.subjectLabel }}</span>
-      {% if meta.estimatedMinutes %}<span>{{ meta.estimatedMinutes }} דק׳</span>{% endif %}
+      {% if meta.estimatedMinutes %}<span class="mins">{{ meta.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
     </div>
   </header>
 
   <section class="card path-head">
-    <h1>{{ meta.emoji }} {{ doc.name }}</h1>
-    <p class="lede">{{ doc.description }}</p>
-    <div class="progress-wrap" aria-label="התקדמות">
+    <h1>{{ meta.emoji }} {{ meta.title }}</h1>
+    <p class="lede">{{ meta.blurb }}</p>
+    <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
-      <span class="progress-label">שלב {{ index + 1 }} מתוך {{ total }} · הושלמו {{ mastered|length }}</span>
+      <span class="progress-label">{{ t('progress_label', n=index + 1, total=total, done=mastered|length) }}</span>
     </div>
   </section>
 
@@ -37,16 +48,18 @@
     <div class="step-head">
       <span class="type-pill">{{ ntype }}</span>
       <h2>{{ block.title }}</h2>
-      <button type="button" class="icon-btn" id="btn-speak" title="הקראה" aria-label="הקראה">🔊 הקראה</button>
+      <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">🔊 {{ t('speak') }}</button>
     </div>
-    <p class="body-text" id="speak-source" data-speak="{{ kids.speak_text or kids.body_he or block.title }}">{{ kids.body_he or block.learningObjective }}</p>
+    <p class="body-text" id="speak-source" data-speak="{{ kids.speak_text or kids.body_en or kids.body_he or block.title }}">
+      {% if locale == 'en' and kids.body_en %}{{ kids.body_en }}{% else %}{{ kids.body_he or block.learningObjective }}{% endif %}
+    </p>
 
     {% if ntype in ['practice', 'check'] and kids.choices %}
     <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices">
       {% for ch in kids.choices %}
       <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile">
         {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
-        <span>{{ ch.label }}</span>
+        <span>{% if locale == 'en' and ch.label_en %}{{ ch.label_en }}{% else %}{{ ch.label }}{% endif %}</span>
       </button>
       {% endfor %}
     </form>
@@ -60,7 +73,7 @@
     <form method="post" action="/play/{{ doc.pathId }}/answer" id="piano-form">
       <input type="hidden" name="sequence" id="piano-sequence" value="" />
       <button type="submit" class="primary big">
-        {% if kids.target_sequence %}בדקו את הרצף{% else %}סיימתי להתנסות{% endif %}
+        {% if kids.target_sequence %}{{ t('check_sequence') }}{% else %}{{ t('done_free') }}{% endif %}
       </button>
     </form>
     {% elif ntype == 'rhythm' %}
@@ -72,44 +85,44 @@
       </div>
       <div class="beat-row">
         {% for beat in kids.pattern %}
-        <button type="button" class="beat-btn" data-idx="{{ loop.index0 }}" data-expect="{{ beat }}">פעימה {{ loop.index }}</button>
+        <button type="button" class="beat-btn" data-idx="{{ loop.index0 }}" data-expect="{{ beat }}">{{ loop.index }}</button>
         {% endfor %}
       </div>
-      <button type="button" class="secondary" id="rhythm-reset">איפוס</button>
+      <button type="button" class="secondary" id="rhythm-reset">{{ t('reset') }}</button>
     </div>
     <form method="post" action="/play/{{ doc.pathId }}/answer" id="rhythm-form">
       <input type="hidden" name="sequence" id="rhythm-sequence" value="" />
-      <button type="submit" class="primary big">בדקו קצב</button>
+      <button type="submit" class="primary big">{{ t('check_rhythm') }}</button>
     </form>
     {% elif ntype == 'speak' %}
     <div class="speak-tools">
-      <button type="button" class="icon-btn" id="btn-record" {% if not kids.record %}hidden{% endif %}>🎤 הקלטה</button>
-      <p class="muted tiny" id="record-status">הקלטה אופציונלית — אם הדפדפן תומך.</p>
+      <button type="button" class="icon-btn" id="btn-record" {% if not kids.record %}hidden{% endif %}>🎤 {{ t('record') }}</button>
+      <p class="muted tiny" id="record-status">{{ t('record_hint') }}</p>
     </div>
     <form method="post" action="/play/{{ doc.pathId }}/ack">
-      <button type="submit" class="primary big">המשכתי / סיימתי</button>
+      <button type="submit" class="primary big">{{ t('continue_speak') }}</button>
     </form>
     {% else %}
     <form method="post" action="/play/{{ doc.pathId }}/ack">
-      <button type="submit" class="primary big">{% if ntype == 'celebrate' %}סיום 🎉{% else %}הבנתי — המשך{% endif %}</button>
+      <button type="submit" class="primary big">{% if ntype == 'celebrate' %}{{ t('finish') }}{% else %}{{ t('continue') }}{% endif %}</button>
     </form>
     {% endif %}
 
     <div class="nav row">
       <form method="post" action="/play/{{ doc.pathId }}/nav">
         <input type="hidden" name="direction" value="prev" />
-        <button type="submit" {% if not can_prev %}disabled{% endif %}>הקודם</button>
+        <button type="submit" {% if not can_prev %}disabled{% endif %}>{{ t('prev') }}</button>
       </form>
       <form method="post" action="/play/{{ doc.pathId }}/nav">
         <input type="hidden" name="direction" value="next" />
-        <button type="submit" {% if not can_next %}disabled{% endif %}>הבא</button>
+        <button type="submit" {% if not can_next %}disabled{% endif %}>{{ t('next') }}</button>
       </form>
     </div>
   </section>
   {% endif %}
 
   <footer>
-    <small><a href="/">חזרה לקטלוג</a> · {{ product }}</small>
+    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }}</small>
   </footer>
   <script src="/static/platform.js"></script>
 </body>
