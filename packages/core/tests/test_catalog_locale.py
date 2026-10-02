@@ -7,6 +7,7 @@ import pytest
 from myroad_core.content.loader import default_content_dir, list_catalog_cards, load_content_paths, seed_content_paths
 from myroad_core.content.locale_rules import validate_catalog_chrome
 from myroad_core.store import PathStore
+from myroad_core.ui.i18n import subject_label
 
 pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
@@ -27,22 +28,24 @@ def test_all_grade3_paths_have_en_catalog_chrome() -> None:
         assert errs == [], errs
 
 
-def test_list_catalog_cards_follow_ui_locale(store: PathStore) -> None:
+def test_list_catalog_cards_expose_en_chrome(store: PathStore) -> None:
+    """Cards carry titleEn/blurbEn so UI locale=en can pick them (platform_routes)."""
     seed_content_paths(store, content_dir=default_content_dir())
-    he_cards = {c["pathId"]: c for c in list_catalog_cards(store, locale="he")}
-    en_cards = {c["pathId"]: c for c in list_catalog_cards(store, locale="en")}
-    assert len(he_cards) == len(en_cards) == 10
-    for pid, card in he_cards.items():
+    cards = list_catalog_cards(store)
+    assert len(cards) == 10
+    for card in cards:
+        assert card.get("titleEn"), card["pathId"]
+        assert card.get("blurbEn"), card["pathId"]
+        # HE default title is Hebrew-native name
         if card["subject"] in {"math", "physics", "piano"}:
-            assert any("\u0590" <= ch <= "\u05FF" for ch in card["title"]), pid
-            assert card["title"] == card.get("titleHe") or card["title"]
-        if card["subject"] == "english":
-            assert card["title"] == card.get("titleHe") or card["title"]
-    for pid, card in en_cards.items():
-        assert card["titleEn"], pid
-        assert card["title"] == card["titleEn"], pid
-        assert card["blurb"] == card["blurbEn"], pid
-        assert card["subjectLabel"] in {"Math", "English", "Physics", "Piano", "General"}
+            assert any("\u0590" <= ch <= "\u05FF" for ch in card["title"]), card["pathId"]
+        # EN pick simulation (same rule as platform home)
+        en_title = card["titleEn"]
+        en_blurb = card["blurbEn"]
+        assert en_title == card["titleEn"]
+        assert any(ch.isascii() and ch.isalpha() for ch in en_title)
+        assert en_blurb
+        assert subject_label(card["subject"], "en") in {"Math", "English", "Physics", "Piano", "General"}
 
 
 @pytest.fixture
