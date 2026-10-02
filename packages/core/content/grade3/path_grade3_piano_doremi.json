@@ -1,11 +1,17 @@
 {
   "id": "path_grade3_piano_doremi",
   "title_he": "דו־רה־מי",
+  "title_en": "Do-Re-Mi",
+  "title_ar": "دو-ري-مي",
   "subject": "piano",
   "grade": 3,
-  "group_ids": ["grade3"],
+  "group_ids": [
+    "grade3"
+  ],
   "emoji": "🎹",
   "blurb_he": "הכרת שלושה תווים — לחיצה על מקשים וירטואליים.",
+  "blurb_en": "Meet three notes — tap virtual keys.",
+  "blurb_ar": "التعرّف على ثلاث نغمات — اضغط مفاتيح افتراضية.",
   "estimated_minutes": 8,
   "nodes": [
     {
@@ -19,7 +25,11 @@
       "title": "נגינה חופשית",
       "body_he": "לחצו על המקשים דו · רה · מי ונסו אותם. אחר כך לחצו ״סיימתי להתנסות״.",
       "speak_text": "נסו את המקשים: דו, רה, מי.",
-      "keys": ["do", "re", "mi"],
+      "keys": [
+        "do",
+        "re",
+        "mi"
+      ],
       "media_hint": "free_play"
     },
     {
@@ -27,8 +37,16 @@
       "title": "נגנו: דו־רה־מי",
       "body_he": "לחצו לפי הסדר: דו, אחר כך רה, אחר כך מי.",
       "speak_text": "נגנו דו, רה, מי — לפי הסדר.",
-      "keys": ["do", "re", "mi"],
-      "target_sequence": ["do", "re", "mi"],
+      "keys": [
+        "do",
+        "re",
+        "mi"
+      ],
+      "target_sequence": [
+        "do",
+        "re",
+        "mi"
+      ],
       "feedback_ok": "מושלם! דו־רה־מי 🎵",
       "feedback_try": "נסו שוב לפי הסדר: דו, רה, מי."
     },
@@ -37,8 +55,16 @@
       "title": "נגנו: מי־רה־דו",
       "body_he": "עכשיו הפוך: מי, רה, דו.",
       "speak_text": "מי, רה, דו.",
-      "keys": ["do", "re", "mi"],
-      "target_sequence": ["mi", "re", "do"],
+      "keys": [
+        "do",
+        "re",
+        "mi"
+      ],
+      "target_sequence": [
+        "mi",
+        "re",
+        "do"
+      ],
       "feedback_ok": "יפה מאוד! כמו מגלשה למטה.",
       "feedback_try": "התחילו ממי, אחר כך רה, ואז דו."
     },
