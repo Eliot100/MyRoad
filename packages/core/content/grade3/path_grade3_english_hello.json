@@ -1,0 +1,74 @@
+{
+  "id": "path_grade3_english_hello",
+  "title_he": "Hello & Feelings",
+  "subject": "english",
+  "grade": 3,
+  "group_ids": ["grade3"],
+  "emoji": "😊",
+  "blurb_he": "ברכות ורגשות פשוטים: Hello, thank you, happy, sad.",
+  "estimated_minutes": 8,
+  "nodes": [
+    {
+      "type": "learn",
+      "title": "שלום ורגשות",
+      "body_he": "נלמד להגיד שלום ולהגיד איך אנחנו מרגישים באנגלית.",
+      "speak_text": "Hello! How are you? Happy or sad?"
+    },
+    {
+      "type": "practice",
+      "title": "Hello!",
+      "body_he": "מה אומרים באנגלית כדי להגיד שלום?",
+      "speak_text": "We say hello!",
+      "choices": [
+        {"id": "a", "label": "Goodbye"},
+        {"id": "b", "label": "Hello"},
+        {"id": "c", "label": "Sorry"}
+      ],
+      "correct": "b",
+      "feedback_ok": "Hello! יפה.",
+      "feedback_try": "שלום באנגלית: Hello."
+    },
+    {
+      "type": "speak",
+      "title": "אמרו: Thank you",
+      "body_he": "״תודה״ באנגלית זה Thank you. הקשיבו והקליטו.",
+      "speak_text": "Thank you. Thank you!",
+      "record": true,
+      "media_hint": "thank you"
+    },
+    {
+      "type": "practice",
+      "title": "Happy",
+      "body_he": "Happy אומר…",
+      "speak_text": "Happy!",
+      "choices": [
+        {"id": "a", "label": "עצוב 😢"},
+        {"id": "b", "label": "שמח 😊"},
+        {"id": "c", "label": "עייף 😴"}
+      ],
+      "correct": "b",
+      "feedback_ok": "Yes — happy = שמח!",
+      "feedback_try": "Happy זה שמח."
+    },
+    {
+      "type": "check",
+      "title": "Sad",
+      "body_he": "אם מישהו sad, הוא…",
+      "speak_text": "Sad means…",
+      "choices": [
+        {"id": "a", "label": "שמח"},
+        {"id": "b", "label": "עצוב"},
+        {"id": "c", "label": "רעב"}
+      ],
+      "correct": "b",
+      "feedback_ok": "Correct — sad = עצוב.",
+      "feedback_try": "Sad זה עצוב."
+    },
+    {
+      "type": "celebrate",
+      "title": "Nice to meet you!",
+      "body_he": "סיימתם! Hello, thank you, happy, sad — מילים חמות לשיחה.",
+      "speak_text": "Nice to meet you! Bye bye!"
+    }
+  ]
+}
