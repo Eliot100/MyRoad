@@ -84,3 +84,21 @@ uvicorn myroad_core.ui.app:app --reload --port 8765
 ```bash
 python scripts/smoke_ui.py
 ```
+
+## Golden loop (E2E demo)
+
+```bash
+pip install -e ".[dev,api]"
+python scripts/golden_loop.py
+python scripts/golden_loop.py --create-draft
+python scripts/golden_loop.py --json
+```
+
+End-to-end: topic → draft/seed → simulate learn → `record_feedback` →
+`revise_draft` → `request_publish` → `publish(human_publisher=True)`.
+
+Asserts agent-only publish is denied (`RBAC_DENY`). **Never auto-publish.**
+
+Thin UI: primary button "שמור משוב ועדכן טיוטה" is one-click feedback→revise;
+version diff banner appears briefly after revise.
+
