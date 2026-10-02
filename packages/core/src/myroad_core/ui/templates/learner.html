@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — לומד</title>
+  <link rel="stylesheet" href="/static/learner.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <strong>{{ product }}</strong>
+      <span class="badge">POC · thin learner UI</span>
+    </div>
+    <div class="meta">
+      <span>סטטוס: <code>{{ status }}</code></span>
+      <span>גרסה: <code>{{ version_id }}</code></span>
+    </div>
+  </header>
+
+  {% if flash %}
+  <div class="flash {{ flash.level }}">{{ flash.text }}</div>
+  {% endif %}
+
+  <section class="path-card">
+    <h1>{{ path_name }}</h1>
+    <p class="goal"><strong>מטרה:</strong> {{ path_goal }}</p>
+    <p class="progress">בלוק {{ index + 1 }} מתוך {{ total }}
+      · נשלטו: {{ mastered|length }}/{{ total }}
+      · משובים במסמך: {{ feedback_count }}
+    </p>
+    <ol class="toc">
+      {% for b in blocks %}
+      <li class="{% if loop.index0 == index %}current{% endif %} {% if b.blockId in mastered %}done{% endif %}">
+        <span class="type">{{ b.type }}</span> {{ b.title }}
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {% if block %}
+  <section class="block-card">
+    <div class="block-head">
+      <span class="type-pill">{{ block.type }}</span>
+      <h2>{{ block.title }}</h2>
+    </div>
+    {% if block.learningObjective %}
+    <p class="lo"><strong>מטרת למידה:</strong> {{ block.learningObjective }}</p>
+    {% endif %}
+
+    {% if body.definition %}
+    <div class="content"><strong>הגדרה:</strong> {{ body.definition }}</div>
+    {% endif %}
+    {% if body.formula %}
+    <div class="content formula"><code>{{ body.formula }}</code></div>
+    {% endif %}
+    {% if body.coefficients %}
+    <ul>
+      {% for k,v in body.coefficients.items() %}
+      <li><code>{{ k }}</code>: {{ v }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% if body.cases %}
+    <ul>
+      {% if body.cases is mapping %}
+        {% for k,v in body.cases.items() %}
+        <li><strong>{{ k }}</strong>: {{ v }}</li>
+        {% endfor %}
+      {% else %}
+        {% for c in body.cases %}
+        <li>{{ c }}</li>
+        {% endfor %}
+      {% endif %}
+    </ul>
+    {% endif %}
+    {% if body.steps %}
+    <ol>
+      {% for s in body.steps %}
+      <li>{{ s }}</li>
+      {% endfor %}
+    </ol>
+    {% endif %}
+    {% if body.shell_he %}
+    <p class="shell">{{ body.shell_he }}</p>
+    {% endif %}
+    {% if body.scenario %}
+    <div class="content"><strong>תרחיש:</strong> {{ body.scenario }}</div>
+    {% endif %}
+    {% if body.setup %}
+    <div class="content"><strong>הצבה:</strong> <code>{{ body.setup }}</code></div>
+    {% endif %}
+
+    {% if block.type == "explanation" %}
+    <form method="post" action="/ack" class="row">
+      <button type="submit">קראתי והבנתי — המשך</button>
+    </form>
+    {% elif block.type in ["practice", "assessment"] %}
+    <form method="post" action="/submit" class="quiz">
+      {% for item in body.quiz_items %}
+      <fieldset>
+        <legend>{{ item.prompt }}</legend>
+        <input name="{{ item.itemId }}" placeholder="תשובה" autocomplete="off" />
+      </fieldset>
+      {% endfor %}
+      <button type="submit">בדוק תשובות</button>
+    </form>
+    {% elif block.type == "experience" %}
+    <form method="post" action="/submit" class="quiz">
+      <label>רוחב <input name="width" placeholder="למשל 6" /></label>
+      <label>אורך <input name="length" placeholder="למשל 8" /></label>
+      <button type="submit">בדוק</button>
+    </form>
+    {% endif %}
+
+    {% if grade %}
+    <div class="grade {% if grade.passed %}ok{% else %}warn{% endif %}">
+      תוצאה: {{ grade.correct }}/{{ grade.total }}
+      {% if grade.passed %} · עבר{% else %} · לא עבר{% endif %}
+      <ul>
+        {% for d in grade.details %}
+        <li>
+          {% if d.ok %}✓{% else %}✗{% endif %}
+          {{ d.prompt or d.itemId }}
+          {% if not d.ok and d.solution %}
+          <div class="hint">רמז/פתרון: {{ d.solution }}</div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <div class="nav row">
+      <form method="post" action="/nav/prev">
+        <button type="submit" {% if not can_prev %}disabled{% endif %}>הקודם</button>
+      </form>
+      <form method="post" action="/nav/next">
+        <button type="submit" {% if not can_next %}disabled{% endif %}>הבא</button>
+      </form>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="side-card">
+    <h3>משוב ללומד / לפידבק לסוכן</h3>
+    <p class="muted">שומר דרך <code>AgentTools.record_feedback</code>. אפשר גם לקרוא ל-<code>reviseDraft</code> (יוצר טיוטה חדשה — <strong>לא</strong> מפרסם).</p>
+    <form method="post" action="/feedback" class="feedback">
+      <label>דירוג (1–5)
+        <input type="number" name="rating" min="1" max="5" value="3" />
+      </label>
+      <label>הערה
+        <textarea name="comment" rows="3" placeholder="מה היה חסר / מבלבל?"></textarea>
+      </label>
+      <label>שינוי מוצע
+        <input name="proposed_change" placeholder="למשל: עוד דוגמה מספרית" />
+      </label>
+      <label class="check">
+        <input type="checkbox" name="also_revise" value="true" />
+        גם קרוא ל-reviseDraft (טיוטה חדשה בלבד)
+      </label>
+      <button type="submit">שמור משוב</button>
+    </form>
+  </section>
+
+  <section class="side-card publish">
+    <h3>פרסום (אנושי בלבד)</h3>
+    <p class="muted warn-text">Never auto-publish. הכפתור פעיל רק אחרי סימון אישור אנושי.</p>
+    <form method="post" action="/publish" id="publish-form">
+      <label class="check">
+        <input type="checkbox" name="human_confirm" id="human_confirm" value="true" />
+        אני מאשר/ת כהומני לפרסם את הגרסה הזו
+      </label>
+      <label>מזהה מפרסם
+        <input name="publisher_id" value="user_owner_poc" />
+      </label>
+      <button type="submit" id="publish-btn" disabled>פרסם מסלול</button>
+    </form>
+  </section>
+
+  <footer>
+    <small>{{ product }} · packages/core learner UI · AgentTools wired · no auto-publish</small>
+  </footer>
+
+  <script>
+    (function () {
+      var box = document.getElementById("human_confirm");
+      var btn = document.getElementById("publish-btn");
+      if (!box || !btn) return;
+      function sync() { btn.disabled = !box.checked; }
+      box.addEventListener("change", sync);
+      sync();
+    })();
+  </script>
+</body>
+</html>
