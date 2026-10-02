@@ -1,0 +1,27 @@
+{
+  "default": "he",
+  "fallback": [
+    "en",
+    "he"
+  ],
+  "locales": [
+    {
+      "code": "he",
+      "label": "עברית",
+      "nativeLabel": "עברית",
+      "dir": "rtl"
+    },
+    {
+      "code": "en",
+      "label": "English",
+      "nativeLabel": "English",
+      "dir": "ltr"
+    },
+    {
+      "code": "ar",
+      "label": "العربية",
+      "nativeLabel": "العربية",
+      "dir": "rtl"
+    }
+  ]
+}

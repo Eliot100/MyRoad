@@ -20,7 +20,9 @@ from myroad_core.ui.i18n import (
     LOCALES,
     dir_for,
     html_lang,
+    localize_path_chrome,
     normalize_locale,
+    pick,
     subject_label,
     t,
 )
@@ -168,22 +170,36 @@ def register_platform_routes(
     def _card_meta(doc: dict[str, Any], locale: str) -> dict[str, Any]:
         subject = doc.get("subject") or "general"
         meta = SUBJECTS.get(subject, SUBJECTS["general"])
-        title = doc.get("name")
-        if locale == "en" and doc.get("titleEn"):
-            title = doc["titleEn"]
-        blurb = doc.get("description") or ""
-        if locale == "en" and doc.get("blurbEn"):
-            blurb = doc["blurbEn"]
+        titles = dict(doc.get("titles") or {})
+        blurbs = dict(doc.get("blurbs") or {})
+        if doc.get("name"):
+            titles.setdefault("he", doc.get("name"))
+        if doc.get("titleEn"):
+            titles.setdefault("en", doc.get("titleEn"))
+        if doc.get("titleAr"):
+            titles.setdefault("ar", doc.get("titleAr"))
+        if doc.get("blurbHe") or doc.get("description"):
+            blurbs.setdefault("he", doc.get("blurbHe") or doc.get("description") or "")
+        if doc.get("blurbEn"):
+            blurbs.setdefault("en", doc.get("blurbEn"))
+        if doc.get("blurbAr"):
+            blurbs.setdefault("ar", doc.get("blurbAr"))
+        chrome = localize_path_chrome(
+            locale=locale,
+            titles=titles,
+            blurbs=blurbs,
+            subject=subject,
+        )
         return {
             "subject": subject,
-            "subjectLabel": subject_label(subject, locale),
+            "subjectLabel": chrome["subjectLabel"],
             "subjectColor": doc.get("subjectColor") or meta["color"],
             "emoji": doc.get("emoji") or meta["emoji"],
             "kidsDemo": bool(doc.get("kidsDemo")),
             "estimatedMinutes": doc.get("estimatedMinutes"),
             "groupIds": doc.get("groupIds") or [],
-            "title": title,
-            "blurb": blurb,
+            "title": chrome["title"],
+            "blurb": chrome["blurb"],
         }
 
     def _topics_for_ui(doc: dict[str, Any], blocks: list[dict], locale: str) -> list[dict[str, Any]]:
@@ -194,11 +210,14 @@ def register_platform_routes(
         index_by_block = {b["blockId"]: i for i, b in enumerate(blocks)}
         out: list[dict[str, Any]] = []
         for topic in topics:
-            title = topic.get("title_he") or topic.get("id")
-            if locale == "en" and topic.get("title_en"):
-                title = topic["title_en"]
-            elif locale == "ar" and topic.get("title_ar"):
-                title = topic["title_ar"]
+            topic_titles = dict(topic.get("titles") or {})
+            if topic.get("title_he"):
+                topic_titles.setdefault("he", topic.get("title_he"))
+            if topic.get("title_en"):
+                topic_titles.setdefault("en", topic.get("title_en"))
+            if topic.get("title_ar"):
+                topic_titles.setdefault("ar", topic.get("title_ar"))
+            title = pick(topic_titles, locale, default=topic.get("id") or "")
             node_ids = topic.get("node_ids") or []
             block_ids = []
             for nid in node_ids:
@@ -326,7 +345,7 @@ def register_platform_routes(
         view: str | None = "status",
     ) -> HTMLResponse:
         locale = _locale(request)
-        cards = list_catalog_cards(store)
+        cards = list_catalog_cards(store, locale=locale)
         learner = _learner(request)
         progress_map: dict[str, Any] = {}
         if learner:
@@ -337,15 +356,6 @@ def register_platform_routes(
         recent_cutoff = 7 * 24 * 3600  # 7 days
 
         for c in cards:
-            if locale == "en":
-                if c.get("titleEn"):
-                    c["title"] = c["titleEn"]
-                if c.get("blurbEn"):
-                    c["blurb"] = c["blurbEn"]
-                if c.get("subjectLabelEn"):
-                    c["subjectLabel"] = c["subjectLabelEn"]
-            else:
-                c["subjectLabel"] = subject_label(c["subject"], locale)
             prog = progress_map.get(c["pathId"])
             c["userProgress"] = prog
             status = None
@@ -454,33 +464,29 @@ def register_platform_routes(
                 )
 
         group_banner = catalog.get("group")
-        if group_banner and locale != "he":
+        if group_banner:
             group_banner = dict(group_banner)
-            if locale == "en":
-                group_banner["title_display"] = group_banner.get("title_en") or group_banner.get("title_he")
-                group_banner["blurb_display"] = group_banner.get("blurb_en") or group_banner.get("blurb_he")
-            elif locale == "ar":
-                group_banner["title_display"] = group_banner.get("title_ar") or group_banner.get("title_he")
-                group_banner["blurb_display"] = group_banner.get("blurb_ar") or group_banner.get("blurb_he")
-            else:
-                group_banner["title_display"] = group_banner.get("title_he")
-                group_banner["blurb_display"] = group_banner.get("blurb_he")
-        elif group_banner:
-            group_banner = dict(group_banner)
-            group_banner["title_display"] = group_banner.get("title_he")
-            group_banner["blurb_display"] = group_banner.get("blurb_he")
+            g_titles = dict(group_banner.get("titles") or {})
+            g_blurbs = dict(group_banner.get("blurbs") or {})
+            for code in ("he", "en", "ar"):
+                if group_banner.get(f"title_{code}"):
+                    g_titles.setdefault(code, group_banner.get(f"title_{code}"))
+                if group_banner.get(f"blurb_{code}"):
+                    g_blurbs.setdefault(code, group_banner.get(f"blurb_{code}"))
+            group_banner["title_display"] = pick(g_titles, locale, default=group_banner.get("title_he") or "")
+            group_banner["blurb_display"] = pick(g_blurbs, locale, default=group_banner.get("blurb_he") or "")
 
         subjects_ui = {}
         for sid, meta in SUBJECTS.items():
             subjects_ui[sid] = {**meta, "label": subject_label(sid, locale)}
 
-        groups_ui = {}
+        groups_ui: dict[str, Any] = {}
         for gid, g in GROUPS.items():
-            title = g.get("title_he")
-            if locale == "en":
-                title = g.get("title_en") or title
-            elif locale == "ar":
-                title = g.get("title_ar") or title
+            g_titles = dict(g.get("titles") or {})
+            for code in ("he", "en", "ar"):
+                if g.get(f"title_{code}"):
+                    g_titles.setdefault(code, g.get(f"title_{code}"))
+            title = pick(g_titles, locale, default=g.get("title_he") or gid)
             groups_ui[gid] = {**g, "title_display": title}
 
         # Tab order: RTL puts first item on the right (Hebrew emphasis); LTR left for English

@@ -1,17 +1,21 @@
 {
   "id": "path_grade3_piano_rhythm",
-  "title_he": "קצב ידיים",
-  "title_en": "Hand rhythm",
-  "title_ar": "إيقاع اليدين",
+  "titles": {
+    "he": "קצב ידיים",
+    "en": "Hand rhythm",
+    "ar": "إيقاع اليدين"
+  },
+  "blurbs": {
+    "he": "מחיאות לפי דפוס — רואים, שומעים, ולפי רצון מקליטים.",
+    "en": "Clap along to a pattern — see, hear, and optionally record.",
+    "ar": "تصفيق حسب نمط — نرى ونسمع، ويمكن التسجيل إن رغبت."
+  },
   "subject": "piano",
   "grade": 3,
   "group_ids": [
     "grade3"
   ],
   "emoji": "👏",
-  "blurb_he": "מחיאות לפי דפוס — רואים, שומעים, ולפי רצון מקליטים.",
-  "blurb_en": "Clap along to a pattern — see, hear, and optionally record.",
-  "blurb_ar": "تصفيق حسب نمط — نرى ونسمع، ويمكن التسجيل إن رغبت.",
   "estimated_minutes": 7,
   "nodes": [
     {

@@ -206,16 +206,58 @@ def resolve_node_display(
     }
 
 
-def validate_catalog_chrome(path: ContentPath, *, require_en: bool = True) -> list[str]:
-    """Catalog/card chrome must be available for UI locales (titles & blurbs)."""
+def validate_catalog_chrome(
+    path: ContentPath,
+    *,
+    require_locales: list[str] | None = None,
+    require_en: bool | None = None,
+    require_ar: bool | None = None,
+) -> list[str]:
+    """Catalog/card chrome must cover UI locales via titles/blurbs maps.
+
+    By default requires every code listed in ``locales/manifest.json``.
+    ``require_en`` / ``require_ar`` remain as back-compat toggles.
+    """
+    from myroad_core.ui.i18n import locale_codes
+
     errors: list[str] = []
-    if not (path.title_he or "").strip():
-        errors.append(f"{path.id}: missing title_he")
-    if not (path.blurb_he or "").strip():
-        errors.append(f"{path.id}: missing blurb_he")
-    if require_en:
-        if not (path.title_en or "").strip():
-            errors.append(f"{path.id}: missing title_en for catalog UI locale=en")
-        if not (path.blurb_en or "").strip():
-            errors.append(f"{path.id}: missing blurb_en for catalog UI locale=en")
+    titles = dict(path.titles or {})
+    blurbs = dict(path.blurbs or {})
+    # legacy mirrors
+    if path.title_he:
+        titles.setdefault("he", path.title_he)
+    if path.title_en:
+        titles.setdefault("en", path.title_en)
+    if path.title_ar:
+        titles.setdefault("ar", path.title_ar)
+    if path.blurb_he:
+        blurbs.setdefault("he", path.blurb_he)
+    if path.blurb_en:
+        blurbs.setdefault("en", path.blurb_en)
+    if path.blurb_ar:
+        blurbs.setdefault("ar", path.blurb_ar)
+
+    if not (titles.get("he") or "").strip():
+        errors.append(f"{path.id}: missing titles.he")
+    if not (blurbs.get("he") or "").strip():
+        errors.append(f"{path.id}: missing blurbs.he")
+
+    needed: list[str] = list(require_locales) if require_locales is not None else list(locale_codes())
+    # Back-compat flags override membership when explicitly False/True
+    if require_en is False and "en" in needed:
+        needed = [c for c in needed if c != "en"]
+    if require_ar is False and "ar" in needed:
+        needed = [c for c in needed if c != "ar"]
+    if require_en is True and "en" not in needed:
+        needed.append("en")
+    if require_ar is True and "ar" not in needed:
+        needed.append("ar")
+
+    for code in needed:
+        if code == "he":
+            continue
+        if not (titles.get(code) or "").strip():
+            errors.append(f"{path.id}: missing titles.{code} for catalog UI locale={code}")
+        if not (blurbs.get(code) or "").strip():
+            errors.append(f"{path.id}: missing blurbs.{code} for catalog UI locale={code}")
     return errors

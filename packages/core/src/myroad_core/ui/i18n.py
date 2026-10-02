@@ -1,252 +1,192 @@
-"""Shell chrome i18n (he / en / ar). Path explanations follow UI locale; content tokens stay in content_locale."""
+"""Data-driven UI locale packs + generic chrome picker.
+
+Shell strings live in ``packages/core/locales/<code>.json``.
+Available languages are listed in ``packages/core/locales/manifest.json``.
+
+Adding a language (e.g. Russian ``ru``):
+  1. Add ``{"code": "ru", "label": "Русский", "dir": "ltr"}`` to manifest.json
+  2. Add ``locales/ru.json`` with the same keys as ``en.json``
+  3. Add ``titles.ru`` / ``blurbs.ru`` (and topic titles) on content paths
+No Python changes required.
+"""
 
 from __future__ import annotations
 
-from typing import Any
-
-LOCALES = ("he", "en", "ar")
-DEFAULT_LOCALE = "he"
-RTL_LOCALES = frozenset({"he", "ar"})
+import json
+from functools import lru_cache
+from pathlib import Path
+from typing import Any, Mapping
 
 COOKIE_LOCALE = "myroad_locale"
 COOKIE_USER = "myroad_uid"
 
-_STRINGS: dict[str, dict[str, str]] = {
-    "he": {
-        "product_badge": "פלטפורמת למידה",
-        "catalog": "קטלוג",
-        "author_poc": "ממשק מחבר (POC)",
-        "hero_title": "דרכי למידה",
-        "hero_lede": "בחרו קבוצה ונושא, ואז פתחו דרך. התוכן מגיע מקבצי נתונים — לא מקוד קשיח.",
-        "groups": "קבוצות",
-        "subjects": "נושאים",
-        "all": "הכל",
-        "mins": "דק׳",
-        "empty_catalog": "אין דרכים בקטלוג הזה עדיין.",
-        "footer_catalog": "קטלוג מבוסס תוכן · פרסום אנושי לדרכים חדשות · דמו כיתה ג׳ נטען מראש",
-        "back_catalog": "קטלוג",
-        "who_am_i": "מי אני?",
-        "who_guest": "אורח/ת",
-        "login_title": "בחרו שם לתלמיד/ה",
-        "login_lede": "שם תצוגה פשוט + מזהה יציב בדפדפן (POC בלי OAuth).",
-        "display_name": "שם תצוגה",
-        "save_identity": "שמירה והמשך",
-        "switch_user": "החלפת משתמש",
-        "resume": "המשך מאיפה שעצרתם",
-        "completed": "הושלם",
-        "in_progress": "בתהליך",
-        "path_map": "מפת הדרך",
-        "path_map_lede": "כל ריבוע הוא נושא — בתוכו כמה שלבי למידה. בחרו נושא או התחילו מההתחלה.",
-        "start": "התחל",
-        "start_path": "התחל את הדרך",
-        "enter_topic": "כניסה לנושא",
-        "steps_count": "שלבים",
-        "progress_label": "שלב {n} מתוך {total} · הושלמו {done}",
-        "speak": "הקראה",
-        "record": "הקלטה",
-        "record_hint": "הקלטה אופציונלית — אם הדפדפן תומך.",
-        "continue": "הבנתי — המשך",
-        "finish": "סיום 🎉",
-        "continue_speak": "המשכתי / סיימתי",
-        "prev": "הקודם",
-        "next": "הבא",
-        "check_sequence": "בדקו את הרצף",
-        "done_free": "סיימתי להתנסות",
-        "check_rhythm": "בדקו קצב",
-        "reset": "איפוס",
-        "stats_title": "סיכום הדרך",
-        "stats_time": "זמן משוער",
-        "stats_nodes": "שלבים שהושלמו",
-        "stats_correct": "לחיצות נכונות",
-        "stats_incorrect": "לחיצות שגויות",
-        "stats_mastery": "אחוז שליטה",
-        "stats_message": "כל הכבוד — סיימתם את הדרך!",
-        "stats_message_ok": "עבודה יפה — המשיכו לתרגל!",
-        "stats_message_retry": "שווה לחזור על כמה שלבים לחיזוק.",
-        "back_to_catalog": "חזרה לקטלוג",
-        "replay": "לשחק שוב",
-        "seconds": "שניות",
-        "minutes": "דקות",
-        "language": "שפה",
-        "gate_practice": "סיימו את השלב לפני המעבר הלאה.",
-        "footer_play": "חזרה לקטלוג",
-        "nodes": "שלבים",
-        "topic_progress": "הושלם בנושא",
-        "tab_in_progress": "דרכים שעשינו",
-        "tab_completed": "דרכים שסיימנו",
-        "tab_practice": "דרכים לתרגול",
-        "tab_catalog": "כל הדרכים",
-        "view_by_status": "לפי סטטוס",
-        "view_by_time": "לפי זמן",
-        "time_recent": "לאחרונה",
-        "time_older": "מוקדם יותר",
-        "time_never": "עדיין לא נגענו",
-        "empty_tab": "אין דרכים בלשונית הזו עדיין.",
-        "needs_practice": "לתרגול",
-        "content_token": "מילת יעד",
-        "home_tabs_lede": "הלשוניות מציגות דרכים שהתחלתם, שסיימתם, או שכדאי לחזור עליהן. הקטלוג המלא נשאר זמין.",
-    },
-    "en": {
-        "product_badge": "Learning platform",
-        "catalog": "Catalog",
-        "author_poc": "Author UI (POC)",
-        "hero_title": "Learning paths",
-        "hero_lede": "Pick a group and subject, then open a path. Content comes from data files — not hard-coded UI.",
-        "groups": "Groups",
-        "subjects": "Subjects",
-        "all": "All",
-        "mins": "min",
-        "empty_catalog": "No paths in this catalog yet.",
-        "footer_catalog": "Content-driven catalog · human publish for new paths · Grade-3 demos preloaded",
-        "back_catalog": "Catalog",
-        "who_am_i": "Who am I?",
-        "who_guest": "Guest",
-        "login_title": "Choose a learner name",
-        "login_lede": "Simple display name + stable browser id (POC, no OAuth).",
-        "display_name": "Display name",
-        "save_identity": "Save & continue",
-        "switch_user": "Switch user",
-        "resume": "Resume where you left off",
-        "completed": "Completed",
-        "in_progress": "In progress",
-        "path_map": "Path map",
-        "path_map_lede": "Each square is a topic — with learning steps inside. Pick a topic or start from the beginning.",
-        "start": "Start",
-        "start_path": "Start the path",
-        "enter_topic": "Enter topic",
-        "steps_count": "steps",
-        "progress_label": "Step {n} of {total} · done {done}",
-        "speak": "Speak",
-        "record": "Record",
-        "record_hint": "Optional recording — if the browser supports it.",
-        "continue": "Got it — continue",
-        "finish": "Finish 🎉",
-        "continue_speak": "I continued / done",
-        "prev": "Previous",
-        "next": "Next",
-        "check_sequence": "Check sequence",
-        "done_free": "Done exploring",
-        "check_rhythm": "Check rhythm",
-        "reset": "Reset",
-        "stats_title": "Path summary",
-        "stats_time": "Approx. time",
-        "stats_nodes": "Steps completed",
-        "stats_correct": "Correct taps",
-        "stats_incorrect": "Incorrect taps",
-        "stats_mastery": "Mastery %",
-        "stats_message": "Great job — you finished the path!",
-        "stats_message_ok": "Nice work — keep practicing!",
-        "stats_message_retry": "Worth revisiting a few steps to strengthen.",
-        "back_to_catalog": "Back to catalog",
-        "replay": "Play again",
-        "seconds": "sec",
-        "minutes": "min",
-        "language": "Language",
-        "gate_practice": "Finish this step before moving on.",
-        "footer_play": "Back to catalog",
-        "nodes": "steps",
-        "topic_progress": "done in topic",
-        "tab_in_progress": "Paths we started",
-        "tab_completed": "Paths we finished",
-        "tab_practice": "Paths to practice",
-        "tab_catalog": "All paths",
-        "view_by_status": "By status",
-        "view_by_time": "By time",
-        "time_recent": "Recently touched",
-        "time_older": "Earlier",
-        "time_never": "Not started yet",
-        "empty_tab": "No paths in this tab yet.",
-        "needs_practice": "Practice",
-        "content_token": "Target word",
-        "home_tabs_lede": "Tabs show paths you started, finished, or should revisit. The full catalog stays available.",
-    },
-    "ar": {
-        "product_badge": "منصة تعلّم",
-        "catalog": "الفهرس",
-        "author_poc": "واجهة المؤلف (POC)",
-        "hero_title": "مسارات التعلّم",
-        "hero_lede": "اختر مجموعة وموضوعًا ثم افتح مسارًا. المحتوى من ملفات بيانات — وليس من واجهة ثابتة.",
-        "groups": "المجموعات",
-        "subjects": "المواضيع",
-        "all": "الكل",
-        "mins": "د",
-        "empty_catalog": "لا توجد مسارات في هذا الفهرس بعد.",
-        "footer_catalog": "فهرس مبني على المحتوى · نشر بشري للمسارات الجديدة · عروض الصف الثالث محمّلة مسبقًا",
-        "back_catalog": "الفهرس",
-        "who_am_i": "من أنا؟",
-        "who_guest": "زائر",
-        "login_title": "اختر اسمًا للمتعلّم",
-        "login_lede": "اسم عرض بسيط ومعرّف ثابت في المتصفح (POC بدون OAuth).",
-        "display_name": "اسم العرض",
-        "save_identity": "حفظ ومتابعة",
-        "switch_user": "تبديل المستخدم",
-        "resume": "تابع من حيث توقفت",
-        "completed": "مكتمل",
-        "in_progress": "جارٍ",
-        "path_map": "خريطة المسار",
-        "path_map_lede": "كل مربع موضوع — وفيه خطوات تعلّم. اختر موضوعًا أو ابدأ من البداية.",
-        "start": "ابدأ",
-        "start_path": "ابدأ المسار",
-        "enter_topic": "ادخل الموضوع",
-        "steps_count": "خطوات",
-        "progress_label": "الخطوة {n} من {total} · أُنجز {done}",
-        "speak": "قراءة",
-        "record": "تسجيل",
-        "record_hint": "تسجيل اختياري — إن دعمه المتصفح.",
-        "continue": "فهمت — متابعة",
-        "finish": "إنهاء 🎉",
-        "continue_speak": "تابعت / انتهيت",
-        "prev": "السابق",
-        "next": "التالي",
-        "check_sequence": "تحقق من التسلسل",
-        "done_free": "انتهيت من التجربة",
-        "check_rhythm": "تحقق من الإيقاع",
-        "reset": "إعادة",
-        "stats_title": "ملخص المسار",
-        "stats_time": "وقت تقريبي",
-        "stats_nodes": "خطوات مكتملة",
-        "stats_correct": "نقرات صحيحة",
-        "stats_incorrect": "نقرات خاطئة",
-        "stats_mastery": "نسبة الإتقان",
-        "stats_message": "أحسنت — أنهيت المسار!",
-        "stats_message_ok": "عمل جميل — واصل التمرين!",
-        "stats_message_retry": "يُستحسن إعادة بعض الخطوات للتعزيز.",
-        "back_to_catalog": "العودة للفهرس",
-        "replay": "العب مجددًا",
-        "seconds": "ث",
-        "minutes": "د",
-        "language": "اللغة",
-        "gate_practice": "أنهِ هذه الخطوة قبل المتابعة.",
-        "footer_play": "العودة للفهرس",
-        "nodes": "خطوات",
-        "topic_progress": "مكتمل في الموضوع",
-        "tab_in_progress": "مسارات بدأناها",
-        "tab_completed": "مسارات أنهيناها",
-        "tab_practice": "مسارات للمراجعة",
-        "tab_catalog": "كل المسارات",
-        "view_by_status": "حسب الحالة",
-        "view_by_time": "حسب الوقت",
-        "time_recent": "مؤخرًا",
-        "time_older": "أقدم",
-        "time_never": "لم نبدأ بعد",
-        "empty_tab": "لا توجد مسارات في هذا التبويب بعد.",
-        "needs_practice": "مراجعة",
-        "content_token": "كلمة الهدف",
-        "home_tabs_lede": "تعرض التبويبات المسارات التي بدأتها أو أنهيتها أو تحتاج مراجعة. الفهرس الكامل يبقى متاحًا.",
-    },
-}
+# packages/core/src/myroad_core/ui -> packages/core/locales
+_PKG_CORE = Path(__file__).resolve().parents[3]
+DEFAULT_LOCALES_DIR = _PKG_CORE / "locales"
 
 
-def normalize_locale(raw: str | None) -> str:
+def default_locales_dir() -> Path:
+    return DEFAULT_LOCALES_DIR
+
+
+@lru_cache(maxsize=4)
+def _load_manifest(locales_dir: str) -> dict[str, Any]:
+    path = Path(locales_dir) / "manifest.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or "locales" not in data:
+        raise ValueError(f"invalid locale manifest: {path}")
+    return data
+
+
+def reload_locale_packs() -> None:
+    """Clear cached manifest/string packs (tests that inject a locales dir)."""
+    _load_manifest.cache_clear()
+    _load_strings.cache_clear()
+    # Reset module-level snapshots derived from default dir
+    global LOCALES, DEFAULT_LOCALE, RTL_LOCALES, FALLBACK_CHAIN, _LOCALE_META
+    LOCALES, DEFAULT_LOCALE, RTL_LOCALES, FALLBACK_CHAIN, _LOCALE_META = _snapshot(
+        default_locales_dir()
+    )
+
+
+@lru_cache(maxsize=8)
+def _load_strings(locales_dir: str, code: str) -> dict[str, str]:
+    path = Path(locales_dir) / f"{code}.json"
+    if not path.is_file():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"locale pack must be an object: {path}")
+    return {str(k): str(v) for k, v in data.items()}
+
+
+def _snapshot(locales_dir: Path) -> tuple[tuple[str, ...], str, frozenset[str], tuple[str, ...], dict[str, dict[str, str]]]:
+    manifest = _load_manifest(str(locales_dir))
+    entries = manifest.get("locales") or []
+    codes: list[str] = []
+    meta: dict[str, dict[str, str]] = {}
+    rtl: set[str] = set()
+    for entry in entries:
+        code = str(entry.get("code") or "").strip().lower()
+        if not code:
+            continue
+        codes.append(code)
+        direction = str(entry.get("dir") or "ltr").lower()
+        meta[code] = {
+            "code": code,
+            "label": str(entry.get("label") or code),
+            "nativeLabel": str(entry.get("nativeLabel") or entry.get("label") or code),
+            "dir": direction,
+        }
+        if direction == "rtl":
+            rtl.add(code)
+    default = str(manifest.get("default") or (codes[0] if codes else "he")).lower()
+    fallback = tuple(
+        str(x).lower() for x in (manifest.get("fallback") or ["en", "he"]) if str(x).strip()
+    )
+    if default not in fallback:
+        fallback = (default, *fallback)
+    return tuple(codes), default, frozenset(rtl), fallback, meta
+
+
+LOCALES, DEFAULT_LOCALE, RTL_LOCALES, FALLBACK_CHAIN, _LOCALE_META = _snapshot(DEFAULT_LOCALES_DIR)
+
+
+def locale_manifest(locales_dir: Path | None = None) -> dict[str, Any]:
+    return _load_manifest(str(locales_dir or default_locales_dir()))
+
+
+def locale_codes(locales_dir: Path | None = None) -> tuple[str, ...]:
+    if locales_dir is None:
+        return LOCALES
+    codes, *_rest = _snapshot(locales_dir)
+    return codes
+
+
+def locale_meta(code: str, locales_dir: Path | None = None) -> dict[str, str]:
+    if locales_dir is None:
+        return dict(_LOCALE_META.get(normalize_locale(code)) or {"code": code, "label": code, "dir": "ltr"})
+    _codes, _d, _r, _f, meta = _snapshot(locales_dir)
+    loc = code.strip().lower().split("-")[0]
+    return dict(meta.get(loc) or {"code": loc, "label": loc, "dir": "ltr"})
+
+
+def pick(
+    values: Mapping[str, str | None] | None,
+    locale: str | None,
+    *,
+    fallback_chain: tuple[str, ...] | None = None,
+    default: str = "",
+) -> str:
+    """Pick a localized string from a map.
+
+    Fallback order: requested locale → manifest fallback chain (default en→he) →
+    any non-empty value in the map → ``default``.
+    """
+    if not values:
+        return default
+    loc = (locale or DEFAULT_LOCALE).strip().lower().split("-")[0]
+    chain = fallback_chain if fallback_chain is not None else FALLBACK_CHAIN
+    ordered: list[str] = []
+    for code in (loc, *chain):
+        if code and code not in ordered:
+            ordered.append(code)
+    for code in ordered:
+        val = values.get(code)
+        if val is not None and str(val).strip():
+            return str(val).strip()
+    for val in values.values():
+        if val is not None and str(val).strip():
+            return str(val).strip()
+    return default
+
+
+def merge_locale_fields(
+    data: dict[str, Any],
+    *,
+    map_key: str,
+    legacy_prefix: str,
+) -> dict[str, str]:
+    """Merge ``titles``/``blurbs`` maps with legacy ``title_he``-style fields."""
+    merged: dict[str, str] = {}
+    raw_map = data.get(map_key) or {}
+    if isinstance(raw_map, dict):
+        for k, v in raw_map.items():
+            if v is not None and str(v).strip():
+                merged[str(k).lower()] = str(v).strip()
+    # legacy flat fields: title_he / blurb_en / ...
+    prefix = legacy_prefix
+    for key, val in list(data.items()):
+        if not isinstance(key, str) or not key.startswith(prefix + "_"):
+            continue
+        code = key[len(prefix) + 1 :].lower()
+        if code and val is not None and str(val).strip() and code not in merged:
+            merged[code] = str(val).strip()
+    return merged
+
+
+def normalize_locale(raw: str | None, *, locales_dir: Path | None = None) -> str:
+    codes = locale_codes(locales_dir)
+    default = DEFAULT_LOCALE if locales_dir is None else _snapshot(locales_dir)[1]
     if not raw:
-        return DEFAULT_LOCALE
+        return default
     code = raw.strip().lower().split("-")[0]
-    return code if code in LOCALES else DEFAULT_LOCALE
+    return code if code in codes else default
 
 
 def t(locale: str, key: str, **kwargs: Any) -> str:
     loc = normalize_locale(locale)
-    text = _STRINGS.get(loc, _STRINGS[DEFAULT_LOCALE]).get(key) or _STRINGS[DEFAULT_LOCALE].get(key) or key
+    locales_dir = default_locales_dir()
+    pack = _load_strings(str(locales_dir), loc)
+    default_pack = _load_strings(str(locales_dir), DEFAULT_LOCALE)
+    text = pack.get(key) or default_pack.get(key) or key
+    # Try fallback chain for missing keys
+    if text == key:
+        for code in FALLBACK_CHAIN:
+            alt = _load_strings(str(locales_dir), code).get(key)
+            if alt:
+                text = alt
+                break
     if kwargs:
         try:
             return text.format(**kwargs)
@@ -256,7 +196,8 @@ def t(locale: str, key: str, **kwargs: Any) -> str:
 
 
 def dir_for(locale: str) -> str:
-    return "rtl" if normalize_locale(locale) in RTL_LOCALES else "ltr"
+    meta = locale_meta(locale)
+    return meta.get("dir") or ("rtl" if normalize_locale(locale) in RTL_LOCALES else "ltr")
 
 
 def html_lang(locale: str) -> str:
@@ -265,8 +206,54 @@ def html_lang(locale: str) -> str:
 
 def subject_label(subject: str, locale: str) -> str:
     meta = SUBJECTS_SAFE.get(subject) or SUBJECTS_SAFE["general"]
-    loc = normalize_locale(locale)
-    return meta.get(loc) or meta.get("he") or subject
+    # SUBJECTS values are already locale maps (plus color/emoji)
+    labels = {k: v for k, v in meta.items() if k in LOCALES or k in ("he", "en", "ar") or (isinstance(v, str) and k not in {"color", "emoji"})}
+    # Prefer known locale keys only
+    label_map = {k: str(v) for k, v in meta.items() if isinstance(v, str) and k not in {"color", "emoji", "id"}}
+    return pick(label_map, locale, default=subject)
+
+
+def pick_localized(
+    locale: str,
+    *,
+    he: str | None = None,
+    en: str | None = None,
+    ar: str | None = None,
+    fallback: str = "",
+    **extra: str | None,
+) -> str:
+    """Back-compat wrapper around :func:`pick` for keyword he/en/ar (+ extras)."""
+    values: dict[str, str | None] = {"he": he, "en": en, "ar": ar}
+    values.update(extra)
+    return pick(values, locale, default=fallback)
+
+
+def localize_path_chrome(
+    *,
+    locale: str,
+    titles: Mapping[str, str | None] | None = None,
+    blurbs: Mapping[str, str | None] | None = None,
+    title_he: str | None = None,
+    title_en: str | None = None,
+    title_ar: str | None = None,
+    blurb_he: str | None = None,
+    blurb_en: str | None = None,
+    blurb_ar: str | None = None,
+    subject: str | None = None,
+) -> dict[str, str]:
+    """Resolve catalog/path card title, blurb, and subject label for the UI locale."""
+    title_map: dict[str, str | None] = dict(titles or {})
+    for code, val in (("he", title_he), ("en", title_en), ("ar", title_ar)):
+        if val and not title_map.get(code):
+            title_map[code] = val
+    blurb_map: dict[str, str | None] = dict(blurbs or {})
+    for code, val in (("he", blurb_he), ("en", blurb_en), ("ar", blurb_ar)):
+        if val and not blurb_map.get(code):
+            blurb_map[code] = val
+    title = pick(title_map, locale, default=title_he or "")
+    blurb = pick(blurb_map, locale, default=blurb_he or "")
+    label = subject_label(subject, locale) if subject else ""
+    return {"title": title, "blurb": blurb, "subjectLabel": label}
 
 
 # Avoid circular import of schema SUBJECTS at module load for typing clarity

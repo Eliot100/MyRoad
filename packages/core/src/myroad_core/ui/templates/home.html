@@ -103,7 +103,7 @@
           <h3 class="subject-heading" style="--subject: {{ block.color }}">{{ block.emoji }} {{ block.label }}</h3>
           <div class="grid">
             {% for c in block.cards %}
-            <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}">
+            <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}" data-ui-locale="{{ locale }}">
               <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
               <div class="path-body">
                 <div class="path-meta">
@@ -132,7 +132,7 @@
   {% else %}
   <section class="grid" aria-label="{{ t('catalog') }}">
     {% for c in catalog.cards %}
-    <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}">
+    <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}" data-ui-locale="{{ locale }}">
       <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
       <div class="path-body">
         <div class="path-meta">

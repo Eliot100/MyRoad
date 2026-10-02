@@ -1,17 +1,21 @@
 {
   "id": "path_grade3_math_mult_groups",
-  "title_he": "כפל כחזרה על חיבור",
-  "title_en": "Multiplication as repeated addition",
-  "title_ar": "الضرب كتكرار للجمع",
+  "titles": {
+    "he": "כפל כחזרה על חיבור",
+    "en": "Multiplication as repeated addition",
+    "ar": "الضرب كتكرار للجمع"
+  },
+  "blurbs": {
+    "he": "קבוצות קטנות: כמה זה 3 פעמים 4? לומדים כפל דרך חיבור חוזר.",
+    "en": "Small groups: what is 3 times 4? Learn multiplication through repeated addition.",
+    "ar": "مجموعات صغيرة: كم يساوي 3 مرات 4؟ نتعلم الضرب عبر الجمع المتكرر."
+  },
   "subject": "math",
   "grade": 3,
   "group_ids": [
     "grade3"
   ],
   "emoji": "✨",
-  "blurb_he": "קבוצות קטנות: כמה זה 3 פעמים 4? לומדים כפל דרך חיבור חוזר.",
-  "blurb_en": "Small groups: what is 3 times 4? Learn multiplication through repeated addition.",
-  "blurb_ar": "مجموعات صغيرة: كم يساوي 3 مرات 4؟ نتعلم الضرب عبر الجمع المتكرر.",
   "estimated_minutes": 9,
   "nodes": [
     {
