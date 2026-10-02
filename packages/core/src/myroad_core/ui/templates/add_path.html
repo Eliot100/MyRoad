@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — {{ t('add_path') }}</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+<body class="platform">
+  <header class="top">
+    <div class="brand">
+      <a href="/" class="back">→ {{ t('back_catalog') }}</a>
+      <strong>{{ product }}</strong>
+    </div>
+    <form method="post" action="/locale" class="lang-switch">
+      <input type="hidden" name="next" value="/add-path" />
+      {% for loc in locales %}
+      <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
+      {% endfor %}
+    </form>
+  </header>
+
+  <section class="card hero">
+    <h1>{{ t('add_path') }}</h1>
+    {% if token_ok %}
+      <p class="lede">{{ t('add_path_unlocked') }}</p>
+      <p class="flash ok">{{ t('add_path_criterion_met') }}</p>
+      <p class="lede tiny">{{ t('add_path_next_steps') }}</p>
+    {% else %}
+      <p class="lede">{{ t('add_path_gate_lede') }}</p>
+      <aside class="card security-note" role="note">
+        <strong>{{ t('security_note_title') }}</strong>
+        <p>{{ t('security_note_body') }}</p>
+      </aside>
+      {% if error %}
+      <p class="flash warn">{{ error }}</p>
+      {% endif %}
+      <form method="post" action="/add-path/check-token" class="login-form" autocomplete="off">
+        <label for="api_token">{{ t('api_token_label') }}</label>
+        <input id="api_token" name="api_token" type="password" maxlength="512" required
+               placeholder="sk-…" autocomplete="off" />
+        <button type="submit" class="primary big">{{ t('api_token_check') }}</button>
+      </form>
+      <p class="lede tiny">{{ t('add_path_no_token_hint') }}</p>
+    {% endif %}
+  </section>
+</body>
+</html>

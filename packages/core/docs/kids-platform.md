@@ -12,7 +12,7 @@ in content and tone. Soft styling applies only to that demo group / those player
 Sample paths live under:
 
 ```
-packages/core/content/grade3/*.json
+MyRoad-content/grade3/*.json (CONTENT_DIR or packages/core/content checkout)
 ```
 
 Schema: `myroad_core.content.schema.ContentPath`  
@@ -60,7 +60,7 @@ Toggle **לפי זמן**: group paths by recently touched vs older vs never, wit
 
 ## v0.6 platform polish
 
-- **Identity (POC):** display name + stable `myroad_uid` cookie (`/login`). No OAuth.
+- **Identity (POC):** first/last name + unique email; opaque `myroad_uid` cookie (`/login`). No passwords / no OAuth.
 - **Per-user data:** progress, completed paths, and attempt metrics in SQLite
   (`learners`, `learner_progress`, `learner_attempts`), keyed by user id.
 - **Locales:** `he` / `en` / `ar` shell chrome (RTL for he/ar). Header language switcher.
@@ -79,8 +79,10 @@ uvicorn myroad_core.ui.app:app --reload --port 8765
 ```
 
 Open http://127.0.0.1:8765/ for the catalog.  
-Author / golden-loop POC: http://127.0.0.1:8765/author  
-Identity: http://127.0.0.1:8765/login
+Add a path (token-gated): http://127.0.0.1:8765/add-path  
+Register / sign in: http://127.0.0.1:8765/login
+
+UI SQLite file: `packages/core/data/myroad_ui.db` (or `MYROAD_DB`). Content: set `CONTENT_DIR` to a MyRoad-content clone.
 
 ## Player notes
 

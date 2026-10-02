@@ -471,3 +471,20 @@ body.platform:has(.home-layout) { max-width: 1120px; }
   color: #047857;
   font-weight: 700;
 }
+
+.login-form input[type="email"],
+.login-form input[type="password"] {
+  font: inherit;
+  padding: .65rem .75rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+.security-note {
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+  margin: 1rem 0;
+  font-size: .92rem;
+}
+.security-note strong { display: block; margin-bottom: .35rem; }
+.flash.warn { color: #92400e; background: #fffbeb; padding: .5rem .75rem; border-radius: 8px; }
+.flash.ok { color: #065f46; background: #ecfdf5; padding: .5rem .75rem; border-radius: 8px; }
