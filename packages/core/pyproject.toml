@@ -1,7 +1,7 @@
 [project]
 name = "myroad-core"
-version = "0.8.0"
-description = "MyRoad POC: path store + agent tools + registration, SQLite users, content split, gated add-path + golden loop"
+version = "0.8.1"
+description = "MyRoad POC: path store + agent tools + registration, SQLite users, content split, Cloudflare AI Gateway BYOK add-path + golden loop"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

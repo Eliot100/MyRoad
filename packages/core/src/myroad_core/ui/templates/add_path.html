@@ -22,7 +22,7 @@
 
   <section class="card hero">
     <h1>{{ t('add_path') }}</h1>
-    {% if token_ok %}
+    {% if gateway_ok %}
       <p class="lede">{{ t('add_path_unlocked') }}</p>
       <p class="flash ok">{{ t('add_path_criterion_met') }}</p>
       <p class="lede tiny">{{ t('add_path_next_steps') }}</p>
@@ -35,13 +35,10 @@
       {% if error %}
       <p class="flash warn">{{ error }}</p>
       {% endif %}
-      <form method="post" action="/add-path/check-token" class="login-form" autocomplete="off">
-        <label for="api_token">{{ t('api_token_label') }}</label>
-        <input id="api_token" name="api_token" type="password" maxlength="512" required
-               placeholder="sk-…" autocomplete="off" />
-        <button type="submit" class="primary big">{{ t('api_token_check') }}</button>
+      <form method="post" action="/add-path/check-gateway" class="login-form" autocomplete="off">
+        <button type="submit" class="primary big">{{ t('add_path_check') }}</button>
       </form>
-      <p class="lede tiny">{{ t('add_path_no_token_hint') }}</p>
+      <p class="lede tiny">{{ t('add_path_not_configured_hint') }}</p>
     {% endif %}
   </section>
 </body>
