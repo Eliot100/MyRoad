@@ -78,6 +78,13 @@ uvicorn myroad_core.ui.app:app --reload --port 8765
 Home tabs (in progress / completed / needs practice) + time view by subject;
 locale split (`explain_locale` vs `content_locale`) for English paths.
 
+**Internationalization (i18n) is part of the platform implementation:** shell strings
+and path titles/blurbs are data-driven locale content (`he`, `en`, and `ar` today),
+with RTL for Hebrew and Arabic, fallback locales for missing translations, and a
+split between the language used to explain a path and the language of its learning
+content (`explain_locale` vs `content_locale`). See
+`packages/core/docs/how-to-add-locale.md` for how to add another locale.
+
 See `packages/core/docs/kids-platform.md`.
 
 ### Thin learner UI
