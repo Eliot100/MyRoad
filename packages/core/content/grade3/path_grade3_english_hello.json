@@ -1,73 +1,187 @@
 {
   "id": "path_grade3_english_hello",
   "title_he": "Hello & Feelings",
+  "title_en": "Hello & Feelings",
   "subject": "english",
   "grade": 3,
   "group_ids": ["grade3"],
   "emoji": "😊",
-  "blurb_he": "ברכות ורגשות פשוטים: Hello, thank you, happy, sad.",
-  "estimated_minutes": 8,
+  "blurb_he": "ברכות ורגשות: Hello, goodbye, thank you, please, happy, sad, tired.",
+  "blurb_en": "Greetings and feelings: Hello, goodbye, thank you, please, happy, sad, tired.",
+  "estimated_minutes": 12,
+  "topics": [
+    {
+      "id": "topic_hello",
+      "title_he": "שלום ופרידה",
+      "title_en": "Hello & goodbye",
+      "title_ar": "مرحبا ووداعا",
+      "emoji": "👋",
+      "node_ids": ["learn_hello", "practice_hello", "practice_goodbye"]
+    },
+    {
+      "id": "topic_polite",
+      "title_he": "נימוסים",
+      "title_en": "Be polite",
+      "title_ar": "أدب",
+      "emoji": "🙏",
+      "node_ids": ["speak_thanks", "practice_please"]
+    },
+    {
+      "id": "topic_feelings",
+      "title_he": "רגשות",
+      "title_en": "Feelings",
+      "title_ar": "مشاعر",
+      "emoji": "💭",
+      "node_ids": ["learn_feelings", "practice_happy", "check_sad"]
+    },
+    {
+      "id": "topic_finish",
+      "title_he": "סיכום",
+      "title_en": "Celebrate",
+      "title_ar": "احتفال",
+      "emoji": "🎉",
+      "node_ids": ["check_tired", "celebrate"]
+    }
+  ],
   "nodes": [
     {
+      "id": "learn_hello",
       "type": "learn",
       "title": "שלום ורגשות",
-      "body_he": "נלמד להגיד שלום ולהגיד איך אנחנו מרגישים באנגלית.",
+      "title_en": "Hello and feelings",
+      "body_he": "נלמד להגיד שלום, להיפרד, ולהגיד איך אנחנו מרגישים באנגלית.",
+      "body_en": "We will learn to say hello, goodbye, and how we feel in English.",
       "speak_text": "Hello! How are you? Happy or sad?"
     },
     {
+      "id": "practice_hello",
       "type": "practice",
       "title": "Hello!",
+      "title_en": "Hello!",
       "body_he": "מה אומרים באנגלית כדי להגיד שלום?",
+      "body_en": "What do we say in English to greet someone?",
       "speak_text": "We say hello!",
       "choices": [
-        {"id": "a", "label": "Goodbye"},
-        {"id": "b", "label": "Hello"},
-        {"id": "c", "label": "Sorry"}
+        {"id": "a", "label": "Goodbye", "label_en": "Goodbye"},
+        {"id": "b", "label": "Hello", "label_en": "Hello"},
+        {"id": "c", "label": "Sorry", "label_en": "Sorry"}
       ],
       "correct": "b",
       "feedback_ok": "Hello! יפה.",
       "feedback_try": "שלום באנגלית: Hello."
     },
     {
+      "id": "practice_goodbye",
+      "type": "practice",
+      "title": "Goodbye",
+      "title_en": "Goodbye",
+      "body_he": "כשנפרדים אומרים…",
+      "body_en": "When we leave we say…",
+      "speak_text": "Goodbye! Bye bye!",
+      "choices": [
+        {"id": "a", "label": "Hello", "label_en": "Hello"},
+        {"id": "b", "label": "Goodbye", "label_en": "Goodbye"},
+        {"id": "c", "label": "Please", "label_en": "Please"}
+      ],
+      "correct": "b",
+      "feedback_ok": "Bye! Goodbye = להתראות.",
+      "feedback_try": "פרידה באנגלית: Goodbye."
+    },
+    {
+      "id": "speak_thanks",
       "type": "speak",
       "title": "אמרו: Thank you",
+      "title_en": "Say: Thank you",
       "body_he": "״תודה״ באנגלית זה Thank you. הקשיבו והקליטו.",
+      "body_en": "Thank you means תודה. Listen and record.",
       "speak_text": "Thank you. Thank you!",
       "record": true,
       "media_hint": "thank you"
     },
     {
+      "id": "practice_please",
+      "type": "practice",
+      "title": "Please",
+      "title_en": "Please",
+      "body_he": "מילה מנומסת לבקשה היא…",
+      "body_en": "A polite word for asking is…",
+      "speak_text": "Please. Please!",
+      "choices": [
+        {"id": "a", "label": "Please", "label_en": "Please"},
+        {"id": "b", "label": "Happy", "label_en": "Happy"},
+        {"id": "c", "label": "Sad", "label_en": "Sad"}
+      ],
+      "correct": "a",
+      "feedback_ok": "Nice! Please = בבקשה.",
+      "feedback_try": "בבקשה באנגלית: Please."
+    },
+    {
+      "id": "learn_feelings",
+      "type": "learn",
+      "title": "רגשות באנגלית",
+      "title_en": "Feelings words",
+      "body_he": "Happy = שמח, Sad = עצוב, Tired = עייף. בואו נתרגל!",
+      "body_en": "Happy, sad, tired — three feeling words. Let's practice!",
+      "speak_text": "Happy. Sad. Tired. How are you today?"
+    },
+    {
+      "id": "practice_happy",
       "type": "practice",
       "title": "Happy",
+      "title_en": "Happy",
       "body_he": "Happy אומר…",
+      "body_en": "Happy means…",
       "speak_text": "Happy!",
       "choices": [
-        {"id": "a", "label": "עצוב 😢"},
-        {"id": "b", "label": "שמח 😊"},
-        {"id": "c", "label": "עייף 😴"}
+        {"id": "a", "label": "עצוב 😢", "label_en": "sad 😢"},
+        {"id": "b", "label": "שמח 😊", "label_en": "happy 😊"},
+        {"id": "c", "label": "עייף 😴", "label_en": "tired 😴"}
       ],
       "correct": "b",
       "feedback_ok": "Yes — happy = שמח!",
       "feedback_try": "Happy זה שמח."
     },
     {
+      "id": "check_sad",
       "type": "check",
       "title": "Sad",
+      "title_en": "Sad",
       "body_he": "אם מישהו sad, הוא…",
+      "body_en": "If someone is sad, they are…",
       "speak_text": "Sad means…",
       "choices": [
-        {"id": "a", "label": "שמח"},
-        {"id": "b", "label": "עצוב"},
-        {"id": "c", "label": "רעב"}
+        {"id": "a", "label": "שמח", "label_en": "happy"},
+        {"id": "b", "label": "עצוב", "label_en": "sad"},
+        {"id": "c", "label": "רעב", "label_en": "hungry"}
       ],
       "correct": "b",
       "feedback_ok": "Correct — sad = עצוב.",
       "feedback_try": "Sad זה עצוב."
     },
     {
+      "id": "check_tired",
+      "type": "check",
+      "title": "Tired",
+      "title_en": "Tired",
+      "body_he": "Tired אומר…",
+      "body_en": "Tired means…",
+      "speak_text": "Tired. I am tired.",
+      "choices": [
+        {"id": "a", "label": "עייף 😴", "label_en": "tired 😴"},
+        {"id": "b", "label": "שמח 😊", "label_en": "happy 😊"},
+        {"id": "c", "label": "רעב 🍎", "label_en": "hungry 🍎"}
+      ],
+      "correct": "a",
+      "feedback_ok": "Yes — tired = עייף.",
+      "feedback_try": "Tired זה עייף."
+    },
+    {
+      "id": "celebrate",
       "type": "celebrate",
       "title": "Nice to meet you!",
-      "body_he": "סיימתם! Hello, thank you, happy, sad — מילים חמות לשיחה.",
+      "title_en": "Nice to meet you!",
+      "body_he": "סיימתם! Hello, goodbye, thank you, please, happy, sad, tired — מילים חמות לשיחה.",
+      "body_en": "Done! Hello, goodbye, thank you, please, happy, sad, tired — warm words for talking.",
       "speak_text": "Nice to meet you! Bye bye!"
     }
   ]

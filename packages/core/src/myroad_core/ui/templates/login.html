@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — {{ t('who_am_i') }}</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+<body class="platform">
+  <header class="top">
+    <div class="brand">
+      <a href="/" class="back">→ {{ t('back_catalog') }}</a>
+      <strong>{{ product }}</strong>
+    </div>
+    <form method="post" action="/locale" class="lang-switch">
+      <input type="hidden" name="next" value="/login?next={{ next_url }}" />
+      {% for loc in locales %}
+      <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
+      {% endfor %}
+    </form>
+  </header>
+
+  <section class="card hero">
+    <h1>{{ t('login_title') }}</h1>
+    <p class="lede">{{ t('login_lede') }}</p>
+    <form method="post" action="/login" class="login-form">
+      <input type="hidden" name="next" value="{{ next_url }}" />
+      <label for="display_name">{{ t('display_name') }}</label>
+      <input id="display_name" name="display_name" type="text" maxlength="40" required
+             value="{{ current_name if current_name != 'Learner' else '' }}"
+             placeholder="…" autocomplete="nickname" />
+      <button type="submit" class="primary big">{{ t('save_identity') }}</button>
+    </form>
+  </section>
+</body>
+</html>
