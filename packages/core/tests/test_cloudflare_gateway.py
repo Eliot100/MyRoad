@@ -123,7 +123,7 @@ def test_chat_request_omits_provider_authorization(monkeypatch: pytest.MonkeyPat
     assert "authorization" not in headers
     assert headers["cf-aig-authorization"] == "Bearer cf-token-for-gateway-only"
     assert "cf-aig-byok-alias" not in headers
-    assert req.full_url == "http://gateway.test/v1/acct_test/gw_test/grok/chat/completions"
+    assert req.full_url == "http://gateway.test/v1/acct_test/gw_test/grok/v1/chat/completions"
     raw = req.data.decode("utf-8")
     assert _PROVIDER_KEY not in raw
     assert json.loads(raw)["model"] == "grok-4"
