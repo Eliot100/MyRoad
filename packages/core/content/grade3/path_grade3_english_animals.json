@@ -1,0 +1,74 @@
+{
+  "id": "path_grade3_english_animals",
+  "title_he": "Animals — חיות בסיסיות",
+  "subject": "english",
+  "grade": 3,
+  "group_ids": ["grade3"],
+  "emoji": "🐶",
+  "blurb_he": "dog, cat, bird, fish — לוחצים ומקשיבים.",
+  "estimated_minutes": 7,
+  "nodes": [
+    {
+      "type": "learn",
+      "title": "חיות באנגלית",
+      "body_he": "נלמד ארבע חיות: dog (כלב), cat (חתול), bird (ציפור), fish (דג).",
+      "speak_text": "Animals: dog, cat, bird, fish."
+    },
+    {
+      "type": "practice",
+      "title": "מי אומר Woof?",
+      "body_he": "איזו חיה היא dog?",
+      "speak_text": "Dog. Which animal is a dog?",
+      "choices": [
+        {"id": "a", "label": "כלב", "emoji": "🐶"},
+        {"id": "b", "label": "חתול", "emoji": "🐱"},
+        {"id": "c", "label": "דג", "emoji": "🐟"}
+      ],
+      "correct": "a",
+      "feedback_ok": "Yes! Dog = כלב.",
+      "feedback_try": "Dog נובח — woof!"
+    },
+    {
+      "type": "practice",
+      "title": "Cat",
+      "body_he": "Cat באנגלית זה…",
+      "speak_text": "Cat.",
+      "choices": [
+        {"id": "a", "label": "ציפור", "emoji": "🐦"},
+        {"id": "b", "label": "חתול", "emoji": "🐱"},
+        {"id": "c", "label": "פרה", "emoji": "🐮"}
+      ],
+      "correct": "b",
+      "feedback_ok": "Meow! Cat = חתול.",
+      "feedback_try": "Cat זה חתול."
+    },
+    {
+      "type": "speak",
+      "title": "אמרו: Bird",
+      "body_he": "הקשיבו ואמרו Bird (ציפור). לחצו על 🎤 כשאתם מוכנים.",
+      "speak_text": "Bird. Bird. Say bird!",
+      "record": true,
+      "media_hint": "bird"
+    },
+    {
+      "type": "check",
+      "title": "Fish",
+      "body_he": "Fish חי ב…",
+      "speak_text": "Where does a fish live?",
+      "choices": [
+        {"id": "a", "label": "במים 🌊"},
+        {"id": "b", "label": "בעצים 🌳"},
+        {"id": "c", "label": "בעננים ☁️"}
+      ],
+      "correct": "a",
+      "feedback_ok": "Right! Fish live in water.",
+      "feedback_try": "דגים חיים במים."
+    },
+    {
+      "type": "celebrate",
+      "title": "Animal friends",
+      "body_he": "כל הכבוד! dog, cat, bird, fish — חברים חדשים באנגלית.",
+      "speak_text": "Wonderful animals!"
+    }
+  ]
+}

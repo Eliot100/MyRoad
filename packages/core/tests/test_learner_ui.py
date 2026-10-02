@@ -30,7 +30,7 @@ def test_health_and_home(client: TestClient) -> None:
     assert body["product"] == "MyRoad"
     assert body["pathId"] == "path_quadratic_he_hs_001"
 
-    r = client.get("/")
+    r = client.get("/author")
     assert r.status_code == 200
     assert "MyRoad" in r.text
     assert "משוואות ריבועיות" in r.text
@@ -39,14 +39,14 @@ def test_health_and_home(client: TestClient) -> None:
 
 
 def test_ack_advances_and_feedback_records(client: TestClient) -> None:
-    home = client.get("/")
+    home = client.get("/author")
     assert home.status_code == 200
-    ack = client.post("/ack", follow_redirects=True)
+    ack = client.post("/author/ack", follow_redirects=True)
     assert ack.status_code == 200
     assert "אושר" in ack.text or "הדיסקרימיננטה" in ack.text
 
     fb = client.post(
-        "/feedback",
+        "/author/feedback",
         data={
             "rating": "4",
             "comment": "צריך עוד דוגמה",
@@ -60,11 +60,11 @@ def test_ack_advances_and_feedback_records(client: TestClient) -> None:
 def test_practice_mastery_gate_and_no_autopublish(client: TestClient) -> None:
     # Jump to practice by acking explanations (3) then stay on practice
     for _ in range(3):
-        client.post("/ack", follow_redirects=True)
+        client.post("/author/ack", follow_redirects=True)
 
     # Wrong answers — should not master
     r = client.post(
-        "/submit",
+        "/author/submit",
         data={"prac_001": "0", "prac_002": "1", "prac_003": "9"},
     )
     assert r.status_code == 200
@@ -72,14 +72,14 @@ def test_practice_mastery_gate_and_no_autopublish(client: TestClient) -> None:
 
     # Correct enough for minCorrect=2
     r2 = client.post(
-        "/submit",
+        "/author/submit",
         data={"prac_001": "1", "prac_002": "2,3", "prac_003": "0"},
     )
     assert r2.status_code == 200
     assert "שליטה הושגה" in r2.text
 
     # Publish without human confirm must refuse
-    denied = client.post("/publish", data={"publisher_id": "user_owner_poc"})
+    denied = client.post("/author/publish", data={"publisher_id": "user_owner_poc"})
     assert denied.status_code == 200
     assert "נדרש אישור אנושי" in denied.text
 
@@ -92,13 +92,13 @@ def test_practice_mastery_gate_and_no_autopublish(client: TestClient) -> None:
 
 def test_feedback_revise_one_click_shows_version_diff(client: TestClient) -> None:
     """Primary feedback action revises draft and surfaces a brief version diff."""
-    home = client.get("/")
+    home = client.get("/author")
     assert home.status_code == 200
     # Capture current version id from page
     assert "ver_qeq_draft_001" in home.text or "גרסה:" in home.text
 
     fb = client.post(
-        "/feedback",
+        "/author/feedback",
         data={
             "rating": "2",
             "comment": "חסר תרגול",
@@ -116,10 +116,10 @@ def test_feedback_revise_one_click_shows_version_diff(client: TestClient) -> Non
 
 
 def test_feedback_only_without_revise(client: TestClient) -> None:
-    before = client.get("/")
+    before = client.get("/author")
     assert before.status_code == 200
     fb = client.post(
-        "/feedback",
+        "/author/feedback",
         data={
             "rating": "5",
             "comment": "מצוין",

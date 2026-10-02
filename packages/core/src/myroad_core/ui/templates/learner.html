@@ -11,6 +11,7 @@
     <div class="brand">
       <strong>{{ product }}</strong>
       <span class="badge">POC · thin learner UI</span>
+      <a href="/" style="font-size:.85rem;margin-inline-start:.5rem">← קטלוג</a>
     </div>
     <div class="meta">
       <span>סטטוס: <code>{{ status }}</code></span>
@@ -113,11 +114,11 @@
     {% endif %}
 
     {% if block.type == "explanation" %}
-    <form method="post" action="/ack" class="row">
+    <form method="post" action="{{ author_base }}/ack" class="row">
       <button type="submit">קראתי והבנתי — המשך</button>
     </form>
     {% elif block.type in ["practice", "assessment"] %}
-    <form method="post" action="/submit" class="quiz">
+    <form method="post" action="{{ author_base }}/submit" class="quiz">
       {% for item in body.quiz_items %}
       <fieldset>
         <legend>{{ item.prompt }}</legend>
@@ -127,7 +128,7 @@
       <button type="submit">בדוק תשובות</button>
     </form>
     {% elif block.type == "experience" %}
-    <form method="post" action="/submit" class="quiz">
+    <form method="post" action="{{ author_base }}/submit" class="quiz">
       <label>רוחב <input name="width" placeholder="למשל 6" /></label>
       <label>אורך <input name="length" placeholder="למשל 8" /></label>
       <button type="submit">בדוק</button>
@@ -153,10 +154,10 @@
     {% endif %}
 
     <div class="nav row">
-      <form method="post" action="/nav/prev">
+      <form method="post" action="{{ author_base }}/nav/prev">
         <button type="submit" {% if not can_prev %}disabled{% endif %}>הקודם</button>
       </form>
-      <form method="post" action="/nav/next">
+      <form method="post" action="{{ author_base }}/nav/next">
         <button type="submit" {% if not can_next %}disabled{% endif %}>הבא</button>
       </form>
     </div>
@@ -166,7 +167,7 @@
   <section class="side-card">
     <h3>משוב ללומד / לפידבק לסוכן</h3>
     <p class="muted">שומר דרך <code>AgentTools.record_feedback</code>. אפשר גם לקרוא ל-<code>reviseDraft</code> (יוצר טיוטה חדשה — <strong>לא</strong> מפרסם).</p>
-    <form method="post" action="/feedback" class="feedback" id="feedback-form">
+    <form method="post" action="{{ author_base }}/feedback" class="feedback" id="feedback-form">
       <label>דירוג (1–5)
         <input type="number" name="rating" min="1" max="5" value="3" />
       </label>
@@ -191,7 +192,7 @@
   <section class="side-card publish">
     <h3>פרסום (אנושי בלבד)</h3>
     <p class="muted warn-text">Never auto-publish. הכפתור פעיל רק אחרי סימון אישור אנושי.</p>
-    <form method="post" action="/publish" id="publish-form">
+    <form method="post" action="{{ author_base }}/publish" id="publish-form">
       <label class="check">
         <input type="checkbox" name="human_confirm" id="human_confirm" value="true" />
         אני מאשר/ת כהומני לפרסם את הגרסה הזו
