@@ -1,4 +1,4 @@
-# MyRoad 
+# MyRoad
 
 **MyRoad** is an adaptive learning platform POC: turn a learner goal into a measurable path (blocks, edges, mastery)—not another unstructured tutoring chat.
 
@@ -18,15 +18,16 @@
 
 ## Phase-1+ (`packages/core`)
 
-Python + Pydantic + SQLite store, plus a thin **AgentTools** facade (callable without HTTP) and an optional FastAPI wrapper.
+Python + Pydantic + SQLite store, **AgentTools** facade (callable without HTTP), optional FastAPI tool API, and a **thin learner UI** (FastAPI + Jinja).
 
 | Capability | Notes |
 |------------|-------|
 | `PathStore` | create/save/get/revise/requestPublish/publish + events |
 | `AgentTools` | Contract ops: createDraft, getPath/getVersion, addBlock, editBlock, addEdge, reviseDraft, validatePath, recordFeedback, requestPublish, publish |
 | `publish` | Human-only; **refuses when `agentId` is set** unless `human_publisher=True` |
+| Learner UI | Seeds golden quadratic path; one block at a time; practice/assessment forms; feedback → `record_feedback` (+ optional `reviseDraft`); publish button **disabled until human checkbox** |
 | Audit | Every tool call emits an event via PathStore |
-| FastAPI (optional) | `pip install -e ".[api]"` → `uvicorn myroad_core.api:app` |
+| FastAPI tools API (optional) | `uvicorn myroad_core.api:app` |
 
 ### Run tests
 
@@ -34,7 +35,7 @@ Python + Pydantic + SQLite store, plus a thin **AgentTools** facade (callable wi
 cd packages/core
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+pip install -e ".[dev,api]"
 pytest -q
 ```
 
@@ -43,11 +44,35 @@ With uv:
 ```bash
 cd packages/core
 uv venv && source .venv/bin/activate
-uv pip install -e ".[dev]"
+uv pip install -e ".[dev,api]"
 pytest -q
 ```
 
-### Optional HTTP API
+### Thin learner UI
+
+```bash
+cd packages/core
+pip install -e ".[api]"
+uvicorn myroad_core.ui.app:app --reload --port 8765
+# open http://127.0.0.1:8765/
+```
+
+Hebrew UI labels; product id stays **MyRoad**. Flow:
+
+1. Loads golden quadratic path from `freeze/v0` via PathStore seed
+2. Shows path name/goal and one block at a time
+3. Next/prev; practice/assessment/experience advance on mastery
+4. Feedback form calls `AgentTools.record_feedback` (optional `reviseDraft` — new draft only)
+5. **Publish** stays disabled until the human confirmation checkbox is checked — never auto-publish
+
+Smoke without a browser:
+
+```bash
+cd packages/core
+python scripts/smoke_ui.py
+```
+
+### Optional HTTP AgentTools API
 
 ```bash
 cd packages/core
@@ -59,17 +84,17 @@ uvicorn myroad_core.api:app --reload
 ## Next build steps / שלבי בנייה הבאים
 
 1. ~~**Persistence** — versions, statuses, event log~~
-2. ~~**Agent API** — tool contract facade + optional HTTP~~ (this package)
-3. **Thin UI** — learner path + minimal author/editor
-4. **Golden loop** — topic → draft → learn → feedback → revise → human publish
+2. ~~**Agent API** — tool contract facade + optional HTTP~~
+3. ~~**Thin UI** — learner path + feedback / gated publish~~
+4. **Golden loop** — topic → draft → learn → feedback → revise → human publish (end-to-end demo script + author/editor polish)
 
 ## CI
 
 On push/PR to `main`:
 
 1. Validate both freeze path JSON files with `python -m json.tool`
-2. Install `packages/core` and run `pytest` (persistence + tool facade)
+2. Install `packages/core` with `[dev,api]` and run `pytest` (persistence + tools + learner UI)
 
 ## License / note
 
-Freeze artifacts + persistence library + agent-tool facade. Optional FastAPI wrapper; no UI yet. No published learning paths in the golden freeze (both are `draft`).
+Freeze artifacts + persistence + agent-tool facade + thin learner UI. No auto-publish; golden freeze paths remain `draft` until a human publishes.
