@@ -61,9 +61,14 @@ topic map before play, completion stats, and per-user progress in **file SQLite*
 The platform loads it via `CONTENT_DIR`, a checkout/submodule at
 `packages/core/content`, or a sibling `../MyRoad-content` clone.
 
-**Add a path** (`/add-path`) is gated: one-shot OpenAI-style API token check on the
-server only — tokens are never stored in DB, cookies, HTML, localStorage, or logs.
-The old `/author` golden-loop POC remains unlinked from the main nav.
+**Add a path** (`/add-path`) calls Grok through Cloudflare AI Gateway BYOK.
+The xAI key stays in Cloudflare Secrets Store. MyRoad does not accept or send a
+provider API key. Server environment names: `CLOUDFLARE_ACCOUNT_ID`,
+`CLOUDFLARE_GATEWAY_ID`, and optionally `CLOUDFLARE_AI_GATEWAY_TOKEN` when the
+gateway has authenticated gateway enabled. If the account id or gateway id is
+missing, the page says the Cloudflare gateway is not configured. See
+`packages/core/docs/cloudflare-ai-gateway.md`. The old `/author` golden-loop POC
+remains unlinked from the main nav.
 
 ```bash
 # clone platform + content (sibling layout)
@@ -90,6 +95,10 @@ $env:CONTENT_DIR = (Resolve-Path ..\..\MyRoad-content).Path
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[api,dev]"
+$env:CLOUDFLARE_ACCOUNT_ID = ""
+$env:CLOUDFLARE_GATEWAY_ID = ""
+# Optional, only if the gateway has authenticated gateway enabled:
+$env:CLOUDFLARE_AI_GATEWAY_TOKEN = ""
 uvicorn myroad_core.ui.app:app --reload --port 8765
 ```
 

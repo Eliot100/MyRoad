@@ -43,7 +43,7 @@ _SCAN_GLOBS = (
     "store*.py",
     "ui/platform_routes.py",
     "ui/app.py",
-    "ui/token_check.py",
+    "ui/cloudflare_gateway.py",
     "ui/db_path.py",
     "ui/templates/*.html",
 )
@@ -111,12 +111,36 @@ def test_learners_schema_has_no_secret_columns(db_file: Path) -> None:
         store.close()
 
 
-def test_registration_and_token_check_do_not_persist_secrets(
-    client, db_file: Path, caplog: pytest.LogCaptureFixture
+def test_registration_and_gateway_check_do_not_persist_secrets(
+    client, db_file: Path, caplog: pytest.LogCaptureFixture, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     c, app, store = client
     secret_token = "sk-testNEVERPERSIST_0123456789abcdef"
+    gateway_token = "cf-test-gateway-token-not-persisted"
     email = "ada.secret-check@example.com"
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID", "acct_test")
+    monkeypatch.setenv("CLOUDFLARE_GATEWAY_ID", "gw_test")
+    monkeypatch.setenv("CLOUDFLARE_AI_GATEWAY_TOKEN", gateway_token)
+    monkeypatch.setenv("XAI_API_KEY", secret_token)
+    captured: list = []
+
+    class _Resp:
+        status = 200
+
+        def read(self):
+            return b'{"choices":[{"message":{"content":"ok"}}]}'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    def _fake_urlopen(req, timeout=30):
+        captured.append(req)
+        return _Resp()
+
+    monkeypatch.setattr("myroad_core.ui.cloudflare_gateway.urlopen", _fake_urlopen)
 
     with caplog.at_level(logging.DEBUG):
         reg = c.post("/login", data=_login_payload(email), follow_redirects=True)
@@ -125,27 +149,29 @@ def test_registration_and_token_check_do_not_persist_secrets(
 
         gate = c.get("/add-path")
         assert gate.status_code == 200
-        assert "sk-" not in gate.text or "sk-…" in gate.text or "sk-..." in gate.text
-        # placeholder ellipsis ok; full secret must not appear
         assert secret_token not in gate.text
-        # Security note may mention localStorage as something we do NOT use;
-        # forbid instructions that write secrets there.
+        assert gateway_token not in gate.text
+        assert 'name="api_token"' not in gate.text
+        assert 'type="password"' not in gate.text
         assert "localStorage.setItem" not in gate.text
         assert "localStorage.set" not in gate.text
 
+        # A client may still post a provider key. The action must ignore it.
         check = c.post(
-            "/add-path/check-token",
+            "/add-path/check-gateway",
             data={"api_token": secret_token},
             follow_redirects=True,
         )
         assert check.status_code == 200
         assert secret_token not in check.text
-        assert "password" not in check.text.lower() or "no password" in check.text.lower() or "بلا" in check.text or "בלי סיסמה" in check.text or "No passwords" in check.text
+        assert gateway_token not in check.text
+        assert 'class="flash ok"' in check.text
 
     # Cookies: opaque ids only — never the token or email-as-secret requirement:
     # email must not be in cookie *values* (uid is opaque)
     for name, value in c.cookies.items():
         assert secret_token not in value
+        assert gateway_token not in value
         assert "password" not in name.lower()
         assert "token" not in name.lower() or name == "myroad_author_sid"
         # author sid is opaque hex, not the API token
@@ -157,6 +183,7 @@ def test_registration_and_token_check_do_not_persist_secrets(
     unlocked = c.get("/add-path")
     assert unlocked.status_code == 200
     assert secret_token not in unlocked.text
+    assert gateway_token not in unlocked.text
     # Query string must not carry the token
     assert "api_token=" not in str(unlocked.request.url)
     assert secret_token not in str(unlocked.request.url)
@@ -164,6 +191,7 @@ def test_registration_and_token_check_do_not_persist_secrets(
     # DB file bytes / SQL dump must not contain the token
     raw = db_file.read_bytes()
     assert secret_token.encode("utf-8") not in raw
+    assert gateway_token.encode("utf-8") not in raw
     assert b"password" not in raw.lower() or True  # column names checked above
     # Stronger: dump all text cells
     conn = sqlite3.connect(str(db_file))
@@ -175,12 +203,25 @@ def test_registration_and_token_check_do_not_persist_secrets(
             for row in rows:
                 blob = " ".join("" if v is None else str(v) for v in row)
                 assert secret_token not in blob
+                assert gateway_token not in blob
                 assert "sk-testNEVERPERSIST" not in blob
     finally:
         conn.close()
 
+    assert captured, "gateway was not called"
+    req = captured[0]
+    header_map = {k.lower(): v for k, v in req.header_items()}
+    assert "authorization" not in header_map
+    assert header_map.get("cf-aig-authorization") == f"Bearer {gateway_token}"
+    blob_req = (req.full_url or "") + " " + (req.data.decode("utf-8") if req.data else "")
+    joined_headers = " ".join(f"{k}:{v}" for k, v in header_map.items())
+    assert secret_token not in blob_req
+    assert secret_token not in joined_headers
+    assert "api.x.ai" not in req.full_url
+    assert req.full_url.endswith("/grok/chat/completions")
+
     # In-memory author gate stores only bools
-    gates = getattr(app.state, "author_token_ok", {})
+    gates = getattr(app.state, "author_gateway_ok", {})
     for sid, flag in gates.items():
         assert isinstance(flag, bool)
         assert secret_token not in sid
@@ -189,6 +230,7 @@ def test_registration_and_token_check_do_not_persist_secrets(
     # Logs must not contain the raw token
     joined = "\n".join(r.getMessage() for r in caplog.records)
     assert secret_token not in joined
+    assert gateway_token not in joined
 
 
 def test_duplicate_email_registration_unique(client) -> None:
@@ -224,7 +266,6 @@ def test_grep_source_does_not_write_secrets_to_store_cookie_or_templates() -> No
     assert files, "expected source files to scan"
     # Allowlist: documentation / comments mentioning the policy, form field *names*
     allow_snippets = (
-        "api_token",  # form field name for ephemeral POST only
         "verify_agent_token_ephemeral",
         "never",
         "password",  # i18n / security note strings about *not* using passwords
@@ -266,13 +307,3 @@ def test_grep_source_does_not_write_secrets_to_store_cookie_or_templates() -> No
     assert not violations, "Secret persistence patterns found:\n" + "\n".join(violations)
 
 
-def test_token_check_result_never_echoes_secret() -> None:
-    from myroad_core.ui.token_check import verify_agent_token_ephemeral
-
-    secret = "sk-abcdef0123456789XYZ"
-    result = verify_agent_token_ephemeral(secret)
-    assert result["ok"] is True
-    assert result["persisted"] is False
-    dumped = str(result)
-    assert secret not in dumped
-    assert "sk-abcdef" not in dumped
