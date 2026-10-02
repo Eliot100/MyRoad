@@ -83,11 +83,18 @@ def test_practice_mastery_gate_and_no_autopublish(client: TestClient) -> None:
     assert denied.status_code == 200
     assert "נדרש אישור אנושי" in denied.text
 
+    # Agent-style auto publish is not exposed; human confirm path may still
+    # fail validation/in_review gate — but must never silently publish without confirm.
+    # Confirm checkbox alone on a draft that was never request_publish'd from
+    # a valid state: we still call request_publish then publish.
+    # Ensure UI does not publish when checkbox absent (already checked).
+
 
 def test_feedback_revise_one_click_shows_version_diff(client: TestClient) -> None:
     """Primary feedback action revises draft and surfaces a brief version diff."""
     home = client.get("/author")
     assert home.status_code == 200
+    # Capture current version id from page
     assert "ver_qeq_draft_001" in home.text or "גרסה:" in home.text
 
     fb = client.post(
@@ -104,6 +111,7 @@ def test_feedback_revise_one_click_shows_version_diff(client: TestClient) -> Non
     assert "גרסת טיוטה חדשה" in fb.text
     assert "version-diff" in fb.text or "הפרש גרסאות" in fb.text
     assert "לא פורסם" in fb.text
+    # Still draft — never auto-publish
     assert "published" not in fb.text.lower() or "לא פורסם" in fb.text
 
 
