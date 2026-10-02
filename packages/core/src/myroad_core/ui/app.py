@@ -80,7 +80,7 @@ def create_learner_app(
         if content_dir.is_dir():
             content_seed = seed_content_paths(path_store, content_dir=content_dir)
 
-    app = FastAPI(title="MyRoad", version="0.8.0")
+    app = FastAPI(title="MyRoad", version="0.8.1")
     app.state.store = path_store
     app.state.db_path = resolved_db
     app.state.tools = tools
@@ -88,8 +88,8 @@ def create_learner_app(
     app.state.content_seed = content_seed
     app.state.sessions: dict[str, dict[str, Any]] = {}
     app.state.play_sessions: dict[str, dict[str, Any]] = {}
-    # Ephemeral author-gate flags (opaque sid -> True). Never stores API tokens.
-    app.state.author_token_ok: dict[str, bool] = {}
+    # Opaque sid -> gateway check passed. Never stores provider keys.
+    app.state.author_gateway_ok: dict[str, bool] = {}
 
     static_dir = UI_DIR / "static"
     if static_dir.is_dir():

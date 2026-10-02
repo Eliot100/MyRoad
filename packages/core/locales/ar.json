@@ -80,14 +80,14 @@
   "err_email_invalid": "بريد غير صالح.",
   "err_name_required": "الاسم الأول واسم العائلة مطلوبان.",
   "err_email_taken": "هذا البريد مسجّل مسبقًا.",
-  "add_path_gate_lede": "لإضافة مسار يلزم ربط رمز API بأسلوب OpenAI (Bearer / مفتاح) لفحص لمرة واحدة على الخادم.",
-  "add_path_unlocked": "تحقق المعيار الأول — يمكن متابعة إضافة مسار.",
-  "add_path_criterion_met": "تم التحقق من شكل الرمز (لم يُحفظ).",
+  "add_path_gate_lede": "لإضافة مسار يستدعي الخادم Grok عبر Cloudflare AI Gateway. يبقى مفتاح xAI في Cloudflare Secrets Store (BYOK). MyRoad لا يقبل هذا المفتاح.",
+  "add_path_unlocked": "نجحت فحص البوابة — يمكن متابعة إضافة مسار.",
+  "add_path_criterion_met": "بوابة Cloudflare مهيأة وردّت. لم يرسل MyRoad مفتاح مزود.",
   "add_path_next_steps": "إنشاء المسار الكامل لاحقًا. النشر يبقى بشريًا فقط.",
-  "add_path_no_token_hint": "بدون رمز موثّق في هذه الجلسة لن يُفتح واجهة المؤلف القديمة.",
-  "api_token_label": "رمز API (فحص لمرة واحدة)",
-  "api_token_check": "تحقق من الرمز",
-  "err_api_token_invalid": "الرمز مفقود أو غير صالح.",
   "security_note_title": "ملاحظة أمنية",
-  "security_note_body": "لا تلصق الرموز في صفحات تخزّنها. هذا الـ POC لا يحفظ الأسرار — لا في قاعدة البيانات ولا في ملفات تعريف الارتباط ولا في localStorage ولا في السجلات. يُقبل الرمز لطلب فحص واحد على الخادم ثم يُهمل فورًا."
+  "security_note_body": "MyRoad لا يقبل ولا يخزّن ولا يرسل مفتاح API لـ xAI أو أي مزود. تبقى المفاتيح في Cloudflare Secrets Store. هذا الـ POC لا يحفظ الأسرار في قاعدة البيانات ولا في ملفات تعريف الارتباط ولا في localStorage ولا في السجلات.",
+  "add_path_check": "فحص بوابة Cloudflare",
+  "add_path_not_configured_hint": "يُضاف مفتاح xAI مرة واحدة في لوحة Cloudflare كـ BYOK بالاسم default. يحتاج MyRoad فقط إلى معرّف الحساب واسم البوابة في بيئة الخادم.",
+  "err_gateway_not_configured": "بوابة Cloudflare AI Gateway غير مهيأة. اضبطوا CLOUDFLARE_ACCOUNT_ID و CLOUDFLARE_GATEWAY_ID على الخادم. لا تلصقوا مفتاح xAI في MyRoad.",
+  "err_gateway_request": "فشل طلب Cloudflare AI Gateway. تحققوا من البوابة ومفتاح BYOK في لوحة Cloudflare وليس في MyRoad."
 }

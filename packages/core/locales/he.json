@@ -80,14 +80,14 @@
   "err_email_invalid": "כתובת אימייל לא תקינה.",
   "err_name_required": "נדרשים שם פרטי ושם משפחה.",
   "err_email_taken": "האימייל כבר רשום — נסו שוב או בדקו את הפרטים.",
-  "add_path_gate_lede": "כדי להוסיף דרך צריך לחבר אסימון API בסגנון OpenAI (Authorization Bearer / מפתח API) לבדיקה חד־פעמית בשרת.",
-  "add_path_unlocked": "הקריטריון הראשון התקיים — אפשר להמשיך לזרימת הוספת דרך.",
-  "add_path_criterion_met": "אסימון הסוכן אומת לפורמט (לא נשמר).",
+  "add_path_gate_lede": "כדי להוסיף דרך השרת קורא ל-Grok דרך Cloudflare AI Gateway. מפתח xAI נשאר ב-Cloudflare Secrets Store (BYOK). MyRoad לא מקבל את המפתח.",
+  "add_path_unlocked": "בדיקת השער הצליחה — אפשר להמשיך לזרימת הוספת דרך.",
+  "add_path_criterion_met": "Cloudflare AI Gateway מוגדר והגיב. MyRoad לא שלח מפתח ספק.",
   "add_path_next_steps": "יצירת דרך מלאה תתווסף בשלב הבא. הפרסום נשאר אנושי בלבד.",
-  "add_path_no_token_hint": "בלי אסימון מאומת בסשן הזה לא נפתח ממשק המחבר הישן.",
-  "api_token_label": "אסימון API (לבדיקה חד־פעמית)",
-  "api_token_check": "בדיקת אסימון",
-  "err_api_token_invalid": "האסימון חסר או בפורמט לא תקין.",
   "security_note_title": "הערת אבטחה",
-  "security_note_body": "לעולם אל תדביקו אסימונים בדפים ששומרים אותם. POC זה לא שומר סודות — לא במסד, לא בעוגיות, לא ב־localStorage, ולא בלוגים. האסימון מתקבל רק לבקשת בדיקה אחת בשרת ונזרק מיד."
+  "security_note_body": "MyRoad לא מקבל, לא שומר ולא שולח מפתח API של xAI או של ספק אחר. המפתחות נשארים ב-Cloudflare Secrets Store. POC זה לא שומר סודות במסד, בעוגיות, ב-localStorage או בלוגים.",
+  "add_path_check": "בדיקת שער Cloudflare",
+  "add_path_not_configured_hint": "את מפתח xAI מוסיפים פעם אחת בלוח Cloudflare כ-BYOK בכינוי default. MyRoad צריך רק מזהה חשבון ושם שער בסביבת השרת.",
+  "err_gateway_not_configured": "Cloudflare AI Gateway אינו מוגדר. הגדירו CLOUDFLARE_ACCOUNT_ID ו-CLOUDFLARE_GATEWAY_ID בשרת. אל תדביקו מפתח xAI ב-MyRoad.",
+  "err_gateway_request": "הבקשה ל-Cloudflare AI Gateway נכשלה. בדקו את השער ואת מפתח BYOK בלוח Cloudflare, לא ב-MyRoad."
 }

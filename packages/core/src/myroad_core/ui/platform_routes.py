@@ -26,7 +26,12 @@ from myroad_core.ui.i18n import (
     subject_label,
     t,
 )
-from myroad_core.ui.token_check import verify_agent_token_ephemeral
+from myroad_core.ui.cloudflare_gateway import (
+    GatewayNotConfigured,
+    GatewayRequestError,
+    call_grok_chat,
+    gateway_is_configured,
+)
 
 COOKIE_AUTHOR_SID = "myroad_author_sid"
 
@@ -353,53 +358,68 @@ def register_platform_routes(
         return resp
 
     def _author_gate_ok(request: Request) -> bool:
-        gates: dict[str, bool] = getattr(app.state, "author_token_ok", {})
+        gates: dict[str, bool] = getattr(app.state, "author_gateway_ok", {})
         sid = request.cookies.get(COOKIE_AUTHOR_SID)
         return bool(sid and gates.get(sid))
 
     @app.get("/add-path", response_class=HTMLResponse)
     def add_path_page(request: Request) -> HTMLResponse:
         locale = _locale(request)
-        ok = _author_gate_ok(request)
+        configured = gateway_is_configured()
+        ok = configured and _author_gate_ok(request)
+        error = "" if configured else t(locale, "err_gateway_not_configured")
         return templates.TemplateResponse(
             request,
             "add_path.html",
             _shell_ctx(
                 request,
-                token_ok=ok,
-                error="",
+                gateway_ok=ok,
+                gateway_configured=configured,
+                error=error,
             ),
         )
 
-    @app.post("/add-path/check-token")
-    async def add_path_check_token(request: Request) -> RedirectResponse:
-        """Accept token for this request only; never persist or echo it."""
+    @app.post("/add-path/check-gateway", response_model=None)
+    def add_path_check_gateway(request: Request):
+        """Call Cloudflare AI Gateway. Does not read a provider API key."""
         locale = _locale(request)
-        form = await request.form()
-        raw = form.get("api_token")
-        # Verify then discard — result must never include the secret
-        result = verify_agent_token_ephemeral(str(raw) if raw is not None else None)
-        # Drop form reference to the secret as soon as possible
-        del raw
-        del form
-        if not result.get("ok"):
-            # Re-render gate with error (no token in context)
-            html = templates.TemplateResponse(
+        try:
+            call_grok_chat(
+                [
+                    {
+                        "role": "user",
+                        "content": "Reply with the single word ok.",
+                    }
+                ]
+            )
+        except GatewayNotConfigured:
+            return templates.TemplateResponse(
                 request,
                 "add_path.html",
                 _shell_ctx(
                     request,
-                    token_ok=False,
-                    error=t(locale, "err_api_token_invalid"),
+                    gateway_ok=False,
+                    gateway_configured=False,
+                    error=t(locale, "err_gateway_not_configured"),
                 ),
             )
-            return html  # type: ignore[return-value]
-        if not hasattr(app.state, "author_token_ok"):
-            app.state.author_token_ok = {}
+        except GatewayRequestError:
+            return templates.TemplateResponse(
+                request,
+                "add_path.html",
+                _shell_ctx(
+                    request,
+                    gateway_ok=False,
+                    gateway_configured=True,
+                    error=t(locale, "err_gateway_request"),
+                ),
+            )
+        if not hasattr(app.state, "author_gateway_ok"):
+            app.state.author_gateway_ok = {}
         sid = request.cookies.get(COOKIE_AUTHOR_SID) or uuid.uuid4().hex
-        app.state.author_token_ok[sid] = True
+        app.state.author_gateway_ok[sid] = True
         resp = RedirectResponse("/add-path", status_code=303)
-        # Opaque session id only — never the API token
+        # Opaque session id only. Never a provider key.
         resp.set_cookie(COOKIE_AUTHOR_SID, sid, httponly=True, samesite="lax", max_age=3600)
         return resp
 
