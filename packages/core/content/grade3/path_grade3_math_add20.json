@@ -3,16 +3,19 @@
   "title_he": "חיבור עד 20",
   "subject": "math",
   "grade": 3,
-  "group_ids": ["grade3"],
+  "group_ids": [
+    "grade3"
+  ],
   "emoji": "➕",
   "blurb_he": "סיפורים קצרים וחיבור מספרים עד 20 — בוחרים תשובה בלחיצה.",
-  "estimated_minutes": 8,
+  "estimated_minutes": 9,
   "nodes": [
     {
       "type": "learn",
       "title": "מה זה חיבור?",
       "body_he": "חיבור אומר לשים יחד. אם יש לי 3 תפוחים וקיבלתי עוד 2 — יש לי 5. היום נחבר מספרים עד 20.",
-      "speak_text": "שלום! חיבור אומר לשים יחד. בואו נתרגל עד עשרים."
+      "speak_text": "שלום! חיבור אומר לשים יחד. בואו נתרגל עד עשרים.",
+      "id": "learn_add"
     },
     {
       "type": "practice",
@@ -20,13 +23,26 @@
       "body_he": "לנועה יש 7 בלונים. אמא קנתה עוד 5. כמה בלונים יש לנועה עכשיו?",
       "speak_text": "לנועה יש שבעה בלונים. אמא קנתה עוד חמישה. כמה יש ביחד?",
       "choices": [
-        {"id": "a", "label": "10", "emoji": "🎈"},
-        {"id": "b", "label": "12", "emoji": "🎈"},
-        {"id": "c", "label": "15", "emoji": "🎈"}
+        {
+          "id": "a",
+          "label": "10",
+          "emoji": "🎈"
+        },
+        {
+          "id": "b",
+          "label": "12",
+          "emoji": "🎈"
+        },
+        {
+          "id": "c",
+          "label": "15",
+          "emoji": "🎈"
+        }
       ],
       "correct": "b",
       "feedback_ok": "מעולה! 7 ועוד 5 זה 12.",
-      "feedback_try": "נסו שוב: 7 ועוד 5… אפשר לספור על האצבעות."
+      "feedback_try": "נסו שוב: 7 ועוד 5… אפשר לספור על האצבעות.",
+      "id": "practice_balloons"
     },
     {
       "type": "practice",
@@ -34,13 +50,23 @@
       "body_he": "בקופסה יש 9 ממתקים. שמו עוד 8. כמה ממתקים יש עכשיו?",
       "speak_text": "תשע ועוד שמונה — כמה זה?",
       "choices": [
-        {"id": "a", "label": "15"},
-        {"id": "b", "label": "16"},
-        {"id": "c", "label": "17"}
+        {
+          "id": "a",
+          "label": "15"
+        },
+        {
+          "id": "b",
+          "label": "16"
+        },
+        {
+          "id": "c",
+          "label": "17"
+        }
       ],
       "correct": "c",
       "feedback_ok": "כל הכבוד! 9 + 8 = 17.",
-      "feedback_try": "טיפ: 9 ועוד 1 זה 10, ואז עוד 7 זה 17."
+      "feedback_try": "טיפ: 9 ועוד 1 זה 10, ואז עוד 7 זה 17.",
+      "id": "practice_candy"
     },
     {
       "type": "check",
@@ -48,19 +74,61 @@
       "body_he": "11 + 6 = ?",
       "speak_text": "אחד עשר ועוד שש — מה התשובה?",
       "choices": [
-        {"id": "a", "label": "16"},
-        {"id": "b", "label": "17"},
-        {"id": "c", "label": "18"}
+        {
+          "id": "a",
+          "label": "16"
+        },
+        {
+          "id": "b",
+          "label": "17"
+        },
+        {
+          "id": "c",
+          "label": "18"
+        }
       ],
       "correct": "b",
       "feedback_ok": "נכון! 11 + 6 = 17.",
-      "feedback_try": "ספרו שש קדימה מ־11."
+      "feedback_try": "ספרו שש קדימה מ־11.",
+      "id": "check_add"
     },
     {
       "type": "celebrate",
       "title": "סיימת!",
       "body_he": "כל הכבוד! אתם יודעים לחבר מספרים עד 20. אפשר לחזור על הדרך מתי שרוצים.",
-      "speak_text": "כל הכבוד! סיימתם את דרך החיבור."
+      "speak_text": "כל הכבוד! סיימתם את דרך החיבור.",
+      "id": "celebrate"
+    }
+  ],
+  "topics": [
+    {
+      "id": "topic_learn",
+      "title_he": "מה זה חיבור?",
+      "title_en": "What is addition?",
+      "emoji": "➕",
+      "node_ids": [
+        "learn_add"
+      ]
+    },
+    {
+      "id": "topic_practice",
+      "title_he": "תרגול סיפורים",
+      "title_en": "Story practice",
+      "emoji": "🎈",
+      "node_ids": [
+        "practice_balloons",
+        "practice_candy"
+      ]
+    },
+    {
+      "id": "topic_check",
+      "title_he": "אתגר וסיום",
+      "title_en": "Challenge & finish",
+      "emoji": "🏁",
+      "node_ids": [
+        "check_add",
+        "celebrate"
+      ]
     }
   ]
 }

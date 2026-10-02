@@ -1,44 +1,57 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — קטלוג דרכים</title>
+  <title>{{ product }} — {{ t('catalog') }}</title>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform">
   <header class="top">
     <div class="brand">
       <strong>{{ product }}</strong>
-      <span class="badge">פלטפורמת למידה</span>
+      <span class="badge">{{ t('product_badge') }}</span>
     </div>
-    <nav class="top-nav">
-      <a href="/">קטלוג</a>
-      <a href="/author" class="muted-link">ממשק מחבר (POC)</a>
-    </nav>
+    <div class="top-tools">
+      <div class="whoami">
+        <a href="/login?next=/" class="who-link" title="{{ t('who_am_i') }}">
+          👤 {% if learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
+        </a>
+      </div>
+      <form method="post" action="/locale" class="lang-switch" aria-label="{{ t('language') }}">
+        <input type="hidden" name="next" value="/?group={{ active_group }}&subject={{ active_subject }}" />
+        {% for loc in locales %}
+        <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
+        {% endfor %}
+      </form>
+      <nav class="top-nav">
+        <a href="/">{{ t('catalog') }}</a>
+        <a href="/author" class="muted-link">{{ t('author_poc') }}</a>
+      </nav>
+    </div>
   </header>
 
   <section class="hero card">
-    <h1>דרכי למידה</h1>
-    <p class="lede">בחרו קבוצה ונושא, ואז פתחו דרך. התוכן מגיע מקבצי נתונים — לא מקוד קשיח.</p>
+    <h1>{{ t('hero_title') }}</h1>
+    <p class="lede">{{ t('hero_lede') }}</p>
   </section>
 
   <section class="filters card">
     <div class="filter-row">
-      <span class="filter-label">קבוצות</span>
+      <span class="filter-label">{{ t('groups') }}</span>
       <div class="chips">
-        <a class="chip {% if active_group == 'all' %}active{% endif %}" href="/?group=all&subject={{ active_subject }}">הכל</a>
+        <a class="chip {% if active_group == 'all' %}active{% endif %}" href="/?group=all&subject={{ active_subject }}">{{ t('all') }}</a>
         {% for gid, g in groups.items() %}
-        <a class="chip {% if active_group == gid %}active{% endif %}" href="/?group={{ gid }}&subject={{ active_subject }}">{{ g.title_he }}</a>
+        <a class="chip {% if active_group == gid %}active{% endif %}" href="/?group={{ gid }}&subject={{ active_subject }}">{{ g.title_display or g.title_he }}</a>
         {% endfor %}
       </div>
     </div>
     <div class="filter-row">
-      <span class="filter-label">נושאים</span>
+      <span class="filter-label">{{ t('subjects') }}</span>
       <div class="chips">
-        <a class="chip {% if active_subject == 'all' %}active{% endif %}" href="/?group={{ active_group }}&subject=all">הכל</a>
+        <a class="chip {% if active_subject == 'all' %}active{% endif %}" href="/?group={{ active_group }}&subject=all">{{ t('all') }}</a>
         {% for sid, s in subjects.items() %}
-        <a class="chip {% if active_subject == sid %}active{% endif %}" href="/?group={{ active_group }}&subject={{ sid }}" style="--chip-accent: {{ s.color }}">{{ s.emoji }} {{ s.he }}</a>
+        <a class="chip {% if active_subject == sid %}active{% endif %}" href="/?group={{ active_group }}&subject={{ sid }}" style="--chip-accent: {{ s.color }}">{{ s.emoji }} {{ s.label or s.he }}</a>
         {% endfor %}
       </div>
     </div>
@@ -46,31 +59,37 @@
 
   {% if catalog.group %}
   <section class="group-banner card {% if active_group == 'grade3' %}tone-demo{% endif %}">
-    <h2>{{ catalog.group.title_he }}</h2>
-    <p>{{ catalog.group.blurb_he }}</p>
+    <h2>{{ catalog.group.title_display or catalog.group.title_he }}</h2>
+    <p>{{ catalog.group.blurb_display or catalog.group.blurb_he }}</p>
   </section>
   {% endif %}
 
-  <section class="grid" aria-label="כרטיסי דרכים">
+  <section class="grid" aria-label="{{ t('catalog') }}">
     {% for c in catalog.cards %}
     <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}">
       <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
       <div class="path-body">
         <div class="path-meta">
           <span class="subject-pill">{{ c.subjectLabel }}</span>
-          {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} דק׳</span>{% endif %}
+          {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
+          {% if c.nodeCount %}<span class="mins">{{ c.nodeCount }} {{ t('nodes') }}</span>{% endif %}
         </div>
         <h3>{{ c.title }}</h3>
         <p>{{ c.blurb }}</p>
+        {% if c.progressStatus == 'completed' %}
+        <span class="status-pill done">{{ t('completed') }}</span>
+        {% elif c.progressStatus == 'in_progress' %}
+        <span class="status-pill prog">{{ t('in_progress') }}</span>
+        {% endif %}
       </div>
     </a>
     {% else %}
-    <p class="empty">אין דרכים בקטלוג הזה עדיין.</p>
+    <p class="empty">{{ t('empty_catalog') }}</p>
     {% endfor %}
   </section>
 
   <footer>
-    <small>{{ product }} · קטלוג מבוסס תוכן · פרסום אנושי לדרכים חדשות · דמו כיתה ג׳ נטען מראש</small>
+    <small>{{ product }} · {{ t('footer_catalog') }}</small>
   </footer>
 </body>
 </html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — {{ t('stats_title') }}</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+<body class="platform play stats-view {% if meta.kidsDemo %}tone-demo{% endif %}">
+  <header class="top">
+    <div class="brand">
+      <a href="/" class="back">→ {{ t('back_catalog') }}</a>
+      <strong>{{ product }}</strong>
+    </div>
+    <div class="top-tools">
+      <div class="whoami">
+        <a href="/login?next=/play/{{ doc.pathId }}?view=stats" class="who-link">
+          👤 {% if learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
+        </a>
+      </div>
+      <form method="post" action="/locale" class="lang-switch">
+        <input type="hidden" name="next" value="/play/{{ doc.pathId }}?view=stats" />
+        {% for loc in locales %}
+        <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
+        {% endfor %}
+      </form>
+    </div>
+  </header>
+
+  <section class="card hero stats-card">
+    <h1>🎉 {{ t('stats_title') }}</h1>
+    <p class="lede">{{ meta.emoji }} {{ meta.title }}</p>
+    <p class="stats-msg">{{ attempt.message or t('stats_message') }}</p>
+
+    <div class="stats-grid">
+      <div class="stat-tile">
+        <div class="stat-label">{{ t('stats_time') }}</div>
+        <div class="stat-value">
+          {% set secs = attempt.durationSec or 0 %}
+          {% if secs >= 60 %}{{ (secs / 60)|int }} {{ t('minutes') }} · {{ secs % 60 }} {{ t('seconds') }}
+          {% else %}{{ secs }} {{ t('seconds') }}{% endif %}
+        </div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">{{ t('stats_nodes') }}</div>
+        <div class="stat-value">{{ attempt.nodesCompleted or 0 }} / {{ attempt.nodesTotal or total }}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">{{ t('stats_correct') }}</div>
+        <div class="stat-value ok">{{ attempt.correctTaps or 0 }}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">{{ t('stats_incorrect') }}</div>
+        <div class="stat-value warn">{{ attempt.incorrectTaps or 0 }}</div>
+      </div>
+      <div class="stat-tile wide">
+        <div class="stat-label">{{ t('stats_mastery') }}</div>
+        <div class="stat-value">{{ attempt.masteryPct or 0 }}%</div>
+        <div class="progress-bar"><div class="progress-fill" style="width: {{ attempt.masteryPct or 0 }}%"></div></div>
+      </div>
+    </div>
+
+    <div class="row map-actions">
+      <a class="primary big link-btn" href="/">{{ t('back_to_catalog') }}</a>
+      <form method="post" action="/play/{{ doc.pathId }}/start">
+        <input type="hidden" name="reset" value="1" />
+        <button type="submit" class="secondary big">{{ t('replay') }}</button>
+      </form>
+      <a class="secondary big link-btn" href="/play/{{ doc.pathId }}?view=map">{{ t('path_map') }}</a>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — {{ meta.title }}</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+<body class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}">
+  <header class="top">
+    <div class="brand">
+      <a href="/" class="back">→ {{ t('back_catalog') }}</a>
+      <strong>{{ product }}</strong>
+    </div>
+    <div class="top-tools">
+      <div class="whoami">
+        <a href="/login?next=/play/{{ doc.pathId }}" class="who-link">
+          👤 {% if learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
+        </a>
+      </div>
+      <form method="post" action="/locale" class="lang-switch">
+        <input type="hidden" name="next" value="/play/{{ doc.pathId }}?view=map" />
+        {% for loc in locales %}
+        <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
+        {% endfor %}
+      </form>
+      <span class="subject-pill" style="--subject: {{ meta.subjectColor }}">{{ meta.emoji }} {{ meta.subjectLabel }}</span>
+    </div>
+  </header>
+
+  <section class="card path-head">
+    <h1>{{ meta.emoji }} {{ meta.title }}</h1>
+    <p class="lede">{{ meta.blurb }}</p>
+    <div class="progress-wrap" aria-label="progress">
+      <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
+      <span class="progress-label">{{ progress }}% · {{ mastered|length }}/{{ total }}</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>{{ t('path_map') }}</h2>
+    <p class="lede">{{ t('path_map_lede') }}</p>
+
+    <div class="topic-diagram" role="list">
+      {% for tp in topics %}
+      <div class="topic-station {% if tp.complete %}done{% endif %}" role="listitem">
+        <div class="topic-box" style="--subject: {{ meta.subjectColor }}">
+          <div class="topic-emoji">{{ tp.emoji }}</div>
+          <h3>{{ tp.title }}</h3>
+          <p class="tiny muted">{{ tp.stepCount }} {{ t('steps_count') }}
+            {% if tp.doneCount %} · {{ tp.doneCount }}/{{ tp.stepCount }} {{ t('topic_progress') }}{% endif %}
+          </p>
+          <form method="post" action="/play/{{ doc.pathId }}/start">
+            <input type="hidden" name="topic" value="{{ tp.id }}" />
+            <button type="submit" class="secondary">{{ t('enter_topic') }}</button>
+          </form>
+        </div>
+        {% if not loop.last %}
+        <div class="topic-arrow" aria-hidden="true">↓</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="row map-actions">
+      <form method="post" action="/play/{{ doc.pathId }}/start">
+        <button type="submit" class="primary big">{{ t('start_path') }}</button>
+      </form>
+      {% if can_resume %}
+      <form method="post" action="/play/{{ doc.pathId }}/start">
+        <button type="submit" class="secondary big">{{ t('resume') }}</button>
+      </form>
+      {% endif %}
+    </div>
+  </section>
+
+  <footer>
+    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }}</small>
+  </footer>
+</body>
+</html>
