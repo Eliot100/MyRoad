@@ -15,7 +15,7 @@
     <div class="top-tools">
       <div class="whoami">
         <a href="/login?next=/" class="who-link" title="{{ t('who_am_i') }}">
-          👤 {% if learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
+          👤 {% if learner and learner.email %}{{ learner.displayName }}{% elif learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
         </a>
       </div>
       <form method="post" action="/locale" class="lang-switch" aria-label="{{ t('language') }}">
@@ -26,7 +26,7 @@
       </form>
       <nav class="top-nav">
         <a href="/?tab=catalog">{{ t('catalog') }}</a>
-        <a href="/author" class="muted-link">{{ t('author_poc') }}</a>
+        <a href="/add-path" class="muted-link">{{ t('add_path') }}</a>
       </nav>
     </div>
   </header>

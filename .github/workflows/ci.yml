@@ -24,8 +24,19 @@ jobs:
           python -m json.tool freeze/v0/02-path-after-feedback.json > /dev/null
           echo "Both freeze path JSON files are valid."
 
-      - name: Validate grade3 content JSON
+      - name: Vendor MyRoad-content (grade3 samples)
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -e
+          mkdir -p packages/core/content
+          # Prefer sibling content repo; fall back to API archive
+          if git clone --depth 1 "https://github.com/Eliot100/MyRoad-content.git" /tmp/MyRoad-content; then
+            cp -R /tmp/MyRoad-content/grade3 packages/core/content/
+          else
+            echo "MyRoad-content clone failed — expecting CONTENT_DIR or vendored files"
+            exit 1
+          fi
           python - <<'PY'
           import json, pathlib
           root = pathlib.Path("packages/core/content/grade3")
@@ -45,6 +56,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Vendor MyRoad-content
+        run: |
+          set -e
+          git clone --depth 1 "https://github.com/Eliot100/MyRoad-content.git" /tmp/MyRoad-content
+          mkdir -p content
+          cp -R /tmp/MyRoad-content/grade3 content/
+          test "$(ls content/grade3/*.json | wc -l)" -eq 10
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -55,5 +74,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev,api]"
 
-      - name: Run core unit tests (persistence + agent tools + UI)
+      - name: Run core unit tests (persistence + agent tools + UI + secrets)
+        env:
+          CONTENT_DIR: ${{ github.workspace }}/packages/core/content
         run: pytest -q

@@ -25,13 +25,56 @@ from myroad_core.models import (
 from myroad_core.store import PathStore
 from myroad_core.store_schema import _iso_now
 
-# packages/core/src/myroad_core/content -> packages/core/content
+# packages/core/src/myroad_core/content -> packages/core
 _PKG_CORE = Path(__file__).resolve().parents[3]
-DEFAULT_CONTENT_DIR = _PKG_CORE / "content"
+# Repo root: packages/core -> MyRoad/
+_REPO_ROOT = _PKG_CORE.parents[1]
+# Legacy in-tree path (submodule checkout target or vendored copy)
+_LEGACY_CONTENT = _PKG_CORE / "content"
+
+
+def _candidate_content_dirs() -> list[Path]:
+    """Resolve path-content directory without embedding JSON in the platform repo.
+
+    Order:
+      1. CONTENT_DIR env (absolute or relative)
+      2. packages/core/content (git submodule or local checkout)
+      3. sibling ../MyRoad-content (clone next to MyRoad)
+      4. repo-root/content (alternate layout)
+    """
+    import os
+
+    out: list[Path] = []
+    env = (os.environ.get("CONTENT_DIR") or "").strip()
+    if env:
+        out.append(Path(env).expanduser().resolve())
+    out.append(_LEGACY_CONTENT)
+    out.append((_REPO_ROOT.parent / "MyRoad-content").resolve())
+    out.append((_REPO_ROOT / "content").resolve())
+    # de-dupe while preserving order
+    seen: set[str] = set()
+    uniq: list[Path] = []
+    for p in out:
+        key = str(p)
+        if key not in seen:
+            seen.add(key)
+            uniq.append(p)
+    return uniq
 
 
 def default_content_dir() -> Path:
-    return DEFAULT_CONTENT_DIR
+    """First existing candidate that contains grade3/*.json (or any *.json)."""
+    for cand in _candidate_content_dirs():
+        if not cand.is_dir():
+            continue
+        if any(cand.rglob("*.json")):
+            return cand
+    # Fall back to legacy path even if empty (tests / docs reference it)
+    return _LEGACY_CONTENT
+
+
+# Back-compat alias used by older docs/tests
+DEFAULT_CONTENT_DIR = _LEGACY_CONTENT
 
 
 def _find_json_files(root: Path) -> list[Path]:
@@ -176,7 +219,7 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
         blurbs=dict(path.blurbs or {}),
         topics=topics,
         nodeToBlock=node_to_block,
-        contentSource="packages/core/content",
+        contentSource="MyRoad-content",
         kidsDemo=path.grade == 3,
         explainLocale=explain,
         contentLocale=content,
@@ -203,6 +246,33 @@ def seed_content_paths(
     for i, path in enumerate(loaded):
         doc = content_to_path_version(path)
         corr = f"{correlation_id}_{i:02d}"
+        # Idempotent: file DB may already hold published demo samples
+        existing = None
+        try:
+            existing = store.get_version(doc.pathId, doc.versionId)
+        except Exception:
+            existing = None
+        if existing is None:
+            try:
+                latest = store.get_path_latest(doc.pathId)
+                existing = latest
+            except Exception:
+                existing = None
+        if existing is not None:
+            seeded.append(
+                {
+                    "pathId": path.id,
+                    "versionId": existing.versionId if hasattr(existing, "versionId") else doc.versionId,
+                    "title": path.title_he,
+                    "subject": path.subject,
+                    "groupIds": path.group_ids,
+                    "published": True,
+                    "nodeCount": len(path.nodes),
+                    "topicCount": len(infer_topics(path)),
+                    "skippedExisting": True,
+                }
+            )
+            continue
         store.save_version(
             actor_id=actor_id,
             agent_id=None,

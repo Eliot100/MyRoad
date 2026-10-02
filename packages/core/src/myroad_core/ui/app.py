@@ -61,11 +61,14 @@ def _block_body(block: dict[str, Any]) -> dict[str, Any]:
 def create_learner_app(
     store: PathStore | None = None,
     *,
-    db_path: str = ":memory:",
+    db_path: str | None = None,
     seed: bool = True,
     seed_content: bool = True,
 ) -> FastAPI:
-    path_store = store or PathStore(db_path)
+    from myroad_core.ui.db_path import resolve_ui_db_path
+
+    resolved_db = db_path if db_path is not None else resolve_ui_db_path()
+    path_store = store or PathStore(resolved_db)
     tools = AgentTools(path_store)
     seeded: dict[str, Any] = {}
     content_seed: dict[str, Any] = {}
@@ -77,13 +80,16 @@ def create_learner_app(
         if content_dir.is_dir():
             content_seed = seed_content_paths(path_store, content_dir=content_dir)
 
-    app = FastAPI(title="MyRoad", version="0.6.0")
+    app = FastAPI(title="MyRoad", version="0.8.0")
     app.state.store = path_store
+    app.state.db_path = resolved_db
     app.state.tools = tools
     app.state.seed = seeded
     app.state.content_seed = content_seed
     app.state.sessions: dict[str, dict[str, Any]] = {}
     app.state.play_sessions: dict[str, dict[str, Any]] = {}
+    # Ephemeral author-gate flags (opaque sid -> True). Never stores API tokens.
+    app.state.author_token_ok: dict[str, bool] = {}
 
     static_dir = UI_DIR / "static"
     if static_dir.is_dir():
@@ -250,5 +256,5 @@ def create_learner_app(
     return app
 
 
-# Default app for uvicorn myroad_core.ui.app:app
+# Default app for uvicorn myroad_core.ui.app:app — file SQLite (see db_path.resolve_ui_db_path)
 app = create_learner_app()

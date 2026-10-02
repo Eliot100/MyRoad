@@ -49,31 +49,52 @@ uv pip install -e ".[dev,api]"
 pytest -q
 ```
 
-### Platform catalog + path player (v0.7)
+### Platform catalog + path player (v0.8)
 
-Age-agnostic home (groups + subject chips + path cards), lightweight learner identity,
-he/en/ar UI locale (RTL for he/ar), topic map before play, completion stats, and
-per-user progress in SQLite. Demo Grade-3 paths load from
-`packages/core/content/grade3/*.json` into PathStore as published samples.
+Age-agnostic home (groups + subject chips + path cards), **email registration**
+(first/last name + unique email, no passwords), he/en/ar UI locale (RTL for he/ar),
+topic map before play, completion stats, and per-user progress in **file SQLite**
+(`packages/core/data/myroad_ui.db` by default; override with `MYROAD_DB`).
+
+**Path content** lives in the separate public repo
+[`Eliot100/MyRoad-content`](https://github.com/Eliot100/MyRoad-content).
+The platform loads it via `CONTENT_DIR`, a checkout/submodule at
+`packages/core/content`, or a sibling `../MyRoad-content` clone.
+
+**Add a path** (`/add-path`) is gated: one-shot OpenAI-style API token check on the
+server only — tokens are never stored in DB, cookies, HTML, localStorage, or logs.
+The old `/author` golden-loop POC remains unlinked from the main nav.
 
 ```bash
-cd packages/core
+# clone platform + content (sibling layout)
+git clone https://github.com/Eliot100/MyRoad.git
+git clone https://github.com/Eliot100/MyRoad-content.git
+cd MyRoad/packages/core
+export CONTENT_DIR="$(cd ../../MyRoad-content && pwd)"   # or copy grade3 into content/
 pip install -e ".[api]"
 uvicorn myroad_core.ui.app:app --reload --port 8765
 # http://127.0.0.1:8765/          catalog
-# http://127.0.0.1:8765/login     identity POC
-# http://127.0.0.1:8765/author   golden-loop author POC
+# http://127.0.0.1:8765/login     register / sign in (email)
+# http://127.0.0.1:8765/add-path  gated add-a-path flow
 ```
 
 Windows PowerShell:
 
 ```powershell
-cd path\to\MyRoad\packages\core
+cd path\to\projects
+git clone https://github.com/Eliot100/MyRoad.git
+git clone https://github.com/Eliot100/MyRoad-content.git
+cd MyRoad\packages\core
+$env:CONTENT_DIR = (Resolve-Path ..\..\MyRoad-content).Path
+# If Resolve-Path fails, use the full path to the MyRoad-content folder.
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[api,dev]"
 uvicorn myroad_core.ui.app:app --reload --port 8765
 ```
+
+SQLite UI DB (survives restart): `packages/core/data/myroad_ui.db` (gitignored `*.db`).
+Override: `$env:MYROAD_DB = "C:\path\to\myroad.db"`.
 
 Home tabs (in progress / completed / needs practice) + time view by subject;
 locale split (`explain_locale` vs `content_locale`) for English paths.
@@ -85,7 +106,7 @@ split between the language used to explain a path and the language of its learni
 content (`explain_locale` vs `content_locale`). See
 `packages/core/docs/how-to-add-locale.md` for how to add another locale.
 
-See `packages/core/docs/kids-platform.md`.
+See `packages/core/docs/kids-platform.md` and `packages/core/content/README.md`.
 
 ### Thin learner UI
 
