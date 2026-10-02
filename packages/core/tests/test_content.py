@@ -22,6 +22,14 @@ from fastapi.testclient import TestClient
 
 from myroad_core.ui.app import create_learner_app
 
+def _reg(client, email: str, first: str = "Test", last: str = "User"):
+    return client.post(
+        "/login",
+        data={"first_name": first, "last_name": last, "email": email, "next": "/"},
+        follow_redirects=True,
+    )
+
+
 
 def test_all_grade3_paths_validate() -> None:
     paths = load_content_paths(default_content_dir())
@@ -150,14 +158,12 @@ def test_locale_switch_english_shell(platform_client: TestClient) -> None:
 
 
 def test_identity_login_and_whoami(platform_client: TestClient) -> None:
-    r = platform_client.post(
-        "/login",
-        data={"display_name": "נועה", "next": "/"},
-        follow_redirects=True,
-    )
+    r = _reg(platform_client, "noa@example.com", "נועה", "כהן")
     assert r.status_code == 200
     assert "נועה" in r.text
-    assert platform_client.cookies.get("myroad_uid")
+    uid = platform_client.cookies.get("myroad_uid")
+    assert uid
+    assert "@" not in uid
 
 
 def test_play_shows_topic_map_first(platform_client: TestClient) -> None:
@@ -168,7 +174,7 @@ def test_play_shows_topic_map_first(platform_client: TestClient) -> None:
 
 
 def test_play_math_path_mouse_flow(platform_client: TestClient) -> None:
-    platform_client.post("/login", data={"display_name": "Tester", "next": "/"})
+    _reg(platform_client, "tester@example.com", "Tester", "User")
     # enter learning from map
     start = platform_client.post(
         "/play/path_grade3_math_add20/start",
@@ -201,7 +207,7 @@ def test_play_math_path_mouse_flow(platform_client: TestClient) -> None:
 
 
 def test_progress_persists_per_user(platform_client: TestClient) -> None:
-    platform_client.post("/login", data={"display_name": "Eli", "next": "/"})
+    _reg(platform_client, "eli@example.com", "Eli", "User")
     platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
     platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
     # reopen path — should resume learn view (progress exists)
@@ -215,7 +221,7 @@ def test_progress_persists_per_user(platform_client: TestClient) -> None:
 def test_completion_stats_and_attempt(platform_client: TestClient, tmp_path) -> None:
     # Use store from app
     store: PathStore = platform_client.app.state.store
-    platform_client.post("/login", data={"display_name": "Fin", "next": "/"})
+    _reg(platform_client, "fin@example.com", "Fin", "User")
     platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
     # Walk all nodes: learn ack, 2 practices, check, celebrate
     # learn
@@ -283,7 +289,7 @@ def test_learner_identity_tables(store: PathStore) -> None:
 def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
     """Home primary tabs: in progress / completed / practice; progress survives reload."""
     store: PathStore = platform_client.app.state.store
-    platform_client.post("/login", data={"display_name": "TabUser", "next": "/"})
+    _reg(platform_client, "tabuser@example.com", "Tab", "User")
 
     # Before any play — default tab is catalog (full list)
     home = platform_client.get("/")
@@ -335,7 +341,7 @@ def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
 
 
 def test_english_play_shows_content_token_and_he_explanation(platform_client: TestClient) -> None:
-    platform_client.post("/login", data={"display_name": "Eng", "next": "/"})
+    _reg(platform_client, "eng@example.com", "Eng", "User")
     r = platform_client.post(
         "/play/path_grade3_english_colors/start",
         data={},
@@ -361,7 +367,7 @@ def test_english_play_shows_content_token_and_he_explanation(platform_client: Te
 
 
 def test_completed_tab_after_finish(platform_client: TestClient) -> None:
-    platform_client.post("/login", data={"display_name": "Done", "next": "/"})
+    _reg(platform_client, "done@example.com", "Done", "User")
     platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
     platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
     platform_client.post("/play/path_grade3_math_add20/answer", data={"choice": "b"}, follow_redirects=True)

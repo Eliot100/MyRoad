@@ -26,6 +26,9 @@ from myroad_core.ui.i18n import (
     subject_label,
     t,
 )
+from myroad_core.ui.token_check import verify_agent_token_ephemeral
+
+COOKIE_AUTHOR_SID = "myroad_author_sid"
 
 ACTOR_LEARNER = "user_learner_poc"
 
@@ -290,33 +293,114 @@ def register_platform_routes(
     def _maybe_done(sess: dict[str, Any], n: int) -> bool:
         return n > 0 and len(sess.get("mastered") or set()) >= n
 
-    # --- Identity / locale ---
+    # --- Identity / locale (email registration; cookie = opaque user id only) ---
     @app.get("/login", response_class=HTMLResponse)
-    def login_page(request: Request, next: str = "/") -> HTMLResponse:
+    def login_page(request: Request, next: str = "/", error: str | None = None) -> HTMLResponse:
         locale = _locale(request)
         learner = _learner(request)
+        err_text = ""
+        if error == "email_required":
+            err_text = t(locale, "err_email_required")
+        elif error == "email_invalid":
+            err_text = t(locale, "err_email_invalid")
+        elif error == "name_required":
+            err_text = t(locale, "err_name_required")
+        elif error == "email_taken":
+            err_text = t(locale, "err_email_taken")
         return templates.TemplateResponse(
             request,
             "login.html",
             _shell_ctx(
                 request,
                 next_url=next or "/",
-                current_name=(learner or {}).get("displayName") or "",
+                current_first=(learner or {}).get("firstName") or "",
+                current_last=(learner or {}).get("lastName") or "",
+                current_email=(learner or {}).get("email") or "",
+                error=err_text,
             ),
         )
 
     @app.post("/login")
     def login_submit(
         request: Request,
-        display_name: str = Form(""),
+        first_name: str = Form(""),
+        last_name: str = Form(""),
+        email: str = Form(""),
         next: str = Form("/"),
+        # legacy field ignored (no passwords in this phase)
+        display_name: str = Form(""),
     ) -> RedirectResponse:
         locale = _locale(request)
-        uid = request.cookies.get(COOKIE_USER) or f"usr_{uuid.uuid4().hex[:12]}"
-        learner = store.upsert_learner(uid, display_name or "Learner", locale=locale)
         dest = next if next.startswith("/") else "/"
+        try:
+            learner = store.register_or_login(
+                email=email,
+                first_name=first_name or (display_name.split()[0] if display_name.strip() else ""),
+                last_name=last_name
+                or (
+                    " ".join(display_name.split()[1:])
+                    if display_name.strip() and len(display_name.split()) > 1
+                    else ""
+                ),
+                locale=locale,
+            )
+        except ValueError as exc:
+            code = str(exc) or "email_invalid"
+            resp = RedirectResponse(f"/login?next={dest}&error={code}", status_code=303)
+            return resp
         resp = RedirectResponse(dest, status_code=303)
         _set_identity_cookies(resp, learner, locale)
+        return resp
+
+    def _author_gate_ok(request: Request) -> bool:
+        gates: dict[str, bool] = getattr(app.state, "author_token_ok", {})
+        sid = request.cookies.get(COOKIE_AUTHOR_SID)
+        return bool(sid and gates.get(sid))
+
+    @app.get("/add-path", response_class=HTMLResponse)
+    def add_path_page(request: Request) -> HTMLResponse:
+        locale = _locale(request)
+        ok = _author_gate_ok(request)
+        return templates.TemplateResponse(
+            request,
+            "add_path.html",
+            _shell_ctx(
+                request,
+                token_ok=ok,
+                error="",
+            ),
+        )
+
+    @app.post("/add-path/check-token")
+    async def add_path_check_token(request: Request) -> RedirectResponse:
+        """Accept token for this request only; never persist or echo it."""
+        locale = _locale(request)
+        form = await request.form()
+        raw = form.get("api_token")
+        # Verify then discard — result must never include the secret
+        result = verify_agent_token_ephemeral(str(raw) if raw is not None else None)
+        # Drop form reference to the secret as soon as possible
+        del raw
+        del form
+        if not result.get("ok"):
+            # Re-render gate with error (no token in context)
+            html = templates.TemplateResponse(
+                request,
+                "add_path.html",
+                _shell_ctx(
+                    request,
+                    token_ok=False,
+                    error=t(locale, "err_api_token_invalid"),
+                ),
+            )
+            return html  # type: ignore[return-value]
+        if not hasattr(app.state, "author_token_ok"):
+            app.state.author_token_ok = {}
+        sid = request.cookies.get(COOKIE_AUTHOR_SID) or uuid.uuid4().hex
+        app.state.author_token_ok[sid] = True
+        resp = RedirectResponse("/add-path", status_code=303)
+        # Opaque session id only — never the API token
+        resp.set_cookie(COOKIE_AUTHOR_SID, sid, httponly=True, samesite="lax", max_age=3600)
         return resp
 
     @app.post("/locale")
@@ -328,7 +412,12 @@ def register_platform_routes(
         loc = normalize_locale(locale)
         learner = _learner(request)
         if learner:
-            store.upsert_learner(learner["userId"], learner["displayName"], locale=loc)
+            store.upsert_learner(
+            learner["userId"], learner["displayName"], locale=loc,
+            first_name=learner.get("firstName") or None,
+            last_name=learner.get("lastName") or None,
+            email=learner.get("email") or None,
+        )
         dest = next if next.startswith("/") else "/"
         resp = RedirectResponse(dest, status_code=303)
         resp.set_cookie(COOKIE_LOCALE, loc, httponly=False, samesite="lax", max_age=86400 * 400)
