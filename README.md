@@ -100,7 +100,7 @@ uvicorn myroad_core.api:app --reload
 ## Next build steps / שלבי בנייה הבאים
 
 1. ~~**Persistence** — versions, statuses, event log~~
-2. ~~**Agent API** — tool contract facade + optional HTTP~~
+2. ~~**Agent API** — tool contract facade~~
 3. ~~**Thin UI** — learner path + feedback / gated publish~~
 4. ~~**Golden loop** — topic → draft → learn → feedback → revise → human publish~~ (demo script + UI one-click revise + version diff)
 5. **Author/editor polish** — richer diff UX, source approval flows, multi-path catalog
