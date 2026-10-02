@@ -25,7 +25,8 @@ Python + Pydantic + SQLite store, **AgentTools** facade (callable without HTTP),
 | `PathStore` | create/save/get/revise/requestPublish/publish + events |
 | `AgentTools` | Contract ops: createDraft, getPath/getVersion, addBlock, editBlock, addEdge, reviseDraft, validatePath, recordFeedback, requestPublish, publish |
 | `publish` | Human-only; **refuses when `agentId` is set** unless `human_publisher=True` |
-| Learner UI | Seeds golden quadratic path; one block at a time; practice/assessment forms; feedback → `record_feedback` (+ optional `reviseDraft`); publish button **disabled until human checkbox** |
+| Learner UI | Seeds golden quadratic path; one block at a time; practice/assessment forms; **one-click** feedback→`reviseDraft` + brief version diff; publish button **disabled until human checkbox** |
+| Golden loop | `scripts/golden_loop.py` — seed/createDraft → learn → feedback → revise → requestPublish → human publish only |
 | Audit | Every tool call emits an event via PathStore |
 | FastAPI tools API (optional) | `uvicorn myroad_core.api:app` |
 
@@ -86,7 +87,27 @@ uvicorn myroad_core.api:app --reload
 1. ~~**Persistence** — versions, statuses, event log~~
 2. ~~**Agent API** — tool contract facade + optional HTTP~~
 3. ~~**Thin UI** — learner path + feedback / gated publish~~
-4. **Golden loop** — topic → draft → learn → feedback → revise → human publish (end-to-end demo script + author/editor polish)
+4. ~~**Golden loop** — topic → draft → learn → feedback → revise → human publish~~ (demo script + UI one-click revise + version diff)
+5. **Author/editor polish** — richer diff UX, source approval flows, multi-path catalog
+
+### Golden loop (end-to-end demo)
+
+```bash
+cd packages/core
+pip install -e ".[dev,api]"
+python scripts/golden_loop.py
+# or: python scripts/golden_loop.py --create-draft
+# or: python scripts/golden_loop.py --json
+```
+
+Flow: seed quadratic path (or `createDraft`) → simulate learn/attempts →
+`recordFeedback` → `reviseDraft` → `requestPublish` → **publish only with
+`human_publisher=True`** (asserts `agentId` alone is `RBAC_DENY`).
+
+**Never auto-publish.**
+
+Thin UI polish: primary feedback button is one-click feedback→revise; a brief
+version-diff banner shows `from → to` after revise.
 
 ## CI
 
@@ -97,4 +118,4 @@ On push/PR to `main`:
 
 ## License / note
 
-Freeze artifacts + persistence + agent-tool facade + thin learner UI. No auto-publish; golden freeze paths remain `draft` until a human publishes.
+Freeze artifacts + persistence + agent-tool facade + thin learner UI + golden loop demo. No auto-publish; golden freeze paths remain `draft` until a human publishes.

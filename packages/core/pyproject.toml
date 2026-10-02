@@ -1,7 +1,7 @@
 [project]
 name = "myroad-core"
-version = "0.3.0"
-description = "MyRoad POC: path/version store + agent-tool facade + thin learner UI"
+version = "0.4.0"
+description = "MyRoad POC: path/version store + agent-tool facade + thin learner UI + golden loop"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

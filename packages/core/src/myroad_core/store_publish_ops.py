@@ -22,7 +22,12 @@ class PublishOpsMixin:
         base = self.get_version(path_id, base_version_id)
         now = _iso_now()
         new_vid = new_version_id or new_id("ver")
-        next_num = base.version + 1
+        # Allocate next version_num from the path max (seed may already hold v2+).
+        row = self._conn.execute(
+            "SELECT MAX(version_num) AS m FROM versions WHERE path_id = ?",
+            (path_id,),
+        ).fetchone()
+        next_num = int(row["m"] or 0) + 1
 
         if document_override is not None:
             new_doc = (
