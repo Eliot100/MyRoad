@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — {{ doc.name }}</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+<body class="platform play {% if meta.kidsDemo %}tone-demo{% endif %}" data-path="{{ doc.pathId }}">
+  <header class="top">
+    <div class="brand">
+      <a href="/" class="back">→ קטלוג</a>
+      <strong>{{ product }}</strong>
+    </div>
+    <div class="meta">
+      <span class="subject-pill" style="--subject: {{ meta.subjectColor }}">{{ meta.emoji }} {{ meta.subjectLabel }}</span>
+      {% if meta.estimatedMinutes %}<span>{{ meta.estimatedMinutes }} דק׳</span>{% endif %}
+    </div>
+  </header>
+
+  <section class="card path-head">
+    <h1>{{ meta.emoji }} {{ doc.name }}</h1>
+    <p class="lede">{{ doc.description }}</p>
+    <div class="progress-wrap" aria-label="התקדמות">
+      <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
+      <span class="progress-label">שלב {{ index + 1 }} מתוך {{ total }} · הושלמו {{ mastered|length }}</span>
+    </div>
+  </section>
+
+  {% if flash %}
+  <div class="flash {{ flash.level }}" role="status">{{ flash.text }}</div>
+  {% endif %}
+
+  {% if block %}
+  {% set ntype = kids.type or (block.content.nodeType if block.content else 'learn') %}
+  <section class="card step-card" data-node-type="{{ ntype }}">
+    <div class="step-head">
+      <span class="type-pill">{{ ntype }}</span>
+      <h2>{{ block.title }}</h2>
+      <button type="button" class="icon-btn" id="btn-speak" title="הקראה" aria-label="הקראה">🔊 הקראה</button>
+    </div>
+    <p class="body-text" id="speak-source" data-speak="{{ kids.speak_text or kids.body_he or block.title }}">{{ kids.body_he or block.learningObjective }}</p>
+
+    {% if ntype in ['practice', 'check'] and kids.choices %}
+    <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices">
+      {% for ch in kids.choices %}
+      <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile">
+        {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
+        <span>{{ ch.label }}</span>
+      </button>
+      {% endfor %}
+    </form>
+    {% elif ntype == 'piano_keys' %}
+    <div class="piano" id="piano" data-keys="{{ kids.keys|join(',') }}" data-target="{{ (kids.target_sequence or [])|join(',') }}">
+      {% for k in kids.keys %}
+      <button type="button" class="piano-key" data-key="{{ k }}">{{ k }}</button>
+      {% endfor %}
+    </div>
+    <p class="muted tiny" id="piano-seq"></p>
+    <form method="post" action="/play/{{ doc.pathId }}/answer" id="piano-form">
+      <input type="hidden" name="sequence" id="piano-sequence" value="" />
+      <button type="submit" class="primary big">
+        {% if kids.target_sequence %}בדקו את הרצף{% else %}סיימתי להתנסות{% endif %}
+      </button>
+    </form>
+    {% elif ntype == 'rhythm' %}
+    <div class="rhythm" id="rhythm" data-pattern="{{ kids.pattern|join(',') }}">
+      <div class="pattern-view" aria-hidden="true">
+        {% for beat in kids.pattern %}
+        <span class="beat-dot {% if beat %}on{% else %}off{% endif %}">{% if beat %}●{% else %}○{% endif %}</span>
+        {% endfor %}
+      </div>
+      <div class="beat-row">
+        {% for beat in kids.pattern %}
+        <button type="button" class="beat-btn" data-idx="{{ loop.index0 }}" data-expect="{{ beat }}">פעימה {{ loop.index }}</button>
+        {% endfor %}
+      </div>
+      <button type="button" class="secondary" id="rhythm-reset">איפוס</button>
+    </div>
+    <form method="post" action="/play/{{ doc.pathId }}/answer" id="rhythm-form">
+      <input type="hidden" name="sequence" id="rhythm-sequence" value="" />
+      <button type="submit" class="primary big">בדקו קצב</button>
+    </form>
+    {% elif ntype == 'speak' %}
+    <div class="speak-tools">
+      <button type="button" class="icon-btn" id="btn-record" {% if not kids.record %}hidden{% endif %}>🎤 הקלטה</button>
+      <p class="muted tiny" id="record-status">הקלטה אופציונלית — אם הדפדפן תומך.</p>
+    </div>
+    <form method="post" action="/play/{{ doc.pathId }}/ack">
+      <button type="submit" class="primary big">המשכתי / סיימתי</button>
+    </form>
+    {% else %}
+    <form method="post" action="/play/{{ doc.pathId }}/ack">
+      <button type="submit" class="primary big">{% if ntype == 'celebrate' %}סיום 🎉{% else %}הבנתי — המשך{% endif %}</button>
+    </form>
+    {% endif %}
+
+    <div class="nav row">
+      <form method="post" action="/play/{{ doc.pathId }}/nav">
+        <input type="hidden" name="direction" value="prev" />
+        <button type="submit" {% if not can_prev %}disabled{% endif %}>הקודם</button>
+      </form>
+      <form method="post" action="/play/{{ doc.pathId }}/nav">
+        <input type="hidden" name="direction" value="next" />
+        <button type="submit" {% if not can_next %}disabled{% endif %}>הבא</button>
+      </form>
+    </div>
+  </section>
+  {% endif %}
+
+  <footer>
+    <small><a href="/">חזרה לקטלוג</a> · {{ product }}</small>
+  </footer>
+  <script src="/static/platform.js"></script>
+</body>
+</html>
