@@ -1,4 +1,4 @@
-"""MyRoad core — phase-1 persistence (path/version/status + event log)."""
+"""MyRoad core — phase-1 persistence + agent-tool facade."""
 
 from myroad_core.models import (
     BlockType,
@@ -9,8 +9,10 @@ from myroad_core.models import (
     RbacDecision,
 )
 from myroad_core.store import PathStore, StoreError
+from myroad_core.tools import AgentTools
 
 __all__ = [
+    "AgentTools",
     "BlockType",
     "EdgeRelationship",
     "Event",
@@ -21,4 +23,4 @@ __all__ = [
     "StoreError",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
