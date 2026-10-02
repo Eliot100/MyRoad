@@ -111,6 +111,13 @@ See `content/grade3/` and `docs/kids-platform.md`.
 **v0.7:** learner identity POC, per-user progress/attempts, he/en/ar shell i18n,
 topic map before play, completion stats, expanded English demo paths.
 
+**Internationalization (i18n) is part of the platform implementation:** shell strings
+and path titles/blurbs are data-driven locale content (`he`, `en`, and `ar` today),
+with RTL for Hebrew and Arabic, fallback locales for missing translations, and a
+split between the language used to explain a path and the language of its learning
+content (`explain_locale` vs `content_locale`). See
+[`docs/how-to-add-locale.md`](docs/how-to-add-locale.md) for how to add another
+locale.
 
 ## Locale split (v0.7)
 
