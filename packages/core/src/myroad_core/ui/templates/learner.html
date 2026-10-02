@@ -22,6 +22,27 @@
   <div class="flash {{ flash.level }}">{{ flash.text }}</div>
   {% endif %}
 
+  {% if version_diff %}
+  <aside class="version-diff" id="version-diff" role="status">
+    <div class="version-diff-head">
+      <strong>הפרש גרסאות (זמני)</strong>
+      <span class="badge">draft only · לא פורסם</span>
+    </div>
+    <p class="diff-line">
+      <code>{{ version_diff.fromVersionId }}</code>
+      →
+      <code>{{ version_diff.toVersionId }}</code>
+      {% if version_diff.diffRef %}
+      · <code>{{ version_diff.diffRef }}</code>
+      {% endif %}
+    </p>
+    {% if version_diff.summary %}
+    <p class="diff-summary">{{ version_diff.summary }}</p>
+    {% endif %}
+    <p class="muted">{{ version_diff.note }}</p>
+  </aside>
+  {% endif %}
+
   <section class="path-card">
     <h1>{{ path_name }}</h1>
     <p class="goal"><strong>מטרה:</strong> {{ path_goal }}</p>
@@ -145,7 +166,7 @@
   <section class="side-card">
     <h3>משוב ללומד / לפידבק לסוכן</h3>
     <p class="muted">שומר דרך <code>AgentTools.record_feedback</code>. אפשר גם לקרוא ל-<code>reviseDraft</code> (יוצר טיוטה חדשה — <strong>לא</strong> מפרסם).</p>
-    <form method="post" action="/feedback" class="feedback">
+    <form method="post" action="/feedback" class="feedback" id="feedback-form">
       <label>דירוג (1–5)
         <input type="number" name="rating" min="1" max="5" value="3" />
       </label>
@@ -155,11 +176,15 @@
       <label>שינוי מוצע
         <input name="proposed_change" placeholder="למשל: עוד דוגמה מספרית" />
       </label>
-      <label class="check">
-        <input type="checkbox" name="also_revise" value="true" />
-        גם קרוא ל-reviseDraft (טיוטה חדשה בלבד)
-      </label>
-      <button type="submit">שמור משוב</button>
+      <div class="row feedback-actions">
+        <button type="submit" name="also_revise" value="true" class="primary">
+          שמור משוב ועדכן טיוטה
+        </button>
+        <button type="submit" class="secondary" formnovalidate>
+          שמור משוב בלבד
+        </button>
+      </div>
+      <p class="muted tiny">לחיצה אחת: משוב → reviseDraft (טיוטה חדשה בלבד — <strong>לא</strong> מפרסם).</p>
     </form>
   </section>
 
@@ -186,10 +211,16 @@
     (function () {
       var box = document.getElementById("human_confirm");
       var btn = document.getElementById("publish-btn");
-      if (!box || !btn) return;
-      function sync() { btn.disabled = !box.checked; }
-      box.addEventListener("change", sync);
-      sync();
+      if (box && btn) {
+        function sync() { btn.disabled = !box.checked; }
+        box.addEventListener("change", sync);
+        sync();
+      }
+      // Version diff is visible briefly, then fades (still in DOM until next nav).
+      var diff = document.getElementById("version-diff");
+      if (diff) {
+        setTimeout(function () { diff.classList.add("fade"); }, 6000);
+      }
     })();
   </script>
 </body>

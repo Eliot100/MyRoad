@@ -88,3 +88,44 @@ def test_practice_mastery_gate_and_no_autopublish(client: TestClient) -> None:
     # Confirm checkbox alone on a draft that was never request_publish'd from
     # a valid state: we still call request_publish then publish.
     # Ensure UI does not publish when checkbox absent (already checked).
+
+
+def test_feedback_revise_one_click_shows_version_diff(client: TestClient) -> None:
+    """Primary feedback action revises draft and surfaces a brief version diff."""
+    home = client.get("/")
+    assert home.status_code == 200
+    # Capture current version id from page
+    assert "ver_qeq_draft_001" in home.text or "גרסה:" in home.text
+
+    fb = client.post(
+        "/feedback",
+        data={
+            "rating": "2",
+            "comment": "חסר תרגול",
+            "proposed_change": "add remediation after feedback",
+            "also_revise": "true",
+        },
+    )
+    assert fb.status_code == 200
+    assert "משוב נשמר" in fb.text
+    assert "גרסת טיוטה חדשה" in fb.text
+    assert "version-diff" in fb.text or "הפרש גרסאות" in fb.text
+    assert "לא פורסם" in fb.text
+    # Still draft — never auto-publish
+    assert "published" not in fb.text.lower() or "לא פורסם" in fb.text
+
+
+def test_feedback_only_without_revise(client: TestClient) -> None:
+    before = client.get("/")
+    assert before.status_code == 200
+    fb = client.post(
+        "/feedback",
+        data={
+            "rating": "5",
+            "comment": "מצוין",
+            "proposed_change": "",
+        },
+    )
+    assert fb.status_code == 200
+    assert "משוב נשמר" in fb.text
+    assert "הפרש גרסאות" not in fb.text

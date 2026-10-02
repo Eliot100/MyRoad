@@ -114,3 +114,38 @@ button:disabled {
 .publish { border-color: #e0c4a4; }
 footer { color: var(--muted); margin-top: 1.5rem; text-align: center; }
 code { font-size: .9em; }
+
+/* Golden-loop polish: version diff banner (brief) + dual feedback actions */
+.version-diff {
+  background: #eef6f1;
+  border: 1px solid #b9dcc5;
+  border-radius: 10px;
+  padding: .85rem 1rem;
+  margin-bottom: 1rem;
+  transition: opacity .8s ease, max-height .8s ease, margin .8s ease, padding .8s ease;
+  max-height: 240px;
+  overflow: hidden;
+}
+.version-diff.fade {
+  opacity: 0;
+  max-height: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+}
+.version-diff-head {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: .35rem;
+}
+.diff-line { margin: .25rem 0; font-size: .95rem; }
+.diff-summary { margin: .35rem 0; }
+.tiny { font-size: .8rem; margin-top: .45rem; }
+.feedback-actions { margin-top: .65rem; }
+button.secondary {
+  background: #6b736c;
+}
+button.primary { background: var(--accent); }
