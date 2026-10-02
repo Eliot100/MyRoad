@@ -120,7 +120,8 @@ class ContentPath(BaseModel):
     """Sample path document stored as JSON under content/.
 
     Locale fields:
-      explain_locale — language of authored explanations / chrome (matches UI when possible)
+      title_he / title_en / title_ar + blurb_* — catalog/card chrome (follow platform UI locale)
+      explain_locale — language of authored explanations (matches UI when possible)
       content_locale — language of tokens being taught (e.g. en for English paths)
     """
 
@@ -129,12 +130,14 @@ class ContentPath(BaseModel):
     id: str
     title_he: str
     title_en: str | None = None
+    title_ar: str | None = None
     subject: SubjectId
     grade: int | None = None
     group_ids: list[str] = Field(default_factory=lambda: ["grade3"])
     emoji: str
     blurb_he: str
     blurb_en: str | None = None
+    blurb_ar: str | None = None
     explain_locale: str = "he"
     content_locale: str = "he"
     estimated_minutes: int = Field(ge=1, le=60)
