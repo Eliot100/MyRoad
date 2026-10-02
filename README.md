@@ -49,9 +49,11 @@ uv pip install -e ".[dev,api]"
 pytest -q
 ```
 
-### Platform catalog + path player
+### Platform catalog + path player (v0.6)
 
-Age-agnostic home (groups + subject chips + path cards). Demo Grade-3 paths load from
+Age-agnostic home (groups + subject chips + path cards), lightweight learner identity,
+he/en/ar UI locale (RTL for he/ar), topic map before play, completion stats, and
+per-user progress in SQLite. Demo Grade-3 paths load from
 `packages/core/content/grade3/*.json` into PathStore as published samples.
 
 ```bash
@@ -59,7 +61,18 @@ cd packages/core
 pip install -e ".[api]"
 uvicorn myroad_core.ui.app:app --reload --port 8765
 # http://127.0.0.1:8765/          catalog
+# http://127.0.0.1:8765/login     identity POC
 # http://127.0.0.1:8765/author   golden-loop author POC
+```
+
+Windows PowerShell:
+
+```powershell
+cd path\to\MyRoad\packages\core
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[api,dev]"
+uvicorn myroad_core.ui.app:app --reload --port 8765
 ```
 
 See `packages/core/docs/kids-platform.md`.

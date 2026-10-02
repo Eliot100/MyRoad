@@ -107,3 +107,6 @@ version diff banner appears briefly after revise.
 ## Content samples
 
 See `content/grade3/` and `docs/kids-platform.md`.
+
+**v0.6:** learner identity POC, per-user progress/attempts, he/en/ar shell i18n,
+topic map before play, completion stats, expanded English demo paths.

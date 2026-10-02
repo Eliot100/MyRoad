@@ -5,6 +5,8 @@ from myroad_core.content.schema import (
     GROUPS,
     ContentNode,
     ContentPath,
+    ContentTopic,
+    infer_topics,
     validate_content_path,
 )
 from myroad_core.content.loader import (
@@ -20,6 +22,8 @@ __all__ = [
     "GROUPS",
     "ContentNode",
     "ContentPath",
+    "ContentTopic",
+    "infer_topics",
     "validate_content_path",
     "default_content_dir",
     "load_content_paths",

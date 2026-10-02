@@ -11,6 +11,7 @@ from myroad_core.content.schema import (
     SUBJECTS,
     ContentNode,
     ContentPath,
+    infer_topics,
     validate_content_path,
 )
 from myroad_core.models import (
@@ -20,7 +21,6 @@ from myroad_core.models import (
     EdgeRelationship,
     PathStatus,
     PathVersion,
-    new_id,
 )
 from myroad_core.store import PathStore
 from myroad_core.store_schema import _iso_now
@@ -62,9 +62,11 @@ _NODE_TO_BLOCK: dict[str, BlockType] = {
 
 
 def _node_to_block(node: ContentNode, index: int) -> Block:
+    nid = node.id or f"n{index:03d}_{node.type}"
     block_id = f"blk_{index:03d}_{node.type}"
     kids = node.model_dump(mode="json", exclude_none=True)
-    content: dict[str, Any] = {"kids": kids, "nodeType": node.type}
+    kids["id"] = nid
+    content: dict[str, Any] = {"kids": kids, "nodeType": node.type, "nodeId": nid}
     if node.choices:
         content["verifiedCore"] = {
             "items": [
@@ -112,6 +114,12 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
         )
     subject_meta = SUBJECTS.get(path.subject, SUBJECTS["general"])
     vid = version_id or f"ver_{path.id}_demo_001"
+    topics = [t.model_dump(mode="json") for t in infer_topics(path)]
+    # Map node_id -> blockId for UI
+    node_to_block: dict[str, str] = {}
+    for i, n in enumerate(path.nodes):
+        nid = n.id or f"n{i:03d}_{n.type}"
+        node_to_block[nid] = blocks[i].blockId
     return PathVersion(
         schemaVersion="0.1.0",
         pathId=path.id,
@@ -148,15 +156,19 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
             "Demo sample path seeded as published for platform demo. "
             "Future paths still require human publish gate."
         ),
-        # Age-agnostic catalog metadata (extra fields allowed on PathVersion)
         subject=path.subject,
         subjectLabelHe=subject_meta["he"],
+        subjectLabelEn=subject_meta.get("en"),
         subjectColor=subject_meta["color"],
         emoji=path.emoji,
         groupIds=path.group_ids,
         grade=path.grade,
         estimatedMinutes=path.estimated_minutes,
         blurbHe=path.blurb_he,
+        blurbEn=path.blurb_en,
+        titleEn=path.title_en,
+        topics=topics,
+        nodeToBlock=node_to_block,
         contentSource="packages/core/content",
         kidsDemo=path.grade == 3,
     )
@@ -173,7 +185,7 @@ def seed_content_paths(
     """
     Load all content JSON files into the store.
 
-    When publish=True (default for the 10 demo samples only), each path is
+    When publish=True (default for the demo samples only), each path is
     saved as draft then published via the human publish gate (no agentId).
     Does not auto-publish arbitrary future drafts created through AgentTools.
     """
@@ -212,6 +224,8 @@ def seed_content_paths(
                 "subject": path.subject,
                 "groupIds": path.group_ids,
                 "published": publish,
+                "nodeCount": len(path.nodes),
+                "topicCount": len(infer_topics(path)),
             }
         )
     return {
@@ -238,22 +252,27 @@ def list_catalog_cards(store: PathStore) -> list[dict[str, Any]]:
         if not subject:
             continue  # skip non-catalog paths (e.g. golden quadratic)
         subject_meta = SUBJECTS.get(subject, SUBJECTS["general"])
+        topics = raw.get("topics") or []
         cards.append(
             {
                 "pathId": doc.pathId,
                 "versionId": doc.versionId,
                 "status": doc.status.value if hasattr(doc.status, "value") else doc.status,
                 "title": doc.name,
+                "titleEn": raw.get("titleEn"),
                 "blurb": raw.get("blurbHe") or doc.description or "",
+                "blurbEn": raw.get("blurbEn") or "",
                 "emoji": raw.get("emoji") or subject_meta["emoji"],
                 "subject": subject,
                 "subjectLabel": raw.get("subjectLabelHe") or subject_meta["he"],
+                "subjectLabelEn": raw.get("subjectLabelEn") or subject_meta.get("en"),
                 "subjectColor": raw.get("subjectColor") or subject_meta["color"],
                 "groupIds": raw.get("groupIds") or [],
                 "grade": raw.get("grade"),
                 "estimatedMinutes": raw.get("estimatedMinutes"),
                 "kidsDemo": bool(raw.get("kidsDemo")),
                 "nodeCount": len(doc.blocks or []),
+                "topicCount": len(topics),
             }
         )
     return cards
