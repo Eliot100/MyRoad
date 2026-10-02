@@ -1,4 +1,4 @@
-# MyRoad platform catalog + Grade-3 sample paths (v0.6)
+# MyRoad platform catalog + Grade-3 sample paths (v0.7)
 
 The **platform shell** is age-agnostic: groups, subject categories, content-as-data,
 identity POC, locales, topic maps, and a path player with optional speech / piano / rhythm.
@@ -22,6 +22,41 @@ Loader: `seed_content_paths()` → PathStore (human publish gate for these demos
 
 Future paths use the same JSON format. Do **not** auto-publish arbitrary drafts;
 only these demo seeds are pre-published by design.
+
+## Locale consistency (explanations vs content tokens)
+
+**Rule:** Platform UI language and path *explanations* must match. Learning *content
+tokens* (vocabulary/phrases being taught) stay in the path's `content_locale`.
+
+Example: learning English with UI in Hebrew → all chrome + explanations in Hebrew;
+only target vocabulary/phrases in English. When the learner switches UI language,
+shell + explanation strings switch; content tokens do not.
+
+Content JSON fields:
+
+| Field | Role |
+|-------|------|
+| `explain_locale` | Language of authored explanations / feedback chrome |
+| `content_locale` | Language of tokens being taught (e.g. `en` for English paths) |
+| `body_he` / `body_en` / `body_ui` | Explanations (follow UI locale) |
+| `body_content` | Target vocab/phrases (stay in content_locale) |
+| `speak_text` | TTS for content tokens |
+| `speak_ui` | Optional TTS for the explanation |
+
+Validation: `myroad_core.content.locale_rules` + pytest (`tests/test_locale_rules.py`)
+fail English-learning paths that mix unexplained English chrome into HE explanations
+without `body_content` / `speak_text`.
+
+## Home bookmarks / tabs (v0.7)
+
+Primary home navigation (RTL: Hebrew emphasis starts on the right; LTR English on the left):
+
+- **דרכים שעשינו** — started / in progress (persisted in `learner_progress`)
+- **דרכים שסיימנו** — completed
+- **דרכים לתרגול** — needs practice (weak mastery / marked for review)
+- **כל הדרכים** — full catalog (filters still apply)
+
+Toggle **לפי זמן**: group paths by recently touched vs older vs never, within subject categories.
 
 ## v0.6 platform polish
 

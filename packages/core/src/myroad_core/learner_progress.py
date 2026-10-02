@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS learner_progress (
   started_at TEXT,
   updated_at TEXT NOT NULL,
   completed_at TEXT,
+  needs_practice INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (user_id, path_id)
 );
 CREATE TABLE IF NOT EXISTS learner_attempts (
@@ -49,12 +50,24 @@ CREATE INDEX IF NOT EXISTS idx_attempts_user ON learner_attempts(user_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_path ON learner_attempts(path_id);
 """
 
+_PROGRESS_EXTRA_COLUMNS = (
+    ("needs_practice", "INTEGER NOT NULL DEFAULT 0"),
+)
+
 
 class LearnerProgressMixin:
     """Mixin expecting self._conn (sqlite3 connection)."""
 
     def ensure_learner_schema(self) -> None:
         self._conn.executescript(_LEARNER_SCHEMA)
+        # Lightweight migrations for columns added after first deploy
+        existing = {
+            row[1]
+            for row in self._conn.execute("PRAGMA table_info(learner_progress)").fetchall()
+        }
+        for col, decl in _PROGRESS_EXTRA_COLUMNS:
+            if col not in existing:
+                self._conn.execute(f"ALTER TABLE learner_progress ADD COLUMN {col} {decl}")
         self._conn.commit()
 
     def upsert_learner(
@@ -115,6 +128,11 @@ class LearnerProgressMixin:
         if not row:
             return None
         mastered = json.loads(row["mastered_json"] or "[]")
+        needs = 0
+        try:
+            needs = int(row["needs_practice"] or 0)
+        except (KeyError, IndexError, TypeError):
+            needs = 0
         return {
             "userId": row["user_id"],
             "pathId": row["path_id"],
@@ -126,6 +144,7 @@ class LearnerProgressMixin:
             "startedAt": row["started_at"],
             "updatedAt": row["updated_at"],
             "completedAt": row["completed_at"],
+            "needsPractice": bool(needs),
         }
 
     def save_progress(
@@ -140,17 +159,31 @@ class LearnerProgressMixin:
         incorrect_taps: int,
         started_at: str | None = None,
         completed_at: str | None = None,
+        needs_practice: bool | None = None,
     ) -> dict[str, Any]:
         now = _iso_now()
         existing = self.get_progress(user_id, path_id)
         started = started_at or (existing or {}).get("startedAt") or now
         mastered_list = sorted(mastered) if isinstance(mastered, set) else list(mastered)
+        if needs_practice is None:
+            # Auto: incomplete mastery after start, or more wrong than right taps
+            if completed_at:
+                needs = incorrect_taps > max(0, correct_taps) or (
+                    len(mastered_list) > 0 and incorrect_taps >= 2 and incorrect_taps >= correct_taps
+                )
+            else:
+                needs = incorrect_taps >= 2 and incorrect_taps > correct_taps
+            # preserve explicit prior flag if still in progress without new signal
+            if existing and existing.get("needsPractice") and not completed_at:
+                needs = True
+        else:
+            needs = bool(needs_practice)
         self._conn.execute(
             """
             INSERT INTO learner_progress (
               user_id, path_id, version_id, node_index, mastered_json,
-              correct_taps, incorrect_taps, started_at, updated_at, completed_at
-            ) VALUES (?,?,?,?,?,?,?,?,?,?)
+              correct_taps, incorrect_taps, started_at, updated_at, completed_at, needs_practice
+            ) VALUES (?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(user_id, path_id) DO UPDATE SET
               version_id = excluded.version_id,
               node_index = excluded.node_index,
@@ -159,7 +192,8 @@ class LearnerProgressMixin:
               incorrect_taps = excluded.incorrect_taps,
               started_at = COALESCE(learner_progress.started_at, excluded.started_at),
               updated_at = excluded.updated_at,
-              completed_at = excluded.completed_at
+              completed_at = excluded.completed_at,
+              needs_practice = excluded.needs_practice
             """,
             (
                 user_id,
@@ -172,6 +206,7 @@ class LearnerProgressMixin:
                 started,
                 now,
                 completed_at,
+                1 if needs else 0,
             ),
         )
         self._conn.commit()
@@ -179,25 +214,66 @@ class LearnerProgressMixin:
 
     def list_user_progress(self, user_id: str) -> list[dict[str, Any]]:
         rows = self._conn.execute(
-            "SELECT path_id, node_index, mastered_json, completed_at, updated_at, correct_taps, incorrect_taps "
+            "SELECT path_id, node_index, mastered_json, started_at, completed_at, updated_at, "
+            "correct_taps, incorrect_taps, needs_practice "
             "FROM learner_progress WHERE user_id = ? ORDER BY updated_at DESC",
             (user_id,),
         ).fetchall()
         out: list[dict[str, Any]] = []
         for row in rows:
             mastered = json.loads(row["mastered_json"] or "[]")
+            try:
+                needs = bool(row["needs_practice"])
+            except (KeyError, IndexError):
+                needs = False
+            completed = bool(row["completed_at"])
+            started = bool(row["started_at"])
+            if completed:
+                status = "completed"
+            elif started or len(mastered) > 0 or int(row["node_index"] or 0) > 0:
+                status = "in_progress"
+            else:
+                status = "started"
+            # Needs practice: explicit flag, or completed with weak accuracy, or in-progress with mistakes
+            if not needs:
+                c = int(row["correct_taps"] or 0)
+                w = int(row["incorrect_taps"] or 0)
+                if completed and w >= 2 and w >= c:
+                    needs = True
+                elif status == "in_progress" and w >= 2 and w > c:
+                    needs = True
             out.append(
                 {
                     "pathId": row["path_id"],
                     "nodeIndex": row["node_index"],
                     "masteredCount": len(mastered),
+                    "startedAt": row["started_at"],
                     "completedAt": row["completed_at"],
                     "updatedAt": row["updated_at"],
                     "correctTaps": row["correct_taps"],
                     "incorrectTaps": row["incorrect_taps"],
+                    "needsPractice": needs,
+                    "progressStatus": status,
                 }
             )
         return out
+
+    def mark_needs_practice(self, user_id: str, path_id: str, flag: bool = True) -> dict[str, Any] | None:
+        prog = self.get_progress(user_id, path_id)
+        if not prog:
+            return None
+        return self.save_progress(
+            user_id,
+            path_id,
+            version_id=prog.get("versionId"),
+            node_index=int(prog.get("nodeIndex") or 0),
+            mastered=prog.get("mastered") or set(),
+            correct_taps=int(prog.get("correctTaps") or 0),
+            incorrect_taps=int(prog.get("incorrectTaps") or 0),
+            started_at=prog.get("startedAt"),
+            completed_at=prog.get("completedAt"),
+            needs_practice=flag,
+        )
 
     def record_attempt(
         self,

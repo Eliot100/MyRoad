@@ -1,13 +1,17 @@
 {
   "id": "path_grade3_english_colors",
-  "title_he": "Colors — צבעים באנגלית",
+  "title_he": "צבעים באנגלית",
   "title_en": "Colors in English",
   "subject": "english",
   "grade": 3,
-  "group_ids": ["grade3"],
+  "group_ids": [
+    "grade3"
+  ],
   "emoji": "🌈",
   "blurb_he": "מקשיבים, לוחצים ואומרים: red, blue, green, yellow, orange, purple.",
   "blurb_en": "Listen, tap, and say: red, blue, green, yellow, orange, purple.",
+  "explain_locale": "he",
+  "content_locale": "en",
   "estimated_minutes": 12,
   "topics": [
     {
@@ -16,7 +20,11 @@
       "title_en": "Meet the colors",
       "title_ar": "تعرّف على الألوان",
       "emoji": "👋",
-      "node_ids": ["learn_intro", "practice_red", "practice_blue"]
+      "node_ids": [
+        "learn_intro",
+        "practice_red",
+        "practice_blue"
+      ]
     },
     {
       "id": "topic_speak",
@@ -24,7 +32,10 @@
       "title_en": "Say it out loud",
       "title_ar": "قلها بصوت عالٍ",
       "emoji": "🗣️",
-      "node_ids": ["speak_green", "practice_yellow"]
+      "node_ids": [
+        "speak_green",
+        "practice_yellow"
+      ]
     },
     {
       "id": "topic_more",
@@ -32,7 +43,11 @@
       "title_en": "More colors",
       "title_ar": "ألوان إضافية",
       "emoji": "🎨",
-      "node_ids": ["learn_more", "practice_orange", "check_purple"]
+      "node_ids": [
+        "learn_more",
+        "practice_orange",
+        "check_purple"
+      ]
     },
     {
       "id": "topic_finish",
@@ -40,7 +55,10 @@
       "title_en": "Celebrate",
       "title_ar": "احتفال",
       "emoji": "🎉",
-      "node_ids": ["check_mix", "celebrate"]
+      "node_ids": [
+        "check_mix",
+        "celebrate"
+      ]
     }
   ],
   "nodes": [
@@ -51,49 +69,83 @@
       "title_en": "Colors in English",
       "body_he": "היום נלמד שמות של צבעים באנגלית. לחצו על 🔊 כדי לשמוע, ואחר כך בחרו.",
       "body_en": "Today we learn color words in English. Tap 🔊 to listen, then choose.",
+      "body_content": "red · blue · green · yellow",
       "speak_text": "Hello! Today we learn colors. Red, blue, green, yellow."
     },
     {
       "id": "practice_red",
       "type": "practice",
-      "title": "מה הצבע? Red",
-      "title_en": "Which color? Red",
-      "body_he": "איזו מילה אומרת אדום באנגלית?",
-      "body_en": "Which word means red?",
-      "speak_text": "Which word means red? Listen: red.",
+      "title": "בחרו את הצבע",
+      "title_en": "Pick the color",
+      "body_he": "איזו מילה באנגלית אומרת אדום?",
+      "body_en": "Which English word means red?",
+      "body_content": "red",
+      "speak_text": "Red",
       "choices": [
-        {"id": "a", "label": "blue", "label_en": "blue", "emoji": "🔵"},
-        {"id": "b", "label": "red", "label_en": "red", "emoji": "🔴"},
-        {"id": "c", "label": "green", "label_en": "green", "emoji": "🟢"}
+        {
+          "id": "a",
+          "label": "blue",
+          "label_en": "blue",
+          "emoji": "🔵"
+        },
+        {
+          "id": "b",
+          "label": "red",
+          "label_en": "red",
+          "emoji": "🔴"
+        },
+        {
+          "id": "c",
+          "label": "green",
+          "label_en": "green",
+          "emoji": "🟢"
+        }
       ],
       "correct": "b",
-      "feedback_ok": "Yes! Red = אדום.",
+      "feedback_ok": "נכון! Red = אדום.",
       "feedback_try": "נסו שוב. אדום באנגלית: red."
     },
     {
       "id": "practice_blue",
       "type": "practice",
-      "title": "Blue — כחול",
-      "title_en": "Blue",
-      "body_he": "מה הצבע של השמים ביום בהיר?",
-      "body_en": "What color is a clear sky?",
+      "title": "צבע השמים",
+      "title_en": "Sky color",
+      "body_he": "מה הצבע של השמים ביום בהיר? בחרו את המילה באנגלית.",
+      "body_en": "What color is a clear sky? Pick the English word.",
+      "body_content": "blue",
       "speak_text": "The sky is blue. Blue!",
       "choices": [
-        {"id": "a", "label": "blue", "label_en": "blue", "emoji": "🔵"},
-        {"id": "b", "label": "yellow", "label_en": "yellow", "emoji": "🟡"},
-        {"id": "c", "label": "black", "label_en": "black", "emoji": "⚫"}
+        {
+          "id": "a",
+          "label": "blue",
+          "label_en": "blue",
+          "emoji": "🔵"
+        },
+        {
+          "id": "b",
+          "label": "yellow",
+          "label_en": "yellow",
+          "emoji": "🟡"
+        },
+        {
+          "id": "c",
+          "label": "black",
+          "label_en": "black",
+          "emoji": "⚫"
+        }
       ],
       "correct": "a",
-      "feedback_ok": "Great! Blue = כחול.",
+      "feedback_ok": "מעולה! Blue = כחול.",
       "feedback_try": "השמים כחולים — blue."
     },
     {
       "id": "speak_green",
       "type": "speak",
-      "title": "אמרו: Green",
-      "title_en": "Say: Green",
-      "body_he": "הקשיבו למילה Green (ירוק), ואז לחצו על 🎤 ונסו להגיד אותה. אין ציון — רק תרגול!",
-      "body_en": "Listen to Green, then tap 🎤 and try saying it. No score — just practice!",
+      "title": "אמרו את הצבע",
+      "title_en": "Say the color",
+      "body_he": "הקשיבו למילה באנגלית למטה, ואז לחצו על 🎤. אין ציון — רק תרגול!",
+      "body_en": "Listen to the English word below, then tap 🎤. No score — just practice!",
+      "body_content": "Green",
       "speak_text": "Green. Green. Your turn — say green!",
       "record": true,
       "media_hint": "green"
@@ -101,61 +153,107 @@
     {
       "id": "practice_yellow",
       "type": "practice",
-      "title": "Yellow או Green?",
-      "title_en": "Yellow or Green?",
+      "title": "צבע השמש",
+      "title_en": "Sun color",
       "body_he": "מה הצבע של השמש באנגלית?",
       "body_en": "What color is the sun in English?",
-      "speak_text": "The sun is… yellow!",
+      "body_content": "yellow",
+      "speak_text": "The sun is yellow!",
       "choices": [
-        {"id": "a", "label": "yellow", "label_en": "yellow", "emoji": "🟡"},
-        {"id": "b", "label": "green", "label_en": "green", "emoji": "🟢"},
-        {"id": "c", "label": "black", "label_en": "black", "emoji": "⚫"}
+        {
+          "id": "a",
+          "label": "yellow",
+          "label_en": "yellow",
+          "emoji": "🟡"
+        },
+        {
+          "id": "b",
+          "label": "green",
+          "label_en": "green",
+          "emoji": "🟢"
+        },
+        {
+          "id": "c",
+          "label": "black",
+          "label_en": "black",
+          "emoji": "⚫"
+        }
       ],
       "correct": "a",
-      "feedback_ok": "Great! Yellow = צהוב.",
+      "feedback_ok": "מעולה! Yellow = צהוב.",
       "feedback_try": "השמש צהובה — yellow."
     },
     {
       "id": "learn_more",
       "type": "learn",
-      "title": "Orange ו־Purple",
-      "title_en": "Orange and Purple",
-      "body_he": "עוד שני צבעים: orange (כתום) כמו תפוז, ו־purple (סגול) כמו ענבים.",
-      "body_en": "Two more colors: orange like an orange fruit, and purple like grapes.",
+      "title": "עוד שני צבעים",
+      "title_en": "Two more colors",
+      "body_he": "עוד שני צבעים באנגלית: כמו תפוז, וכמו ענבים.",
+      "body_en": "Two more English colors: like an orange fruit, and like grapes.",
+      "body_content": "orange · purple",
       "speak_text": "Orange. Purple. Orange is like a fruit. Purple is like grapes."
     },
     {
       "id": "practice_orange",
       "type": "practice",
-      "title": "Orange",
-      "title_en": "Find Orange",
-      "body_he": "איזו מילה אומרת כתום?",
-      "body_en": "Which word means orange?",
+      "title": "בחרו כתום",
+      "title_en": "Find orange",
+      "body_he": "איזו מילה באנגלית אומרת כתום?",
+      "body_en": "Which English word means orange?",
+      "body_content": "orange",
       "speak_text": "Orange. Which one is orange?",
       "choices": [
-        {"id": "a", "label": "purple", "label_en": "purple", "emoji": "🟣"},
-        {"id": "b", "label": "orange", "label_en": "orange", "emoji": "🟠"},
-        {"id": "c", "label": "white", "label_en": "white", "emoji": "⚪"}
+        {
+          "id": "a",
+          "label": "purple",
+          "label_en": "purple",
+          "emoji": "🟣"
+        },
+        {
+          "id": "b",
+          "label": "orange",
+          "label_en": "orange",
+          "emoji": "🟠"
+        },
+        {
+          "id": "c",
+          "label": "white",
+          "label_en": "white",
+          "emoji": "⚪"
+        }
       ],
       "correct": "b",
-      "feedback_ok": "Yes! Orange = כתום.",
+      "feedback_ok": "נכון! Orange = כתום.",
       "feedback_try": "תפוז באנגלית: orange."
     },
     {
       "id": "check_purple",
       "type": "check",
-      "title": "Purple",
-      "title_en": "Purple check",
-      "body_he": "Purple זה…",
-      "body_en": "Purple means…",
-      "speak_text": "Purple means…",
+      "title": "מה הצבע?",
+      "title_en": "Which color?",
+      "body_he": "מה המשמעות של המילה באנגלית למטה?",
+      "body_en": "What does the English word below mean?",
+      "body_content": "purple",
+      "speak_text": "Purple",
       "choices": [
-        {"id": "a", "label": "אדום", "label_en": "red"},
-        {"id": "b", "label": "סגול", "label_en": "purple"},
-        {"id": "c", "label": "ירוק", "label_en": "green"}
+        {
+          "id": "a",
+          "label": "אדום",
+          "label_en": "red"
+        },
+        {
+          "id": "b",
+          "label": "סגול",
+          "label_en": "purple"
+        },
+        {
+          "id": "c",
+          "label": "ירוק",
+          "label_en": "green"
+        }
       ],
       "correct": "b",
-      "feedback_ok": "Excellent! Purple = סגול.",
+      "feedback_ok": "מעולה! Purple = סגול.",
       "feedback_try": "Purple זה הצבע הסגול."
     },
     {
@@ -163,25 +261,39 @@
       "type": "check",
       "title": "בחרו נכון",
       "title_en": "Pick the right color",
-      "body_he": "Green זה…",
-      "body_en": "Green means…",
-      "speak_text": "Green means…",
+      "body_he": "מה המשמעות של המילה באנגלית למטה?",
+      "body_en": "What does the English word below mean?",
+      "body_content": "green",
+      "speak_text": "Green",
       "choices": [
-        {"id": "a", "label": "אדום", "label_en": "red"},
-        {"id": "b", "label": "כחול", "label_en": "blue"},
-        {"id": "c", "label": "ירוק", "label_en": "green"}
+        {
+          "id": "a",
+          "label": "אדום",
+          "label_en": "red"
+        },
+        {
+          "id": "b",
+          "label": "כחול",
+          "label_en": "blue"
+        },
+        {
+          "id": "c",
+          "label": "ירוק",
+          "label_en": "green"
+        }
       ],
       "correct": "c",
-      "feedback_ok": "Excellent! Green = ירוק.",
+      "feedback_ok": "מעולה! Green = ירוק.",
       "feedback_try": "Green זה הצבע של הדשא."
     },
     {
       "id": "celebrate",
       "type": "celebrate",
-      "title": "Color star!",
+      "title": "כוכב צבעים!",
       "title_en": "Color star!",
-      "body_he": "כל הכבוד! אתם יודעים: red, blue, green, yellow, orange, purple.",
-      "body_en": "Great job! You know: red, blue, green, yellow, orange, purple.",
+      "body_he": "כל הכבוד! אתם יודעים שמות של צבעים באנגלית.",
+      "body_en": "Great job! You know color words in English.",
+      "body_content": "red, blue, green, yellow, orange, purple",
       "speak_text": "Great job with colors! You are a color star!"
     }
   ]

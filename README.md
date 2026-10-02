@@ -49,7 +49,7 @@ uv pip install -e ".[dev,api]"
 pytest -q
 ```
 
-### Platform catalog + path player (v0.6)
+### Platform catalog + path player (v0.7)
 
 Age-agnostic home (groups + subject chips + path cards), lightweight learner identity,
 he/en/ar UI locale (RTL for he/ar), topic map before play, completion stats, and
@@ -74,6 +74,9 @@ python -m venv .venv
 pip install -e ".[api,dev]"
 uvicorn myroad_core.ui.app:app --reload --port 8765
 ```
+
+Home tabs (in progress / completed / needs practice) + time view by subject;
+locale split (`explain_locale` vs `content_locale`) for English paths.
 
 See `packages/core/docs/kids-platform.md`.
 

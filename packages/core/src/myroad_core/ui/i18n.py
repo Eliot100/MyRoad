@@ -1,4 +1,4 @@
-"""Shell chrome i18n (he / en / ar). Path content stays mostly Hebrew for demos."""
+"""Shell chrome i18n (he / en / ar). Path explanations follow UI locale; content tokens stay in content_locale."""
 
 from __future__ import annotations
 
@@ -72,6 +72,19 @@ _STRINGS: dict[str, dict[str, str]] = {
         "footer_play": "חזרה לקטלוג",
         "nodes": "שלבים",
         "topic_progress": "הושלם בנושא",
+        "tab_in_progress": "דרכים שעשינו",
+        "tab_completed": "דרכים שסיימנו",
+        "tab_practice": "דרכים לתרגול",
+        "tab_catalog": "כל הדרכים",
+        "view_by_status": "לפי סטטוס",
+        "view_by_time": "לפי זמן",
+        "time_recent": "לאחרונה",
+        "time_older": "מוקדם יותר",
+        "time_never": "עדיין לא נגענו",
+        "empty_tab": "אין דרכים בלשונית הזו עדיין.",
+        "needs_practice": "לתרגול",
+        "content_token": "מילת יעד",
+        "home_tabs_lede": "הלשוניות מציגות דרכים שהתחלתם, שסיימתם, או שכדאי לחזור עליהן. הקטלוג המלא נשאר זמין.",
     },
     "en": {
         "product_badge": "Learning platform",
@@ -133,6 +146,19 @@ _STRINGS: dict[str, dict[str, str]] = {
         "footer_play": "Back to catalog",
         "nodes": "steps",
         "topic_progress": "done in topic",
+        "tab_in_progress": "Paths we started",
+        "tab_completed": "Paths we finished",
+        "tab_practice": "Paths to practice",
+        "tab_catalog": "All paths",
+        "view_by_status": "By status",
+        "view_by_time": "By time",
+        "time_recent": "Recently touched",
+        "time_older": "Earlier",
+        "time_never": "Not started yet",
+        "empty_tab": "No paths in this tab yet.",
+        "needs_practice": "Practice",
+        "content_token": "Target word",
+        "home_tabs_lede": "Tabs show paths you started, finished, or should revisit. The full catalog stays available.",
     },
     "ar": {
         "product_badge": "منصة تعلّم",
@@ -194,6 +220,19 @@ _STRINGS: dict[str, dict[str, str]] = {
         "footer_play": "العودة للفهرس",
         "nodes": "خطوات",
         "topic_progress": "مكتمل في الموضوع",
+        "tab_in_progress": "مسارات بدأناها",
+        "tab_completed": "مسارات أنهيناها",
+        "tab_practice": "مسارات للمراجعة",
+        "tab_catalog": "كل المسارات",
+        "view_by_status": "حسب الحالة",
+        "view_by_time": "حسب الوقت",
+        "time_recent": "مؤخرًا",
+        "time_older": "أقدم",
+        "time_never": "لم نبدأ بعد",
+        "empty_tab": "لا توجد مسارات في هذا التبويب بعد.",
+        "needs_practice": "مراجعة",
+        "content_token": "كلمة الهدف",
+        "home_tabs_lede": "تعرض التبويبات المسارات التي بدأتها أو أنهيتها أو تحتاج مراجعة. الفهرس الكامل يبقى متاحًا.",
     },
 }
 

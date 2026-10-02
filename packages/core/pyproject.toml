@@ -1,6 +1,6 @@
 [project]
 name = "myroad-core"
-version = "0.6.0"
+version = "0.7.0"
 description = "MyRoad POC: path store + agent tools + platform catalog/player (identity, i18n, topic map, stats) + golden loop"
 readme = "README.md"
 requires-python = ">=3.11"

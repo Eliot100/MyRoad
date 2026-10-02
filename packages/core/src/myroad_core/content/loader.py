@@ -120,14 +120,17 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
     for i, n in enumerate(path.nodes):
         nid = n.id or f"n{i:03d}_{n.type}"
         node_to_block[nid] = blocks[i].blockId
+    explain = (path.explain_locale or "he").split("-")[0]
+    content = (path.content_locale or explain).split("-")[0]
+    ui_locale = {"he": "he-IL", "en": "en-US", "ar": "ar-IL"}.get(explain, f"{explain}-{explain.upper()}")
     return PathVersion(
         schemaVersion="0.1.0",
         pathId=path.id,
         versionId=vid,
         version=1,
         status=PathStatus.draft,
-        contentLanguage="he",
-        uiLocale="he-IL",
+        contentLanguage=content,
+        uiLocale=ui_locale,
         name=path.title_he,
         description=path.blurb_he,
         goal=path.blurb_he,
@@ -171,6 +174,8 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
         nodeToBlock=node_to_block,
         contentSource="packages/core/content",
         kidsDemo=path.grade == 3,
+        explainLocale=explain,
+        contentLocale=content,
     )
 
 
@@ -273,6 +278,8 @@ def list_catalog_cards(store: PathStore) -> list[dict[str, Any]]:
                 "kidsDemo": bool(raw.get("kidsDemo")),
                 "nodeCount": len(doc.blocks or []),
                 "topicCount": len(topics),
+                "explainLocale": raw.get("explainLocale") or "he",
+                "contentLocale": raw.get("contentLocale") or raw.get("contentLanguage") or "he",
             }
         )
     return cards

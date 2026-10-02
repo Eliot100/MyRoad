@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from myroad_core.content.loader import group_catalog, list_catalog_cards
+from myroad_core.content.locale_rules import resolve_node_display
 from myroad_core.content.schema import GROUPS, SUBJECTS
 from myroad_core.ui.i18n import (
     COOKIE_LOCALE,
@@ -125,11 +126,21 @@ def register_platform_routes(
         sess["userId"] = user_id
         return sess
 
-    def _persist_progress(sess: dict[str, Any], *, completed: bool = False) -> None:
+    def _persist_progress(
+        sess: dict[str, Any],
+        *,
+        completed: bool = False,
+        needs_practice: bool | None = None,
+    ) -> None:
         user_id = sess.get("userId")
         if not user_id:
             return
         completed_at = datetime.now(timezone.utc).isoformat() if completed else None
+        # Keep prior completed_at if already completed and not re-completing
+        if not completed:
+            prior = store.get_progress(user_id, sess["pathId"])
+            if prior and prior.get("completedAt"):
+                completed_at = prior["completedAt"]
         store.save_progress(
             user_id,
             sess["pathId"],
@@ -140,6 +151,7 @@ def register_platform_routes(
             incorrect_taps=int(sess.get("incorrect_taps") or 0),
             started_at=sess.get("started_at"),
             completed_at=completed_at,
+            needs_practice=needs_practice,
         )
 
     def _load_play_doc(sess: dict[str, Any]) -> dict[str, Any]:
@@ -252,7 +264,8 @@ def register_platform_routes(
             sess["last_attempt"] = attempt
         else:
             attempt = sess.get("last_attempt") or store.latest_attempt(sess["userId"], sess["pathId"])
-        _persist_progress(sess, completed=True)
+        needs = mastery < 85.0 or int(sess.get("incorrect_taps") or 0) >= 2
+        _persist_progress(sess, completed=True, needs_practice=needs)
         return attempt or {}
 
     def _maybe_done(sess: dict[str, Any], n: int) -> bool:
@@ -309,17 +322,21 @@ def register_platform_routes(
         request: Request,
         group: str | None = "grade3",
         subject: str | None = "all",
+        tab: str | None = None,
+        view: str | None = "status",
     ) -> HTMLResponse:
         locale = _locale(request)
         cards = list_catalog_cards(store)
-        # Enrich cards with per-user progress
         learner = _learner(request)
         progress_map: dict[str, Any] = {}
         if learner:
             for row in store.list_user_progress(learner["userId"]):
                 progress_map[row["pathId"]] = row
+
+        now_ts = time.time()
+        recent_cutoff = 7 * 24 * 3600  # 7 days
+
         for c in cards:
-            # Localized labels
             if locale == "en":
                 if c.get("titleEn"):
                     c["title"] = c["titleEn"]
@@ -331,18 +348,111 @@ def register_platform_routes(
                 c["subjectLabel"] = subject_label(c["subject"], locale)
             prog = progress_map.get(c["pathId"])
             c["userProgress"] = prog
-            if prog and prog.get("completedAt"):
-                c["progressStatus"] = "completed"
-            elif prog and prog.get("masteredCount", 0) > 0:
-                c["progressStatus"] = "in_progress"
+            status = None
+            needs = False
+            updated_ts = None
+            if prog:
+                status = prog.get("progressStatus")
+                if prog.get("completedAt"):
+                    status = "completed"
+                elif prog.get("startedAt") or prog.get("masteredCount", 0) > 0 or prog.get("nodeIndex", 0) > 0:
+                    status = "in_progress"
+                needs = bool(prog.get("needsPractice"))
+                updated_ts = _parse_iso(prog.get("updatedAt")) or _parse_iso(prog.get("startedAt"))
+            c["progressStatus"] = status
+            c["needsPractice"] = needs
+            c["updatedTs"] = updated_ts
+            if updated_ts is None:
+                c["timeBucket"] = "never"
+            elif now_ts - updated_ts <= recent_cutoff:
+                c["timeBucket"] = "recent"
             else:
-                c["progressStatus"] = None
+                c["timeBucket"] = "older"
 
         catalog = group_catalog(cards, group_id=group or None, subject=subject)
         if (group == "grade3") and catalog["total"] == 0 and cards:
             catalog = group_catalog(cards, group_id=None, subject=subject)
 
-        # Localized group banner
+        filtered_cards = list(catalog["cards"])
+        active_view = view if view in ("status", "time") else "status"
+        if tab in ("in_progress", "completed", "practice", "catalog"):
+            active_tab = tab
+        else:
+            # First visit with no progress → catalog; otherwise land on in-progress
+            active_tab = "in_progress" if progress_map else "catalog"
+        if active_view == "status":
+            if active_tab == "in_progress":
+                filtered_cards = [c for c in filtered_cards if c.get("progressStatus") == "in_progress"]
+            elif active_tab == "completed":
+                filtered_cards = [c for c in filtered_cards if c.get("progressStatus") == "completed"]
+            elif active_tab == "practice":
+                filtered_cards = [
+                    c
+                    for c in filtered_cards
+                    if c.get("needsPractice")
+                    or (
+                        c.get("progressStatus") == "in_progress"
+                        and (c.get("userProgress") or {}).get("incorrectTaps", 0) >= 1
+                    )
+                ]
+            # catalog = all filtered by group/subject
+            elif active_tab == "catalog":
+                pass
+            else:
+                active_tab = "catalog"
+        else:
+            # time view: keep all catalog cards; template groups by time + subject
+            active_tab = "catalog"
+
+        # Counts for tab badges (within group/subject filter)
+        base_cards = list(catalog["cards"])
+        tab_counts = {
+            "in_progress": sum(1 for c in base_cards if c.get("progressStatus") == "in_progress"),
+            "completed": sum(1 for c in base_cards if c.get("progressStatus") == "completed"),
+            "practice": sum(
+                1
+                for c in base_cards
+                if c.get("needsPractice")
+                or (
+                    c.get("progressStatus") == "in_progress"
+                    and (c.get("userProgress") or {}).get("incorrectTaps", 0) >= 1
+                )
+            ),
+            "catalog": len(base_cards),
+        }
+
+        # Time + subject grouping for time view
+        time_groups: list[dict[str, Any]] = []
+        if active_view == "time":
+            for bucket, label_key in (
+                ("recent", "time_recent"),
+                ("older", "time_older"),
+                ("never", "time_never"),
+            ):
+                bucket_cards = [c for c in base_cards if c.get("timeBucket") == bucket]
+                by_subject: dict[str, list] = {}
+                for c in bucket_cards:
+                    by_subject.setdefault(c["subject"], []).append(c)
+                subjects_blocks = []
+                for sid, scards in sorted(by_subject.items(), key=lambda kv: subject_label(kv[0], locale)):
+                    subjects_blocks.append(
+                        {
+                            "subject": sid,
+                            "label": subject_label(sid, locale),
+                            "emoji": SUBJECTS.get(sid, SUBJECTS["general"]).get("emoji", "📚"),
+                            "color": SUBJECTS.get(sid, SUBJECTS["general"]).get("color"),
+                            "cards": scards,
+                        }
+                    )
+                time_groups.append(
+                    {
+                        "bucket": bucket,
+                        "label": t(locale, label_key),
+                        "subjects": subjects_blocks,
+                        "count": len(bucket_cards),
+                    }
+                )
+
         group_banner = catalog.get("group")
         if group_banner and locale != "he":
             group_banner = dict(group_banner)
@@ -360,13 +470,9 @@ def register_platform_routes(
             group_banner["title_display"] = group_banner.get("title_he")
             group_banner["blurb_display"] = group_banner.get("blurb_he")
 
-        # Localized subject chips
         subjects_ui = {}
         for sid, meta in SUBJECTS.items():
-            subjects_ui[sid] = {
-                **meta,
-                "label": subject_label(sid, locale),
-            }
+            subjects_ui[sid] = {**meta, "label": subject_label(sid, locale)}
 
         groups_ui = {}
         for gid, g in GROUPS.items():
@@ -377,19 +483,29 @@ def register_platform_routes(
                 title = g.get("title_ar") or title
             groups_ui[gid] = {**g, "title_display": title}
 
+        # Tab order: RTL puts first item on the right (Hebrew emphasis); LTR left for English
+        if dir_for(locale) == "rtl":
+            tab_order = ["in_progress", "completed", "practice", "catalog"]
+        else:
+            tab_order = ["catalog", "in_progress", "completed", "practice"]
+
         response = templates.TemplateResponse(
             request,
             "home.html",
             _shell_ctx(
                 request,
-                catalog={**catalog, "group": group_banner},
+                catalog={**catalog, "group": group_banner, "cards": filtered_cards},
                 active_group=group or "all",
                 active_subject=subject or "all",
+                active_tab=active_tab,
+                active_view=active_view,
+                tab_counts=tab_counts,
+                tab_order=tab_order,
+                time_groups=time_groups,
                 groups=groups_ui,
                 subjects=subjects_ui,
             ),
         )
-        # Ensure anonymous cookie exists for resume later
         if not request.cookies.get(COOKIE_USER):
             anon = _ensure_user(request)
             _set_identity_cookies(response, anon, locale)
@@ -471,6 +587,11 @@ def register_platform_routes(
         sess["index"] = idx
         block = blocks[idx] if blocks else None
         kids = _kids_payload(block)
+        display = resolve_node_display(
+            kids,
+            ui_locale=locale,
+            content_locale=doc.get("contentLocale") or doc.get("contentLanguage"),
+        )
         flash = sess.pop("flash", None)
         result = sess.get("last_result")
         progress = int(round(100 * len(sess["mastered"]) / n)) if n else 0
@@ -481,6 +602,9 @@ def register_platform_routes(
             blocks=blocks,
             block=block,
             kids=kids,
+            display=display,
+            content_locale=doc.get("contentLocale") or doc.get("contentLanguage") or "he",
+            explain_locale=doc.get("explainLocale") or "he",
             index=idx,
             total=n,
             progress=progress,
@@ -515,6 +639,19 @@ def register_platform_routes(
             sess["started_monotonic"] = time.monotonic()
             sess["attempt_saved"] = False
             sess["last_attempt"] = None
+            # Clear completion so the path returns to in-progress bookmarks
+            store.save_progress(
+                sess["userId"],
+                sess["pathId"],
+                version_id=sess.get("versionId"),
+                node_index=0,
+                mastered=set(),
+                correct_taps=0,
+                incorrect_taps=0,
+                started_at=sess["started_at"],
+                completed_at=None,
+                needs_practice=False,
+            )
         if topic:
             doc = _load_play_doc(sess)
             blocks = doc.get("blocks") or []
