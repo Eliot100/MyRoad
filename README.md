@@ -1,4 +1,4 @@
-# MyRoad / מיי-רואד
+# MyRoad 
 
 **MyRoad** is an adaptive learning platform POC: turn a learner goal into a measurable path (blocks, edges, mastery)—not another unstructured tutoring chat.
 
