@@ -203,7 +203,7 @@ def register_learner_actions(
             actor_id=publisher_id,
             agent_id=None,
             correlation_id=_corr("pub"),
-            path_id=sess["versionId"],
+            path_id=sess["pathId"],
             version_id=sess["versionId"],
             publisher_id=publisher_id,
             human_publisher=True,
@@ -219,4 +219,3 @@ def register_learner_actions(
                 "text": f"פרסום נדחה: {pub.errors}",
             }
         return _render(request, sess)
-
