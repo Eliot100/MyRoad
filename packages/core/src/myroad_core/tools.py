@@ -8,10 +8,11 @@ from __future__ import annotations
 
 from myroad_core.store import PathStore
 from myroad_core.tooling.draft import ToolsDraftMixin
-from myroad_core.tooling.gate import ToolsGateMixin
 from myroad_core.tooling.helpers import ToolsHelpersMixin
 from myroad_core.tooling.mutate import ToolsMutateMixin
+from myroad_core.tooling.publish import ToolsPublishMixin
 from myroad_core.tooling.reads import ToolsReadMixin
+from myroad_core.tooling.validate import ToolsValidateMixin
 
 
 class AgentTools(
@@ -19,7 +20,8 @@ class AgentTools(
     ToolsReadMixin,
     ToolsMutateMixin,
     ToolsDraftMixin,
-    ToolsGateMixin,
+    ToolsValidateMixin,
+    ToolsPublishMixin,
 ):
     """Contract-aligned tool surface over PathStore."""
 
