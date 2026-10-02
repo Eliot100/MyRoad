@@ -24,6 +24,18 @@ jobs:
           python -m json.tool freeze/v0/02-path-after-feedback.json > /dev/null
           echo "Both freeze path JSON files are valid."
 
+      - name: Validate grade3 content JSON
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path("packages/core/content/grade3")
+          files = sorted(root.glob("*.json"))
+          assert len(files) == 10, files
+          for f in files:
+              json.load(f.open(encoding="utf-8"))
+          print(f"Validated {len(files)} content files.")
+          PY
+
   core-tests:
     runs-on: ubuntu-latest
     defaults:
