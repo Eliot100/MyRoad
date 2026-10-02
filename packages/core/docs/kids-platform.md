@@ -37,5 +37,5 @@ Author / golden-loop POC: http://127.0.0.1:8765/author
 ## Player notes
 
 - Mouse-first: big choice tiles, next/back, piano keys, rhythm beats.
-- Web Speech API TTS (הקראה) when supported.
-- Optional MediaRecorder (הקלטה) on speak nodes — graceful fallback.
+- 🔊 Web Speech API TTS (הקראה) when supported.
+- 🎤 Optional MediaRecorder (הקלטה) on speak nodes — graceful fallback.
