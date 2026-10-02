@@ -3,7 +3,7 @@
 The **platform shell** is age-agnostic: groups, subject categories, content-as-data,
 and a path player with optional speech / piano / rhythm controls.
 
-The **ten Grade-3 sample paths** (group `דרכים לתלמידי כיתה ג׳`) are kid-oriented
+The **ten Grade-3 sample paths** (group `דרכים לתלמידי כיתה ג'`) are kid-oriented
 in content and tone. Soft styling applies only to that demo group / those players
 (`.tone-demo`), not to the whole site.
 
@@ -37,5 +37,5 @@ Author / golden-loop POC: http://127.0.0.1:8765/author
 ## Player notes
 
 - Mouse-first: big choice tiles, next/back, piano keys, rhythm beats.
-- Web Speech API TTS when supported.
-- Optional MediaRecorder on speak nodes — graceful fallback.
+- Web Speech API TTS (הקראה) when supported.
+- Optional MediaRecorder (הקלטה) on speak nodes — graceful fallback.
