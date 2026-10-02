@@ -1,7 +1,8 @@
-# myroad-core (persistence + agent tools)
+# myroad-core (persistence + agent tools + thin UI)
 
-SQLite-backed path/version/status storage, audit event log, and a thin
-`AgentTools` facade aligned with `freeze/v0/03-agent-tool-contract.md`.
+SQLite-backed path/version/status storage, audit event log, a thin
+`AgentTools` facade aligned with `freeze/v0/03-agent-tool-contract.md`,
+and a minimal learner UI (`myroad_core.ui`).
 
 **Never auto-publish** — `publish` refuses when `agentId` is set unless
 `human_publisher=True`.
@@ -65,3 +66,21 @@ shared request envelope (`actorId`, `agentId?`, `correlationId`, …).
 - Status transitions: `draft` → `in_review` → `published`
 - Published versions immutable; revise always creates a new `versionId`
 - Seed loader for golden quadratic path JSON under `freeze/v0/`
+
+
+## Thin learner UI
+
+```bash
+pip install -e ".[api]"
+uvicorn myroad_core.ui.app:app --reload --port 8765
+```
+
+- Seeds the golden quadratic path from `freeze/v0`
+- Hebrew labels; product id **MyRoad**
+- One block at a time; mastery gate for practice/assessment/experience
+- Feedback → `record_feedback` (+ optional `reviseDraft`)
+- Publish button disabled until human confirmation — **never auto-publish**
+
+```bash
+python scripts/smoke_ui.py
+```

@@ -38,10 +38,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install package + pytest
+      - name: Install package + pytest (+ api for learner UI)
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -e ".[dev,api]"
 
-      - name: Run core unit tests (persistence + agent tools)
+      - name: Run core unit tests (persistence + agent tools + UI)
         run: pytest -q
