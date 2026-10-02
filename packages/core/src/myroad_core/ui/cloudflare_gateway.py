@@ -6,7 +6,7 @@ and does not send a provider Authorization header. AI Gateway inserts the
 stored key only when that header is absent. A placeholder would be forwarded
 and the provider call would fail.
 
-Native base URL replaces https://api.x.ai/v1:
+Native base URL replaces https://api.x.ai/v1; chat uses /v1/chat/completions:
 https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/grok
 
 Authenticated gateways additionally send cf-aig-authorization. The default
@@ -95,9 +95,9 @@ def call_grok_chat(
     timeout: float = 30.0,
     urlopen_fn: Callable[..., Any] | None = None,
 ) -> dict[str, Any]:
-    """POST {grok_base}/chat/completions. Summary never includes request headers."""
+    """POST {grok_base}/v1/chat/completions. Summary never includes request headers."""
     base = grok_base_url()
-    url = f"{base}/chat/completions"
+    url = f"{base}/v1/chat/completions"
     payload = {"model": model, "messages": messages}
     body = json.dumps(payload).encode("utf-8")
     headers = gateway_headers()

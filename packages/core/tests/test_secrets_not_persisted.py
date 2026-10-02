@@ -218,7 +218,7 @@ def test_registration_and_gateway_check_do_not_persist_secrets(
     assert secret_token not in blob_req
     assert secret_token not in joined_headers
     assert "api.x.ai" not in req.full_url
-    assert req.full_url.endswith("/grok/chat/completions")
+    assert req.full_url.endswith("/grok/v1/chat/completions")
 
     # In-memory author gate stores only bools
     gates = getattr(app.state, "author_gateway_ok", {})

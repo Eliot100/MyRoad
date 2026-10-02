@@ -26,7 +26,7 @@ Base URL (replaces `https://api.x.ai/v1`):
 
 `https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/grok`
 
-Chat: `POST {base}/chat/completions`
+Chat: `POST {base}/v1/chat/completions`
 
 Headers:
 
