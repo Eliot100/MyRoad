@@ -278,3 +278,98 @@ def test_learner_identity_tables(store: PathStore) -> None:
     )
     assert att["attemptId"].startswith("att_")
     assert store.latest_attempt("usr_test1", "path_x")["durationSec"] == 42
+
+
+def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
+    """Home primary tabs: in progress / completed / practice; progress survives reload."""
+    store: PathStore = platform_client.app.state.store
+    platform_client.post("/login", data={"display_name": "TabUser", "next": "/"})
+
+    # Before any play — default tab is catalog (full list)
+    home = platform_client.get("/")
+    assert home.status_code == 200
+    assert "דרכים שעשינו" in home.text or "Paths we started" in home.text
+    assert "דרכים שסיימנו" in home.text or "Paths we finished" in home.text
+    assert "דרכים לתרגול" in home.text or "Paths to practice" in home.text
+    assert "חיבור עד 20" in home.text
+
+    # Start a path → appears under in_progress after reload
+    platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
+    platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
+
+    uid = platform_client.cookies.get("myroad_uid")
+    assert uid
+    prog = store.get_progress(uid, "path_grade3_math_add20")
+    assert prog is not None
+    assert prog.get("startedAt")
+    assert not prog.get("completedAt")
+
+    tab = platform_client.get("/?tab=in_progress")
+    assert tab.status_code == 200
+    assert "חיבור עד 20" in tab.text
+    assert "בתהליך" in tab.text or "In progress" in tab.text
+
+    # Fresh client cookies still resume via same cookie jar (TestClient persists)
+    again = platform_client.get("/play/path_grade3_math_add20")
+    assert again.status_code == 200
+
+    # Wrong answers → needs practice tab
+    platform_client.post(
+        "/play/path_grade3_math_add20/answer",
+        data={"choice": "a"},
+        follow_redirects=True,
+    )
+    platform_client.post(
+        "/play/path_grade3_math_add20/answer",
+        data={"choice": "a"},
+        follow_redirects=True,
+    )
+    practice = platform_client.get("/?tab=practice")
+    assert practice.status_code == 200
+
+    # Time view groups by subject
+    by_time = platform_client.get("/?view=time")
+    assert by_time.status_code == 200
+    assert "לאחרונה" in by_time.text or "Recently" in by_time.text
+    assert "מתמטיקה" in by_time.text or "Math" in by_time.text
+
+
+def test_english_play_shows_content_token_and_he_explanation(platform_client: TestClient) -> None:
+    platform_client.post("/login", data={"display_name": "Eng", "next": "/"})
+    r = platform_client.post(
+        "/play/path_grade3_english_colors/start",
+        data={},
+        follow_redirects=True,
+    )
+    assert r.status_code == 200
+    # HE explanation chrome
+    assert "צבעים" in r.text or "אנגלית" in r.text
+    # Content token separated
+    assert "red" in r.text.lower()
+    assert "מילת יעד" in r.text or "Target word" in r.text
+
+    # Switch UI to English — explanation switches, token stays
+    platform_client.post(
+        "/locale",
+        data={"locale": "en", "next": "/play/path_grade3_english_colors?view=learn"},
+        follow_redirects=True,
+    )
+    en = platform_client.get("/play/path_grade3_english_colors?view=learn")
+    assert en.status_code == 200
+    assert "Today we learn" in en.text or "color" in en.text.lower()
+    assert "red" in en.text.lower()
+
+
+def test_completed_tab_after_finish(platform_client: TestClient) -> None:
+    platform_client.post("/login", data={"display_name": "Done", "next": "/"})
+    platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
+    platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
+    platform_client.post("/play/path_grade3_math_add20/answer", data={"choice": "b"}, follow_redirects=True)
+    platform_client.post("/play/path_grade3_math_add20/answer", data={"choice": "c"}, follow_redirects=True)
+    platform_client.post("/play/path_grade3_math_add20/answer", data={"choice": "b"}, follow_redirects=True)
+    platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
+
+    done = platform_client.get("/?tab=completed")
+    assert done.status_code == 200
+    assert "חיבור עד 20" in done.text
+    assert "הושלם" in done.text or "Completed" in done.text

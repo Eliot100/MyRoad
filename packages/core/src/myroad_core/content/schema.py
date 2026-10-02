@@ -50,7 +50,13 @@ class ContentChoice(BaseModel):
 
 
 class ContentNode(BaseModel):
-    """One step in a learning path (learn / practice / check / …)."""
+    """One step in a learning path (learn / practice / check / …).
+
+    Locale split:
+      - body_he / body_en / body_ui — explanations follow platform UI locale
+      - body_content / speak_text — target vocabulary in content_locale
+      - speak_ui — optional TTS for the explanation (UI locale)
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -58,9 +64,12 @@ class ContentNode(BaseModel):
     type: NodeType
     title: str
     title_en: str | None = None
-    body_he: str
+    body_he: str = ""
     body_en: str | None = None
+    body_ui: str | None = None
+    body_content: str | None = None
     speak_text: str | None = None
+    speak_ui: str | None = None
     choices: list[ContentChoice] | None = None
     correct: str | list[str] | None = None
     media_hint: str | None = None
@@ -70,6 +79,12 @@ class ContentNode(BaseModel):
     record: bool = False
     feedback_ok: str | None = None
     feedback_try: str | None = None
+
+    @model_validator(mode="after")
+    def _require_explanation(self) -> ContentNode:
+        if not (self.body_he or self.body_ui or self.body_en):
+            raise ValueError(f"node '{self.title}': need body_he, body_ui, or body_en explanation")
+        return self
 
     @model_validator(mode="after")
     def _validate_interactive(self) -> ContentNode:
@@ -102,7 +117,12 @@ class ContentTopic(BaseModel):
 
 
 class ContentPath(BaseModel):
-    """Sample path document stored as JSON under content/."""
+    """Sample path document stored as JSON under content/.
+
+    Locale fields:
+      explain_locale — language of authored explanations / chrome (matches UI when possible)
+      content_locale — language of tokens being taught (e.g. en for English paths)
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -115,6 +135,8 @@ class ContentPath(BaseModel):
     emoji: str
     blurb_he: str
     blurb_en: str | None = None
+    explain_locale: str = "he"
+    content_locale: str = "he"
     estimated_minutes: int = Field(ge=1, le=60)
     topics: list[ContentTopic] | None = None
     nodes: list[ContentNode] = Field(min_length=1)
@@ -133,6 +155,20 @@ class ContentPath(BaseModel):
         if unknown:
             raise ValueError(f"unknown group_ids: {unknown}")
         return v
+
+    @model_validator(mode="after")
+    def _default_locales_for_subject(self) -> ContentPath:
+        # English-learning demos teach EN tokens; explanations default to HE.
+        if self.subject == "english":
+            updates: dict[str, Any] = {}
+            if self.content_locale == "he":
+                updates["content_locale"] = "en"
+            if not self.explain_locale:
+                updates["explain_locale"] = "he"
+            if updates:
+                object.__setattr__(self, "content_locale", updates.get("content_locale", self.content_locale))
+                object.__setattr__(self, "explain_locale", updates.get("explain_locale", self.explain_locale))
+        return self
 
     @model_validator(mode="after")
     def _assign_node_ids_and_topics(self) -> ContentPath:
