@@ -37,7 +37,8 @@
     <p class="lede tiny">{{ t('home_tabs_lede') }}</p>
   </section>
 
-  <section class="home-nav card" aria-label="home navigation">
+  <div class="home-layout">
+  <aside class="home-nav card" aria-label="home navigation">
     <div class="view-toggle" role="group" aria-label="view mode">
       <a class="chip {% if active_view == 'status' %}active{% endif %}"
          href="/?group={{ active_group }}&subject={{ active_subject }}&tab={{ active_tab }}&view=status">{{ t('view_by_status') }}</a>
@@ -63,8 +64,9 @@
       {% endfor %}
     </div>
     {% endif %}
-  </section>
+  </aside>
 
+  <div class="home-catalog">
   <section class="filters card">
     <div class="filter-row">
       <span class="filter-label">{{ t('groups') }}</span>
@@ -155,6 +157,8 @@
     {% endfor %}
   </section>
   {% endif %}
+  </div>
+  </div>
 
   <footer>
     <small>{{ product }} · {{ t('footer_catalog') }}</small>
