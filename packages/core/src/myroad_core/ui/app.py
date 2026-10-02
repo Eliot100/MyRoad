@@ -80,7 +80,7 @@ def create_learner_app(
         if content_dir.is_dir():
             content_seed = seed_content_paths(path_store, content_dir=content_dir)
 
-    app = FastAPI(title="MyRoad", version="0.8.1")
+    app = FastAPI(title="MyRoad", version="0.8.2")
     app.state.store = path_store
     app.state.db_path = resolved_db
     app.state.tools = tools
