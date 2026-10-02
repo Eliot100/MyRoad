@@ -47,12 +47,23 @@
   <section class="card step-card" data-node-type="{{ ntype }}">
     <div class="step-head">
       <span class="type-pill">{{ ntype }}</span>
-      <h2>{{ block.title }}</h2>
+      <h2>{% if display is defined and display.title %}{{ display.title }}{% else %}{{ block.title }}{% endif %}</h2>
       <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">🔊 {{ t('speak') }}</button>
     </div>
-    <p class="body-text" id="speak-source" data-speak="{{ kids.speak_text or kids.body_en or kids.body_he or block.title }}">
-      {% if locale == 'en' and kids.body_en %}{{ kids.body_en }}{% else %}{{ kids.body_he or block.learningObjective }}{% endif %}
+    <p class="body-text" id="speak-source" data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}">
+      {% if display is defined %}{{ display.body }}{% elif locale == 'en' and kids.body_en %}{{ kids.body_en }}{% else %}{{ kids.body_he or block.learningObjective }}{% endif %}
     </p>
+    {% if display is defined and display.body_content %}
+    <div class="content-token" lang="{{ content_locale or 'en' }}" dir="ltr">
+      <span class="content-token-label">{{ t('content_token') }}</span>
+      <strong class="content-token-text">{{ display.body_content }}</strong>
+    </div>
+    {% elif kids.body_content %}
+    <div class="content-token" lang="en" dir="ltr">
+      <span class="content-token-label">{{ t('content_token') }}</span>
+      <strong class="content-token-text">{{ kids.body_content }}</strong>
+    </div>
+    {% endif %}
 
     {% if ntype in ['practice', 'check'] and kids.choices %}
     <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices">

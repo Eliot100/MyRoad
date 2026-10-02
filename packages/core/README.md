@@ -108,5 +108,11 @@ version diff banner appears briefly after revise.
 
 See `content/grade3/` and `docs/kids-platform.md`.
 
-**v0.6:** learner identity POC, per-user progress/attempts, he/en/ar shell i18n,
+**v0.7:** learner identity POC, per-user progress/attempts, he/en/ar shell i18n,
 topic map before play, completion stats, expanded English demo paths.
+
+
+## Locale split (v0.7)
+
+English Grade-3 paths use `explain_locale=he` + `content_locale=en` with `body_content`
+for target words. See `docs/kids-platform.md` and `myroad_core.content.locale_rules`.
