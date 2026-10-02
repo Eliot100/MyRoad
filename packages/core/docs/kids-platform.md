@@ -86,5 +86,5 @@ Identity: http://127.0.0.1:8765/login
 
 - Mouse-first: big choice tiles, next/back, piano keys, rhythm beats.
 - 🔊 Web Speech API TTS (הקראה) when supported.
-- 🎙 Optional MediaRecorder (הקלטה) on speak nodes — graceful fallback.
+- 🎤 Optional MediaRecorder (הקלטה) on speak nodes — graceful fallback.
 - Resume: same user cookie restores path progress; catalog shows in-progress / completed.
