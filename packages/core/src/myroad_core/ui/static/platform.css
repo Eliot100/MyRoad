@@ -363,16 +363,47 @@ a.link-btn.secondary { background: #4b5563; }
 .stats-msg { font-size: 1.1rem; margin: .75rem 0 0; }
 html[dir="ltr"] .back { transform: scaleX(-1); display: inline-block; }
 
-/* --- Home tabs / bookmarks (RTL: first tab on the right; LTR: left) --- */
-.home-nav { display: flex; flex-direction: column; gap: .75rem; }
+/* --- Home status sidebar ---
+   First grid track is the inline-start side: left when html dir=ltr (en),
+   right when dir=rtl (he, ar). Direction comes from locales/manifest.json.
+*/
+.home-layout {
+  display: grid;
+  grid-template-columns: minmax(13.5rem, 17.5rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+body.platform:has(.home-layout) { max-width: 1120px; }
+.home-catalog { min-width: 0; }
+.home-nav {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  position: sticky;
+  top: .75rem;
+  margin-bottom: 0;
+  align-self: start;
+}
 .view-toggle { display: flex; flex-wrap: wrap; gap: .45rem; }
 .home-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: .45rem;
 }
+.home-nav .view-toggle,
+.home-nav .home-tabs {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+.home-nav .view-toggle .chip,
+.home-nav .home-tab {
+  width: 100%;
+  justify-content: space-between;
+}
 .home-tab {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: .4rem;
   padding: .55rem .9rem;
@@ -401,6 +432,14 @@ html[dir="ltr"] .back { transform: scaleX(-1); display: inline-block; }
 }
 .tabs-rtl { justify-content: flex-start; }
 .tabs-ltr { justify-content: flex-start; }
+@media (max-width: 760px) {
+  .home-layout { grid-template-columns: 1fr; }
+  .home-nav { position: static; }
+  .home-nav .view-toggle,
+  .home-nav .home-tabs { flex-direction: row; flex-wrap: wrap; }
+  .home-nav .view-toggle .chip,
+  .home-nav .home-tab { width: auto; }
+}
 .status-pill.practice { background: #fff7ed; color: #c2410c; }
 .time-heading { margin: 0 0 .75rem; font-size: 1.15rem; display: flex; gap: .5rem; align-items: center; }
 .subject-heading {

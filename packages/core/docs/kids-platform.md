@@ -49,7 +49,7 @@ without `body_content` / `speak_text`.
 
 ## Home bookmarks / tabs (v0.7)
 
-Primary home navigation (RTL: Hebrew emphasis starts on the right; LTR English on the left):
+Primary home navigation sits in a side column (not a full-width bar). Side follows UI locale `dir` from `locales/manifest.json`: right for RTL (`he`, `ar`), left for LTR (`en`). The catalog (groups, subjects, path cards) fills the other side. Tab order still starts on the inline-start side (RTL right, LTR left):
 
 - **דרכים שעשינו** — started / in progress (persisted in `learner_progress`)
 - **דרכים שסיימנו** — completed
