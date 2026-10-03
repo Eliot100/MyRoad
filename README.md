@@ -1,10 +1,7 @@
 # MyRoad
 
-**MyRoad** is an adaptive learning platform POC: turn a learner goal into a measurable path (blocks, edges, mastery)—not another unstructured tutoring chat.
+**MyRoad** is an adaptive learning platform : turn a learner goal into a measurable path (blocks, edges, mastery).
 
-**MyRoad** היא POC לפלטפורמת למידה אדפטיבית: המרת מטרת לומד למסלול מדיד (בלוקים, קשתות, שליטה) — לא עוד צ'אט חופשי.
-
-**Product ID:** `MyRoad` · **Never auto-publish** — human approval is required to publish any learning path.
 
 ## v0 freeze contents / תוכן הקפאת v0
 
