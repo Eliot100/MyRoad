@@ -18,6 +18,16 @@ def client(tmp_path):
     store = PathStore(str(tmp_path / "ui.db"))
     app = create_learner_app(store=store, seed=True)
     with TestClient(app) as c:
+        c.post(
+            "/login",
+            data={
+                "first_name": "Test",
+                "last_name": "User",
+                "email": "author@example.com",
+                "next": "/",
+            },
+            follow_redirects=True,
+        )
         yield c
     store.close()
 
@@ -35,7 +45,9 @@ def test_health_and_home(client: TestClient) -> None:
     assert "MyRoad" in r.text
     assert "משוואות ריבועיות" in r.text
     assert "פרסם מסלול" in r.text
-    assert 'id="publish-btn" disabled' in r.text or 'disabled' in r.text
+    assert 'id="publish-btn"' in r.text
+    assert 'id="publish-btn" disabled' not in r.text
+    assert "human_confirm" not in r.text
 
 
 def test_ack_advances_and_feedback_records(client: TestClient) -> None:
@@ -57,7 +69,7 @@ def test_ack_advances_and_feedback_records(client: TestClient) -> None:
     assert "משוב נשמר" in fb.text
 
 
-def test_practice_mastery_gate_and_no_autopublish(client: TestClient) -> None:
+def test_practice_mastery_gate_and_publish_without_checkbox(client: TestClient) -> None:
     # Jump to practice by acking explanations (3) then stay on practice
     for _ in range(3):
         client.post("/author/ack", follow_redirects=True)
@@ -78,16 +90,10 @@ def test_practice_mastery_gate_and_no_autopublish(client: TestClient) -> None:
     assert r2.status_code == 200
     assert "שליטה הושגה" in r2.text
 
-    # Publish without human confirm must refuse
-    denied = client.post("/author/publish", data={"publisher_id": "user_owner_poc"})
-    assert denied.status_code == 200
-    assert "נדרש אישור אנושי" in denied.text
-
-    # Agent-style auto publish is not exposed; human confirm path may still
-    # fail validation/in_review gate — but must never silently publish without confirm.
-    # Confirm checkbox alone on a draft that was never request_publish'd from
-    # a valid state: we still call request_publish then publish.
-    # Ensure UI does not publish when checkbox absent (already checked).
+    published = client.post("/author/publish", data={})
+    assert published.status_code == 200
+    assert "נדרש אישור אנושי" not in published.text
+    assert "human_confirm" not in published.text
 
 
 def test_feedback_revise_one_click_shows_version_diff(client: TestClient) -> None:
@@ -111,7 +117,7 @@ def test_feedback_revise_one_click_shows_version_diff(client: TestClient) -> Non
     assert "גרסת טיוטה חדשה" in fb.text
     assert "version-diff" in fb.text or "הפרש גרסאות" in fb.text
     assert "לא פורסם" in fb.text
-    # Still draft — never auto-publish
+    # Revise creates a draft; it does not publish.
     assert "published" not in fb.text.lower() or "לא פורסם" in fb.text
 
 
