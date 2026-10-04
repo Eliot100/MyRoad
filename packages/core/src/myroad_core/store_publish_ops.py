@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from myroad_core.errors import RbacDenyError, StatusError
+from myroad_core.errors import StatusError
 from myroad_core.models import OpResponse, PathStatus, PathVersion, RbacDecision, new_id
 from myroad_core.store_schema import _iso_now
 
@@ -114,21 +114,11 @@ class PublishOpsMixin:
         self, *, actor_id: str, correlation_id: str, path_id: str, version_id: str,
         agent_id: str | None = None, publisher_id: str | None = None,
     ) -> OpResponse:
-        """Human publish gate. Refuses when agent_id is set (no auto-publish)."""
-        if agent_id:
-            evt = self._emit(
-                event_type="path.publish", actor_id=actor_id, agent_id=agent_id,
-                correlation_id=correlation_id, path_id=path_id, version_id=version_id,
-                rbac=RbacDecision.deny, detail={"reason": "agent_auto_publish_forbidden"},
-            )
-            raise RbacDenyError(
-                f"agents cannot publish; human publisher required (audit={evt.eventId})"
-            )
-
+        """Publish a draft or in-review version. An agent may publish."""
         doc = self.get_version(path_id, version_id)
         if doc.status == PathStatus.published:
             evt = self._emit(
-                event_type="path.publish", actor_id=actor_id, agent_id=None,
+                event_type="path.publish", actor_id=actor_id, agent_id=agent_id,
                 correlation_id=correlation_id, path_id=path_id, version_id=version_id,
                 rbac=RbacDecision.deny, detail={"reason": "already_published"},
             )
@@ -136,25 +126,25 @@ class PublishOpsMixin:
         if doc.status not in (PathStatus.draft, PathStatus.in_review):
             raise StatusError(f"cannot publish from status {doc.status.value}")
 
-        human_publisher = publisher_id or actor_id
+        publisher = publisher_id or actor_id
         doc.status = PathStatus.published
         doc.updatedAt = _iso_now()
         actors = doc.actors
         if isinstance(actors, dict):
-            doc.actors = {**actors, "publisherId": human_publisher}  # type: ignore[assignment]
+            doc.actors = {**actors, "publisherId": publisher}  # type: ignore[assignment]
         elif actors is not None:
             data = actors.model_dump()
-            data["publisherId"] = human_publisher
+            data["publisherId"] = publisher
             doc.actors = data  # type: ignore[assignment]
 
         self._write_version(doc, insert=False)
         evt = self._emit(
-            event_type="path.publish", actor_id=actor_id, agent_id=None,
+            event_type="path.publish", actor_id=actor_id, agent_id=agent_id,
             correlation_id=correlation_id, path_id=path_id, version_id=version_id,
-            rbac=RbacDecision.allow, detail={"publisherId": human_publisher},
+            rbac=RbacDecision.allow, detail={"publisherId": publisher},
         )
         return OpResponse(
             ok=True, correlationId=correlation_id, pathId=path_id, versionId=version_id,
             status=PathStatus.published, auditEventId=evt.eventId,
-            data={"publisherId": human_publisher},
+            data={"publisherId": publisher},
         )
