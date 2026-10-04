@@ -5,7 +5,7 @@ Run:
   uvicorn myroad_core.ui.app:app --reload --port 8765
 
 Catalog seeds demo content paths as published (explicit sample allow-list).
-Author/golden-loop UI never auto-publishes new paths.
+A signed-in user may publish from the author screen.
 """
 from __future__ import annotations
 
@@ -181,7 +181,7 @@ def create_learner_app(
             "contentPaths": (content_seed or {}).get("count", 0),
         }
 
-    # --- Author / golden-loop POC (never auto-publish) ---
+    # --- Author / golden-loop POC ---
     @app.get("/author", response_class=HTMLResponse)
     def author_home(request: Request) -> HTMLResponse:
         sess = _session(request)
