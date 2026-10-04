@@ -12,6 +12,7 @@
       <strong>{{ product }}</strong>
       <span class="badge">POC · thin learner UI</span>
       <a href="/" style="font-size:.85rem;margin-inline-start:.5rem">← קטלוג</a>
+      <a class="settings-link" href="/settings">הגדרות</a>
     </div>
     <div class="meta">
       <span>סטטוס: <code>{{ status }}</code></span>
@@ -190,33 +191,19 @@
   </section>
 
   <section class="side-card publish">
-    <h3>פרסום (אנושי בלבד)</h3>
-    <p class="muted warn-text">Never auto-publish. הכפתור פעיל רק אחרי סימון אישור אנושי.</p>
+    <h3>פרסום</h3>
+    <p class="muted">המשתמש המחובר יכול לפרסם את הגרסה הזו. אין סיסמה ואין תיבת «אני אנושי».</p>
     <form method="post" action="{{ author_base }}/publish" id="publish-form">
-      <label class="check">
-        <input type="checkbox" name="human_confirm" id="human_confirm" value="true" />
-        אני מאשר/ת כהומני לפרסם את הגרסה הזו
-      </label>
-      <label>מזהה מפרסם
-        <input name="publisher_id" value="user_owner_poc" />
-      </label>
-      <button type="submit" id="publish-btn" disabled>פרסם מסלול</button>
+      <button type="submit" id="publish-btn">פרסם מסלול</button>
     </form>
   </section>
 
   <footer>
-    <small>{{ product }} · packages/core learner UI · AgentTools wired · no auto-publish</small>
+    <small>{{ product }} · packages/core learner UI · AgentTools wired</small>
   </footer>
 
   <script>
     (function () {
-      var box = document.getElementById("human_confirm");
-      var btn = document.getElementById("publish-btn");
-      if (box && btn) {
-        function sync() { btn.disabled = !box.checked; }
-        box.addEventListener("change", sync);
-        sync();
-      }
       // Version diff is visible briefly, then fades (still in DOM until next nav).
       var diff = document.getElementById("version-diff");
       if (diff) {
