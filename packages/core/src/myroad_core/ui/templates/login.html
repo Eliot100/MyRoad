@@ -3,43 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — {{ t('who_am_i') }}</title>
+  <title>{{ product }} — {{ t('login_title') }}</title>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
-<body class="platform">
-  <header class="top">
-    <div class="brand">
-      <a href="/" class="back">→ {{ t('back_catalog') }}</a>
-      <strong>{{ product }}</strong>
-    </div>
-    <form method="post" action="/locale" class="lang-switch">
-      <input type="hidden" name="next" value="/login?next={{ next_url }}" />
-      {% for loc in locales %}
-      <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
-      {% endfor %}
-    </form>
-  </header>
-
-  <section class="card hero">
+<body class="platform auth-screen">
+  <main class="auth-card card">
+    <p class="brand-kicker">{{ product }}</p>
+    {% if mode == 'register' %}
+    <h1>{{ t('login_new_title') }}</h1>
+    <p class="lede">{{ t('login_new_lede') }}</p>
+    {% else %}
     <h1>{{ t('login_title') }}</h1>
     <p class="lede">{{ t('login_lede') }}</p>
+    {% endif %}
     {% if error %}
     <p class="flash warn">{{ error }}</p>
     {% endif %}
     <form method="post" action="/login" class="login-form" autocomplete="on">
       <input type="hidden" name="next" value="{{ next_url }}" />
+      <input type="hidden" name="mode" value="{{ mode }}" />
+      {% if mode == 'register' %}
       <label for="first_name">{{ t('first_name') }}</label>
-      <input id="first_name" name="first_name" type="text" maxlength="60" required
-             value="{{ current_first }}" autocomplete="given-name" />
+      <input id="first_name" name="first_name" type="text" maxlength="60" required autocomplete="given-name" />
       <label for="last_name">{{ t('last_name') }}</label>
-      <input id="last_name" name="last_name" type="text" maxlength="60" required
-             value="{{ current_last }}" autocomplete="family-name" />
+      <input id="last_name" name="last_name" type="text" maxlength="60" required autocomplete="family-name" />
+      {% endif %}
       <label for="email">{{ t('email') }}</label>
-      <input id="email" name="email" type="email" maxlength="120" required
-             value="{{ current_email }}" autocomplete="email" />
-      <button type="submit" class="primary big">{{ t('save_identity') }}</button>
+      <input id="email" name="email" type="email" maxlength="120" required value="{{ current_email }}" autocomplete="email" />
+      <button type="submit" class="primary big">{% if mode == 'register' %}{{ t('register') }}{% else %}{{ t('sign_in') }}{% endif %}</button>
     </form>
+    {% if mode == 'register' %}
+    <p class="lede tiny"><a href="/login?next={{ next_url }}">{{ t('login_have_account') }}</a></p>
+    {% else %}
+    <p class="lede tiny"><a href="/login?mode=register&next={{ next_url }}">{{ t('login_new_here') }}</a></p>
+    {% endif %}
     <p class="lede tiny">{{ t('login_email_note') }}</p>
-  </section>
+  </main>
 </body>
 </html>

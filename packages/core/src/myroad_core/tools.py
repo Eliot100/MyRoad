@@ -1,8 +1,7 @@
 """Thin agent-tool facade over PathStore (freeze/v0/03-agent-tool-contract.md).
 
 Callable without HTTP. Every op emits an audit event via PathStore and returns
-the shared OpResponse envelope. Never auto-publishes: publish denies when
-agentId is present unless human_publisher=True.
+the shared OpResponse envelope. An agent may publish.
 """
 from __future__ import annotations
 
