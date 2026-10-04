@@ -1,7 +1,7 @@
 # MyRoad POC — Agent / Tool Contract (freeze v0.1)
 
 **Product ID (stable, English):** `MyRoad`  
-**Scope:** draft → learn → feedback → revise → human publish. Agent may draft/suggest/revise/navigate; **never auto-publish**.  
+**Scope:** draft → learn → feedback → revise → publish. Agent may draft/suggest/revise/navigate and **may publish**.  
 **Every call requires:** authenticated `actorId` + optional `agentId`, RBAC check, `correlationId`, audit event, provenance retention.
 
 ## Shared envelopes
@@ -125,12 +125,12 @@ Published versions are **immutable**. Feedback always yields a **new** `versionI
 **Rules:** `requestPublish` should fail if `valid=false` on hard errors.
 
 ### 11. `requestPublish`
-**Purpose:** Ask a human to publish; **does not publish by itself**.  
-**RBAC:** `author` | agent-as-author may request; **`approver` / `coordinator` (human) must confirm** via separate publish confirmation (out of agent auto-path)  
+**Purpose:** Move a draft to review. Does not publish by itself.  
+**RBAC:** `author` | agent-as-author may request  
 **Input:** `pathId`, `versionId`, `evidenceSnapshotRef?`  
-**Output:** `status` → `in_review` (or remains `draft` if policy requires), `publishRequestId`  
+**Output:** `status` → `in_review`, `publishRequestId`  
 **Audit:** `path.request_publish`  
-**Hard rule:** **No auto-publish.** Final publish records human `publisherId` + evidence/context at publish time as a distinct privileged action (`path.publish`) not listed here as an agent-invokable autopilot op.
+**Rule:** Final `path.publish` may be called by an agent. It records `publisherId` (actor or explicit publisher) and keeps the published version immutable.
 
 ---
 
@@ -147,7 +147,7 @@ Published versions are **immutable**. Feedback always yields a **new** `versionI
 | reviseDraft | — | ✓ | — | ✓ | ✓ |
 | validatePath | — | ✓ | ✓ | ✓ | ✓ |
 | requestPublish | — | ✓ | — | ✓ | ✓ |
-| path.publish (human) | — | — | ✓ | ✓ | **deny** |
+| path.publish | — | ✓ | ✓ | ✓ | ✓ |
 
 \*Agent inherits the binding user's permissions; external agent key ≠ elevated role.
 
@@ -156,4 +156,4 @@ Published versions are **immutable**. Feedback always yields a **new** `versionI
 - All denials still emit audit with `rbacDecision=deny`.
 
 ## Explicit non-goals in this freeze
-Auto-publish, silent mutation of published versions, agent self-approval of sources, full school/parent regulatory workflow.
+Silent mutation of published versions, agent self-approval of sources, full school/parent regulatory workflow.
