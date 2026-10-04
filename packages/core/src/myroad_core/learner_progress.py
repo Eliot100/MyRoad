@@ -182,37 +182,44 @@ class LearnerProgressMixin:
             return None
         return self._row_to_learner(row)
 
-    def register_or_login(
-        self,
-        *,
-        email: str,
-        first_name: str,
-        last_name: str,
-        locale: str = "he",
-    ) -> dict[str, Any]:
-        """Identify by unique email: create user or return existing (refresh names).
-
-        Raises ValueError on missing email / names. Email uniqueness is enforced by DB.
-        """
+    def _validate_email(self, email: str | None) -> str:
         email_n = self._normalize_email(email)
-        first = (first_name or "").strip()
-        last = (last_name or "").strip()
         if not email_n:
             raise ValueError("email_required")
         if "@" not in email_n or "." not in email_n.split("@")[-1]:
             raise ValueError("email_invalid")
-        if not first or not last:
-            raise ValueError("name_required")
+        return email_n
+
+    def register_or_login(
+        self,
+        *,
+        email: str,
+        first_name: str = "",
+        last_name: str = "",
+        locale: str = "he",
+    ) -> dict[str, Any]:
+        """Email identity. Returning users sign in with email only.
+
+        New users need first name, last name, and a unique email.
+        No password is stored. Raises ValueError with a stable code.
+        """
+        email_n = self._validate_email(email)
+        first = (first_name or "").strip()
+        last = (last_name or "").strip()
         existing = self.get_learner_by_email(email_n)
         if existing:
+            # Lookup only. Names change on the settings screen, not at sign-in.
+            loc = existing.get("locale") or locale or "he"
             return self.upsert_learner(
                 existing["userId"],
-                self._display_from_names(first, last),
-                locale=locale,
-                first_name=first,
-                last_name=last,
+                existing.get("displayName") or self._display_from_names(first, last),
+                locale=loc,
+                first_name=existing.get("firstName") or None,
+                last_name=existing.get("lastName") or None,
                 email=email_n,
             )
+        if not first or not last:
+            raise ValueError("name_required")
         new_id = f"usr_{uuid.uuid4().hex[:12]}"
         try:
             return self.upsert_learner(
@@ -224,19 +231,49 @@ class LearnerProgressMixin:
                 email=email_n,
             )
         except Exception as exc:
-            # Unique race: another insert won
             again = self.get_learner_by_email(email_n)
             if again:
                 return again
             raise ValueError("email_taken") from exc
 
+    def update_learner_profile(
+        self,
+        user_id: str,
+        *,
+        first_name: str,
+        last_name: str,
+        email: str,
+        locale: str | None = None,
+    ) -> dict[str, Any]:
+        """Edit name and unique email for an existing learner. No password."""
+        current = self.get_learner(user_id)
+        if not current:
+            raise ValueError("name_required")
+        first = (first_name or "").strip()
+        last = (last_name or "").strip()
+        if not first or not last:
+            raise ValueError("name_required")
+        email_n = self._validate_email(email)
+        other = self.get_learner_by_email(email_n)
+        if other and other["userId"] != user_id:
+            raise ValueError("email_taken")
+        loc = locale or current.get("locale") or "he"
+        return self.upsert_learner(
+            user_id,
+            self._display_from_names(first, last),
+            locale=loc,
+            first_name=first,
+            last_name=last,
+            email=email_n,
+        )
+
     def ensure_learner(self, user_id: str | None, display_name: str | None = None) -> dict[str, Any]:
+        """Return an existing learner. Does not create anonymous users."""
         if user_id:
             existing = self.get_learner(user_id)
             if existing:
                 return existing
-        new_id = user_id or f"usr_{uuid.uuid4().hex[:12]}"
-        return self.upsert_learner(new_id, display_name or "Learner")
+        raise ValueError("auth_required")
 
     def get_progress(self, user_id: str, path_id: str) -> dict[str, Any] | None:
         row = self._conn.execute(
