@@ -1,4 +1,4 @@
-"""Load content/*.json into PathStore as published demo seeds (human gate)."""
+"""Load content/*.json into PathStore as published demo seeds."""
 
 from __future__ import annotations
 
@@ -200,7 +200,7 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
         edges=edges,
         publishedImmutableNote=(
             "Demo sample path seeded as published for platform demo. "
-            "Future paths still require human publish gate."
+            "An agent may publish later drafts; a published version stays immutable."
         ),
         subject=path.subject,
         subjectLabelHe=subject_meta["he"],
@@ -238,8 +238,8 @@ def seed_content_paths(
     Load all content JSON files into the store.
 
     When publish=True (default for the demo samples only), each path is
-    saved as draft then published via the human publish gate (no agentId).
-    Does not auto-publish arbitrary future drafts created through AgentTools.
+    saved as draft then published (no agentId on the seed call).
+    Other drafts are not published unless publish() is called.
     """
     loaded = load_content_paths(content_dir)
     seeded: list[dict[str, Any]] = []
