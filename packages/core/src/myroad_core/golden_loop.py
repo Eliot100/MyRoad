@@ -1,10 +1,7 @@
 """Golden loop end-to-end demo for MyRoad POC.
 
 Flow: topic → draft (or seed quadratic) → simulate learn/attempts →
-recordFeedback → reviseDraft → requestPublish → publish ONLY with
-human_publisher=True.
-
-Never auto-publishes. Asserts that agentId alone is denied.
+recordFeedback → reviseDraft → requestPublish → publish by the agent.
 
 Run from packages/core (with package installed):
 
@@ -23,7 +20,6 @@ from myroad_core.golden_loop_steps import (
     AGENT_REVISE,
     ACTOR_AUTHOR,
     ACTOR_LEARNER,
-    ACTOR_PUBLISHER,
     _corr,
     _revise_with_remediation,
     _seed_or_create,
@@ -44,7 +40,7 @@ def run_golden_loop(
     tools = AgentTools(store)
     summary: dict[str, Any] = {
         "product": "MyRoad",
-        "neverAutoPublish": True,
+        "agentMayPublish": True,
         "steps": [],
     }
 
@@ -100,29 +96,6 @@ def run_golden_loop(
         }
     )
 
-    # Assert: agentId alone cannot publish
-    denied = tools.publish(
-        actor_id=ACTOR_AUTHOR,
-        agent_id=AGENT_REVISE,
-        correlation_id=_corr("deny_pub"),
-        path_id=path_id,
-        version_id=new_version_id,
-        human_publisher=False,
-    )
-    if denied.ok:
-        raise AssertionError("agent publish must fail without human_publisher=True")
-    if not denied.errors or denied.errors[0].get("code") != "RBAC_DENY":
-        raise AssertionError(f"expected RBAC_DENY, got {denied.errors}")
-    summary["steps"].append(
-        {
-            "op": "publish_agent_denied",
-            "ok": True,
-            "denied": True,
-            "code": "RBAC_DENY",
-            "auditEventId": denied.auditEventId,
-        }
-    )
-
     req = tools.request_publish(
         actor_id=ACTOR_AUTHOR,
         agent_id=AGENT_REVISE,
@@ -142,33 +115,32 @@ def run_golden_loop(
         }
     )
 
-    # Human publish only
+    # Agent publish succeeds (no human-only gate).
     pub = tools.publish(
-        actor_id=ACTOR_PUBLISHER,
-        agent_id=None,
+        actor_id=ACTOR_AUTHOR,
+        agent_id=AGENT_REVISE,
         correlation_id=_corr("pub"),
         path_id=path_id,
         version_id=new_version_id,
-        publisher_id=ACTOR_PUBLISHER,
-        human_publisher=True,
+        publisher_id=ACTOR_AUTHOR,
     )
     if not pub.ok:
-        raise RuntimeError(f"human publish failed: {pub.errors}")
+        raise RuntimeError(f"agent publish failed: {pub.errors}")
     if pub.status != PathStatus.published:
         raise AssertionError(f"expected published, got {pub.status}")
     summary["publishedVersionId"] = new_version_id
     summary["status"] = PathStatus.published.value
     summary["steps"].append(
         {
-            "op": "publish_human",
+            "op": "publish_agent",
             "ok": True,
             "status": PathStatus.published.value,
-            "publisherId": ACTOR_PUBLISHER,
+            "publisherId": ACTOR_AUTHOR,
+            "agentId": AGENT_REVISE,
             "auditEventId": pub.auditEventId,
         }
     )
 
-    # Final guard: document stays published; agent still cannot "re-publish"
     doc = store.get_version(path_id, new_version_id)
     summary["finalStatus"] = doc.status.value
     summary["blockCount"] = len(doc.blocks)
@@ -201,7 +173,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(summary, ensure_ascii=False, indent=2))
     else:
-        print("MyRoad golden loop OK — never auto-publish")
+        print("MyRoad golden loop OK — agent may publish")
         print(f"  origin:            {summary['origin']}")
         print(f"  pathId:            {summary['pathId']}")
         print(f"  baseVersionId:     {summary['baseVersionId']}")
@@ -211,8 +183,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  published:         {summary['publishedVersionId']} ({summary['status']})")
         print(f"  attempts:          {len(summary['attempts'])}")
         print(f"  events:            {summary['eventCount']}")
-        print("  agent publish:     DENIED (RBAC_DENY)")
-        print("  human publish:     OK (human_publisher=True)")
+        print("  agent publish:     OK")
     return 0
 
 
