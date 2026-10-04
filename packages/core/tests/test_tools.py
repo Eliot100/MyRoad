@@ -1,4 +1,4 @@
-"""AgentTools facade: happy path, agent cannot publish, revise creates new version."""
+"""AgentTools facade: happy path, agent may publish, revise creates new version."""
 
 from __future__ import annotations
 
@@ -150,55 +150,43 @@ def test_happy_path_create_block_edge_validate_publish(store: PathStore) -> None
     assert "path.publish" in types
 
 
-def test_agent_cannot_publish(store: PathStore) -> None:
+def test_agent_can_publish(store: PathStore) -> None:
     tools = AgentTools(store)
     created = tools.create_draft(
         actor_id="user_author",
-        correlation_id="corr_deny_create",
-        name="No auto publish",
+        correlation_id="corr_agent_create",
+        name="Agent may publish",
         goal="g",
     )
-    # Add a block so validation would pass if we requested publish
     tools.add_block(
         actor_id="user_author",
-        correlation_id="corr_deny_blk",
+        correlation_id="corr_agent_blk",
         path_id=created.pathId,  # type: ignore[arg-type]
         version_id=created.versionId,  # type: ignore[arg-type]
         type="explanation",
         title="Intro",
     )
 
-    denied = tools.publish(
+    published = tools.publish(
         actor_id="user_author",
-        agent_id="agent_naughty",
-        correlation_id="corr_deny_pub",
+        agent_id="agent_author",
+        correlation_id="corr_agent_pub",
         path_id=created.pathId,  # type: ignore[arg-type]
         version_id=created.versionId,  # type: ignore[arg-type]
+        publisher_id="user_author",
     )
-    assert denied.ok is False
-    assert denied.errors[0]["code"] == "RBAC_DENY"
-    assert denied.auditEventId
+    assert published.ok is True
+    assert published.status == PathStatus.published
+    assert published.auditEventId
 
     doc = store.get_version(created.pathId, created.versionId)  # type: ignore[arg-type]
-    assert doc.status == PathStatus.draft
+    assert doc.status == PathStatus.published
 
-    events = store.query_events(correlation_id="corr_deny_pub")
+    events = store.query_events(correlation_id="corr_agent_pub")
     assert len(events) == 1
-    assert events[0].rbacDecision.value == "deny"
+    assert events[0].rbacDecision.value == "allow"
     assert events[0].eventType == "path.publish"
-
-    # Explicit human publisher flag allows publish even if agentId was on the envelope
-    allowed = tools.publish(
-        actor_id="user_approver",
-        agent_id="agent_assist",
-        correlation_id="corr_human_flag",
-        path_id=created.pathId,  # type: ignore[arg-type]
-        version_id=created.versionId,  # type: ignore[arg-type]
-        human_publisher=True,
-        publisher_id="user_approver",
-    )
-    assert allowed.ok is True
-    assert allowed.status == PathStatus.published
+    assert events[0].agentId == "agent_author"
 
 
 def test_revise_creates_new_version(store: PathStore) -> None:
