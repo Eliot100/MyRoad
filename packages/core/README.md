@@ -4,8 +4,7 @@ SQLite-backed path/version/status storage, audit event log, a thin
 `AgentTools` facade aligned with `freeze/v0/03-agent-tool-contract.md`,
 and a minimal learner UI (`myroad_core.ui`).
 
-**Never auto-publish** — `publish` refuses when `agentId` is set unless
-`human_publisher=True`.
+An agent may publish. A published version stays immutable.
 
 ## Setup
 
@@ -79,7 +78,7 @@ uvicorn myroad_core.ui.app:app --reload --port 8765
 - Hebrew labels; product id **MyRoad**
 - One block at a time; mastery gate for practice/assessment/experience
 - Feedback → `record_feedback` (+ optional `reviseDraft`)
-- Publish button disabled until human confirmation — **never auto-publish**
+- Publish is available to the signed-in user (no human-only checkbox)
 
 ```bash
 python scripts/smoke_ui.py
@@ -95,9 +94,7 @@ python scripts/golden_loop.py --json
 ```
 
 End-to-end: topic → draft/seed → simulate learn → `record_feedback` →
-`revise_draft` → `request_publish` → `publish(human_publisher=True)`.
-
-Asserts agent-only publish is denied (`RBAC_DENY`). **Never auto-publish.**
+`revise_draft` → `request_publish` → agent `publish` succeeds.
 
 Thin UI: primary button "שמור משוב ועדכן טיוטה" is one-click feedback→revise;
 version diff banner appears briefly after revise.
