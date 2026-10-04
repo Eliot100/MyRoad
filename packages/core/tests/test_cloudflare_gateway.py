@@ -85,6 +85,16 @@ def test_add_path_missing_config_does_not_ask_for_provider_key(
     try:
         with TestClient(app) as client:
             client.cookies.set("myroad_locale", "en")
+            client.post(
+                "/login",
+                data={
+                    "first_name": "Ada",
+                    "last_name": "Lovelace",
+                    "email": "ada.gateway@example.com",
+                    "next": "/add-path",
+                },
+                follow_redirects=True,
+            )
             page = client.get("/add-path")
             assert page.status_code == 200
             assert "Cloudflare AI Gateway is not configured" in page.text
