@@ -1,4 +1,4 @@
-"""Thin MyRoad learner UI (FastAPI + Jinja). Never auto-publishes."""
+"""Thin MyRoad learner UI (FastAPI + Jinja). Signed-in users and agents may publish."""
 
 from myroad_core.ui.app import create_learner_app
 
