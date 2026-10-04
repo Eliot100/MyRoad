@@ -154,6 +154,16 @@ def platform_client(tmp_path):
     store = PathStore(str(tmp_path / "plat.db"))
     app = create_learner_app(store=store, seed=True, seed_content=True)
     with TestClient(app) as c:
+        c.post(
+            "/login",
+            data={
+                "first_name": "Test",
+                "last_name": "User",
+                "email": "catalog@example.com",
+                "next": "/",
+            },
+            follow_redirects=True,
+        )
         yield c
     store.close()
 
