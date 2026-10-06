@@ -47,6 +47,25 @@ GROUPS: dict[str, dict[str, Any]] = {
         "blurb_en": "A short set of sample learning paths — math, English, physics, and piano.",
         "blurb_ar": "مجموعة قصيرة من مسارات التعلم التجريبية — رياضيات وإنجليزي وفيزياء وبيانو.",
     },
+    "agent": {
+        "id": "agent",
+        "titles": {
+            "he": "דרכים שנבנו עם הסוכן",
+            "en": "Agent-built paths",
+            "ar": "مسارات بناها الوكيل",
+        },
+        "blurbs": {
+            "he": "דרכי למידה מלאות שנבנו עם סוכן בניית הדרכים ופורסמו.",
+            "en": "Full learning paths built with the path-building agent and published.",
+            "ar": "مسارات تعلم كاملة بُنيت مع وكيل بناء المسارات ونُشرت.",
+        },
+        "title_he": "דרכים שנבנו עם הסוכן",
+        "title_en": "Agent-built paths",
+        "title_ar": "مسارات بناها الوكيل",
+        "blurb_he": "דרכי למידה מלאות שנבנו עם סוכן בניית הדרכים ופורסמו.",
+        "blurb_en": "Full learning paths built with the path-building agent and published.",
+        "blurb_ar": "مسارات تعلم كاملة بُنيت مع وكيل بناء المسارات ونُشرت.",
+    },
 }
 
 
