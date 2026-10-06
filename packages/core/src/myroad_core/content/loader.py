@@ -322,7 +322,7 @@ def apply_catalog_locale(card: dict[str, Any], locale: str) -> dict[str, Any]:
     loc = normalize_locale(locale)
     titles = dict(card.get("titles") or {})
     blurbs = dict(card.get("blurbs") or {})
-    # Fill from legacy card keys if maps incomplete
+    # Fill from legacy card keys when the maps lack an entry
     if card.get("titleHe") and "he" not in titles:
         titles["he"] = card["titleHe"]
     if card.get("titleEn") and "en" not in titles:
@@ -356,15 +356,18 @@ def apply_catalog_locale(card: dict[str, Any], locale: str) -> dict[str, Any]:
 
 
 def list_catalog_cards(store: PathStore, *, locale: str | None = None) -> list[dict[str, Any]]:
-    """Latest version of each path that carries catalog metadata (subject/group).
+    """Latest published version of each path that carries catalog metadata.
 
+    Drafts never appear in the catalog. When a published path gets a newer
+    draft (e.g. from feedback), the catalog keeps showing the published one.
     When locale is set, title/blurb/subjectLabel follow the platform UI locale
     (catalog chrome). Content tokens are not involved here.
     """
     rows = store._conn.execute(
         "SELECT path_id, document_json FROM versions v "
-        "WHERE version_num = ("
-        "  SELECT MAX(version_num) FROM versions v2 WHERE v2.path_id = v.path_id"
+        "WHERE status = 'published' AND version_num = ("
+        "  SELECT MAX(version_num) FROM versions v2 "
+        "  WHERE v2.path_id = v.path_id AND v2.status = 'published'"
         ") ORDER BY path_id"
     ).fetchall()
     cards: list[dict[str, Any]] = []
@@ -417,6 +420,8 @@ def list_catalog_cards(store: PathStore, *, locale: str | None = None) -> list[d
             "topicCount": len(topics),
             "explainLocale": raw.get("explainLocale") or "he",
             "contentLocale": raw.get("contentLocale") or raw.get("contentLanguage") or "he",
+            "agentBuilt": bool(raw.get("agentBuilt")),
+            "demo": bool(raw.get("demo")),
         }
         if locale is not None:
             card = apply_catalog_locale(card, locale)
