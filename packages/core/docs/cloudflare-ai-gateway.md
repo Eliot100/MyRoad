@@ -18,7 +18,11 @@ Optional test override of the grok base URL (not a secret):
 Do not set or read a provider API key in MyRoad.
 
 If `CLOUDFLARE_ACCOUNT_ID` or `CLOUDFLARE_GATEWAY_ID` is missing, `/add-path`
-says the Cloudflare gateway is not configured.
+says the Cloudflare gateway is not configured, names exactly which variable is
+missing, and offers demo mode (see `agent-path-builder.md`).
+
+The path builder sends `"response_format": {"type": "json_object"}` so Grok
+answers with strict JSON.
 
 ## Request shape
 
