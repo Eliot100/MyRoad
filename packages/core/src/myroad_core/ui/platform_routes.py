@@ -28,14 +28,7 @@ from myroad_core.ui.i18n import (
     subject_label,
     t,
 )
-from myroad_core.ui.cloudflare_gateway import (
-    GatewayNotConfigured,
-    GatewayRequestError,
-    call_grok_chat,
-    gateway_is_configured,
-)
-
-COOKIE_AUTHOR_SID = "myroad_author_sid"
+from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 
 ACTOR_LEARNER = "user_learner_poc"
 
@@ -144,7 +137,8 @@ def register_platform_routes(
 
         if not sid or sid not in sessions or sessions[sid].get("pathId") != path_id:
             sid = uuid.uuid4().hex
-            latest = store.get_path_latest(path_id)
+            # Learners play the newest published version; a newer draft stays private.
+            latest = store.get_path_latest_published(path_id) or store.get_path_latest(path_id)
             progress = store.get_progress(user_id, path_id) if resume else None
             sessions[sid] = {
                 "sid": sid,
@@ -447,71 +441,16 @@ def register_platform_routes(
         _set_identity_cookies(resp, updated, updated.get("locale") or "he")
         return resp
 
-    def _author_gate_ok(request: Request) -> bool:
-        gates: dict[str, bool] = getattr(app.state, "author_gateway_ok", {})
-        sid = request.cookies.get(COOKIE_AUTHOR_SID)
-        return bool(sid and gates.get(sid))
-
-    @app.get("/add-path", response_class=HTMLResponse)
-    def add_path_page(request: Request) -> HTMLResponse:
-        locale = _locale(request)
-        configured = gateway_is_configured()
-        ok = configured and _author_gate_ok(request)
-        error = "" if configured else t(locale, "err_gateway_not_configured")
-        return templates.TemplateResponse(
-            request,
-            "add_path.html",
-            _shell_ctx(
-                request,
-                gateway_ok=ok,
-                gateway_configured=configured,
-                error=error,
-            ),
-        )
-
-    @app.post("/add-path/check-gateway", response_model=None)
-    def add_path_check_gateway(request: Request):
-        """Call Cloudflare AI Gateway. Does not read a provider API key."""
-        locale = _locale(request)
-        try:
-            call_grok_chat(
-                [
-                    {
-                        "role": "user",
-                        "content": "Reply with the single word ok.",
-                    }
-                ]
-            )
-        except GatewayNotConfigured:
-            return templates.TemplateResponse(
-                request,
-                "add_path.html",
-                _shell_ctx(
-                    request,
-                    gateway_ok=False,
-                    gateway_configured=False,
-                    error=t(locale, "err_gateway_not_configured"),
-                ),
-            )
-        except GatewayRequestError:
-            return templates.TemplateResponse(
-                request,
-                "add_path.html",
-                _shell_ctx(
-                    request,
-                    gateway_ok=False,
-                    gateway_configured=True,
-                    error=t(locale, "err_gateway_request"),
-                ),
-            )
-        if not hasattr(app.state, "author_gateway_ok"):
-            app.state.author_gateway_ok = {}
-        sid = request.cookies.get(COOKIE_AUTHOR_SID) or uuid.uuid4().hex
-        app.state.author_gateway_ok[sid] = True
-        resp = RedirectResponse("/add-path", status_code=303)
-        # Opaque session id only. Never a provider key.
-        resp.set_cookie(COOKIE_AUTHOR_SID, sid, httponly=True, samesite="lax", max_age=3600)
-        return resp
+    register_agent_builder_routes(
+        app,
+        templates=templates,
+        store=store,
+        tools=tools,
+        shell_ctx=_shell_ctx,
+        current_learner=_learner,
+        login_redirect=_login_redirect,
+        locale_of=_locale,
+    )
 
     @app.post("/locale")
     def set_locale(
