@@ -58,12 +58,18 @@ topic map before play, completion stats, and per-user progress in **file SQLite*
 The platform loads it via `CONTENT_DIR`, a checkout/submodule at
 `packages/core/content`, or a sibling `../MyRoad-content` clone.
 
-**Add a path** (`/add-path`) calls Grok through Cloudflare AI Gateway BYOK.
-The xAI key stays in Cloudflare Secrets Store. MyRoad does not accept or send a
-provider API key. Server environment names: `CLOUDFLARE_ACCOUNT_ID`,
-`CLOUDFLARE_GATEWAY_ID`, and optionally `CLOUDFLARE_AI_GATEWAY_TOKEN` when the
-gateway has authenticated gateway enabled. If the account id or gateway id is
-missing, the page says the Cloudflare gateway is not configured. See
+**Add a path** (`/add-path`) is a multi-step agent path builder: goal, existing
+paths in the same subject, a JSON outline (validated with Pydantic, editable),
+one model call per topic (each topic saved to the draft as soon as it fills),
+then review and publish. Drafts are saved in the PathStore with an agentId; the
+user or the agent may publish, and feedback creates a new draft version. The
+model is Grok through Cloudflare AI Gateway BYOK. The xAI key stays in
+Cloudflare Secrets Store. MyRoad does not accept or send a provider API key.
+Server environment names: `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_GATEWAY_ID`, and
+optionally `CLOUDFLARE_AI_GATEWAY_TOKEN` when the gateway has authenticated
+gateway enabled. If a required variable is missing, the page names it and offers
+**demo mode**, which builds a full Hebrew 12+ stage draft offline (labeled demo).
+See `packages/core/docs/agent-path-builder.md` and
 `packages/core/docs/cloudflare-ai-gateway.md`. The old `/author` golden-loop POC
 remains unlinked from the main nav.
 
@@ -77,7 +83,7 @@ pip install -e ".[api]"
 uvicorn myroad_core.ui.app:app --reload --port 8765
 # http://127.0.0.1:8765/          catalog
 # http://127.0.0.1:8765/login     register / sign in (email)
-# http://127.0.0.1:8765/add-path  gated add-a-path flow
+# http://127.0.0.1:8765/add-path  agent path builder (demo mode works without Cloudflare)
 ```
 
 Windows PowerShell:
