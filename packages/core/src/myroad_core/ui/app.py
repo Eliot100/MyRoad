@@ -5,7 +5,8 @@ Run:
   uvicorn myroad_core.ui.app:app --reload --port 8765
 
 Catalog seeds demo content paths as published (explicit sample allow-list).
-A signed-in user may publish from the author screen.
+A signed-in user may publish from the author screen. /add-path runs the agent
+path builder (Cloudflare AI Gateway, or demo mode without it).
 """
 from __future__ import annotations
 
@@ -80,7 +81,7 @@ def create_learner_app(
         if content_dir.is_dir():
             content_seed = seed_content_paths(path_store, content_dir=content_dir)
 
-    app = FastAPI(title="MyRoad", version="0.8.2")
+    app = FastAPI(title="MyRoad", version="0.9.0")
     app.state.store = path_store
     app.state.db_path = resolved_db
     app.state.tools = tools
