@@ -109,6 +109,7 @@
                 <div class="path-meta">
                   <span class="subject-pill">{{ c.subjectLabel }}</span>
                   {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
+                  {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
                 </div>
                 <h3>{{ c.title }}</h3>
                 <p>{{ c.blurb }}</p>
@@ -139,6 +140,8 @@
           <span class="subject-pill">{{ c.subjectLabel }}</span>
           {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
           {% if c.nodeCount %}<span class="mins">{{ c.nodeCount }} {{ t('nodes') }}</span>{% endif %}
+          {% if c.agentBuilt %}<span class="status-pill agent">{{ t('agent_badge') }}</span>{% endif %}
+          {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
         </div>
         <h3>{{ c.title }}</h3>
         <p>{{ c.blurb }}</p>
