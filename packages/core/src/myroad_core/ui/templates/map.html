@@ -16,7 +16,7 @@
   </header>
 
   <section class="card path-head">
-    <h1>{{ meta.emoji }} {{ meta.title }}</h1>
+    <h1>{{ meta.emoji }} {{ meta.title }}{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}</h1>
     <p class="lede">{{ meta.blurb }}</p>
     <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
