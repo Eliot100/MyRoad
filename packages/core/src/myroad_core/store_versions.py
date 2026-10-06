@@ -31,6 +31,17 @@ class VersionMixin:
             raise NotFoundError(f"path {path_id} not found")
         return PathVersion.model_validate_json(row["document_json"])
 
+    def get_path_latest_published(self, path_id: str) -> PathVersion | None:
+        """Highest published version of a path, or None when nothing is published."""
+        row = self._conn.execute(
+            "SELECT document_json FROM versions WHERE path_id = ? AND status = ? "
+            "ORDER BY version_num DESC LIMIT 1",
+            (path_id, PathStatus.published.value),
+        ).fetchone()
+        if row is None:
+            return None
+        return PathVersion.model_validate_json(row["document_json"])
+
     def list_versions(self, path_id: str) -> list[dict[str, Any]]:
         rows = self._conn.execute(
             "SELECT version_id, version_num, status, created_at, updated_at "
