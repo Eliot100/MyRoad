@@ -547,3 +547,122 @@ button.secondary {
   font: inherit;
   cursor: pointer;
 }
+
+/* Agent path builder (/add-path) */
+.stepper {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+.stepper .step {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .7rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #f9f7f2;
+  color: var(--muted);
+  font-size: .92rem;
+}
+.stepper .step a { display: inline-flex; align-items: center; gap: .4rem; color: inherit; text-decoration: none; }
+.stepper .step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: #efe8dc;
+  font-weight: 700;
+  font-size: .8rem;
+}
+.stepper .step.current { border-color: var(--accent); color: var(--ink); background: #fff; }
+.stepper .step.current .step-n { background: var(--accent); color: #fff; }
+.stepper .step.done .step-n { background: color-mix(in srgb, var(--accent) 25%, white); color: var(--accent); }
+.builder-form { display: grid; gap: .5rem; }
+.builder-form label { font-size: .9rem; color: var(--muted); }
+.builder-form textarea,
+.builder-form select,
+.builder-form input[type="text"],
+.builder-form input[type="number"] {
+  font: inherit;
+  padding: .55rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  width: 100%;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: .75rem;
+  margin: .25rem 0 .5rem;
+}
+.field-grid > div { display: grid; gap: .3rem; }
+.mode-pick {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: .6rem .9rem;
+  margin: .25rem 0 .5rem;
+  display: grid;
+  gap: .35rem;
+}
+.mode-pick legend { font-size: .9rem; color: var(--muted); padding: 0 .3rem; }
+.mode-pick .radio { display: flex; gap: .5rem; align-items: center; color: var(--ink); }
+.inline-form { display: inline-block; margin-top: .5rem; }
+.gateway-panel .security-note { margin-top: .85rem; }
+.plain-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .45rem; }
+.outline-topic {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: .75rem .9rem;
+  margin: .5rem 0;
+}
+.outline-topic legend { font-weight: 650; padding: 0 .3rem; }
+.topic-edit { display: grid; grid-template-columns: 6rem 1fr; gap: .6rem; align-items: end; }
+.topic-edit label { display: grid; gap: .25rem; }
+.stage-list { padding-inline-start: 0; list-style: none; margin: .6rem 0 0; display: grid; gap: .45rem; }
+.stage-row {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(10rem, 1fr) 6.5rem 5rem;
+  gap: .45rem;
+  align-items: center;
+}
+.stage-row .type-pill, .stage-row .status-pill { justify-self: start; }
+.stage-row .stage-objective { grid-column: 2 / -1; }
+.build-list { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; gap: .5rem; }
+.build-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center;
+  padding: .6rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.build-row .build-title { flex: 1; min-width: 12rem; font-weight: 600; }
+.build-row.done { border-color: color-mix(in srgb, var(--ok) 35%, white); }
+.build-row.failed { border-color: color-mix(in srgb, var(--warn) 45%, white); background: #fffbeb; }
+.build-row .inline-form { margin-top: 0; }
+.build-error { color: var(--warn); flex-basis: 100%; }
+.status-pill.pending { background: #f3f4f6; color: var(--muted); }
+.status-pill.failed { background: #fffbeb; color: var(--warn); }
+.status-pill.demo { background: #fdf2f8; color: #9d174d; font-weight: 700; }
+.status-pill.agent { background: #eef2ff; color: #3730a3; }
+.issue-list { margin: .4rem 0 0; padding-inline-start: 1.2rem; }
+.publish-row form { display: inline-block; }
+.review-topic { border-top: 1px solid var(--line); padding: .6rem 0; }
+.review-topic summary { cursor: pointer; font-weight: 650; }
+.review-stage { padding: .55rem 0; border-bottom: 1px dashed var(--line); }
+.review-stage p { margin: .25rem 0; }
+.choice-preview { margin: .25rem 0 0; padding-inline-start: 1.2rem; }
+.choice-preview .correct { color: var(--ok); font-weight: 650; }
+@media (max-width: 640px) {
+  .stage-row { grid-template-columns: 3.5rem 1fr; }
+  .topic-edit { grid-template-columns: 1fr; }
+}
