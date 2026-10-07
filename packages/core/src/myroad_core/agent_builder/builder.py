@@ -10,7 +10,12 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from myroad_core.agent_builder.completeness import CompletenessReport, check_path_completeness
+from myroad_core.agent_builder.completeness import (
+    CompletenessReport,
+    DraftProblem,
+    check_path_completeness,
+    draft_problems,
+)
 from myroad_core.agent_builder.generator import GenerationError, PathGenerator
 from myroad_core.agent_builder.models import (
     FilledTopic,
@@ -232,6 +237,22 @@ def assemble_document(raw: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def preview_document(spec: GoalSpec, outline: PathOutline) -> dict[str, Any]:
+    """In-memory draft for an outline that is not saved yet (no store write).
+
+    Used to show live problems on the steps before the draft exists.
+    """
+    raw: dict[str, Any] = {
+        "subject": spec.subject,
+        "agentBuild": {
+            "spec": spec.model_dump(mode="json"),
+            "outline": outline.model_dump(mode="json"),
+            "filled": {},
+        },
+    }
+    return assemble_document(raw)
+
+
 class AgentPathBuilder:
     """Draft lifecycle for agent-built paths (create, fill per topic, publish, feedback)."""
 
@@ -254,6 +275,9 @@ class AgentPathBuilder:
 
     def completeness(self, path_id: str, version_id: str) -> CompletenessReport:
         return check_path_completeness(self.load(path_id, version_id))
+
+    def problems(self, path_id: str, version_id: str) -> list[DraftProblem]:
+        return draft_problems(self.load(path_id, version_id))
 
     def _save(self, raw: dict[str, Any], *, actor_id: str, agent_id: str, prefix: str) -> OpResponse:
         resp = self.tools.save_version(

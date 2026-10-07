@@ -217,5 +217,19 @@
   "channel_record": "تسجيل",
   "channel_mouse": "الفأرة",
   "builder_stat_seq_edges": "روابط التسلسل",
-  "builder_stat_pre_edges": "روابط المتطلبات السابقة"
+  "builder_stat_pre_edges": "روابط المتطلبات السابقة",
+  "draft_problems_heading": "ما ينقص في المسودة:",
+  "draft_problems_none": "لم نجد مشاكل في المسودة حتى الآن.",
+  "draft_problem_missing_title_he": "ليس للمسار عنوان بالعبرية (titles.he).",
+  "draft_problem_missing_blurb_he": "ليس للمسار وصف بالعبرية (blurbs.he).",
+  "draft_problem_missing_emoji": "ليس للمسار رمز تعبيري.",
+  "draft_problem_bad_subject": "ليس للمسار مجال صالح: «{subject}».",
+  "draft_problem_no_nodes": "لا توجد مراحل في المسار بعد.",
+  "draft_problem_node_missing_body": "المرحلة «{title}» ليس فيها نص شرح.",
+  "draft_problem_node_correct_missing": "في المرحلة «{title}» خيارات إجابة لكن لا توجد إجابة صحيحة.",
+  "draft_problem_node_correct_not_in_choices": "في المرحلة «{title}» الإجابة الصحيحة «{correct}» ليست من بين الخيارات ({choices}).",
+  "draft_problem_node_invalid": "في المرحلة «{title}» محتوى غير صالح.",
+  "draft_problem_unknown_step_type": "للمرحلة «{title}» نوع غير معروف: «{type}».",
+  "draft_problem_topic_unknown_nodes": "الموضوع «{topic}» يشير إلى مراحل غير موجودة: {ids}.",
+  "draft_problem_topic_no_nodes": "الموضوع «{topic}» ليس فيه مراحل."
 }
