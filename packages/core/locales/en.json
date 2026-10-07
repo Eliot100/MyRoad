@@ -234,5 +234,6 @@
   "draft_problem_topic_no_nodes": "Topic “{topic}” has no steps.",
   "builder_publish_blocked": "Publishing is blocked by format errors ({count}). Fix them and try again:",
   "draft_problem_severity_error": "Blocks publishing",
-  "draft_problem_severity_warning": "Warning"
+  "draft_problem_severity_warning": "Warning",
+  "builder_and_more": "and {n} more"
 }

@@ -234,5 +234,6 @@
   "draft_problem_topic_no_nodes": "בנושא „{topic}” אין שלבים.",
   "builder_publish_blocked": "הפרסום נחסם בגלל שגיאות מבנה ({count}). תקנו אותן ונסו שוב:",
   "draft_problem_severity_error": "חוסם פרסום",
-  "draft_problem_severity_warning": "אזהרה"
+  "draft_problem_severity_warning": "אזהרה",
+  "builder_and_more": "ועוד {n}"
 }

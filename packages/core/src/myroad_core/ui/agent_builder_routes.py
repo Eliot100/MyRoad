@@ -51,6 +51,8 @@ STEPS = ("goal", "existing", "outline", "build", "review")
 
 # Unicode first-strong isolate / pop: keeps ids and titles readable inside RTL text.
 _FSI, _PDI = "\u2068", "\u2069"
+# At most this many ids per list value, and problems in the blocked-publish flash.
+FLASH_CAP = 5
 
 
 def default_generator_factory(mode: str) -> PathGenerator:
@@ -176,9 +178,16 @@ def register_agent_builder_routes(
             )
         return out
 
+    def _capped(locale: str, items: list[str], sep: str = ", ") -> str:
+        shown = sep.join(items[:FLASH_CAP])
+        extra = len(items) - FLASH_CAP
+        return shown + (" " + t(locale, "builder_and_more", n=extra) if extra > 0 else "")
+
     def _problem_view(locale: str, problem: dict[str, Any]) -> dict[str, Any]:
         fmt = {
-            k: _FSI + (", ".join(str(x) for x in v) if isinstance(v, (list, tuple)) else str(v)) + _PDI
+            k: _FSI
+            + (_capped(locale, [str(x) for x in v]) if isinstance(v, (list, tuple)) else str(v))
+            + _PDI
             for k, v in problem["params"].items()
         }
         return {**problem, "message": t(locale, problem["message_key"], **fmt)}
@@ -567,8 +576,9 @@ def register_agent_builder_routes(
         publish_blocked = bool(blocked) and bool(blocking) and raw.get("status") != "published"
         error = ""
         if publish_blocked:
-            error = t(locale, "builder_publish_blocked", count=len(blocking)) + " " + " · ".join(
-                p["message"] for p in blocking
+            # One list only (the blocking problems), capped; autoescaped by the template.
+            error = t(locale, "builder_publish_blocked", count=len(blocking)) + " " + _capped(
+                locale, [p["message"] for p in blocking], sep=" · "
             )
         return _render(
             request, "review", sess,

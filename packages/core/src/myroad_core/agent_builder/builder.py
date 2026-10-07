@@ -434,8 +434,8 @@ class AgentPathBuilder:
 
         Refused, with nothing published, when the draft has a format error
         (severity "error" in draft_problems) or fails the completeness rule
-        (unchanged). Format errors are listed in data["blockingProblems"] with
-        the same item shape as draft_problems.
+        (unchanged). Format errors are listed once, in data["blockingProblems"],
+        with the same item shape as draft_problems.
         """
         raw = self.load(path_id, version_id)
         report = check_path_completeness(raw)
@@ -449,7 +449,7 @@ class AgentPathBuilder:
                     {
                         "code": PUBLISH_FORMAT_ERROR,
                         "message": "path has format errors that block publishing",
-                        "problems": [p.as_dict() for p in blockers],
+                        "count": len(blockers),
                     }
                 )
                 data["blockingProblems"] = [p.as_dict() for p in blockers]

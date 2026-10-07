@@ -209,6 +209,7 @@ def test_problem_locale_keys_exist_in_he_en_ar() -> None:
         "draft_problem_severity_error",
         "draft_problem_severity_warning",
         "builder_publish_blocked",
+        "builder_and_more",
     ]
     for key in keys:
         en, he, ar = packs["en"][key], packs["he"][key], packs["ar"][key]

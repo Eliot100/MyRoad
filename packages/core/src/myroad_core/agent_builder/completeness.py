@@ -300,8 +300,9 @@ def draft_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProble
         t.get("key") for t in (((raw.get("agentBuild") or {}).get("outline") or {}).get("topics") or [])
     ]
     node_topic: dict[str, tuple[str | None, int | None]] = {}
-    known_ids = list(dict.fromkeys(n[0] for n in nodes if n[0]))
-    probe_nodes = [{**_PROBE_NODE, "id": nid} for nid in known_ids] or [dict(_PROBE_NODE)]
+    ordered_ids = list(dict.fromkeys(n[0] for n in nodes if n[0]))
+    known_ids = set(ordered_ids)
+    probe_nodes = [{**_PROBE_NODE, "id": nid} for nid in ordered_ids] or [dict(_PROBE_NODE)]
     topic_problems: list[DraftProblem] = []
     for pos, topic in enumerate(topics):
         tid = topic.get("id") or f"topic_{pos + 1}"

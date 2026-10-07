@@ -107,7 +107,8 @@ def test_format_error_blocks_publish_and_publishes_nothing(
     assert [e["code"] for e in resp.errors] == [PUBLISH_FORMAT_ERROR]
     probs = resp.data["blockingProblems"]
     assert [p["code"] for p in probs] == [code]
-    assert probs == resp.errors[0]["problems"]
+    # Listed once: in data, not repeated inside the error entry.
+    assert "problems" not in resp.errors[0] and resp.errors[0]["count"] == 1
     p = probs[0]
     assert p["severity"] == "error" and p[where[0]] == where[1]
     assert set(p) >= {"code", "message_key", "severity", "field", "node_id", "topic_id", "topic_index", "params"}
@@ -206,9 +207,7 @@ def app_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     store.close()
 
 
-@pytest.mark.parametrize("by", ["agent", "user"])
-def test_blocked_publish_redirects_to_review_with_problems(app_client, by: str) -> None:
-    client, app, store = app_client
+def _built_draft_over_http(client: TestClient) -> None:
     client.cookies.set("myroad_locale", "en")
     client.post("/login", data={"first_name": "Noa", "last_name": "Levi", "email": "g@example.com", "next": "/"})
     client.post(
@@ -218,6 +217,12 @@ def test_blocked_publish_redirects_to_review_with_problems(app_client, by: str) 
     client.post("/add-path/outline")
     client.post("/add-path/outline/approve", data={})
     client.post("/add-path/build/all")
+
+
+@pytest.mark.parametrize("by", ["agent", "user"])
+def test_blocked_publish_redirects_to_review_with_problems(app_client, by: str) -> None:
+    client, app, store = app_client
+    _built_draft_over_http(client)
 
     review = client.get("/add-path/review")
     assert review.context["publish_blocked"] is False
@@ -252,3 +257,37 @@ def test_blocked_publish_redirects_to_review_with_problems(app_client, by: str) 
     # Hebrew flash follows the UI locale.
     he = client.post("/locale", data={"locale": "he", "next": "/add-path/review?blocked=1"}, follow_redirects=True)
     assert "הפרסום נחסם" in he.context["error"]
+
+
+def test_blocked_flash_escapes_html_and_caps_the_list(app_client) -> None:
+    client, app, store = app_client
+    _built_draft_over_http(client)
+    builder = app.state.path_builder
+    sess = next(iter(app.state.builder_sessions.values()))
+    pid, vid = sess["pathId"], sess["versionId"]
+    evil = '<script>alert("x")</script><b>bold</b>'
+
+    def _many_errors(raw: dict) -> None:
+        for block in raw["blocks"]:
+            kids = block["content"]["kids"]
+            kids["title"] = evil
+            if kids.get("choices"):
+                kids["correct"] = "zz"
+        raw["topics"][0]["node_ids"] += [f"ghost_{i}" for i in range(8)]
+
+    _edit(builder, pid, vid, _many_errors)
+    r = client.post("/add-path/publish", data={"by": "agent"}, follow_redirects=True)
+    assert str(r.url).endswith("/add-path/review?blocked=1")
+    assert store.get_path_latest_published(pid) is None
+    blocking = r.context["blocking_problems"]
+    assert len(blocking) == 7  # 6 quiz steps (3 topics x practice/check) + 1 topic
+    flash = r.context["error"]
+    assert "Publishing is blocked by format errors (7)" in flash
+    assert flash.count("not one of the choices") == 5 and "and 2 more" in flash
+    # Long id lists inside one message are capped too.
+    topic_msg = next(p["message"] for p in blocking if p["code"] == "topic_unknown_nodes")
+    assert "ghost_4" in topic_msg and "ghost_5" not in topic_msg and "and 3 more" in topic_msg
+    # The title is HTML-escaped in the rendered flash, never injected.
+    assert "<script>alert" not in r.text and "<b>bold</b>" not in r.text
+    assert "&lt;script&gt;alert(" in r.text and "&lt;b&gt;bold&lt;/b&gt;" in r.text
+
