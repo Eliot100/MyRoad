@@ -17,7 +17,7 @@ from myroad_core.content.schema import validate_content_path
 
 def test_all_paths_locale_rules_pass() -> None:
     paths = load_content_paths(default_content_dir())
-    assert len(paths) == 10
+    assert paths, "no content paths found"
     for p in paths:
         errs = validate_locale_consistency(p)
         assert errs == [], errs

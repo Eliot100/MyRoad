@@ -68,15 +68,16 @@ def test_clean_draft_has_no_problems() -> None:
 def test_agent_draft_is_exempt_from_minutes_limit() -> None:
     doc = _full_doc(length="long")
     assert doc["estimatedMinutes"] > 60
-    for minutes in (0, 61, 500, None):
+    for minutes in (0, 61, 500, 1201, 100000, None):
         d = copy.deepcopy(doc)
         d["estimatedMinutes"] = minutes
         assert draft_problems(d) == [], minutes
-    # The same value would fail the sample-content schema, so the exemption is real.
+    # Past the sample-content limit the schema rejects it, so the exemption is real
+    # (the limit itself may change, e.g. 60 -> 1200 in schema v2).
     with pytest.raises(ValidationError):
         ContentPath.model_validate(
             {"id": "path_x", "titles": {"he": "x"}, "blurbs": {"he": "x"}, "subject": "math",
-             "emoji": "x", "estimated_minutes": doc["estimatedMinutes"],
+             "emoji": "x", "estimated_minutes": 100000,
              "nodes": [{"type": "learn", "title": "x", "body_he": "x"}]}
         )
 
