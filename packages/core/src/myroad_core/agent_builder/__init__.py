@@ -6,8 +6,14 @@ from myroad_core.agent_builder.builder import (
     TopicResult,
     assemble_document,
     list_user_agent_drafts,
+    preview_document,
 )
-from myroad_core.agent_builder.completeness import CompletenessReport, check_path_completeness
+from myroad_core.agent_builder.completeness import (
+    CompletenessReport,
+    DraftProblem,
+    check_path_completeness,
+    draft_problems,
+)
 from myroad_core.agent_builder.fake import FakePathGenerator
 from myroad_core.agent_builder.generator import (
     GatewayPathGenerator,
@@ -30,6 +36,7 @@ __all__ = [
     "AGENT_ID_GATEWAY",
     "AgentPathBuilder",
     "CompletenessReport",
+    "DraftProblem",
     "FakePathGenerator",
     "FilledTopic",
     "GatewayPathGenerator",
@@ -45,7 +52,9 @@ __all__ = [
     "TopicResult",
     "assemble_document",
     "check_path_completeness",
+    "draft_problems",
     "extract_json_object",
     "list_user_agent_drafts",
     "parse_reply",
+    "preview_document",
 ]

@@ -217,5 +217,19 @@
   "channel_record": "הקלטה",
   "channel_mouse": "עכבר",
   "builder_stat_seq_edges": "קשתות רצף",
-  "builder_stat_pre_edges": "קשתות דרישת קדם"
+  "builder_stat_pre_edges": "קשתות דרישת קדם",
+  "draft_problems_heading": "מה חסר בטיוטה:",
+  "draft_problems_none": "לא נמצאו בעיות בטיוטה עד עכשיו.",
+  "draft_problem_missing_title_he": "לדרך אין כותרת בעברית (titles.he).",
+  "draft_problem_missing_blurb_he": "לדרך אין תיאור בעברית (blurbs.he).",
+  "draft_problem_missing_emoji": "לדרך אין אימוג׳י.",
+  "draft_problem_bad_subject": "לדרך אין תחום תקין: „{subject}”.",
+  "draft_problem_no_nodes": "בדרך עוד אין שלבים.",
+  "draft_problem_node_missing_body": "בשלב „{title}” אין טקסט הסבר.",
+  "draft_problem_node_correct_missing": "בשלב „{title}” יש אפשרויות תשובה אבל אין תשובה נכונה.",
+  "draft_problem_node_correct_not_in_choices": "בשלב „{title}” התשובה הנכונה „{correct}” אינה אחת מהאפשרויות ({choices}).",
+  "draft_problem_node_invalid": "בשלב „{title}” יש תוכן לא תקין.",
+  "draft_problem_unknown_step_type": "לשלב „{title}” יש סוג לא מוכר: „{type}”.",
+  "draft_problem_topic_unknown_nodes": "הנושא „{topic}” מפנה לשלבים שלא קיימים: {ids}.",
+  "draft_problem_topic_no_nodes": "בנושא „{topic}” אין שלבים."
 }

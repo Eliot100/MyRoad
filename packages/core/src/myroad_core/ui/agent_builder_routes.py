@@ -23,7 +23,9 @@ from myroad_core.agent_builder import (
     PathGenerator,
     PathOutline,
     check_path_completeness,
+    draft_problems,
     list_user_agent_drafts,
+    preview_document,
 )
 from myroad_core.agent_builder.models import (
     CHANNELS,
@@ -45,6 +47,9 @@ from myroad_core.ui.cloudflare_gateway import (
 
 COOKIE_AUTHOR_SID = "myroad_author_sid"
 STEPS = ("goal", "existing", "outline", "build", "review")
+
+# Unicode first-strong isolate / pop: keeps ids and titles readable inside RTL text.
+_FSI, _PDI = "\u2068", "\u2069"
 
 
 def default_generator_factory(mode: str) -> PathGenerator:
@@ -170,6 +175,32 @@ def register_agent_builder_routes(
             )
         return out
 
+    def _problem_view(locale: str, problem: dict[str, Any]) -> dict[str, Any]:
+        fmt = {
+            k: _FSI + (", ".join(str(x) for x in v) if isinstance(v, (list, tuple)) else str(v)) + _PDI
+            for k, v in problem["params"].items()
+        }
+        return {**problem, "message": t(locale, problem["message_key"], **fmt)}
+
+    def _live_problems(
+        request: Request, sess: dict[str, Any], doc: dict[str, Any] | None
+    ) -> list[dict[str, Any]]:
+        """Problems in the current draft (saved, or previewed from the outline)."""
+        if doc is None and sess.get("pathId"):
+            learner = current_learner(request)
+            doc = _owned_doc(learner, sess) if learner else None
+        if doc is None and sess.get("spec") and sess.get("outline"):
+            try:
+                doc = preview_document(
+                    GoalSpec.model_validate(sess["spec"]), PathOutline.model_validate(sess["outline"])
+                )
+            except (ValidationError, KeyError, TypeError):
+                doc = None
+        if doc is None:
+            return []
+        locale = locale_of(request)
+        return [_problem_view(locale, p.as_dict()) for p in draft_problems(doc)]
+
     def _render(request: Request, step: str, sess: dict[str, Any], **extra: Any) -> HTMLResponse:
         locale = locale_of(request)
         configured = gateway_is_configured()
@@ -191,6 +222,7 @@ def register_agent_builder_routes(
             channels=CHANNELS,
             error=extra.pop("error", ""),
             flash_ok=extra.pop("flash_ok", ""),
+            draft_problems=_live_problems(request, sess, extra.get("doc")),
         )
         ctx.update(extra)
         return templates.TemplateResponse(request, "add_path.html", ctx)

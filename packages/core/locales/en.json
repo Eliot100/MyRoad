@@ -217,5 +217,19 @@
   "channel_record": "Record",
   "channel_mouse": "Mouse",
   "builder_stat_seq_edges": "Sequence edges",
-  "builder_stat_pre_edges": "Prerequisite edges"
+  "builder_stat_pre_edges": "Prerequisite edges",
+  "draft_problems_heading": "Missing in the draft:",
+  "draft_problems_none": "No problems found in the draft so far.",
+  "draft_problem_missing_title_he": "The path has no Hebrew title (titles.he).",
+  "draft_problem_missing_blurb_he": "The path has no Hebrew description (blurbs.he).",
+  "draft_problem_missing_emoji": "The path has no emoji.",
+  "draft_problem_bad_subject": "The path has no valid subject: “{subject}”.",
+  "draft_problem_no_nodes": "The path has no steps yet.",
+  "draft_problem_node_missing_body": "Step “{title}” has no explanation text.",
+  "draft_problem_node_correct_missing": "Step “{title}” has answer choices but no correct answer.",
+  "draft_problem_node_correct_not_in_choices": "Step “{title}”: the correct answer “{correct}” is not one of the choices ({choices}).",
+  "draft_problem_node_invalid": "Step “{title}” has content that is not valid.",
+  "draft_problem_unknown_step_type": "Step “{title}” has an unknown type: “{type}”.",
+  "draft_problem_topic_unknown_nodes": "Topic “{topic}” points to steps that do not exist: {ids}.",
+  "draft_problem_topic_no_nodes": "Topic “{topic}” has no steps."
 }
