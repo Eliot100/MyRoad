@@ -280,10 +280,12 @@ def test_blocked_flash_escapes_html_and_caps_the_list(app_client) -> None:
     assert str(r.url).endswith("/add-path/review?blocked=1")
     assert store.get_path_latest_published(pid) is None
     blocking = r.context["blocking_problems"]
-    assert len(blocking) == 7  # 6 quiz steps (3 topics x practice/check) + 1 topic
+    quiz_steps = sum(1 for b in builder.load(pid, vid)["blocks"] if b["content"]["kids"].get("choices"))
+    assert quiz_steps >= 6
+    assert len(blocking) == quiz_steps + 1  # every quiz step + 1 topic
     flash = r.context["error"]
-    assert "Publishing is blocked by format errors (7)" in flash
-    assert flash.count("not one of the choices") == 5 and "and 2 more" in flash
+    assert f"Publishing is blocked by format errors ({quiz_steps + 1})" in flash
+    assert flash.count("not one of the choices") == 5 and f"and {quiz_steps + 1 - 5} more" in flash
     # Long id lists inside one message are capped too.
     topic_msg = next(p["message"] for p in blocking if p["code"] == "topic_unknown_nodes")
     assert "ghost_4" in topic_msg and "ghost_5" not in topic_msg and "and 3 more" in topic_msg

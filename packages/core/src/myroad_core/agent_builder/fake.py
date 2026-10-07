@@ -1,7 +1,9 @@
 """Deterministic demo generator: builds a full Hebrew path without any model call."""
 from __future__ import annotations
 
-from myroad_core.agent_builder.generator import GenerationError
+from typing import Any
+
+from myroad_core.agent_builder.generator import GenerationError, keep_known_prerequisites
 from myroad_core.agent_builder.models import (
     FilledStage,
     FilledTopic,
@@ -12,8 +14,12 @@ from myroad_core.agent_builder.models import (
     StageChoice,
     StageMastery,
 )
+from myroad_core.content.schema import SCORE_GROUPS
 
 DEMO_PREFIX = "דמו: "
+
+# Demo score link for psychometric paths: subject -> part of the shared 200-800 score.
+_PSYCHOMETRIC_PART = {"math": "quantitative", "hebrew": "verbal", "english": "english", "general": "writing"}
 
 _TOPIC_THEMES: list[tuple[str, str]] = [
     ("מושגי יסוד", "🧱"),
@@ -76,7 +82,7 @@ class FakePathGenerator:
         self.fail_topics: set[int] = set(fail_topics or set())
         self.calls = 0
 
-    def outline(self, spec: GoalSpec) -> PathOutline:
+    def outline(self, spec: GoalSpec, *, existing_paths: list[dict[str, Any]] | None = None) -> PathOutline:
         self.calls += 1
         n_topics, per_topic = spec.targets()
         pattern = _STAGE_PATTERNS[5 if per_topic >= 5 else 4]
@@ -85,16 +91,32 @@ class FakePathGenerator:
         for i in range(n_topics):
             theme, emoji = _TOPIC_THEMES[i % len(_TOPIC_THEMES)]
             topic_title = f"{theme} — {goal}"
-            stages = [
-                OutlineStage(
-                    title=title.format(topic=theme),
-                    type=stype,  # type: ignore[arg-type]
-                    channel=channel,  # type: ignore[arg-type]
-                    objective=objective.format(topic=theme),
-                    order=j + 1,
+            # Interleaved review: from the second topic on, the second practice stage
+            # (5-stage pattern) or the experience stage (4-stage pattern) mixes up to
+            # two EARLIER topics.
+            review_at = None
+            if i >= 1:
+                review_at = 4 if len(pattern) >= 5 else 3
+            earlier = [f"t{k + 1}" for k in range(max(0, i - 2), i)]
+            stages = []
+            for j, (stype, channel, title, objective) in enumerate(pattern):
+                is_review = review_at == j + 1
+                if is_review:
+                    earlier_names = " + ".join(_TOPIC_THEMES[int(k[1:]) - 1][0] for k in earlier)
+                    stype, channel = "practice", "mouse"
+                    title = f"חזרה מעורבת: {earlier_names} + {theme}"
+                    objective = f"לפתור שאלה שמערבבת את {earlier_names} עם {theme}"
+                stages.append(
+                    OutlineStage(
+                        title=title.format(topic=theme),
+                        type=stype,  # type: ignore[arg-type]
+                        channel=channel,  # type: ignore[arg-type]
+                        objective=objective.format(topic=theme),
+                        order=j + 1,
+                        kind="review" if is_review else "understanding",
+                        review_topic_ids=list(earlier) if is_review else [],
+                    )
                 )
-                for j, (stype, channel, title, objective) in enumerate(pattern)
-            ]
             topics.append(
                 OutlineTopic(
                     key=f"t{i + 1}",
@@ -105,12 +127,21 @@ class FakePathGenerator:
                     stages=stages,
                 )
             )
-        return PathOutline(
+        score = None
+        part = _PSYCHOMETRIC_PART.get(spec.subject)
+        if spec.audience == "psychometric" and part:
+            score = {"group_id": next(iter(SCORE_GROUPS)), "part_id": part, "weight": 1}
+        # Realistic prerequisite: the first published path offered in the same subject.
+        prereqs = [str(p["pathId"]) for p in (existing_paths or [])[:1] if p.get("pathId")]
+        outline = PathOutline(
             title=f"{DEMO_PREFIX}{goal}",
             summary=f"דרך לימוד לדוגמה (מצב דמו) על {goal}: הסבר, תרגול, התנסות ובדיקה בכל נושא.",
             emoji="🧪",
             topics=topics,
+            prerequisite_path_ids=prereqs,
+            score=score,
         )
+        return keep_known_prerequisites(outline, existing_paths)
 
     def fill_topic(
         self,
@@ -149,10 +180,17 @@ class FakePathGenerator:
                 }
                 labels[correct_id] = f"התשובה הנכונה: {stage.objective}"
                 verb = "תרגול" if stage.type == "practice" else "בדיקה"
+                body = f"{verb}: איזו מהתשובות מתארת נכון את {theme}?"
+                if stage.kind == "review":
+                    mixed = [t.title.split(" — ")[0] for t in outline.topics if t.key in stage.review_topic_ids]
+                    body = (
+                        f"חזרה מעורבת: השאלה הזאת משלבת את {' ואת '.join(mixed + [theme])}. "
+                        "איזו תשובה נכונה?"
+                    )
                 stages.append(
                     FilledStage(
                         order=stage.order,
-                        body=f"{verb}: איזו מהתשובות מתארת נכון את {theme}?",
+                        body=body,
                         choices=[StageChoice(id=k, label=v) for k, v in labels.items()],
                         correct=correct_id,
                         feedback_ok="נכון! כל הכבוד.",

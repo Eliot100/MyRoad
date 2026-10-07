@@ -19,12 +19,13 @@ from myroad_core.agent_builder.completeness import (
 )
 from myroad_core.agent_builder.generator import GenerationError, PathGenerator
 from myroad_core.agent_builder.models import (
+    STAGE_NODE_TYPE,
     FilledTopic,
     GoalSpec,
     OutlineTopic,
     PathOutline,
 )
-from myroad_core.content.schema import SUBJECTS
+from myroad_core.content.schema import NODE_BLOCK, SUBJECTS
 from myroad_core.models import (
     Block,
     BlockType,
@@ -51,18 +52,10 @@ UI_LOCALE_TAGS = {"he": "he-IL", "en": "en-US", "ar": "ar-IL"}
 # No 60-minute cap here: that limit belongs to sample content files only.
 STAGE_MINUTES = {"explanation": 5, "practice": 4, "check": 4, "experience": 6}
 
-_BLOCK_TYPE = {
-    "explanation": BlockType.explanation,
-    "practice": BlockType.practice,
-    "check": BlockType.assessment,
-    "experience": BlockType.experience,
-}
-# Node types understood by the existing /play player.
-_KIDS_TYPE = {
-    "explanation": "learn",
-    "practice": "practice",
-    "check": "check",
-    "experience": "speak",
+# Stage type -> player node type and store block type, both from content/schema.py.
+_KIDS_TYPE: dict[str, str] = dict(STAGE_NODE_TYPE)
+_BLOCK_TYPE: dict[str, BlockType] = {
+    stage: BlockType(NODE_BLOCK[node_type]) for stage, node_type in STAGE_NODE_TYPE.items()
 }
 _DEFAULT_MASTERY = {
     "explanation": {"type": "view_and_confirm", "passingCriterion": "ack"},
@@ -105,7 +98,10 @@ def _topic_blocks(
             "body_ui": fs.body,
             "channel": stage.channel,
             "objective": stage.objective,
+            "kind": stage.kind,
         }
+        if stage.kind == "review" and stage.review_topic_ids:
+            kids["review_topic_ids"] = list(stage.review_topic_ids)
         if ui_code == "he":
             kids["body_he"] = fs.body
         elif ui_code == "en":
@@ -130,6 +126,7 @@ def _topic_blocks(
             "stageType": stage.type,
             "channel": stage.channel,
             "topicKey": topic.key,
+            "kind": stage.kind,
         }
         if "choices" in kids:
             content["verifiedCore"] = {
@@ -239,6 +236,14 @@ def assemble_document(raw: dict[str, Any]) -> dict[str, Any]:
     out["topics"] = topics
     out["nodeToBlock"] = node_to_block
     out["estimatedMinutes"] = estimated_minutes(outline)
+    # Schema v2 path-level fields. Always written so a re-assemble after an outline
+    # change also clears them.
+    out["prerequisitePathIds"] = [p for p in outline.prerequisite_path_ids if p != raw.get("pathId")]
+    out["score"] = outline.score.model_dump(mode="json") if outline.score else None
+    groups = list(raw.get("groupIds") or [AGENT_GROUP_ID])
+    if spec.audience and spec.audience not in groups:
+        groups.append(spec.audience)
+    out["groupIds"] = groups
     return out
 
 
