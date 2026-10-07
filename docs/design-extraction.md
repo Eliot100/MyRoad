@@ -1,3 +1,7 @@
+> **היסטורי, הוחלף.** המסמך משקף את דרישות v0 מ-2026-09-30. הכלל שרק אדם מפרסם בוטל ב-2026-10-04, וסוכן רשאי לפרסם. המקור הקובע הוא `docs/vision/`.
+>
+> **Historical, superseded.** Human-only publish was removed on 2026-10-04; agents may publish. See `docs/vision/` for the current source of truth.
+
 # Grok chat extraction — AI Learning Platform: AI Tutors & Adaptive Paths
 
 Source chat: https://grok.com/c/8bbe9a24-ff92-4e16-bd3b-2d3ef376f6b7?rid=4f2c8a58-1fbb-447f-a19d-aaf323dc65b8

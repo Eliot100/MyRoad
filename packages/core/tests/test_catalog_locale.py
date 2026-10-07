@@ -40,9 +40,13 @@ def _has_hebrew(text: str) -> bool:
     return any("\u0590" <= ch <= "\u05FF" for ch in text)
 
 
+def _grade3_ids() -> set[str]:
+    return {p.id for p in load_content_paths(default_content_dir()) if "grade3" in p.group_ids}
+
+
 def test_all_grade3_paths_have_manifest_catalog_chrome() -> None:
-    paths = load_content_paths(default_content_dir())
-    assert len(paths) == 10
+    paths = [p for p in load_content_paths(default_content_dir()) if "grade3" in p.group_ids]
+    assert paths, "no grade3 paths found"
     required = list(locale_codes())
     for p in paths:
         assert "he" in p.titles and p.titles["he"].strip()
@@ -78,21 +82,24 @@ def test_validate_catalog_chrome_flags_missing_locale() -> None:
 def test_list_catalog_cards_pick_by_ui_locale(store: PathStore) -> None:
     seed_content_paths(store, content_dir=default_content_dir())
     raw = list_catalog_cards(store)
-    assert len(raw) == 10
+    assert len(raw) == len(load_content_paths(default_content_dir()))
+    grade3 = _grade3_ids()
     for card in raw:
         assert card.get("titles", {}).get("en"), card["pathId"]
+        if card["pathId"] not in grade3:
+            continue  # full ar chrome is only required of the grade-3 demo set
         assert card.get("titles", {}).get("ar"), card["pathId"]
         assert _has_arabic(card["titles"]["ar"]), card["pathId"]
 
     for loc in locale_codes():
         cards = list_catalog_cards(store, locale=loc)
-        assert len(cards) == 10
+        assert len(cards) == len(raw)
         for card in cards:
             assert card["uiLocale"] == loc
             assert card["title"] == pick(card["titles"], loc)
             assert card["blurb"] == pick(card["blurbs"], loc)
             assert subject_label(card["subject"], loc) == card["subjectLabel"]
-            if loc == "ar":
+            if loc == "ar" and card["pathId"] in grade3:
                 assert _has_arabic(card["title"])
                 assert not _has_hebrew(card["title"])
             if loc == "he" and card["subject"] in {"math", "physics", "piano"}:

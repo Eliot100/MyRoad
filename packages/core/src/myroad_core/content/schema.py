@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -16,13 +16,42 @@ NodeType = Literal[
     "rhythm",
 ]
 
-SubjectId = Literal["math", "english", "physics", "piano", "general"]
+# Single source of truth for step types. Other layers map from here:
+#   NODE_STAGE: node type -> agent builder stage type (explanation/practice/check/experience)
+#   NODE_BLOCK: node type -> PathStore block type (explanation/practice/assessment/experience)
+NODE_TYPES: tuple[str, ...] = get_args(NodeType)
+NODE_STAGE: dict[str, str] = {
+    "learn": "explanation",
+    "celebrate": "explanation",
+    "practice": "practice",
+    "check": "check",
+    "speak": "experience",
+    "piano_keys": "experience",
+    "rhythm": "experience",
+}
+NODE_BLOCK: dict[str, str] = {
+    "learn": "explanation",
+    "celebrate": "explanation",
+    "practice": "practice",
+    "check": "assessment",
+    "speak": "experience",
+    "piano_keys": "experience",
+    "rhythm": "experience",
+}
+INTERACTIVE_NODE_TYPES: tuple[str, ...] = ("practice", "check", "piano_keys", "rhythm")
+
+# What a step is for: first-time understanding, or spaced/interleaved review of earlier topics.
+StepKind = Literal["understanding", "review"]
+STEP_KINDS: tuple[str, ...] = get_args(StepKind)
+
+SubjectId = Literal["math", "english", "physics", "piano", "hebrew", "general"]
 
 SUBJECTS: dict[str, dict[str, str]] = {
     "math": {"he": "מתמטיקה", "en": "Math", "ar": "رياضيات", "color": "#5b8def", "emoji": "🔢"},
     "english": {"he": "אנגלית", "en": "English", "ar": "إنجليزي", "color": "#3db88a", "emoji": "🔤"},
     "physics": {"he": "פיזיקה", "en": "Physics", "ar": "فيزياء", "color": "#9b7bde", "emoji": "🔬"},
     "piano": {"he": "פסנתר", "en": "Piano", "ar": "بيانو", "color": "#e08a4d", "emoji": "🎹"},
+    "hebrew": {"he": "עברית", "en": "Hebrew", "ar": "عبرية", "color": "#d9577a", "emoji": "📖"},
     "general": {"he": "כללי", "en": "General", "ar": "عام", "color": "#6b7280", "emoji": "📚"},
 }
 
@@ -69,6 +98,43 @@ GROUPS: dict[str, dict[str, Any]] = {
 }
 
 
+def _group(gid: str, titles: dict[str, str], blurbs: dict[str, str]) -> dict[str, Any]:
+    g: dict[str, Any] = {"id": gid, "titles": titles, "blurbs": blurbs}
+    for loc in ("he", "en", "ar"):
+        g[f"title_{loc}"] = titles.get(loc)
+        g[f"blurb_{loc}"] = blurbs.get(loc)
+    return g
+
+
+GROUPS["adult"] = _group(
+    "adult",
+    {"he": "מבוגרים שמתחילים מאפס", "en": "Adults starting from zero", "ar": "بالغون يبدأون من الصفر"},
+    {
+        "he": "דרכים ארוכות למבוגרים, מהבסיס ועד רמה מלאה.",
+        "en": "Long paths for adults, from the basics to full level.",
+        "ar": "مسارات طويلة للبالغين، من الأساسيات حتى المستوى الكامل.",
+    },
+)
+GROUPS["psychometric"] = _group(
+    "psychometric",
+    {"he": "הכנה לפסיכומטרי", "en": "Psychometric exam prep", "ar": "التحضير للبسيخومتري"},
+    {
+        "he": "ארבע דרכים שנפגשות בציון אחד: כמותי, מילולי, אנגלית וכתיבה.",
+        "en": "Four paths that meet in one score: quantitative, verbal, English, and writing.",
+        "ar": "أربعة مسارات تلتقي في علامة واحدة: كمي، لفظي، إنجليزي وكتابة.",
+    },
+)
+
+# Unified scores that several paths contribute to (e.g. the psychometric 200-800 score).
+SCORE_GROUPS: dict[str, dict[str, Any]] = {
+    "psychometric_800": {
+        "id": "psychometric_800",
+        "titles": {"he": "ציון פסיכומטרי", "en": "Psychometric score", "ar": "علامة البسيخومتري"},
+        "parts": ("quantitative", "verbal", "english", "writing"),
+    },
+}
+
+
 class ContentChoice(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -109,6 +175,18 @@ class ContentNode(BaseModel):
     record: bool = False
     feedback_ok: str | None = None
     feedback_try: str | None = None
+    # Optional: what the step is for. "review" steps may mix several earlier topics
+    # (interleaving), listed in review_topic_ids; they must be topics that come earlier in the path.
+    kind: StepKind | None = None
+    review_topic_ids: list[str] | None = None
+
+    @model_validator(mode="after")
+    def _review_needs_kind(self) -> ContentNode:
+        if self.review_topic_ids and self.kind != "review":
+            raise ValueError(f"node '{self.title}': review_topic_ids require kind 'review'")
+        if self.review_topic_ids is not None and len(set(self.review_topic_ids)) != len(self.review_topic_ids):
+            raise ValueError(f"node '{self.title}': duplicate review_topic_ids")
+        return self
 
     @model_validator(mode="after")
     def _require_explanation(self) -> ContentNode:
@@ -172,6 +250,25 @@ class ContentTopic(BaseModel):
         return self
 
 
+class ScoreLink(BaseModel):
+    """Links a path to one part of a unified score shared by several paths."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    group_id: str
+    part_id: str
+    weight: float = Field(default=1.0, gt=0)
+
+    @model_validator(mode="after")
+    def _known(self) -> ScoreLink:
+        group = SCORE_GROUPS.get(self.group_id)
+        if group is None:
+            raise ValueError(f"unknown score group_id: {self.group_id}")
+        if self.part_id not in group["parts"]:
+            raise ValueError(f"score part_id '{self.part_id}' not in {group['parts']}")
+        return self
+
+
 class ContentPath(BaseModel):
     """Sample path document stored as JSON under content/.
 
@@ -200,7 +297,12 @@ class ContentPath(BaseModel):
     blurb_ar: str | None = None
     explain_locale: str = "he"
     content_locale: str = "he"
-    estimated_minutes: int = Field(ge=1, le=60)
+    # Long adult paths are allowed (up to 20 hours); grade-3 samples stay short.
+    estimated_minutes: int = Field(ge=1, le=1200)
+    # Other paths the learner should finish first (shown as locked on the map until done).
+    prerequisite_path_ids: list[str] = Field(default_factory=list)
+    # Optional link to a unified score shared by several paths.
+    score: ScoreLink | None = None
     topics: list[ContentTopic] | None = None
     nodes: list[ContentNode] = Field(min_length=1)
 
@@ -243,6 +345,19 @@ class ContentPath(BaseModel):
         if not v.startswith("path_"):
             raise ValueError("path id must start with 'path_'")
         return v
+
+    @model_validator(mode="after")
+    def _prerequisites_shape(self) -> ContentPath:
+        seen: set[str] = set()
+        for pid in self.prerequisite_path_ids:
+            if not pid.startswith("path_"):
+                raise ValueError(f"{self.id}: prerequisite '{pid}' must start with 'path_'")
+            if pid == self.id:
+                raise ValueError(f"{self.id}: a path cannot be its own prerequisite")
+            if pid in seen:
+                raise ValueError(f"{self.id}: duplicate prerequisite '{pid}'")
+            seen.add(pid)
+        return self
 
     @field_validator("group_ids")
     @classmethod
@@ -287,7 +402,47 @@ class ContentPath(BaseModel):
                 missing = [x for x in topic.node_ids if x not in node_id_set]
                 if missing:
                     raise ValueError(f"topic '{topic.id}' references unknown node_ids: {missing}")
+
+        # Review steps may only point to topics that come before the topic holding the step.
+        review_nodes = [n for n in self.nodes if n.review_topic_ids]
+        if review_nodes:
+            if not self.topics:
+                raise ValueError(f"{self.id}: review_topic_ids need explicit topics[]")
+            order = {t.id: i for i, t in enumerate(self.topics)}
+            home = {nid: order[t.id] for t in self.topics for nid in t.node_ids}
+            for node in review_nodes:
+                for tid in node.review_topic_ids or []:
+                    if tid not in order:
+                        raise ValueError(f"node '{node.id}': unknown review topic '{tid}'")
+                    if node.id in home and order[tid] >= home[node.id]:
+                        raise ValueError(f"node '{node.id}': review topic '{tid}' must come earlier in the path")
         return self
+
+
+def check_prerequisites(paths: list[ContentPath]) -> list[str]:
+    """Cross-file checks: every prerequisite exists and there are no cycles. Returns problems."""
+    by_id = {p.id: p for p in paths}
+    problems: list[str] = []
+    for p in paths:
+        for pid in p.prerequisite_path_ids:
+            if pid not in by_id:
+                problems.append(f"{p.id}: unknown prerequisite '{pid}'")
+    state: dict[str, int] = {}
+
+    def visit(pid: str, stack: list[str]) -> None:
+        if state.get(pid) == 2 or pid not in by_id:
+            return
+        if state.get(pid) == 1:
+            problems.append("prerequisite cycle: " + " -> ".join(stack[stack.index(pid):] + [pid]))
+            return
+        state[pid] = 1
+        for nxt in by_id[pid].prerequisite_path_ids:
+            visit(nxt, stack + [pid])
+        state[pid] = 2
+
+    for pid in by_id:
+        visit(pid, [])
+    return problems
 
 
 def infer_topics(path: ContentPath) -> list[ContentTopic]:

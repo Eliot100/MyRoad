@@ -8,6 +8,8 @@ from typing import Any
 
 from myroad_core.content.schema import (
     GROUPS,
+    INTERACTIVE_NODE_TYPES,
+    NODE_BLOCK,
     SUBJECTS,
     ContentNode,
     ContentPath,
@@ -93,15 +95,7 @@ def load_content_paths(content_dir: Path | None = None) -> list[ContentPath]:
     return paths
 
 
-_NODE_TO_BLOCK: dict[str, BlockType] = {
-    "learn": BlockType.explanation,
-    "celebrate": BlockType.explanation,
-    "practice": BlockType.practice,
-    "check": BlockType.assessment,
-    "speak": BlockType.experience,
-    "piano_keys": BlockType.experience,
-    "rhythm": BlockType.experience,
-}
+_NODE_TO_BLOCK: dict[str, BlockType] = {k: BlockType(v) for k, v in NODE_BLOCK.items()}
 
 
 def _node_to_block(node: ContentNode, index: int) -> Block:
@@ -122,7 +116,7 @@ def _node_to_block(node: ContentNode, index: int) -> Block:
             ]
         }
     mastery = None
-    if node.type in ("practice", "check", "piano_keys", "rhythm"):
+    if node.type in INTERACTIVE_NODE_TYPES:
         mastery = {
             "type": "tap_correct" if node.choices else "complete_interaction",
             "passingCriterion": "correct_choice_or_sequence",
