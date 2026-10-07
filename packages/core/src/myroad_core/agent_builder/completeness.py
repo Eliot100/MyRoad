@@ -115,6 +115,21 @@ PROBLEM_CODES: tuple[str, ...] = (
     "topic_no_nodes",
 )
 
+# Format errors that block publishing (product rule). Everything else, and the
+# completeness rule above, stays as it is today. Saving a draft is never blocked.
+BLOCKING_CODES: frozenset[str] = frozenset(
+    {
+        "node_missing_body",
+        "node_correct_not_in_choices",
+        # Emitted only for practice/check nodes WITH choices and no correct id:
+        # the same format error as a correct id that is not a choice.
+        "node_correct_missing",
+        "topic_unknown_nodes",
+    }
+)
+SEVERITY_ERROR = "error"
+SEVERITY_WARNING = "warning"
+
 _PROBE_TEXT = "x"
 _PROBE_NODE: dict[str, Any] = {"type": "learn", "title": _PROBE_TEXT, "body_he": _PROBE_TEXT}
 _NODE_FIELDS = tuple(ContentNode.model_fields)
@@ -161,10 +176,20 @@ class DraftProblem:
     def message_key(self) -> str:
         return PROBLEM_KEY_PREFIX + self.code
 
+    @property
+    def severity(self) -> str:
+        """Severity: "error" blocks publishing, "warning" is shown only."""
+        return SEVERITY_ERROR if self.code in BLOCKING_CODES else SEVERITY_WARNING
+
+    @property
+    def blocking(self) -> bool:
+        return self.severity == SEVERITY_ERROR
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "code": self.code,
             "message_key": self.message_key,
+            "severity": self.severity,
             "field": self.field,
             "node_id": self.node_id,
             "topic_id": self.topic_id,
@@ -309,3 +334,8 @@ def draft_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProble
 
     problems.extend(topic_problems)
     return problems
+
+
+def blocking_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProblem]:
+    """The draft problems that block publishing (severity "error")."""
+    return [p for p in draft_problems(doc) if p.blocking]

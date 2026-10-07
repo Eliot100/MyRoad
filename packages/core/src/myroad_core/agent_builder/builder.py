@@ -13,6 +13,7 @@ from typing import Any
 from myroad_core.agent_builder.completeness import (
     CompletenessReport,
     DraftProblem,
+    blocking_problems,
     check_path_completeness,
     draft_problems,
 )
@@ -40,6 +41,10 @@ from myroad_core.store_schema import _iso_now
 AGENT_ID_GATEWAY = "agent_path_builder_grok"
 AGENT_ID_DEMO = "agent_path_builder_demo"
 AGENT_GROUP_ID = "agent"
+
+# Error codes returned by AgentPathBuilder.publish when it refuses to publish.
+PUBLISH_NOT_COMPLETE = "PATH_NOT_COMPLETE"
+PUBLISH_FORMAT_ERROR = "PATH_FORMAT_ERROR"
 
 UI_LOCALE_TAGS = {"he": "he-IL", "en": "en-US", "ar": "ar-IL"}
 
@@ -425,17 +430,41 @@ class AgentPathBuilder:
     def publish(
         self, *, actor_id: str, path_id: str, version_id: str, by_agent: bool = False
     ) -> OpResponse:
+        """Publish through the builder (user or agent).
+
+        Refused, with nothing published, when the draft has a format error
+        (severity "error" in draft_problems) or fails the completeness rule
+        (unchanged). Format errors are listed in data["blockingProblems"] with
+        the same item shape as draft_problems.
+        """
         raw = self.load(path_id, version_id)
         report = check_path_completeness(raw)
+        blockers = blocking_problems(raw)
         corr = _corr("agent_publish")
-        if not report.complete:
+        if blockers or not report.complete:
+            errors: list[dict[str, Any]] = []
+            data: dict[str, Any] = {}
+            if blockers:
+                errors.append(
+                    {
+                        "code": PUBLISH_FORMAT_ERROR,
+                        "message": "path has format errors that block publishing",
+                        "problems": [p.as_dict() for p in blockers],
+                    }
+                )
+                data["blockingProblems"] = [p.as_dict() for p in blockers]
+            if not report.complete:
+                errors.append(
+                    {"code": PUBLISH_NOT_COMPLETE, "message": "path does not meet the completeness rule"}
+                )
+                data["issues"] = report.issues
             return OpResponse(
                 ok=False,
                 correlationId=corr,
                 pathId=path_id,
                 versionId=version_id,
-                errors=[{"code": "PATH_NOT_COMPLETE", "message": "path does not meet the completeness rule"}],
-                data={"issues": report.issues},
+                errors=errors,
+                data=data,
             )
         agent_id = (raw.get("agentBuild") or {}).get("agentId") or AGENT_ID_GATEWAY
         return self.tools.publish(

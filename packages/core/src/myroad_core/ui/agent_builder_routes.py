@@ -15,6 +15,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 
 from myroad_core.agent_builder import (
+    PUBLISH_FORMAT_ERROR,
     AgentPathBuilder,
     FakePathGenerator,
     GatewayPathGenerator,
@@ -222,8 +223,13 @@ def register_agent_builder_routes(
             channels=CHANNELS,
             error=extra.pop("error", ""),
             flash_ok=extra.pop("flash_ok", ""),
-            draft_problems=_live_problems(request, sess, extra.get("doc")),
         )
+        problems = extra.pop("draft_problems", None)
+        if problems is None:
+            problems = _live_problems(request, sess, extra.get("doc"))
+        ctx["draft_problems"] = problems
+        ctx["blocking_problems"] = [p for p in problems if p["severity"] == "error"]
+        ctx["publish_blocked"] = False
         ctx.update(extra)
         return templates.TemplateResponse(request, "add_path.html", ctx)
 
@@ -510,7 +516,9 @@ def register_agent_builder_routes(
 
     # --- step 5: review and publish ---
     @app.get("/add-path/review", response_class=HTMLResponse)
-    def add_path_review(request: Request, published: str | None = None) -> HTMLResponse:
+    def add_path_review(
+        request: Request, published: str | None = None, blocked: str | None = None
+    ) -> HTMLResponse:
         learner = current_learner(request)
         if not learner:
             return login_redirect(request)
@@ -554,8 +562,19 @@ def register_agent_builder_routes(
             )
         versions = store.list_versions(raw["pathId"])
         published_versions = [v for v in versions if v["status"] == "published"]
+        problems = _live_problems(request, sess, raw)
+        blocking = [p for p in problems if p["severity"] == "error"]
+        publish_blocked = bool(blocked) and bool(blocking) and raw.get("status") != "published"
+        error = ""
+        if publish_blocked:
+            error = t(locale, "builder_publish_blocked", count=len(blocking)) + " " + " · ".join(
+                p["message"] for p in blocking
+            )
         return _render(
             request, "review", sess,
+            draft_problems=problems,
+            publish_blocked=publish_blocked,
+            error=error,
             doc=raw,
             outline=outline,
             topics_view=topics_view,
@@ -587,6 +606,8 @@ def register_agent_builder_routes(
             by_agent=(by == "agent"),
         )
         if not resp.ok:
+            if any(e.get("code") == PUBLISH_FORMAT_ERROR for e in resp.errors):
+                return RedirectResponse("/add-path/review?blocked=1", status_code=303)
             return RedirectResponse("/add-path/review", status_code=303)
         return RedirectResponse("/add-path/review?published=1", status_code=303)
 
