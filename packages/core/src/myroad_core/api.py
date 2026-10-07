@@ -2,19 +2,32 @@
 
 Install with: pip install -e ".[api]"
 Run: uvicorn myroad_core.api:app --reload
+
+Auth (issue #40): every ``/tools/*`` call needs either
+- a logged-in user's session cookie (``myroad_session``), or
+- the server-side agent credential: ``Authorization: Bearer <MYROAD_AGENT_TOKEN>``.
+Otherwise the answer is 401. The actor is taken from the session or the
+credential. A body ``actorId`` / ``agentId`` / ``publisherId`` is never used; if
+one is sent and differs from the authenticated principal, the call gets 403.
+
+To accept the UI's login sessions, point both apps at the same SQLite file
+(``MYROAD_DB``) or pass the same ``PathStore`` to ``create_app``.
 """
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from pydantic import BaseModel, Field
 
+from myroad_core.auth import Principal, resolve_principal
 from myroad_core.models import OpResponse
 from myroad_core.store import PathStore
 from myroad_core.tools import AgentTools
 
 try:
-    from fastapi import FastAPI
+    from fastapi import Depends, FastAPI, HTTPException, Request
+    from fastapi.responses import JSONResponse
 except ImportError as exc:  # pragma: no cover
     raise ImportError(
         "FastAPI is required for the HTTP layer. Install with: pip install -e '.[api]'"
@@ -22,7 +35,9 @@ except ImportError as exc:  # pragma: no cover
 
 
 class Envelope(BaseModel):
-    actorId: str
+    # Not trusted: the actor comes from the session / agent credential.
+    # Accepted only so older clients keep working when it matches.
+    actorId: str | None = None
     agentId: str | None = None
     correlationId: str
     pathId: str | None = None
@@ -91,21 +106,77 @@ class PublishBody(Envelope):
     humanPublisher: bool = False
 
 
+TOOLS_PREFIX = "/tools/"
+
+
+def _unauthorized() -> JSONResponse:
+    return JSONResponse(
+        status_code=401,
+        content={"detail": {"code": "UNAUTHENTICATED", "message": "session or agent credential required"}},
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+
+def current_principal(request: Request) -> Principal:
+    principal = getattr(request.state, "principal", None)
+    if principal is None:  # middleware guarantees this; defence in depth
+        raise HTTPException(
+            status_code=401,
+            detail={"code": "UNAUTHENTICATED", "message": "session or agent credential required"},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return principal
+
+
+def _check_claimed_identity(body: BaseModel, principal: Principal) -> None:
+    """Refuse a body that claims a different actor, agent, or publisher."""
+    claims = {
+        "actorId": (getattr(body, "actorId", None), principal.actor_id),
+        "agentId": (getattr(body, "agentId", None), principal.agent_id),
+        "publisherId": (getattr(body, "publisherId", None), principal.actor_id),
+    }
+    for field, (claimed, actual) in claims.items():
+        if claimed is not None and claimed != actual:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "code": "ACTOR_MISMATCH",
+                    "message": f"{field} must match the authenticated principal (or be omitted)",
+                },
+            )
+
+
 def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> FastAPI:
     path_store = store or PathStore(db_path)
     tools = AgentTools(path_store)
-    app = FastAPI(title="MyRoad Agent Tools API", version="0.1.0")
+    app = FastAPI(title="MyRoad Agent Tools API", version="0.2.0")
     app.state.store = path_store
     app.state.tools = tools
+
+    @app.middleware("http")
+    async def _tools_auth(request: Request, call_next):
+        # Runs before body parsing / routing, so every /tools/* path
+        # (known or not) answers 401 without a session or agent credential.
+        if request.url.path.startswith(TOOLS_PREFIX) or request.url.path == TOOLS_PREFIX.rstrip("/"):
+            principal = resolve_principal(request, path_store)
+            if principal is None:
+                return _unauthorized()
+            request.state.principal = principal
+        return await call_next(request)
+
+    def actor(body: Any, principal: Principal) -> tuple[str, str | None]:
+        _check_claimed_identity(body, principal)
+        return principal.actor_id, principal.agent_id
 
     @app.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
     @app.post("/tools/createDraft", response_model=OpResponse)
-    def create_draft(body: CreateDraftBody) -> OpResponse:
+    def create_draft(body: CreateDraftBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.create_draft(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, name=body.name,
             description=body.description, goal=body.goal, audience=body.audience,
             prerequisites=body.prerequisites, content_language=body.contentLanguage,
@@ -113,35 +184,38 @@ def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> 
         )
 
     @app.post("/tools/getPath", response_model=OpResponse)
-    def get_path(body: Envelope) -> OpResponse:
+    def get_path(body: Envelope, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         if not body.pathId:
             return OpResponse(
                 ok=False, correlationId=body.correlationId,
                 errors=[{"code": "MISSING_IDS", "message": "pathId required"}],
             )
         return tools.get_path(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId,
             version_id=body.versionId,
         )
 
     @app.post("/tools/getVersion", response_model=OpResponse)
-    def get_version(body: Envelope) -> OpResponse:
+    def get_version(body: Envelope, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         if not body.pathId or not body.versionId:
             return OpResponse(
                 ok=False, correlationId=body.correlationId,
                 errors=[{"code": "MISSING_IDS", "message": "pathId and versionId required"}],
             )
         return tools.get_version(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId,
             version_id=body.versionId,
         )
 
     @app.post("/tools/addBlock", response_model=OpResponse)
-    def add_block(body: AddBlockBody) -> OpResponse:
+    def add_block(body: AddBlockBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.add_block(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             version_id=body.versionId or "", type=body.type, title=body.title,
             learning_objective=body.learningObjective, concept=body.concept,
@@ -151,17 +225,19 @@ def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> 
         )
 
     @app.post("/tools/editBlock", response_model=OpResponse)
-    def edit_block(body: EditBlockBody) -> OpResponse:
+    def edit_block(body: EditBlockBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.edit_block(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             version_id=body.versionId or "", block_id=body.blockId, patch=body.patch,
         )
 
     @app.post("/tools/addEdge", response_model=OpResponse)
-    def add_edge(body: AddEdgeBody) -> OpResponse:
+    def add_edge(body: AddEdgeBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.add_edge(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             version_id=body.versionId or "", from_=body.from_, to=body.to,
             relationship=body.relationship, condition=body.condition,
@@ -169,26 +245,29 @@ def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> 
         )
 
     @app.post("/tools/reviseDraft", response_model=OpResponse)
-    def revise_draft(body: ReviseDraftBody) -> OpResponse:
+    def revise_draft(body: ReviseDraftBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.revise_draft(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             base_version_id=body.baseVersionId, change_set=body.changeSet,
             feedback_ids=body.feedbackIds,
         )
 
     @app.post("/tools/validatePath", response_model=OpResponse)
-    def validate_path(body: Envelope) -> OpResponse:
+    def validate_path(body: Envelope, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.validate_path(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             version_id=body.versionId or "",
         )
 
     @app.post("/tools/recordFeedback", response_model=OpResponse)
-    def record_feedback(body: RecordFeedbackBody) -> OpResponse:
+    def record_feedback(body: RecordFeedbackBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.record_feedback(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             version_id=body.versionId or "", target_block_id=body.targetBlockId,
             rating=body.rating, comment=body.comment,
@@ -196,9 +275,10 @@ def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> 
         )
 
     @app.post("/tools/requestPublish", response_model=OpResponse)
-    def request_publish(body: RequestPublishBody) -> OpResponse:
+    def request_publish(body: RequestPublishBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.request_publish(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             version_id=body.versionId or "",
             evidence_snapshot_ref=body.evidenceSnapshotRef,
@@ -206,16 +286,18 @@ def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> 
         )
 
     @app.post("/tools/publish", response_model=OpResponse)
-    def publish(body: PublishBody) -> OpResponse:
+    def publish(body: PublishBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+        actor_id, agent_id = actor(body, principal)
         return tools.publish(
-            actor_id=body.actorId, agent_id=body.agentId,
+            actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
-            version_id=body.versionId or "", publisher_id=body.publisherId,
+            version_id=body.versionId or "", publisher_id=actor_id,
             human_publisher=body.humanPublisher,
         )
 
     return app
 
 
-# Default in-memory app for `uvicorn myroad_core.api:app`
-app = create_app()
+# Default app for `uvicorn myroad_core.api:app`: in-memory unless MYROAD_DB is set
+# (set it to the UI's SQLite file so UI login sessions are accepted here).
+app = create_app(db_path=(os.environ.get("MYROAD_DB") or "").strip() or ":memory:")

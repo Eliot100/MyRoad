@@ -55,7 +55,26 @@ uvicorn myroad_core.api:app --reload
 ```
 
 POST endpoints under `/tools/<op>` (e.g. `/tools/createDraft`) accept the
-shared request envelope (`actorId`, `agentId?`, `correlationId`, …).
+shared request envelope (`correlationId`, `pathId?`, `versionId?`, …).
+
+**Auth (required on every `/tools/*` route).** A call without one of these
+gets `401`:
+
+- **Logged-in user:** the `myroad_session` cookie from the UI login. The
+  session id is random; SQLite keeps only its SHA-256 digest. To accept UI
+  sessions, run both apps on the same SQLite file (`MYROAD_DB=...`) or pass the
+  same `PathStore` to `create_app`.
+- **Agent:** `Authorization: Bearer <credential>`, compared in constant time
+  with the server env var `MYROAD_AGENT_TOKEN` (min 16 chars). Unset or empty =
+  agent access disabled. The agent acts as `MYROAD_AGENT_ID` (default
+  `agent_service`). Set these in the server environment only, never in git.
+
+The actor comes from the session or the credential. `actorId`, `agentId` and
+`publisherId` in the body are not trusted: if sent and they differ from the
+authenticated principal the call gets `403 ACTOR_MISMATCH`.
+
+In-process callers (`AgentTools`, the path builder, the golden loop) do not go
+over HTTP and are unchanged.
 
 ## What this package does
 

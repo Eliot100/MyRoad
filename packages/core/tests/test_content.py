@@ -22,6 +22,11 @@ from fastapi.testclient import TestClient
 
 from myroad_core.ui.app import create_learner_app
 
+def _uid(client) -> str | None:
+    """Signed-in user id, resolved from the server-side session cookie."""
+    return client.app.state.store.get_session_user(client.cookies.get("myroad_session"))
+
+
 def _reg(client, email: str, first: str = "Test", last: str = "User"):
     return client.post(
         "/login",
@@ -182,9 +187,13 @@ def test_identity_login_and_whoami(platform_client: TestClient) -> None:
     r = _reg(platform_client, "noa@example.com", "נועה", "כהן")
     assert r.status_code == 200
     assert "נועה" in r.text
-    uid = platform_client.cookies.get("myroad_uid")
+    uid = _uid(platform_client)
     assert uid
     assert "@" not in uid
+    # Cookies hold an opaque session id, never the user id or email
+    assert platform_client.cookies.get("myroad_uid") is None
+    sid = platform_client.cookies.get("myroad_session")
+    assert sid and uid not in sid and "@" not in sid
 
 
 def test_play_shows_topic_map_first(platform_client: TestClient) -> None:
@@ -259,7 +268,7 @@ def test_completion_stats_and_attempt(platform_client: TestClient, tmp_path) -> 
     assert "סיכום" in done.text or "summary" in done.text.lower() or "Path summary" in done.text or "stats" in done.text.lower() or "אחוז" in done.text or "Mastery" in done.text
     assert "חזרה לקטלוג" in done.text or "Back to catalog" in done.text
 
-    uid = platform_client.cookies.get("myroad_uid")
+    uid = _uid(platform_client)
     assert uid
     attempt = store.latest_attempt(uid, "path_grade3_math_add20")
     assert attempt is not None
@@ -324,7 +333,7 @@ def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
     platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
     platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
 
-    uid = platform_client.cookies.get("myroad_uid")
+    uid = _uid(platform_client)
     assert uid
     prog = store.get_progress(uid, "path_grade3_math_add20")
     assert prog is not None
@@ -437,7 +446,7 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             )
             assert created.status_code == 303
             assert created.headers["location"].rstrip("/").endswith("/settings") or created.headers["location"].endswith("/settings")
-            uid = c.cookies.get("myroad_uid")
+            uid = _uid(c)
             assert uid and "@" not in uid
             c.cookies.clear()
             again = c.post(
@@ -446,7 +455,7 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
                 follow_redirects=True,
             )
             assert again.status_code == 200
-            assert c.cookies.get("myroad_uid") == uid
+            assert _uid(c) == uid
             assert "Gate" in again.text
             assert 'type="password"' not in again.text
             assert 'class="lang-switch"' not in again.text

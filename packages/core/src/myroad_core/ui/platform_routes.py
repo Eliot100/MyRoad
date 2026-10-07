@@ -12,6 +12,7 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.auth.sessions import SESSION_COOKIE, SESSION_TTL_SECONDS
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
 from myroad_core.content.schema import GROUPS, SUBJECTS
@@ -62,7 +63,8 @@ def register_platform_routes(
         return normalize_locale(request.cookies.get(COOKIE_LOCALE))
 
     def _learner(request: Request) -> dict[str, Any] | None:
-        uid = request.cookies.get(COOKIE_USER)
+        # Identity = server-side session only. A user id in a cookie is not trusted.
+        uid = store.get_session_user(request.cookies.get(SESSION_COOKIE))
         if not uid:
             return None
         return store.get_learner(uid)
@@ -83,9 +85,16 @@ def register_platform_routes(
     def _require_learner(request: Request) -> dict[str, Any] | None:
         return _learner(request)
 
-    def _set_identity_cookies(resp, learner: dict[str, Any], locale: str) -> None:
-        resp.set_cookie(COOKIE_USER, learner["userId"], httponly=True, samesite="lax", max_age=86400 * 400)
+    def _set_locale_cookie(resp, locale: str) -> None:
         resp.set_cookie(COOKIE_LOCALE, locale, httponly=False, samesite="lax", max_age=86400 * 400)
+
+    def _start_session(request: Request, resp, learner: dict[str, Any], locale: str) -> None:
+        """Start a fresh server-side session (old one revoked) and set its cookie."""
+        store.revoke_session(request.cookies.get(SESSION_COOKIE))
+        sid = store.create_session(learner["userId"])
+        resp.set_cookie(SESSION_COOKIE, sid, httponly=True, samesite="lax", max_age=SESSION_TTL_SECONDS)
+        resp.delete_cookie(COOKIE_USER)  # legacy user-id cookie, no longer used
+        _set_locale_cookie(resp, locale)
 
     def _shell_ctx(request: Request, **extra: Any) -> dict[str, Any]:
         locale = _locale(request)
@@ -389,7 +398,7 @@ def register_platform_routes(
             )
             return RedirectResponse(qs, status_code=303)
         resp = RedirectResponse(dest, status_code=303)
-        _set_identity_cookies(resp, learner, learner.get("locale") or locale)
+        _start_session(request, resp, learner, learner.get("locale") or locale)
         return resp
 
     @app.get("/settings", response_class=HTMLResponse)
@@ -438,7 +447,7 @@ def register_platform_routes(
             code = str(exc) or "email_invalid"
             return RedirectResponse("/settings?error=" + quote(code, safe=""), status_code=303)
         resp = RedirectResponse("/settings?saved=1", status_code=303)
-        _set_identity_cookies(resp, updated, updated.get("locale") or "he")
+        _set_locale_cookie(resp, updated.get("locale") or "he")
         return resp
 
     register_agent_builder_routes(
@@ -470,8 +479,6 @@ def register_platform_routes(
         dest = next if next.startswith("/") else "/"
         resp = RedirectResponse(dest, status_code=303)
         resp.set_cookie(COOKIE_LOCALE, loc, httponly=False, samesite="lax", max_age=86400 * 400)
-        if learner:
-            resp.set_cookie(COOKIE_USER, learner["userId"], httponly=True, samesite="lax", max_age=86400 * 400)
         return resp
 
     @app.get("/", response_class=HTMLResponse)

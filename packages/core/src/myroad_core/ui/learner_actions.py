@@ -6,6 +6,7 @@ from typing import Any, Callable
 from fastapi import Form, Request
 from fastapi.responses import HTMLResponse
 
+from myroad_core.auth.sessions import SESSION_COOKIE
 from myroad_core.ui.answers import answers_match, grade_items, mastery_passed
 from myroad_core.ui.polish import build_revise_change_set, build_version_diff
 
@@ -175,9 +176,13 @@ def register_learner_actions(
         request: Request,
         publisher_id: str = Form(""),
     ) -> HTMLResponse:
-        """Publish as the signed-in user. No human-only checkbox and no password."""
+        """Publish as the signed-in user. No human-only checkbox and no password.
+
+        The actor comes from the server-side session; a posted publisher_id is ignored.
+        """
+        del publisher_id
         sess = _session(request)
-        actor = (publisher_id or "").strip() or request.cookies.get("myroad_uid") or ACTOR_HUMAN
+        actor = tools.store.get_session_user(request.cookies.get(SESSION_COOKIE)) or ACTOR_HUMAN
         req = tools.request_publish(
             actor_id=actor,
             agent_id=None,

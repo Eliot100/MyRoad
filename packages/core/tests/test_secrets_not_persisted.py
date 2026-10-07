@@ -238,7 +238,7 @@ def test_duplicate_email_registration_unique(client) -> None:
     data = _login_payload("unique.user@example.com", "Noa", "Cohen")
     r1 = c.post("/login", data=data, follow_redirects=True)
     assert r1.status_code == 200
-    uid1 = c.cookies.get("myroad_uid")
+    uid1 = store.get_session_user(c.cookies.get("myroad_session"))
     assert uid1
     # Second registration same email → same opaque user id (login), not a second row
     c2_store = store
@@ -252,10 +252,12 @@ def test_duplicate_email_registration_unique(client) -> None:
     after = c2_store._conn.execute("SELECT COUNT(*) FROM learners WHERE email = ?", ("unique.user@example.com",)).fetchone()[0]
     assert before == 1
     assert after == 1
-    assert c.cookies.get("myroad_uid") == uid1
-    # Cookie is opaque — not the email
-    assert c.cookies.get("myroad_uid") != "unique.user@example.com"
-    assert "@" not in (c.cookies.get("myroad_uid") or "")
+    assert store.get_session_user(c.cookies.get("myroad_session")) == uid1
+    # Cookie is an opaque session id — not the email, not the user id
+    sid = c.cookies.get("myroad_session") or ""
+    assert sid and sid != "unique.user@example.com"
+    assert "@" not in sid and uid1 not in sid
+    assert c.cookies.get("myroad_uid") is None
 
 
 def test_grep_source_does_not_write_secrets_to_store_cookie_or_templates() -> None:
