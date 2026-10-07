@@ -9,13 +9,17 @@ import json
 from typing import Any, Callable, Protocol, runtime_checkable
 
 from myroad_core.agent_builder.models import (
+    CHANNELS,
     MIN_STAGES,
     MIN_TOPICS,
+    STAGE_TYPES,
+    STEP_KINDS,
     FilledTopic,
     GoalSpec,
     PathOutline,
     check_filled_against_outline,
 )
+from myroad_core.content.schema import GROUPS, SCORE_GROUPS
 from myroad_core.agent_builder.parsing import ReplyParseError, parse_reply
 
 LANGUAGE_NAMES = {"he": "Hebrew", "en": "English", "ar": "Arabic"}
@@ -43,8 +47,12 @@ class PathGenerator(Protocol):
     name: str
     is_demo: bool
 
-    def outline(self, spec: GoalSpec) -> PathOutline:
-        """One call: structured outline (topics -> stages)."""
+    def outline(self, spec: GoalSpec, *, existing_paths: list[dict[str, Any]] | None = None) -> PathOutline:
+        """One call: structured outline (topics -> stages).
+
+        ``existing_paths`` are published paths ({"pathId", "title"}) the outline
+        may list in prerequisite_path_ids; any other id is dropped.
+        """
 
     def fill_topic(
         self,
@@ -55,6 +63,22 @@ class PathGenerator(Protocol):
         feedback: str | None = None,
     ) -> FilledTopic:
         """One call per topic: fill every stage of that topic."""
+
+
+def keep_known_prerequisites(
+    outline: PathOutline, existing_paths: list[dict[str, Any]] | None
+) -> PathOutline:
+    """Only published paths offered to the model may be prerequisites."""
+    known = {str(p.get("pathId")) for p in existing_paths or [] if p.get("pathId")}
+    outline.prerequisite_path_ids = [p for p in outline.prerequisite_path_ids if p in known]
+    return outline
+
+
+def score_hint() -> str:
+    parts = "; ".join(
+        f"group_id {gid}: part_id one of {', '.join(g['parts'])}" for gid, g in SCORE_GROUPS.items()
+    )
+    return parts
 
 
 def validate_filled(outline: PathOutline, topic_index: int, filled: FilledTopic) -> FilledTopic:
@@ -84,14 +108,18 @@ OUTLINE_SCHEMA = {
             "stages": [
                 {
                     "title": "stage title",
-                    "type": "explanation|practice|check|experience",
-                    "channel": "write|read|listen|record|mouse",
+                    "type": "|".join(STAGE_TYPES),
+                    "channel": "|".join(CHANNELS),
                     "objective": "what the learner can do after this stage",
                     "order": 1,
+                    "kind": "|".join(STEP_KINDS),
+                    "review_topic_ids": [],
                 }
             ],
         }
     ],
+    "prerequisite_path_ids": [],
+    "score": None,
 }
 
 FILL_SCHEMA = {
@@ -110,25 +138,43 @@ FILL_SCHEMA = {
 }
 
 
-def outline_messages(spec: GoalSpec) -> list[dict[str, str]]:
+def outline_messages(
+    spec: GoalSpec, existing_paths: list[dict[str, Any]] | None = None
+) -> list[dict[str, str]]:
     topics, per_topic = spec.targets()
     ui = LANGUAGE_NAMES[spec.ui_locale]
     content = LANGUAGE_NAMES[spec.content_language]
+    existing = [
+        {"pathId": p.get("pathId"), "title": p.get("title")} for p in existing_paths or [] if p.get("pathId")
+    ]
+    audience = ""
+    if spec.audience:
+        titles = (GROUPS.get(spec.audience) or {}).get("titles") or {}
+        audience = f"Audience: {spec.audience} ({titles.get('en') or spec.audience})\n"
     user = (
         f"Design a learning path outline.\n"
         f"Goal or topic: {spec.goal}\n"
         f"Subject: {spec.subject}\n"
         f"Learner: {LEVEL_NAMES[spec.level]}\n"
+        f"{audience}"
         f"Write titles and objectives in {ui}. Material being taught is in {content}.\n"
         f"Size: exactly {topics} topics with {per_topic} stages each "
         f"(never fewer than {MIN_TOPICS} topics or {MIN_STAGES} stages in total).\n"
         "Rules:\n"
         "- Every topic includes at least one explanation, one practice, and one check stage.\n"
         "- Usual stage order inside a topic: explanation, practice, experience, check.\n"
-        "- type is one of explanation, practice, check, experience.\n"
-        "- channel is one of write, read, listen, record, mouse (how the learner works).\n"
+        f"- type is one of {', '.join(STAGE_TYPES)}.\n"
+        f"- channel is one of {', '.join(CHANNELS)} (how the learner works).\n"
         "- order starts at 1 inside each topic; topics are ordered from 1.\n"
         "- requires lists keys of earlier topics that must be finished first.\n"
+        "- kind is understanding (first time the idea is taught) or review (practice again "
+        "later). From the second topic on, include one review practice stage that mixes "
+        "earlier topics; list their keys in review_topic_ids. review_topic_ids may only "
+        "name EARLIER topics and is empty for understanding stages.\n"
+        "- prerequisite_path_ids: ids of published paths the learner should finish first, "
+        f"chosen only from this list (or []): {json.dumps(existing, ensure_ascii=False)}\n"
+        "- score: null, unless the path is one part of a shared exam score; then "
+        f'{{"group_id": ..., "part_id": ..., "weight": 1}} with {score_hint()}.\n'
         "Return JSON with exactly this shape:\n"
         f"{json.dumps(OUTLINE_SCHEMA, ensure_ascii=False)}"
     )
@@ -141,16 +187,20 @@ def fill_messages(
     topic = outline.topics[topic_index]
     ui = LANGUAGE_NAMES[spec.ui_locale]
     content = LANGUAGE_NAMES[spec.content_language]
-    stages = [
-        {
+    titles_by_key = {t.key: t.title for t in outline.topics}
+    stages = []
+    for s in topic.stages:
+        row: dict[str, Any] = {
             "order": s.order,
             "title": s.title,
             "type": s.type,
             "channel": s.channel,
             "objective": s.objective,
+            "kind": s.kind,
         }
-        for s in topic.stages
-    ]
+        if s.kind == "review" and s.review_topic_ids:
+            row["reviews_topics"] = [titles_by_key.get(k, k) for k in s.review_topic_ids]
+        stages.append(row)
     earlier = [t.title for t in outline.topics[:topic_index]]
     user = (
         f"Path: {outline.title}\n"
@@ -173,6 +223,8 @@ def fill_messages(
         'repeat, read = read aloud, mouse = click through); no choices; mastery '
         '{"type":"complete_interaction","passingCriterion":"done"}.\n'
         "- feedback_ok and feedback_try are short and encouraging.\n"
+        "- kind review: the question mixes ideas from the topics in reviews_topics "
+        "(interleaved practice), not only the current topic.\n"
     )
     if feedback:
         user += f"Reviewer feedback to apply to this topic: {feedback}\n"
@@ -241,8 +293,11 @@ class GatewayPathGenerator:
             except ReplyParseError as second:
                 raise GenerationError("bad_reply", str(second)[:300]) from None
 
-    def outline(self, spec: GoalSpec) -> PathOutline:
-        return self._ask(outline_messages(spec), lambda text: parse_reply(text, PathOutline))
+    def outline(self, spec: GoalSpec, *, existing_paths: list[dict[str, Any]] | None = None) -> PathOutline:
+        outline = self._ask(
+            outline_messages(spec, existing_paths), lambda text: parse_reply(text, PathOutline)
+        )
+        return keep_known_prerequisites(outline, existing_paths)
 
     def fill_topic(
         self,

@@ -5,23 +5,41 @@ before anything is saved to the PathStore.
 """
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
-SubjectId = Literal["math", "english", "physics", "piano", "general"]
+from myroad_core.content.schema import (
+    GROUPS,
+    NODE_STAGE,
+    NODE_TYPES,
+    STEP_KINDS,  # noqa: F401  (re-exported for the builder UI and prompts)
+    ScoreLink,
+    StepKind,
+    SubjectId,
+)
+
+# Step types and subjects come from content/schema.py (the single source of truth).
+# Builder stage types are the distinct NODE_STAGE values, in schema order.
+STAGE_TYPES: tuple[str, ...] = tuple(dict.fromkeys(NODE_STAGE[n] for n in NODE_TYPES))
+# Stage type -> the node type the player gets (first schema node type for that stage).
+STAGE_NODE_TYPE: dict[str, str] = {}
+for _node_type in NODE_TYPES:
+    STAGE_NODE_TYPE.setdefault(NODE_STAGE[_node_type], _node_type)
+SUBJECT_IDS: tuple[str, ...] = get_args(SubjectId)
+
 LocaleCode = Literal["he", "en", "ar"]
 LevelId = Literal["beginner", "elementary", "intermediate", "advanced"]
 LengthId = Literal["short", "medium", "long"]
-StageType = Literal["explanation", "practice", "check", "experience"]
+StageType = Literal[STAGE_TYPES]  # type: ignore[valid-type]
 Channel = Literal["write", "read", "listen", "record", "mouse"]
 
-SUBJECT_IDS: tuple[str, ...] = ("math", "english", "physics", "piano", "general")
 LOCALE_CODES: tuple[str, ...] = ("he", "en", "ar")
 LEVEL_IDS: tuple[str, ...] = ("beginner", "elementary", "intermediate", "advanced")
 LENGTH_IDS: tuple[str, ...] = ("short", "medium", "long")
-STAGE_TYPES: tuple[str, ...] = ("explanation", "practice", "check", "experience")
 CHANNELS: tuple[str, ...] = ("write", "read", "listen", "record", "mouse")
+# Optional extra audience for agent paths (schema groups; "agent" is always added).
+AUDIENCE_IDS: tuple[str, ...] = tuple(g for g in GROUPS if g != "agent")
 
 # Completeness rule for agent drafts (outline and filled path).
 MIN_TOPICS = 3
@@ -76,6 +94,17 @@ class GoalSpec(BaseModel):
     ui_locale: LocaleCode = "he"
     content_language: LocaleCode = "he"
     length: LengthId = "medium"
+    # Optional audience group from the schema (e.g. adult, psychometric). Old specs omit it.
+    audience: str | None = None
+
+    @field_validator("audience", mode="before")
+    @classmethod
+    def _audience_known(cls, v: Any) -> Any:
+        if v in (None, ""):
+            return None
+        if v not in AUDIENCE_IDS:
+            raise ValueError(f"unknown audience: {v}")
+        return v
 
     @field_validator("goal")
     @classmethod
@@ -97,6 +126,34 @@ class OutlineStage(BaseModel):
     channel: Channel
     objective: str = Field(min_length=1, max_length=400)
     order: int = Field(ge=0)
+    # Schema v2: why the step exists. Review steps mix EARLIER topics (topic keys).
+    kind: StepKind = "understanding"
+    review_topic_ids: list[str] = Field(default_factory=list)
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _kind_default(cls, v: Any) -> Any:
+        if v is None or (isinstance(v, str) and not v.strip()):
+            return "understanding"
+        return v.strip().lower() if isinstance(v, str) else v
+
+    @field_validator("review_topic_ids", mode="before")
+    @classmethod
+    def _review_list(cls, v: Any) -> Any:
+        if v is None:
+            return []
+        if isinstance(v, (str, int)):
+            return [str(v)]
+        if isinstance(v, list):
+            return list(dict.fromkeys(str(x).strip() for x in v if str(x).strip()))
+        return v
+
+    @model_validator(mode="after")
+    def _review_needs_kind(self) -> OutlineStage:
+        # A stage that lists review topics is a review step (the model may omit kind).
+        if self.review_topic_ids and self.kind != "review":
+            self.kind = "review"
+        return self
 
     @field_validator("type", mode="before")
     @classmethod
@@ -161,6 +218,33 @@ class PathOutline(BaseModel):
     summary: str = Field(default="", max_length=600)
     emoji: str | None = None
     topics: list[OutlineTopic] = Field(min_length=1)
+    # Schema v2 path-level fields (optional; old outlines omit them).
+    prerequisite_path_ids: list[str] = Field(default_factory=list)
+    score: ScoreLink | None = None
+
+    @field_validator("prerequisite_path_ids", mode="before")
+    @classmethod
+    def _prereq_list(cls, v: Any) -> Any:
+        if v is None:
+            return []
+        if isinstance(v, str):
+            v = [v]
+        if isinstance(v, list):
+            # Same shape rule as the schema: path_ ids, no duplicates.
+            return list(dict.fromkeys(str(x).strip() for x in v if str(x).strip().startswith("path_")))
+        return v
+
+    @field_validator("score", mode="before")
+    @classmethod
+    def _score_empty(cls, v: Any) -> Any:
+        # The score link is optional: an empty or invalid one is dropped rather than
+        # failing the whole outline (the schema's ScoreLink decides what is valid).
+        if v in ({}, "", None):
+            return None
+        try:
+            return ScoreLink.model_validate(v)
+        except ValidationError:
+            return None
 
     @model_validator(mode="after")
     def _normalize_and_check(self) -> PathOutline:
@@ -173,10 +257,14 @@ class PathOutline(BaseModel):
                 key = f"t{i}"
             used.add(key)
             topic.key = key
-        # Prerequisites may only point at earlier topics (keeps the map acyclic).
+        # Prerequisites and review topics may only point at earlier topics (keeps the
+        # map acyclic and matches the schema's review rule).
         earlier: set[str] = set()
         for topic in ordered:
             topic.requires = list(dict.fromkeys(r for r in topic.requires if r in earlier))
+            for stage in topic.stages:
+                if stage.kind == "review":
+                    stage.review_topic_ids = [r for r in stage.review_topic_ids if r in earlier]
             earlier.add(topic.key)
         self.topics = ordered
         problems = outline_problems(self)
