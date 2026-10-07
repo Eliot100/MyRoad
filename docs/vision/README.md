@@ -19,6 +19,7 @@
 | [03-agent-and-publish.md](03-agent-and-publish.md) | זרימת הסוכן, מדיניות הפרסום (סוכן רשאי לפרסם), כלל ה-Gateway, חוזה כלים מתוקן בקצרה | PM, Path Builder, MLOps |
 | [04-architecture-and-roadmap.md](04-architecture-and-roadmap.md) | מה יש ב-main היום (מאומת מול הריפו), הרחבות סכמה מתוכננות, טבלת בעלות צוותים, אבני דרך הבאות | PM, Dev |
 | [05-decisions-log.md](05-decisions-log.md) | יומן החלטות מתוארך, כולל החלטות שהוחלפו | PM |
+| [06-content-format.md](06-content-format.md) | פורמט ה-JSON של דרך, גרסה 2: קהלים, סוג שלב, חזרה מעורבת, דרישות קדם, ציון מאוחד | PM |
 
 מסמכים קשורים מחוץ לתיקייה:
 
