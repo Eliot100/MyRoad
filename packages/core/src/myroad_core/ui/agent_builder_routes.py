@@ -38,6 +38,7 @@ from myroad_core.agent_builder.models import (
     STAGE_TYPES,
     SUBJECT_IDS,
 )
+from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids, rank_existing
 from myroad_core.content.loader import list_catalog_cards
 from myroad_core.errors import StoreError
 from myroad_core.ui.cloudflare_gateway import (
@@ -55,6 +56,11 @@ STEPS = ("goal", "existing", "outline", "build", "review")
 _FSI, _PDI = "\u2068", "\u2069"
 # At most this many ids per list value, and problems in the blocked-publish flash.
 FLASH_CAP = 5
+
+
+def _isolate(text: Any) -> str:
+    """Wrap a title or term so it reads correctly inside RTL (or LTR) flash text."""
+    return f"{_FSI}{text}{_PDI}"
 
 
 def default_generator_factory(mode: str) -> PathGenerator:
@@ -331,10 +337,67 @@ def register_agent_builder_routes(
         sess["mode"] = mode
         return RedirectResponse("/add-path/existing", status_code=303)
 
-    # --- step 2: existing published paths with the same subject ---
+    # --- step 2: existing published paths (goal matches first, then the same subject) ---
     def _existing_cards(request: Request, subject: str) -> list[dict[str, Any]]:
         cards = list_catalog_cards(store, locale=locale_of(request))
         return [c for c in cards if c.get("subject") == subject and c.get("status") == "published"]
+
+    def _match_view(locale: str, match: dict[str, Any], titles: dict[str, str]) -> dict[str, Any]:
+        reason = match["reason"]
+        if reason["code"] == "required_by":
+            text = t(
+                locale, "builder_match_reason_required",
+                title=_isolate(titles.get(reason["required_by"], reason["required_by"])),
+            )
+        else:
+            text = t(locale, "builder_match_reason_terms", terms=", ".join(_isolate(x) for x in reason["terms"]))
+            if reason.get("required_by"):
+                text += "; " + t(
+                    locale, "builder_match_reason_required",
+                    title=_isolate(titles.get(reason["required_by"], reason["required_by"])),
+                )
+        missing = [r for r in match["prerequisites"] if not r["done"]]
+        if missing:
+            needs = t(locale, "builder_match_needs", titles=", ".join(_isolate(r["title"]) for r in missing))
+        elif match["prerequisites"]:
+            needs = t(locale, "builder_match_prereqs_done")
+        else:
+            needs = ""
+        view = {k: v for k, v in match.items() if k != "card"}
+        view["reason_text"] = text
+        view["prerequisites_text"] = needs
+        view["missing_prerequisite_titles"] = [r["title"] for r in missing]
+        view["href"] = f"/play/{match['pathId']}"
+        view["card"] = dict(match["card"], match=view.copy())
+        return view
+
+    def _existing_ctx(request: Request, learner: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any]:
+        """existing (cards for the template: matches first) + existing_matches (with reasons)."""
+        locale = locale_of(request)
+        entries = catalog_entries(store, locale=locale)
+        matches = rank_existing(
+            str(spec.get("goal") or ""),
+            entries,
+            subject=spec.get("subject"),
+            audience=spec.get("audience"),
+            completed=completed_path_ids(store, learner.get("userId")),
+        )
+        titles = {e.path_id: e.title for e in entries}
+        views = [_match_view(locale, m, titles) for m in matches]
+        shown = {v["pathId"] for v in views}
+        cards = [v["card"] for v in views] + [
+            c for c in _existing_cards(request, str(spec.get("subject") or "")) if c.get("pathId") not in shown
+        ]
+        ctx: dict[str, Any] = {"existing": cards, "existing_matches": views}
+        if views:
+            items = []
+            for v in views:
+                line = f"{_isolate(v['title'])}: {v['reason_text']}"
+                if v["prerequisites_text"]:
+                    line += f" ({v['prerequisites_text']})"
+                items.append(line)
+            ctx["flash_ok"] = t(locale, "builder_match_found", count=len(views)) + " " + " · ".join(items)
+        return ctx
 
     @app.get("/add-path/existing", response_class=HTMLResponse)
     def add_path_existing(request: Request) -> HTMLResponse:
@@ -344,10 +407,7 @@ def register_agent_builder_routes(
         sess = _session(learner)
         if not sess.get("spec"):
             return RedirectResponse("/add-path", status_code=303)
-        return _render(
-            request, "existing", sess,
-            existing=_existing_cards(request, sess["spec"]["subject"]),
-        )
+        return _render(request, "existing", sess, **_existing_ctx(request, learner, sess["spec"]))
 
     # --- step 3: outline ---
     @app.post("/add-path/outline", response_model=None)
@@ -360,18 +420,14 @@ def register_agent_builder_routes(
             return RedirectResponse("/add-path", status_code=303)
         locale = locale_of(request)
         spec = GoalSpec.model_validate(sess["spec"])
-        existing = [
-            {"pathId": c.get("pathId"), "title": c.get("title")}
-            for c in _existing_cards(request, spec.subject)
-        ]
+        existing_ctx = _existing_ctx(request, learner, sess["spec"])
+        # Matches and same-subject paths are the ones the outline may name as prerequisites.
+        existing = [{"pathId": c.get("pathId"), "title": c.get("title")} for c in existing_ctx["existing"]]
         try:
             outline = _generator(sess.get("mode") or "demo").outline(spec, existing_paths=existing)
         except GenerationError as exc:
-            return _render(
-                request, "existing", sess,
-                existing=_existing_cards(request, spec.subject),
-                error=_gen_error_text(locale, exc),
-            )
+            existing_ctx.pop("flash_ok", None)
+            return _render(request, "existing", sess, **existing_ctx, error=_gen_error_text(locale, exc))
         sess["outline"] = outline.model_dump(mode="json")
         sess.pop("pathId", None)
         sess.pop("versionId", None)

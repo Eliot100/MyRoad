@@ -240,5 +240,12 @@
   "builder_publish_blocked": "النشر محظور بسبب أخطاء في البنية ({count}). صحّحوها وحاولوا مرة أخرى:",
   "draft_problem_severity_error": "يمنع النشر",
   "draft_problem_severity_warning": "تنبيه",
-  "builder_and_more": "و{n} أخرى"
+  "builder_and_more": "و{n} أخرى",
+  "builder_match_found": "وجدنا مسارات موجودة تناسب هدفك ({count}). افتح واحدًا أو ابنِ مسارًا جديدًا على أي حال:",
+  "builder_match_reason_terms": "تطابق {terms}",
+  "builder_match_reason_required": "مطلوب قبل {title}",
+  "builder_match_needs": "أنهِ أولًا: {titles}",
+  "builder_match_prereqs_done": "لقد أنهيت ما يتطلبه هذا المسار",
+  "builder_match_open": "افتح هذا المسار",
+  "builder_match_build_anyway": "ابنِ مسارًا جديدًا على أي حال"
 }

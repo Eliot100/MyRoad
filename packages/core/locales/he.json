@@ -240,5 +240,12 @@
   "builder_publish_blocked": "הפרסום נחסם בגלל שגיאות מבנה ({count}). תקנו אותן ונסו שוב:",
   "draft_problem_severity_error": "חוסם פרסום",
   "draft_problem_severity_warning": "אזהרה",
-  "builder_and_more": "ועוד {n}"
+  "builder_and_more": "ועוד {n}",
+  "builder_match_found": "מצאנו דרכים קיימות שמתאימות למטרה שלך ({count}). אפשר לפתוח אחת או לבנות דרך חדשה בכל זאת:",
+  "builder_match_reason_terms": "מתאימה לפי {terms}",
+  "builder_match_reason_required": "נדרשת לפני {title}",
+  "builder_match_needs": "כדאי לסיים קודם: {titles}",
+  "builder_match_prereqs_done": "כבר סיימת את מה שהיא דורשת",
+  "builder_match_open": "לפתוח את הדרך",
+  "builder_match_build_anyway": "לבנות דרך חדשה בכל זאת"
 }
