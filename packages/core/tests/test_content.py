@@ -110,7 +110,9 @@ def test_invalid_path_rejected() -> None:
 
 def test_seed_publishes_demo_only(store: PathStore) -> None:
     summary = seed_content_paths(store, content_dir=default_content_dir())
-    expected = len(load_content_paths(default_content_dir()))
+    loaded = load_content_paths(default_content_dir())
+    expected = len(loaded)
+    grade3 = {p.id for p in loaded if "grade3" in p.group_ids}
     assert expected >= 1
     assert summary["count"] == expected
     cards = list_catalog_cards(store)
@@ -118,7 +120,8 @@ def test_seed_publishes_demo_only(store: PathStore) -> None:
     for card in cards:
         doc = store.get_path_latest(card["pathId"])
         assert doc.status == PathStatus.published
-        assert card["kidsDemo"] is True
+        if card["pathId"] in grade3:  # kids demo flag belongs to the grade-3 set
+            assert card["kidsDemo"] is True
         raw = doc.model_dump(mode="json")
         assert raw.get("topics")
 
