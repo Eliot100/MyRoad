@@ -134,6 +134,16 @@ def platform_client(tmp_path):
     store = PathStore(str(tmp_path / "plat.db"))
     app = create_learner_app(store=store, seed=True, seed_content=True)
     with TestClient(app) as c:
+        c.post(
+            "/login",
+            data={
+                "first_name": "Test",
+                "last_name": "User",
+                "email": "fixture@example.com",
+                "next": "/",
+            },
+            follow_redirects=True,
+        )
         yield c
     store.close()
 
@@ -146,8 +156,11 @@ def test_catalog_home_lists_grade3(platform_client: TestClient) -> None:
     assert "חיבור עד 20" in r.text
     assert "Colors" in r.text or "צבעים" in r.text
     assert "דו־רה־מי" in r.text or "דו-רה-מי" in r.text
-    assert "פלטפורמת למידה" in r.text
-    assert "HE" in r.text and "EN" in r.text and "AR" in r.text
+    assert 'class="lang-switch"' not in r.text
+    assert 'href="/settings"' in r.text
+    settings = platform_client.get("/settings")
+    assert settings.status_code == 200
+    assert "עברית" in settings.text and "English" in settings.text and "العربية" in settings.text
 
 
 def test_locale_switch_english_shell(platform_client: TestClient) -> None:
@@ -379,3 +392,59 @@ def test_completed_tab_after_finish(platform_client: TestClient) -> None:
     assert done.status_code == 200
     assert "חיבור עד 20" in done.text
     assert "הושלם" in done.text or "Completed" in done.text
+
+
+def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
+    store = PathStore(str(tmp_path / "gate.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    try:
+        with TestClient(app) as c:
+            assert c.get("/health").status_code == 200
+            home = c.get("/", follow_redirects=False)
+            assert home.status_code == 303
+            assert "/login?next=" in home.headers["location"]
+            author = c.get("/author", follow_redirects=False)
+            assert author.status_code == 303
+            assert "/login?next=" in author.headers["location"]
+            settings = c.get("/settings", follow_redirects=False)
+            assert settings.status_code == 303
+            assert "/login?next=" in settings.headers["location"]
+            missing = c.post(
+                "/login",
+                data={"email": "gate@example.com", "next": "/settings"},
+                follow_redirects=False,
+            )
+            assert missing.status_code == 303
+            assert "mode=register" in missing.headers["location"]
+            created = c.post(
+                "/login",
+                data={
+                    "email": "gate@example.com",
+                    "first_name": "Gate",
+                    "last_name": "User",
+                    "mode": "register",
+                    "next": "/settings",
+                },
+                follow_redirects=False,
+            )
+            assert created.status_code == 303
+            assert created.headers["location"].rstrip("/").endswith("/settings") or created.headers["location"].endswith("/settings")
+            uid = c.cookies.get("myroad_uid")
+            assert uid and "@" not in uid
+            c.cookies.clear()
+            again = c.post(
+                "/login",
+                data={"email": "gate@example.com", "next": "/settings"},
+                follow_redirects=True,
+            )
+            assert again.status_code == 200
+            assert c.cookies.get("myroad_uid") == uid
+            assert "Gate" in again.text
+            assert 'type="password"' not in again.text
+            assert 'class="lang-switch"' not in again.text
+            home_in = c.get("/")
+            assert home_in.status_code == 200
+            assert 'class="lang-switch"' not in home_in.text
+            assert "<form" not in home_in.text.split("<header", 1)[-1].split("</header>", 1)[0]
+    finally:
+        store.close()

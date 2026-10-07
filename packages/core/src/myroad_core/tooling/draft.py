@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 from myroad_core.errors import StoreError
-from myroad_core.models import OpResponse
+from myroad_core.models import OpResponse, PathVersion
 
 __all__ = ["ToolsDraftMixin"]
 
@@ -58,4 +58,25 @@ class ToolsDraftMixin:
             return self._err(
                 correlation_id=correlation_id, code=exc.code, message=exc.message,
                 path_id=path_id, version_id=base_version_id,
+            )
+
+    def save_version(
+        self,
+        *,
+        actor_id: str,
+        correlation_id: str,
+        document: PathVersion | dict[str, Any],
+        agent_id: str | None = None,
+    ) -> OpResponse:
+        """Overwrite a draft (or in-review) version. Published versions are refused."""
+        try:
+            return self.store.save_version(
+                actor_id=actor_id, correlation_id=correlation_id,
+                document=document, agent_id=agent_id,
+            )
+        except StoreError as exc:
+            doc = document if isinstance(document, dict) else document.model_dump()
+            return self._err(
+                correlation_id=correlation_id, code=exc.code, message=exc.message,
+                path_id=doc.get("pathId"), version_id=doc.get("versionId"),
             )

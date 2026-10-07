@@ -3,7 +3,7 @@
 The xAI provider key stays in Cloudflare Secrets Store. This module does not
 accept a provider API key, does not read a provider key from the environment,
 and does not send a provider Authorization header. AI Gateway inserts the
-stored key only when that header is absent. A placeholder would be forwarded
+stored key only when that header is absent. Any dummy value would be forwarded
 and the provider call would fail.
 
 Native base URL replaces https://api.x.ai/v1; chat uses /v1/chat/completions:
@@ -59,8 +59,13 @@ def _clean(name: str) -> str:
     return os.environ.get(name, "").strip()
 
 
+def missing_gateway_env() -> list[str]:
+    """Names of required gateway variables that are unset (values are never returned)."""
+    return [name for name in (ENV_ACCOUNT_ID, ENV_GATEWAY_ID) if not _clean(name)]
+
+
 def gateway_is_configured() -> bool:
-    return bool(_clean(ENV_ACCOUNT_ID) and _clean(ENV_GATEWAY_ID))
+    return not missing_gateway_env()
 
 
 def grok_base_url() -> str:
@@ -94,11 +99,17 @@ def call_grok_chat(
     model: str = DEFAULT_MODEL,
     timeout: float = 30.0,
     urlopen_fn: Callable[..., Any] | None = None,
+    response_format: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """POST {grok_base}/v1/chat/completions. Summary never includes request headers."""
+    """POST {grok_base}/v1/chat/completions. Summary never includes request headers.
+
+    ``response_format`` (e.g. ``{"type": "json_object"}``) asks Grok for strict JSON.
+    """
     base = grok_base_url()
     url = f"{base}/v1/chat/completions"
-    payload = {"model": model, "messages": messages}
+    payload: dict[str, Any] = {"model": model, "messages": messages}
+    if response_format:
+        payload["response_format"] = response_format
     body = json.dumps(payload).encode("utf-8")
     headers = gateway_headers()
     req = Request(url, data=body, headers=headers, method="POST")

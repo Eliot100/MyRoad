@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from myroad_core.errors import ImmutableError, RbacDenyError
+from myroad_core.errors import ImmutableError
 from myroad_core.models import PathStatus, PathVersion
 from myroad_core.seed import seed_golden_quadratic
 from myroad_core.store import PathStore
@@ -160,27 +160,29 @@ def test_published_is_immutable(store: PathStore) -> None:
     assert still.name == "Publish Me"
 
 
-def test_agent_cannot_auto_publish(store: PathStore) -> None:
+def test_agent_can_publish(store: PathStore) -> None:
     created = store.create_draft(
         actor_id="user_author",
         correlation_id="corr_agent_pub",
-        name="No Auto Publish",
+        name="Agent Publish",
     )
-    with pytest.raises(RbacDenyError, match="agents cannot publish"):
-        store.publish(
-            actor_id="user_author",
-            agent_id="agent_naughty",
-            correlation_id="corr_agent_pub_deny",
-            path_id=created.pathId,  # type: ignore[arg-type]
-            version_id=created.versionId,  # type: ignore[arg-type]
-        )
-    events = store.query_events(correlation_id="corr_agent_pub_deny")
+    pub = store.publish(
+        actor_id="user_author",
+        agent_id="agent_author",
+        correlation_id="corr_agent_pub_ok",
+        path_id=created.pathId,  # type: ignore[arg-type]
+        version_id=created.versionId,  # type: ignore[arg-type]
+        publisher_id="user_author",
+    )
+    assert pub.ok
+    assert pub.status == PathStatus.published
+    events = store.query_events(correlation_id="corr_agent_pub_ok")
     assert len(events) == 1
     assert events[0].eventType == "path.publish"
-    assert events[0].rbacDecision.value == "deny"
-    # status unchanged
+    assert events[0].rbacDecision.value == "allow"
+    assert events[0].agentId == "agent_author"
     doc = store.get_version(created.pathId, created.versionId)  # type: ignore[arg-type]
-    assert doc.status == PathStatus.draft
+    assert doc.status == PathStatus.published
 
 
 def test_events_query_by_path_and_correlation(store: PathStore) -> None:

@@ -6,40 +6,385 @@
   <title>{{ product }} — {{ t('add_path') }}</title>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
-<body class="platform">
-  <header class="top">
+<body class="platform builder" data-step="{{ step }}">
+  <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back">→ {{ t('back_catalog') }}</a>
-      <strong>{{ product }}</strong>
+      <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
-    <form method="post" action="/locale" class="lang-switch">
-      <input type="hidden" name="next" value="/add-path" />
-      {% for loc in locales %}
-      <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
-      {% endfor %}
-    </form>
+    <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
   </header>
 
   <section class="card hero">
+    <p class="kicker">{{ t('builder_kicker') }}</p>
     <h1>{{ t('add_path') }}</h1>
-    {% if gateway_ok %}
-      <p class="lede">{{ t('add_path_unlocked') }}</p>
-      <p class="flash ok">{{ t('add_path_criterion_met') }}</p>
-      <p class="lede tiny">{{ t('add_path_next_steps') }}</p>
-    {% else %}
-      <p class="lede">{{ t('add_path_gate_lede') }}</p>
-      <aside class="card security-note" role="note">
-        <strong>{{ t('security_note_title') }}</strong>
-        <p>{{ t('security_note_body') }}</p>
-      </aside>
-      {% if error %}
-      <p class="flash warn">{{ error }}</p>
-      {% endif %}
-      <form method="post" action="/add-path/check-gateway" class="login-form" autocomplete="off">
-        <button type="submit" class="primary big">{{ t('add_path_check') }}</button>
+    <p class="lede">{{ t('builder_lede') }}</p>
+    <ol class="stepper" aria-label="{{ t('builder_steps') }}">
+      {% for s in steps %}
+      <li class="step {{ s.state }}" {% if s.state == 'current' %}aria-current="step"{% endif %}>
+        {% if s.href %}<a href="{{ s.href }}">{% endif %}
+        <span class="step-n">{{ s.n }}</span>
+        <span class="step-label">{{ t('step_' ~ s.id) }}</span>
+        {% if s.href %}</a>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {% if flash_ok %}<p class="flash ok" role="status">{{ flash_ok }}</p>{% endif %}
+  {% if error %}<p class="flash warn" role="alert">{{ error }}</p>{% endif %}
+
+  {% if step == 'goal' %}
+  <section class="card gateway-panel">
+    <h2>{{ t('builder_model_title') }}</h2>
+    {% if gateway_configured %}
+      <p class="lede">{{ t('builder_gateway_ready') }}</p>
+      <form method="post" action="/add-path/check-gateway" class="inline-form" autocomplete="off">
+        <button type="submit" class="secondary">{{ t('add_path_check') }}</button>
       </form>
+    {% else %}
+      <p class="flash warn missing-env" data-missing="{{ missing_env|join(',') }}">{{ missing_env_text }}</p>
+      <p class="lede">{{ t('builder_demo_offer') }}</p>
       <p class="lede tiny">{{ t('add_path_not_configured_hint') }}</p>
     {% endif %}
+    <aside class="security-note" role="note">
+      <strong>{{ t('security_note_title') }}</strong>
+      <p>{{ t('security_note_body') }}</p>
+    </aside>
   </section>
+
+  <section class="card">
+    <h2>{{ t('step_goal') }}</h2>
+    <form method="post" action="/add-path/goal" class="builder-form">
+      <label for="goal">{{ t('builder_goal_label') }}</label>
+      <textarea id="goal" name="goal" rows="3" maxlength="400" required>{{ spec.goal or '' }}</textarea>
+      <p class="tiny muted">{{ t('builder_goal_hint') }}</p>
+
+      <div class="field-grid">
+        <div>
+          <label for="subject">{{ t('builder_subject') }}</label>
+          <select id="subject" name="subject">
+            {% for sid in subject_ids %}
+            <option value="{{ sid }}" {% if (spec.subject or 'general') == sid %}selected{% endif %}>{{ subject_label_fn(sid) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="level">{{ t('builder_level') }}</label>
+          <select id="level" name="level">
+            {% for lid in level_ids %}
+            <option value="{{ lid }}" {% if (spec.level or 'beginner') == lid %}selected{% endif %}>{{ t('level_' ~ lid) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="ui_locale">{{ t('builder_ui_language') }}</label>
+          <select id="ui_locale" name="ui_locale">
+            {% for code in locale_codes %}
+            <option value="{{ code }}" {% if (spec.ui_locale or locale) == code %}selected{% endif %}>{{ locale_labels.get(code, code) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="content_language">{{ t('builder_content_language') }}</label>
+          <select id="content_language" name="content_language">
+            {% for code in locale_codes %}
+            <option value="{{ code }}" {% if (spec.content_language or locale) == code %}selected{% endif %}>{{ locale_labels.get(code, code) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="length">{{ t('builder_length') }}</label>
+          <select id="length" name="length">
+            {% for lid in length_ids %}
+            <option value="{{ lid }}" {% if (spec.length or 'medium') == lid %}selected{% endif %}>{{ t('length_' ~ lid) }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <fieldset class="mode-pick">
+        <legend>{{ t('builder_mode') }}</legend>
+        <label class="radio">
+          <input type="radio" name="mode" value="gateway" {% if not gateway_configured %}disabled{% elif mode == 'gateway' %}checked{% endif %} />
+          {{ t('builder_mode_gateway') }}
+        </label>
+        <label class="radio">
+          <input type="radio" name="mode" value="demo" {% if not gateway_configured or mode == 'demo' %}checked{% endif %} />
+          {{ t('builder_mode_demo') }}
+        </label>
+      </fieldset>
+      <button type="submit" class="primary big">{{ t('builder_continue') }}</button>
+    </form>
+  </section>
+
+  {% if drafts %}
+  <section class="card">
+    <h2>{{ t('builder_drafts_title') }}</h2>
+    <ul class="plain-list">
+      {% for d in drafts %}
+      <li>
+        <a href="/add-path/resume/{{ d.pathId }}/{{ d.versionId }}">{{ d.name }}</a>
+        {% if d.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
+        <span class="tiny muted">{{ t('builder_draft_progress', done=d.done, total=d.total, version=d.version) }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+  {% endif %}
+
+  {% if step == 'existing' %}
+  <section class="card">
+    <h2>{{ t('step_existing') }}</h2>
+    <p class="lede">{{ t('builder_existing_lede', subject=subject_label_fn(spec.subject)) }}</p>
+    {% if existing %}
+    <div class="grid existing-grid">
+      {% for c in existing %}
+      <a class="path-card" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}">
+        <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
+        <div class="path-body">
+          <div class="path-meta">
+            <span class="subject-pill">{{ c.subjectLabel }}</span>
+            {% if c.agentBuilt %}<span class="status-pill agent">{{ t('agent_badge') }}</span>{% else %}<span class="status-pill">{{ t('sample_badge') }}</span>{% endif %}
+            {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
+          </div>
+          <h3>{{ c.title }}</h3>
+          <p>{{ c.blurb }}</p>
+          <span class="tiny muted">{{ t('builder_open_path') }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">{{ t('builder_existing_none') }}</p>
+    {% endif %}
+    <div class="row">
+      <form method="post" action="/add-path/outline">
+        <button type="submit" class="primary big">{{ t('builder_new_draft') }}</button>
+      </form>
+      <a class="link-btn secondary" href="/add-path">{{ t('builder_back_goal') }}</a>
+    </div>
+    <p class="tiny muted">{% if mode == 'demo' %}{{ t('builder_mode_demo') }}{% else %}{{ t('builder_mode_gateway') }}{% endif %}</p>
+  </section>
+  {% endif %}
+
+  {% if step == 'outline' %}
+  <section class="card">
+    <h2>{{ t('step_outline') }}</h2>
+    <p class="lede">{{ t('builder_outline_lede') }}</p>
+    <p class="tiny muted">{{ t('builder_outline_counts', topics=outline.topics|length, stages=outline.stage_count()) }}</p>
+    <form method="post" action="/add-path/outline/approve" class="builder-form outline-form">
+      <label for="path_title">{{ t('builder_path_title') }}</label>
+      <input id="path_title" name="path_title" type="text" maxlength="160" value="{{ outline.title }}" />
+      {% if outline.summary %}<p class="tiny muted">{{ outline.summary }}</p>{% endif %}
+
+      {% for topic in outline.topics %}
+      {% set ti = loop.index0 %}
+      <fieldset class="outline-topic">
+        <legend>{{ topic.emoji or '📍' }} {{ t('builder_topic_n', n=topic.order) }}</legend>
+        <div class="topic-edit">
+          <label class="order-field">{{ t('builder_order') }}
+            <input type="number" name="topic_order_{{ ti }}" value="{{ topic.order }}" min="1" max="99" />
+          </label>
+          <label class="title-field">{{ t('builder_title') }}
+            <input type="text" name="topic_title_{{ ti }}" value="{{ topic.title }}" maxlength="160" />
+          </label>
+        </div>
+        <ol class="stage-list">
+          {% for stage in topic.stages %}
+          {% set si = loop.index0 %}
+          <li class="stage-row">
+            <input type="number" name="stage_order_{{ ti }}_{{ si }}" value="{{ stage.order }}" min="1" max="99" aria-label="{{ t('builder_order') }}" />
+            <input type="text" name="stage_title_{{ ti }}_{{ si }}" value="{{ stage.title }}" maxlength="160" aria-label="{{ t('builder_title') }}" />
+            <span class="type-pill">{{ t('stage_type_' ~ stage.type) }}</span>
+            <span class="status-pill">{{ t('channel_' ~ stage.channel) }}</span>
+            <span class="tiny muted stage-objective">{{ stage.objective }}</span>
+          </li>
+          {% endfor %}
+        </ol>
+      </fieldset>
+      {% endfor %}
+      <button type="submit" class="primary big">{{ t('builder_approve') }}</button>
+    </form>
+    <form method="post" action="/add-path/outline" class="inline-form">
+      <button type="submit" class="secondary">{{ t('builder_regenerate') }}</button>
+    </form>
+  </section>
+  {% endif %}
+
+  {% if step == 'build' %}
+  <section class="card">
+    <h2>{{ t('step_build') }} {% if doc.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}</h2>
+    <p class="lede">{{ t('builder_build_lede') }}</p>
+    <div class="progress-wrap" aria-live="polite">
+      <div class="progress-bar"><div class="progress-fill" style="width: {{ build.pct }}%"></div></div>
+      <span class="progress-label">{{ t('builder_build_progress', done=build.done, total=build.total) }}</span>
+    </div>
+    <ol class="build-list">
+      {% for r in build.rows %}
+      <li class="build-row {{ r.status }}" data-topic="{{ r.index }}" data-status="{{ r.status }}">
+        <span class="topic-emoji">{{ r.emoji }}</span>
+        <span class="build-title">{{ r.title }}</span>
+        <span class="tiny muted">{{ r.stages }} {{ t('steps_count') }}</span>
+        <span class="status-pill {{ r.status }}">{{ t('topic_status_' ~ r.status) }}</span>
+        {% if r.status == 'failed' %}
+        <span class="tiny build-error">{{ t('gen_err_short_' ~ (r.error if r.error in ['gateway_request', 'bad_reply', 'gateway_not_configured'] else 'internal')) }}{% if r.detail %} ({{ r.detail }}){% endif %}</span>
+        <form method="post" action="/add-path/build/topic/{{ r.index }}" class="inline-form">
+          <button type="submit" class="secondary">{{ t('builder_retry_topic') }}</button>
+        </form>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+    <div class="row">
+      {% if build.has_pending %}
+      <form method="post" action="/add-path/build/next" id="build-next-form">
+        <button type="submit" class="primary big">{{ t('builder_build_next') }}</button>
+      </form>
+      <form method="post" action="/add-path/build/all">
+        <button type="submit" class="secondary big">{{ t('builder_build_all') }}</button>
+      </form>
+      {% endif %}
+      <a class="link-btn {% if build.has_pending or build.has_failed %}secondary{% endif %}" href="/add-path/review">{{ t('builder_to_review') }}</a>
+    </div>
+    {% if auto %}
+    <p class="tiny muted" aria-live="polite">{{ t('builder_auto_note') }}</p>
+    <script>
+      setTimeout(function () {
+        var f = document.getElementById('build-next-form');
+        if (f) { f.submit(); }
+      }, 400);
+    </script>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {% if step == 'review' %}
+  <section class="card">
+    <h2>{{ doc.emoji }} {{ doc.name }}</h2>
+    <div class="path-meta">
+      {% if doc.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
+      <span class="status-pill agent">{{ t('agent_badge') }}</span>
+      <span class="status-pill {% if doc.status == 'published' %}done{% else %}prog{% endif %}">{{ t('path_status_' ~ doc.status) }}</span>
+      <span class="tiny muted">{{ t('builder_version', n=doc.version) }}</span>
+      <span class="subject-pill" style="--subject: {{ doc.subjectColor }}">{{ subject_label_fn(doc.subject) }}</span>
+    </div>
+    {% if doc.description %}<p class="lede">{{ doc.description }}</p>{% endif %}
+    <div class="stats-grid">
+      <div class="stat-tile"><div class="stat-label">{{ t('builder_stat_topics') }}</div><div class="stat-value">{{ report.topic_count }}</div></div>
+      <div class="stat-tile"><div class="stat-label">{{ t('builder_stat_stages') }}</div><div class="stat-value">{{ report.stage_count }}</div></div>
+      <div class="stat-tile"><div class="stat-label">{{ t('builder_stat_minutes') }}</div><div class="stat-value">{{ doc.estimatedMinutes }}</div></div>
+      <div class="stat-tile"><div class="stat-label">{{ t('builder_stat_seq_edges') }}</div><div class="stat-value">{{ edge_counts.sequence }}</div></div>
+      <div class="stat-tile"><div class="stat-label">{{ t('builder_stat_pre_edges') }}</div><div class="stat-value">{{ edge_counts.prerequisite }}</div></div>
+    </div>
+
+    {% if report.complete %}
+    <p class="flash ok complete-ok">{{ t('builder_complete_ok') }}</p>
+    {% else %}
+    <div class="flash warn">
+      <strong>{{ t('builder_not_complete') }}</strong>
+      <ul class="issue-list">
+        {% for iss in report.issues %}
+        <li>
+          {% if iss.code == 'min_topics' %}{{ t('issue_min_topics', need=iss.need, got=iss.got) }}
+          {% elif iss.code == 'min_stages' %}{{ t('issue_min_stages', need=iss.need, got=iss.got) }}
+          {% elif iss.code == 'topic_missing_types' %}{{ t('issue_topic_missing_types', topic=iss.topic) }} {% for ty in iss.types %}{{ t('stage_type_' ~ ty) }}{% if not loop.last %}, {% endif %}{% endfor %}
+          {% elif iss.code == 'topics_pending' %}{{ t('issue_topics_pending', topics=iss.topics|join(', ')) }}
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if doc.status in ['draft', 'in_review'] %}
+      {% if report.complete %}
+      <div class="row publish-row">
+        <form method="post" action="/add-path/publish">
+          <input type="hidden" name="by" value="user" />
+          <button type="submit" class="primary big">{{ t('builder_publish') }}</button>
+        </form>
+        <form method="post" action="/add-path/publish">
+          <input type="hidden" name="by" value="agent" />
+          <button type="submit" class="secondary big">{{ t('builder_publish_agent') }}</button>
+        </form>
+      </div>
+      <p class="tiny muted">{{ t('builder_publish_note') }}</p>
+      {% else %}
+      <a class="link-btn" href="/add-path/build">{{ t('builder_back_build') }}</a>
+      {% endif %}
+    {% else %}
+      <div class="row">
+        <a class="link-btn" href="/play/{{ doc.pathId }}">{{ t('builder_play') }}</a>
+        <a class="link-btn secondary" href="/?group=agent&subject=all&tab=catalog&view=status">{{ t('builder_see_catalog') }}</a>
+      </div>
+    {% endif %}
+  </section>
+
+  {% if doc.status == 'published' %}
+  <section class="card">
+    <h2>{{ t('builder_feedback_title') }}</h2>
+    <p class="lede">{{ t('builder_feedback_lede') }}</p>
+    <form method="post" action="/add-path/feedback" class="builder-form">
+      <label for="comment">{{ t('builder_feedback_label') }}</label>
+      <textarea id="comment" name="comment" rows="3" maxlength="1000" required></textarea>
+      <label for="topic">{{ t('builder_feedback_topic') }}</label>
+      <select id="topic" name="topic">
+        <option value="">{{ t('builder_feedback_whole') }}</option>
+        {% for tp in outline.topics %}
+        <option value="{{ loop.index0 }}">{{ tp.order }}. {{ tp.title }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="secondary">{{ t('builder_feedback_send') }}</button>
+    </form>
+  </section>
+  {% endif %}
+
+  <section class="card">
+    <h2>{{ t('builder_path_content') }}</h2>
+    {% for tp in topics_view %}
+    <details class="review-topic" {% if loop.first %}open{% endif %}>
+      <summary>{{ tp.emoji }} {{ loop.index }}. {{ tp.title }} <span class="tiny muted">· {{ tp.stages|length }} {{ t('steps_count') }}</span></summary>
+      <ol class="stage-list">
+        {% for st in tp.stages %}
+        <li class="review-stage">
+          <div class="path-meta">
+            <span class="type-pill">{{ t('stage_type_' ~ st.type) }}</span>
+            <span class="status-pill">{{ t('channel_' ~ st.channel) }}</span>
+            <strong>{{ st.title }}</strong>
+          </div>
+          <p class="tiny muted">{{ st.objective }}</p>
+          <p>{{ st.body }}</p>
+          {% if st.choices %}
+          <ul class="choice-preview">
+            {% for ch in st.choices %}
+            <li class="{% if ch.id == st.correct %}correct{% endif %}">{{ ch.id }}. {{ ch.label }}{% if ch.id == st.correct %} ✓{% endif %}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+    </details>
+    {% else %}
+    <p class="empty">{{ t('builder_nothing_built') }}</p>
+    {% endfor %}
+  </section>
+
+  <section class="card">
+    <h2>{{ t('builder_versions') }}</h2>
+    <ul class="plain-list">
+      {% for v in versions %}
+      <li>{{ t('builder_version', n=v.version) }} · {{ t('path_status_' ~ v.status) }}</li>
+      {% endfor %}
+    </ul>
+    <a class="text-link" href="/add-path?new=1">{{ t('builder_start_new') }}</a>
+  </section>
+  {% endif %}
+
+  <footer>
+    <small>{{ product }} · {{ t('builder_footer') }}</small>
+  </footer>
 </body>
 </html>

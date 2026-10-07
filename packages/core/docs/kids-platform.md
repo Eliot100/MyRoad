@@ -18,9 +18,9 @@ MyRoad-content/grade3/*.json (CONTENT_DIR or packages/core/content checkout)
 Schema: `myroad_core.content.schema.ContentPath`  
 Optional `topics[]` (`id`, `title_he`/`title_en`/`title_ar`, `node_ids[]`) group
 steps into map stations. If omitted, topics are inferred.
-Loader: `seed_content_paths()` → PathStore (human publish gate for these demos only).
+Loader: `seed_content_paths()` → PathStore. These demo samples are pre-published.
 
-Future paths use the same JSON format. Do **not** auto-publish arbitrary drafts;
+Future paths use the same JSON format. An agent may publish a draft;
 only these demo seeds are pre-published by design.
 
 ## Locale consistency (explanations vs content tokens)
@@ -63,7 +63,7 @@ Toggle **לפי זמן**: group paths by recently touched vs older vs never, wit
 - **Identity (POC):** first/last name + unique email; opaque `myroad_uid` cookie (`/login`). No passwords / no OAuth.
 - **Per-user data:** progress, completed paths, and attempt metrics in SQLite
   (`learners`, `learner_progress`, `learner_attempts`), keyed by user id.
-- **Locales:** `he` / `en` / `ar` shell chrome (RTL for he/ar). Header language switcher.
+- **Locales:** `he` / `en` / `ar` shell chrome (RTL for he/ar). Language is chosen on `/settings`.
 - **Topic map first:** `/play/{path}` opens a visual topic diagram; then Start / Enter topic.
 - **Completion stats:** time (approx), nodes completed, correct/incorrect taps, mastery %, message; attempt stored.
 - **English paths:** colors / animals / hello expanded (~10 steps) with richer EN+HE and speak_text.

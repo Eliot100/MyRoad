@@ -7,29 +7,16 @@
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}">
-  <header class="top">
+  <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back">→ {{ t('back_catalog') }}</a>
-      <strong>{{ product }}</strong>
+      <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
-    <div class="top-tools">
-      <div class="whoami">
-        <a href="/login?next=/play/{{ doc.pathId }}" class="who-link">
-          👤 {% if learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
-        </a>
-      </div>
-      <form method="post" action="/locale" class="lang-switch">
-        <input type="hidden" name="next" value="/play/{{ doc.pathId }}?view=map" />
-        {% for loc in locales %}
-        <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
-        {% endfor %}
-      </form>
-      <span class="subject-pill" style="--subject: {{ meta.subjectColor }}">{{ meta.emoji }} {{ meta.subjectLabel }}</span>
-    </div>
+    <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
   </header>
 
   <section class="card path-head">
-    <h1>{{ meta.emoji }} {{ meta.title }}</h1>
+    <h1>{{ meta.emoji }} {{ meta.title }}{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}</h1>
     <p class="lede">{{ meta.blurb }}</p>
     <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>

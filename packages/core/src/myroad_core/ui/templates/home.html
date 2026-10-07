@@ -7,29 +7,27 @@
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform">
-  <header class="top">
-    <div class="brand">
-      <strong>{{ product }}</strong>
-      <span class="badge">{{ t('product_badge') }}</span>
-    </div>
-    <div class="top-tools">
-      <div class="whoami">
-        <a href="/login?next=/" class="who-link" title="{{ t('who_am_i') }}">
-          👤 {% if learner and learner.email %}{{ learner.displayName }}{% elif learner and learner.displayName and learner.displayName != 'Learner' %}{{ learner.displayName }}{% else %}{{ t('who_guest') }}{% endif %}
-        </a>
-      </div>
-      <form method="post" action="/locale" class="lang-switch" aria-label="{{ t('language') }}">
-        <input type="hidden" name="next" value="/?group={{ active_group }}&subject={{ active_subject }}&tab={{ active_tab }}&view={{ active_view }}" />
-        {% for loc in locales %}
-        <button type="submit" name="locale" value="{{ loc }}" class="lang-btn {% if locale == loc %}active{% endif %}">{{ loc|upper }}</button>
-        {% endfor %}
-      </form>
-      <nav class="top-nav">
-        <a href="/?tab=catalog">{{ t('catalog') }}</a>
-        <a href="/add-path" class="muted-link">{{ t('add_path') }}</a>
-      </nav>
-    </div>
+  <header class="top shell-top">
+    <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    <nav class="shell-links">
+      <a class="text-link" href="/add-path">{{ t('add_path') }}</a>
+      <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
+    </nav>
   </header>
+
+
+  {% if continue_card %}
+  <section class="continue-card card">
+    <p class="kicker">{{ t('continue_kicker') }}</p>
+    <h2>{{ continue_card.emoji }} {{ continue_card.title }}</h2>
+    <p class="lede">{{ continue_card.blurb }}</p>
+    <div class="progress-wrap" aria-label="progress">
+      <div class="progress-bar"><div class="progress-fill" style="width: {{ continue_card.continuePct }}%"></div></div>
+      <span class="progress-label">{{ continue_card.continuePct }}%</span>
+    </div>
+    <a class="primary big continue-btn" href="/play/{{ continue_card.pathId }}">{{ t('continue_open') }}</a>
+  </section>
+  {% endif %}
 
   <section class="hero card">
     <h1>{{ t('hero_title') }}</h1>
@@ -111,6 +109,7 @@
                 <div class="path-meta">
                   <span class="subject-pill">{{ c.subjectLabel }}</span>
                   {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
+                  {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
                 </div>
                 <h3>{{ c.title }}</h3>
                 <p>{{ c.blurb }}</p>
@@ -141,6 +140,8 @@
           <span class="subject-pill">{{ c.subjectLabel }}</span>
           {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
           {% if c.nodeCount %}<span class="mins">{{ c.nodeCount }} {{ t('nodes') }}</span>{% endif %}
+          {% if c.agentBuilt %}<span class="status-pill agent">{{ t('agent_badge') }}</span>{% endif %}
+          {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
         </div>
         <h3>{{ c.title }}</h3>
         <p>{{ c.blurb }}</p>

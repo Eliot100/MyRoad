@@ -1,4 +1,4 @@
-"""Learner action routes: submit, feedback→revise, gated publish."""
+"""Learner action routes: submit, feedback→revise, publish."""
 from __future__ import annotations
 
 from typing import Any, Callable
@@ -173,22 +173,13 @@ def register_learner_actions(
     @app.post(f"{prefix}/publish", response_class=HTMLResponse)
     def publish_path(
         request: Request,
-        human_confirm: str | None = Form(None),
-        publisher_id: str = Form(ACTOR_HUMAN),
+        publisher_id: str = Form(""),
     ) -> HTMLResponse:
-        """Publish only with explicit human confirmation. Never auto-publish."""
+        """Publish as the signed-in user. No human-only checkbox and no password."""
         sess = _session(request)
-        confirmed = str(human_confirm or "").lower() in {"true", "1", "on", "yes"}
-        if not confirmed:
-            sess["flash"] = {
-                "level": "warn",
-                "text": "פרסום מבוטל — נדרש אישור אנושי מפורש (סימון התיבה).",
-            }
-            return _render(request, sess)
-
-        # Human path: request_publish then publish with human_publisher, no agentId
+        actor = (publisher_id or "").strip() or request.cookies.get("myroad_uid") or ACTOR_HUMAN
         req = tools.request_publish(
-            actor_id=publisher_id,
+            actor_id=actor,
             agent_id=None,
             correlation_id=_corr("reqpub"),
             path_id=sess["pathId"],
@@ -196,7 +187,6 @@ def register_learner_actions(
             require_valid=True,
         )
         if not req.ok:
-            # Allow publish attempt even if still draft-only gate; show validation
             sess["flash"] = {
                 "level": "warn",
                 "text": f"בקשת פרסום נכשלה (אולי ולידציה): {req.errors}",
@@ -204,18 +194,17 @@ def register_learner_actions(
             return _render(request, sess)
 
         pub = tools.publish(
-            actor_id=publisher_id,
+            actor_id=actor,
             agent_id=None,
             correlation_id=_corr("pub"),
             path_id=sess["pathId"],
             version_id=sess["versionId"],
-            publisher_id=publisher_id,
-            human_publisher=True,
+            publisher_id=actor,
         )
         if pub.ok:
             sess["flash"] = {
                 "level": "ok",
-                "text": f"פורסם באישור אנושי. status={pub.status}",
+                "text": f"פורסם. status={pub.status}",
             }
         else:
             sess["flash"] = {

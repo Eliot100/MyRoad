@@ -127,26 +127,15 @@ class ToolsPublishMixin:
         publisher_id: str | None = None,
         human_publisher: bool = False,
     ) -> OpResponse:
-        """Human-only publish. Deny when agentId present without human_publisher flag."""
-        if agent_id and not human_publisher:
-            evt = self.store._emit(
-                event_type="path.publish", actor_id=actor_id, agent_id=agent_id,
-                correlation_id=correlation_id, path_id=path_id, version_id=version_id,
-                rbac=RbacDecision.deny, detail={"reason": "agent_auto_publish_forbidden"},
-            )
-            return self._err(
-                correlation_id=correlation_id, code="RBAC_DENY",
-                message="agents cannot publish; human publisher required",
-                audit_event_id=evt.eventId, path_id=path_id, version_id=version_id,
-            )
-        # Strip agent_id for the store gate when a human publisher explicitly confirms.
+        """Publish the version. An agent may publish; human_publisher is ignored."""
+        del human_publisher  # kept so older callers still pass the flag
         try:
             return self.store.publish(
                 actor_id=actor_id,
                 correlation_id=correlation_id,
                 path_id=path_id,
                 version_id=version_id,
-                agent_id=None,
+                agent_id=agent_id,
                 publisher_id=publisher_id or actor_id,
             )
         except RbacDenyError as exc:

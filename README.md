@@ -9,7 +9,7 @@
 |------|-------------|
 | `freeze/v0/01-path-before-feedback.json` | Golden scenario draft (quadratic equations / משוואות ריבועיות) before feedback |
 | `freeze/v0/02-path-after-feedback.json` | Same path after feedback + remediation + `_diff` |
-| `freeze/v0/03-agent-tool-contract.md` | Agent/tool ops, RBAC, audit — agent may draft/revise; **never auto-publish** |
+| `freeze/v0/03-agent-tool-contract.md` | Agent/tool ops, RBAC, audit — agent may draft/revise and publish |
 | `freeze/v0/04-comparison.md` | Comparison vs first generic scaffold / השוואה לפיגום הגנרי |
 | `docs/design-extraction.md` | Requirements extraction from design docs |
 
@@ -21,9 +21,9 @@ Python + Pydantic + SQLite store, **AgentTools** facade (callable without HTTP),
 |------------|-------|
 | `PathStore` | create/save/get/revise/requestPublish/publish + events |
 | `AgentTools` | Contract ops: createDraft, getPath/getVersion, addBlock, editBlock, addEdge, reviseDraft, validatePath, recordFeedback, requestPublish, publish |
-| `publish` | Human-only; **refuses when `agentId` is set** unless `human_publisher=True` |
-| Learner UI | Seeds golden quadratic path; one block at a time; practice/assessment forms; **one-click** feedback→`reviseDraft` + brief version diff; publish button **disabled until human checkbox** |
-| Golden loop | `scripts/golden_loop.py` — seed/createDraft → learn → feedback → revise → requestPublish → human publish only |
+| `publish` | An agent may publish; published versions stay immutable |
+| Learner UI | Seeds golden quadratic path; one block at a time; practice/assessment forms; **one-click** feedback→`reviseDraft` + brief version diff; signed-in publish (no human checkbox) |
+| Golden loop | `scripts/golden_loop.py` — seed/createDraft → learn → feedback → revise → requestPublish → agent publish |
 | Audit | Every tool call emits an event via PathStore |
 | FastAPI tools API (optional) | `uvicorn myroad_core.api:app` |
 
@@ -58,12 +58,18 @@ topic map before play, completion stats, and per-user progress in **file SQLite*
 The platform loads it via `CONTENT_DIR`, a checkout/submodule at
 `packages/core/content`, or a sibling `../MyRoad-content` clone.
 
-**Add a path** (`/add-path`) calls Grok through Cloudflare AI Gateway BYOK.
-The xAI key stays in Cloudflare Secrets Store. MyRoad does not accept or send a
-provider API key. Server environment names: `CLOUDFLARE_ACCOUNT_ID`,
-`CLOUDFLARE_GATEWAY_ID`, and optionally `CLOUDFLARE_AI_GATEWAY_TOKEN` when the
-gateway has authenticated gateway enabled. If the account id or gateway id is
-missing, the page says the Cloudflare gateway is not configured. See
+**Add a path** (`/add-path`) is a multi-step agent path builder: goal, existing
+paths in the same subject, a JSON outline (validated with Pydantic, editable),
+one model call per topic (each topic saved to the draft as soon as it fills),
+then review and publish. Drafts are saved in the PathStore with an agentId; the
+user or the agent may publish, and feedback creates a new draft version. The
+model is Grok through Cloudflare AI Gateway BYOK. The xAI key stays in
+Cloudflare Secrets Store. MyRoad does not accept or send a provider API key.
+Server environment names: `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_GATEWAY_ID`, and
+optionally `CLOUDFLARE_AI_GATEWAY_TOKEN` when the gateway has authenticated
+gateway enabled. If a required variable is missing, the page names it and offers
+**demo mode**, which builds a full Hebrew 12+ stage draft offline (labeled demo).
+See `packages/core/docs/agent-path-builder.md` and
 `packages/core/docs/cloudflare-ai-gateway.md`. The old `/author` golden-loop POC
 remains unlinked from the main nav.
 
@@ -77,7 +83,7 @@ pip install -e ".[api]"
 uvicorn myroad_core.ui.app:app --reload --port 8765
 # http://127.0.0.1:8765/          catalog
 # http://127.0.0.1:8765/login     register / sign in (email)
-# http://127.0.0.1:8765/add-path  gated add-a-path flow
+# http://127.0.0.1:8765/add-path  agent path builder (demo mode works without Cloudflare)
 ```
 
 Windows PowerShell:
@@ -129,7 +135,7 @@ Hebrew UI labels; product id stays **MyRoad**. Flow:
 2. Shows path name/goal and one block at a time
 3. Next/prev; practice/assessment/experience advance on mastery
 4. Feedback form calls `AgentTools.record_feedback` (optional `reviseDraft` — new draft only)
-5. **Publish** stays disabled until the human confirmation checkbox is checked — never auto-publish
+5. **Publish** is available to the signed-in user — no human-only checkbox
 
 Smoke without a browser:
 
@@ -152,7 +158,7 @@ uvicorn myroad_core.api:app --reload
 1. ~~**Persistence** — versions, statuses, event log~~
 2. ~~**Agent API** — tool contract facade~~
 3. ~~**Thin UI** — learner path + feedback / gated publish~~
-4. ~~**Golden loop** — topic → draft → learn → feedback → revise → human publish~~ (demo script + UI one-click revise + version diff)
+4. ~~**Golden loop** — topic → draft → learn → feedback → revise → publish~~ (demo script + UI one-click revise + version diff)
 5. **Author/editor polish** — richer diff UX, source approval flows, multi-path catalog
 
 ### Golden loop (end-to-end demo)
@@ -166,10 +172,7 @@ python scripts/golden_loop.py
 ```
 
 Flow: seed quadratic path (or `createDraft`) → simulate learn/attempts →
-`recordFeedback` → `reviseDraft` → `requestPublish` → **publish only with
-`human_publisher=True`** (asserts `agentId` alone is `RBAC_DENY`).
-
-**Never auto-publish.**
+`recordFeedback` → `reviseDraft` → `requestPublish` → **agent publish succeeds**.
 
 Thin UI polish: primary feedback button is one-click feedback→revise; a brief
 version-diff banner shows `from → to` after revise.
@@ -183,4 +186,4 @@ On push/PR to `main`:
 
 ## License / note
 
-Freeze artifacts + persistence + agent-tool facade + thin learner UI + golden loop demo. No auto-publish; golden freeze paths remain `draft` until a human publishes.
+Freeze artifacts + persistence + agent-tool facade + thin learner UI + golden loop demo. An agent may publish; a published version stays immutable.
