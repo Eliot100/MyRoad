@@ -32,10 +32,13 @@ def _reg(client, email: str, first: str = "Test", last: str = "User"):
 
 
 def test_all_grade3_paths_validate() -> None:
-    paths = load_content_paths(default_content_dir())
-    assert len(paths) == 10
-    ids = {p.id for p in paths}
-    assert len(ids) == 10
+    all_paths = load_content_paths(default_content_dir())
+    assert all_paths, "no content paths found"
+    # path ids are unique across the whole content tree
+    assert len({p.id for p in all_paths}) == len(all_paths)
+    # the grade-3 demo checks apply only to grade-3 paths, not to new audiences
+    paths = [p for p in all_paths if "grade3" in p.group_ids]
+    assert paths, "no grade3 paths found"
     for p in paths:
         assert p.grade == 3
         assert "grade3" in p.group_ids
@@ -107,9 +110,11 @@ def test_invalid_path_rejected() -> None:
 
 def test_seed_publishes_demo_only(store: PathStore) -> None:
     summary = seed_content_paths(store, content_dir=default_content_dir())
-    assert summary["count"] == 10
+    expected = len(load_content_paths(default_content_dir()))
+    assert expected >= 1
+    assert summary["count"] == expected
     cards = list_catalog_cards(store)
-    assert len(cards) == 10
+    assert len(cards) == expected
     for card in cards:
         doc = store.get_path_latest(card["pathId"])
         assert doc.status == PathStatus.published
@@ -263,7 +268,7 @@ def test_completion_stats_and_attempt(platform_client: TestClient, tmp_path) -> 
 
 def test_health_reports_content_count(platform_client: TestClient) -> None:
     h = platform_client.get("/health")
-    assert h.json()["contentPaths"] == 10
+    assert h.json()["contentPaths"] == len(load_content_paths(default_content_dir()))
 
 
 def test_learner_identity_tables(store: PathStore) -> None:

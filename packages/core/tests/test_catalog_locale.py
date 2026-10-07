@@ -42,7 +42,7 @@ def _has_hebrew(text: str) -> bool:
 
 def test_all_grade3_paths_have_manifest_catalog_chrome() -> None:
     paths = load_content_paths(default_content_dir())
-    assert len(paths) == 10
+    assert paths, "no content paths found"
     required = list(locale_codes())
     for p in paths:
         assert "he" in p.titles and p.titles["he"].strip()
@@ -78,7 +78,7 @@ def test_validate_catalog_chrome_flags_missing_locale() -> None:
 def test_list_catalog_cards_pick_by_ui_locale(store: PathStore) -> None:
     seed_content_paths(store, content_dir=default_content_dir())
     raw = list_catalog_cards(store)
-    assert len(raw) == 10
+    assert len(raw) == len(load_content_paths(default_content_dir()))
     for card in raw:
         assert card.get("titles", {}).get("en"), card["pathId"]
         assert card.get("titles", {}).get("ar"), card["pathId"]
@@ -86,7 +86,7 @@ def test_list_catalog_cards_pick_by_ui_locale(store: PathStore) -> None:
 
     for loc in locale_codes():
         cards = list_catalog_cards(store, locale=loc)
-        assert len(cards) == 10
+        assert len(cards) == len(raw)
         for card in cards:
             assert card["uiLocale"] == loc
             assert card["title"] == pick(card["titles"], loc)
