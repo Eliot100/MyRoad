@@ -204,7 +204,14 @@ def _pack(code: str) -> dict[str, str]:
 def test_problem_locale_keys_exist_in_he_en_ar() -> None:
     packs = {c: _pack(c) for c in ("he", "en", "ar")}
     assert set(packs["he"]) == set(packs["en"]) == set(packs["ar"])
-    keys = [PROBLEM_KEY_PREFIX + c for c in PROBLEM_CODES] + ["draft_problems_heading", "draft_problems_none"]
+    keys = [PROBLEM_KEY_PREFIX + c for c in PROBLEM_CODES] + [
+        "draft_problems_heading",
+        "draft_problems_none",
+        "draft_problem_severity_error",
+        "draft_problem_severity_warning",
+        "builder_publish_blocked",
+        "builder_and_more",
+    ]
     for key in keys:
         en, he, ar = packs["en"][key], packs["he"][key], packs["ar"][key]
         assert any("\u0590" <= ch <= "\u05FF" for ch in he), key

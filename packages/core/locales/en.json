@@ -236,5 +236,9 @@
   "draft_problem_node_invalid": "Step “{title}” has content that is not valid.",
   "draft_problem_unknown_step_type": "Step “{title}” has an unknown type: “{type}”.",
   "draft_problem_topic_unknown_nodes": "Topic “{topic}” points to steps that do not exist: {ids}.",
-  "draft_problem_topic_no_nodes": "Topic “{topic}” has no steps."
+  "draft_problem_topic_no_nodes": "Topic “{topic}” has no steps.",
+  "builder_publish_blocked": "Publishing is blocked by format errors ({count}). Fix them and try again:",
+  "draft_problem_severity_error": "Blocks publishing",
+  "draft_problem_severity_warning": "Warning",
+  "builder_and_more": "and {n} more"
 }

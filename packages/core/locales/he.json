@@ -236,5 +236,9 @@
   "draft_problem_node_invalid": "בשלב „{title}” יש תוכן לא תקין.",
   "draft_problem_unknown_step_type": "לשלב „{title}” יש סוג לא מוכר: „{type}”.",
   "draft_problem_topic_unknown_nodes": "הנושא „{topic}” מפנה לשלבים שלא קיימים: {ids}.",
-  "draft_problem_topic_no_nodes": "בנושא „{topic}” אין שלבים."
+  "draft_problem_topic_no_nodes": "בנושא „{topic}” אין שלבים.",
+  "builder_publish_blocked": "הפרסום נחסם בגלל שגיאות מבנה ({count}). תקנו אותן ונסו שוב:",
+  "draft_problem_severity_error": "חוסם פרסום",
+  "draft_problem_severity_warning": "אזהרה",
+  "builder_and_more": "ועוד {n}"
 }

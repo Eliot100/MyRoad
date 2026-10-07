@@ -236,5 +236,9 @@
   "draft_problem_node_invalid": "في المرحلة «{title}» محتوى غير صالح.",
   "draft_problem_unknown_step_type": "للمرحلة «{title}» نوع غير معروف: «{type}».",
   "draft_problem_topic_unknown_nodes": "الموضوع «{topic}» يشير إلى مراحل غير موجودة: {ids}.",
-  "draft_problem_topic_no_nodes": "الموضوع «{topic}» ليس فيه مراحل."
+  "draft_problem_topic_no_nodes": "الموضوع «{topic}» ليس فيه مراحل.",
+  "builder_publish_blocked": "النشر محظور بسبب أخطاء في البنية ({count}). صحّحوها وحاولوا مرة أخرى:",
+  "draft_problem_severity_error": "يمنع النشر",
+  "draft_problem_severity_warning": "تنبيه",
+  "builder_and_more": "و{n} أخرى"
 }

@@ -2,6 +2,8 @@
 from myroad_core.agent_builder.builder import (
     AGENT_ID_DEMO,
     AGENT_ID_GATEWAY,
+    PUBLISH_FORMAT_ERROR,
+    PUBLISH_NOT_COMPLETE,
     AgentPathBuilder,
     TopicResult,
     assemble_document,
@@ -11,6 +13,7 @@ from myroad_core.agent_builder.builder import (
 from myroad_core.agent_builder.completeness import (
     CompletenessReport,
     DraftProblem,
+    blocking_problems,
     check_path_completeness,
     draft_problems,
 )
@@ -48,9 +51,12 @@ __all__ = [
     "OutlineTopic",
     "PathGenerator",
     "PathOutline",
+    "PUBLISH_FORMAT_ERROR",
+    "PUBLISH_NOT_COMPLETE",
     "ReplyParseError",
     "TopicResult",
     "assemble_document",
+    "blocking_problems",
     "check_path_completeness",
     "draft_problems",
     "extract_json_object",

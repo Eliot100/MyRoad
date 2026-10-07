@@ -116,6 +116,21 @@ PROBLEM_CODES: tuple[str, ...] = (
     "review_topic_not_earlier",
 )
 
+# Format errors that block publishing (product rule). Everything else, and the
+# completeness rule above, stays as it is today. Saving a draft is never blocked.
+BLOCKING_CODES: frozenset[str] = frozenset(
+    {
+        "node_missing_body",
+        "node_correct_not_in_choices",
+        # Emitted only for practice/check nodes WITH choices and no correct id:
+        # the same format error as a correct id that is not a choice.
+        "node_correct_missing",
+        "topic_unknown_nodes",
+    }
+)
+SEVERITY_ERROR = "error"
+SEVERITY_WARNING = "warning"
+
 _PROBE_TEXT = "x"
 _PROBE_NODE: dict[str, Any] = {"type": "learn", "title": _PROBE_TEXT, "body_he": _PROBE_TEXT}
 _NODE_FIELDS = tuple(ContentNode.model_fields)
@@ -169,10 +184,20 @@ class DraftProblem:
     def message_key(self) -> str:
         return PROBLEM_KEY_PREFIX + self.code
 
+    @property
+    def severity(self) -> str:
+        """Severity: "error" blocks publishing, "warning" is shown only."""
+        return SEVERITY_ERROR if self.code in BLOCKING_CODES else SEVERITY_WARNING
+
+    @property
+    def blocking(self) -> bool:
+        return self.severity == SEVERITY_ERROR
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "code": self.code,
             "message_key": self.message_key,
+            "severity": self.severity,
             "field": self.field,
             "node_id": self.node_id,
             "topic_id": self.topic_id,
@@ -287,8 +312,9 @@ def draft_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProble
         t.get("key") for t in (((raw.get("agentBuild") or {}).get("outline") or {}).get("topics") or [])
     ]
     node_topic: dict[str, tuple[str | None, int | None]] = {}
-    known_ids = list(dict.fromkeys(n[0] for n in nodes if n[0]))
-    probe_nodes = [{**_PROBE_NODE, "id": nid} for nid in known_ids] or [dict(_PROBE_NODE)]
+    ordered_ids = list(dict.fromkeys(n[0] for n in nodes if n[0]))
+    known_ids = set(ordered_ids)
+    probe_nodes = [{**_PROBE_NODE, "id": nid} for nid in ordered_ids] or [dict(_PROBE_NODE)]
     topic_problems: list[DraftProblem] = []
     for pos, topic in enumerate(topics):
         tid = topic.get("id") or f"topic_{pos + 1}"
@@ -322,6 +348,11 @@ def draft_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProble
     problems.extend(_review_problems(raw))
     problems.extend(topic_problems)
     return problems
+
+
+def blocking_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProblem]:
+    """The draft problems that block publishing (severity "error")."""
+    return [p for p in draft_problems(doc) if p.blocking]
 
 
 def _review_problems(raw: dict[str, Any]) -> list[DraftProblem]:
