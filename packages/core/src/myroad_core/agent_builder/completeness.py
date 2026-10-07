@@ -15,15 +15,13 @@ from typing import Any
 from pydantic import BaseModel, ValidationError
 
 from myroad_core.agent_builder.models import MIN_STAGES, MIN_TOPICS, REQUIRED_STAGE_TYPES, STAGE_TYPES
-from myroad_core.content.schema import ContentChoice, ContentNode, ContentPath
+from myroad_core.content.schema import NODE_BLOCK, NODE_STAGE, NODE_TYPES, ContentChoice, ContentNode, ContentPath
 from myroad_core.models import PathVersion
 
-_BLOCK_TO_STAGE = {
-    "explanation": "explanation",
-    "practice": "practice",
-    "assessment": "check",
-    "experience": "experience",
-}
+# Store block type -> builder stage type, derived from the schema's NODE_BLOCK / NODE_STAGE.
+_BLOCK_TO_STAGE: dict[str, str] = {}
+for _node_type in NODE_TYPES:
+    _BLOCK_TO_STAGE.setdefault(NODE_BLOCK[_node_type], NODE_STAGE[_node_type])
 
 
 @dataclass
@@ -113,12 +111,16 @@ PROBLEM_CODES: tuple[str, ...] = (
     "unknown_step_type",
     "topic_unknown_nodes",
     "topic_no_nodes",
+    "review_kind_invalid",
+    "review_topic_unknown",
+    "review_topic_not_earlier",
 )
 
 _PROBE_TEXT = "x"
 _PROBE_NODE: dict[str, Any] = {"type": "learn", "title": _PROBE_TEXT, "body_he": _PROBE_TEXT}
 _NODE_FIELDS = tuple(ContentNode.model_fields)
 _CHOICE_FIELDS = tuple(ContentChoice.model_fields)
+_REVIEW_FIELDS = ("kind", "review_topic_ids")
 
 
 def _probe_path(**overrides: Any) -> dict[str, Any]:
@@ -138,11 +140,17 @@ def _probe_path(**overrides: Any) -> dict[str, Any]:
 
 
 def _rejects(model: type[BaseModel], data: dict[str, Any]) -> bool:
+    return _schema_error(model, data) is not None
+
+
+def _schema_error(model: type[BaseModel], data: dict[str, Any]) -> str | None:
+    """The schema's own error message for ``data``, or None when it validates."""
     try:
         model.model_validate(data)
-    except ValidationError:
-        return True
-    return False
+    except ValidationError as exc:
+        err = (exc.errors() or [{}])[0]
+        return str(err.get("msg") or "invalid").removeprefix("Value error, ")
+    return None
 
 
 @dataclass
@@ -229,7 +237,10 @@ def _node_problems(nid: str | None, kids: dict[str, Any], content: dict[str, Any
     # Anything else the schema rejects on this node (only known fields; the agent
     # adds extra keys such as channel/objective that the sample schema forbids).
     if not problems:
-        sliced_node = {k: kids.get(k) for k in _NODE_FIELDS if kids.get(k) is not None}
+        # kind / review_topic_ids are checked by _review_problems.
+        sliced_node = {
+            k: kids.get(k) for k in _NODE_FIELDS if kids.get(k) is not None and k not in _REVIEW_FIELDS
+        }
         if _rejects(ContentNode, sliced_node):
             add("node_invalid", "kids")
     return problems
@@ -240,8 +251,9 @@ def draft_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProble
 
     Checks: titles.he, blurbs.he, emoji, subject, at least one node; per node a
     body (body_he/body_en/body_ui), a known step type, and for practice/check a
-    ``correct`` that points at a choice id; per topic, node_ids that exist.
-    estimated_minutes is never checked for agent drafts.
+    ``correct`` that points at a choice id; per topic, node_ids that exist; for
+    review steps (schema v2), a valid kind and review_topic_ids that point at
+    known, earlier topics. estimated_minutes is never checked for agent drafts.
     """
     if doc is None:
         return []
@@ -307,5 +319,85 @@ def draft_problems(doc: PathVersion | dict[str, Any] | None) -> list[DraftProble
             p.block_id, p.topic_id, p.topic_index = block_id, tid, t_index
             problems.append(p)
 
+    problems.extend(_review_problems(raw))
     problems.extend(topic_problems)
+    return problems
+
+
+def _review_problems(raw: dict[str, Any]) -> list[DraftProblem]:
+    """Schema v2 review steps: kind, and review_topic_ids pointing at EARLIER topics.
+
+    Warnings only. Each review topic is probed alone against the schema's
+    ContentPath rule; when the schema rejects it, its message is kept in
+    params["schema_error"]. If the probe cannot isolate the value, the same
+    rule (known topic, earlier than the step's topic) is applied directly.
+    """
+    nodes = _nodes_of(raw)
+    topics = raw.get("topics") or []
+    topic_ids = [t.get("id") or f"topic_{i + 1}" for i, t in enumerate(topics)]
+    outline_keys = [
+        t.get("key") for t in (((raw.get("agentBuild") or {}).get("outline") or {}).get("topics") or [])
+    ]
+    known = list(dict.fromkeys(n[0] for n in nodes if n[0]))
+    known_set = set(known)
+    home: dict[str, int] = {}
+    probe_topics: list[dict[str, Any]] = []
+    fillers: list[str] = []
+    for pos, topic in enumerate(topics):
+        ids = [x for x in (topic.get("node_ids") or []) if x in known_set]
+        for nid in ids:
+            home.setdefault(nid, pos)
+        if not ids:
+            fillers.append(f"_probe_empty_{pos}")
+            ids = [fillers[-1]]
+        probe_topics.append({"id": topic_ids[pos], "titles": {"he": _PROBE_TEXT}, "node_ids": ids})
+
+    def probe(review_node: str | None = None, tid: str | None = None) -> str | None:
+        probe_nodes = []
+        for nid in known + fillers:
+            node = {**_PROBE_NODE, "id": nid}
+            if nid == review_node:
+                node.update({"kind": "review", "review_topic_ids": [tid]})
+            probe_nodes.append(node)
+        return _schema_error(
+            ContentPath, _probe_path(nodes=probe_nodes, topics=probe_topics or None)
+        )
+
+    baseline_ok: bool | None = None
+    problems: list[DraftProblem] = []
+    for nid, block_id, kids, content in nodes:
+        kind = kids.get("kind")
+        rids = kids.get("review_topic_ids")
+        if kind is None and rids is None:
+            continue
+        pos = home.get(nid or "")
+        tid_home = topic_ids[pos] if pos is not None else content.get("topicKey")
+        t_index = outline_keys.index(tid_home) if tid_home in outline_keys else pos
+        title = kids.get("title") or nid or "?"
+
+        def add(code: str, fld: str, **params: Any) -> None:
+            problems.append(
+                DraftProblem(
+                    code=code, field=fld, node_id=nid, topic_id=tid_home, topic_index=t_index,
+                    block_id=block_id, params={"title": title, **params},
+                )
+            )
+
+        node_err = _schema_error(ContentNode, {**_PROBE_NODE, "kind": kind, "review_topic_ids": rids})
+        if node_err is not None:
+            add("review_kind_invalid", "kind", kind=str(kind), schema_error=node_err)
+            continue
+        for tid in rids or []:
+            if baseline_ok is None:
+                baseline_ok = probe() is None
+            err = probe(nid, tid) if baseline_ok else None
+            unknown = tid not in topic_ids
+            later = not unknown and pos is not None and topic_ids.index(tid) >= pos
+            if err is None and not (unknown or later):
+                continue
+            code = "review_topic_unknown" if unknown else "review_topic_not_earlier"
+            params: dict[str, Any] = {"topic": tid}
+            if err is not None:
+                params["schema_error"] = err
+            add(code, "review_topic_ids", **params)
     return problems

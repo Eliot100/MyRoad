@@ -28,7 +28,9 @@ from myroad_core.agent_builder import (
     preview_document,
 )
 from myroad_core.agent_builder.models import (
+    AUDIENCE_IDS,
     CHANNELS,
+    STEP_KINDS,
     LENGTH_IDS,
     LEVEL_IDS,
     LOCALE_CODES,
@@ -220,6 +222,8 @@ def register_agent_builder_routes(
             locale_codes=LOCALE_CODES,
             stage_types=STAGE_TYPES,
             channels=CHANNELS,
+            audience_ids=AUDIENCE_IDS,
+            step_kinds=STEP_KINDS,
             error=extra.pop("error", ""),
             flash_ok=extra.pop("flash_ok", ""),
             draft_problems=_live_problems(request, sess, extra.get("doc")),
@@ -272,6 +276,7 @@ def register_agent_builder_routes(
         content_language: str = Form("he"),
         length: str = Form("medium"),
         mode: str = Form("demo"),
+        audience: str = Form(""),
     ):
         learner = current_learner(request)
         if not learner:
@@ -286,6 +291,7 @@ def register_agent_builder_routes(
             "ui_locale": ui_locale,
             "content_language": content_language,
             "length": length,
+            "audience": audience or None,
         }
         if mode == "gateway" and not gateway_is_configured():
             sess["spec"] = raw_spec
@@ -339,8 +345,12 @@ def register_agent_builder_routes(
             return RedirectResponse("/add-path", status_code=303)
         locale = locale_of(request)
         spec = GoalSpec.model_validate(sess["spec"])
+        existing = [
+            {"pathId": c.get("pathId"), "title": c.get("title")}
+            for c in _existing_cards(request, spec.subject)
+        ]
         try:
-            outline = _generator(sess.get("mode") or "demo").outline(spec)
+            outline = _generator(sess.get("mode") or "demo").outline(spec, existing_paths=existing)
         except GenerationError as exc:
             return _render(
                 request, "existing", sess,
@@ -540,6 +550,8 @@ def register_agent_builder_routes(
                         "body": kids.get("body_ui") or "",
                         "choices": kids.get("choices") or [],
                         "correct": kids.get("correct"),
+                        "kind": kids.get("kind") or "understanding",
+                        "review_topic_ids": kids.get("review_topic_ids") or [],
                     }
                 )
             titles = topic.get("titles") or {}
