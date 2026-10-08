@@ -18,4 +18,3 @@
 # Content comes from MyRoad-content at build time, not from a local copy.
 packages/core/content
 docs
-freeze

@@ -33,6 +33,7 @@ RUN mkdir -p src/myroad_core && touch src/myroad_core/__init__.py \
  && pip install -e ".[api]"
 
 # Code (editable install: the app reads locales/ and templates from this tree).
+COPY freeze/v0/ /app/freeze/v0/
 COPY packages/core/ ./
 COPY --from=content /content ./content
 
