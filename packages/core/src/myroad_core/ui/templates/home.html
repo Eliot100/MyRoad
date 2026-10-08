@@ -20,12 +20,18 @@
   <section class="continue-card card">
     <p class="kicker">{{ t('continue_kicker') }}</p>
     <h2>{{ continue_card.emoji }} {{ continue_card.title }}</h2>
+    {% if continue_card.continueTotal %}
+    <p class="continue-where" data-step="{{ continue_card.continueStep }}">
+      {{ t('continue_step', n=continue_card.continueStep, total=continue_card.continueTotal) }}{% if continue_card.continueTopic %} · <span class="continue-topic">{{ continue_card.continueTopic }}</span>{% endif %}
+    </p>
+    {% else %}
     <p class="lede">{{ continue_card.blurb }}</p>
+    {% endif %}
     <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ continue_card.continuePct }}%"></div></div>
       <span class="progress-label">{{ continue_card.continuePct }}%</span>
     </div>
-    <a class="primary big continue-btn" href="/play/{{ continue_card.pathId }}">{{ t('continue_open') }}</a>
+    <a class="primary big continue-btn" href="{{ continue_card.continueHref or ('/play/' ~ continue_card.pathId) }}">{{ t('continue_open') }}</a>
   </section>
   {% endif %}
 
@@ -110,9 +116,11 @@
                   <span class="subject-pill">{{ c.subjectLabel }}</span>
                   {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
                   {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
+                  {% if c.lockedBy %}<span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}
                 </div>
                 <h3>{{ c.title }}</h3>
                 <p>{{ c.blurb }}</p>
+                {% if c.lockedBy %}<p class="lock-needs tiny" data-locked-by="{{ c.lockedBy|map(attribute='pathId')|join(',') }}">{{ t('locked_finish_first') }} {% for p in c.lockedBy %}<bdi>{{ p.title }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
                 {% if c.progressStatus == 'completed' %}
                 <span class="status-pill done">{{ t('completed') }}</span>
                 {% elif c.progressStatus == 'in_progress' %}
@@ -142,9 +150,11 @@
           {% if c.nodeCount %}<span class="mins">{{ c.nodeCount }} {{ t('nodes') }}</span>{% endif %}
           {% if c.agentBuilt %}<span class="status-pill agent">{{ t('agent_badge') }}</span>{% endif %}
           {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
+          {% if c.lockedBy %}<span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}
         </div>
         <h3>{{ c.title }}</h3>
         <p>{{ c.blurb }}</p>
+        {% if c.lockedBy %}<p class="lock-needs tiny" data-locked-by="{{ c.lockedBy|map(attribute='pathId')|join(',') }}">{{ t('locked_finish_first') }} {% for p in c.lockedBy %}<bdi>{{ p.title }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
         {% if c.progressStatus == 'completed' %}
         <span class="status-pill done">{{ t('completed') }}</span>
         {% elif c.progressStatus == 'in_progress' %}
