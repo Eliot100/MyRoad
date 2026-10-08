@@ -26,7 +26,7 @@ from myroad_core.ui.app import create_learner_app  # noqa: E402
 
 
 def _wrong(code: str) -> str:
-    return f"{(int(code) + 1) % 10**6:06d}"
+    return f"{(int(code) + 1) % 10**8:08d}"
 
 
 def _user(store: PathStore, email: str = "alice@example.com") -> str:
@@ -197,7 +197,7 @@ def test_every_email_change_request_path_hashes_twice(store: PathStore, monkeypa
     for i in range(lc.SEND_LIMITS["email"]):
         store.start_email_change(uid, f"x{i}@example.com", client_ip=f"9.9.9.{i}")
     before = calls[0]
-    assert store.start_email_change(uid, "late@example.com", client_ip="4.4.4.5").kind == "rate_limited"
+    assert store.start_email_change(uid, "late@example.com", client_ip="4.4.4.5").kind == "email_limited"
     assert calls[0] - before == 2
 
 

@@ -1,6 +1,6 @@
-"""One-time email codes for sign-in and email change (issue #41, hardened).
+"""One-time email codes for sign-in and email change (issues #41, #49, #50).
 
-Sign-in emails a 6-digit code. Per code:
+Sign-in emails an 8-digit code (10^8 possible values). Per code:
 - expires after 15 minutes and works once;
 - at most 5 checks (one atomic conditional UPDATE claims a check BEFORE any
   hashing, so parallel guesses can never exceed the limit);
@@ -8,23 +8,40 @@ Sign-in emails a 6-digit code. Per code:
 - bound to a purpose ("login", or one side of an email change), so a code
   issued for one purpose is refused for any other.
 
-Per email address, up to 3 login codes can be active at once (a new request
-no longer cancels the code the real user is typing).
+Per email + IP, up to 3 login codes can be active at once; a 4th from the
+same IP retires that IP's oldest. Requests from other IPs never cancel the
+code the real user is typing (#50).
 
-Wrong guesses are counted per email + client IP, never as one global counter
-per email, so a stranger cannot lock the real user out:
-- after 5 failures in 24 hours from one IP for one email, that IP must wait
-  before each further check (exponential backoff, 2 s doubling, max 15 min);
-- after 3 failures from one IP, or 15 failures for the email from all IPs,
-  a CAPTCHA is required when a CAPTCHA provider is configured (see
-  ``auth/captcha.py``; off by default). Without one, only the backoff applies.
+Trusted pairs: an email + client IP that signed in successfully in the last
+90 days. Per-email limits never apply to a trusted pair, so an attacker on
+other IPs cannot stop a returning user's codes or lock their correct code.
 
-Sends (codes and notices) are limited per email+IP, per email and per IP. A
-limited request gets the same response as a sent one, and every request path
-runs one PBKDF2 hash so known and unknown emails take the same time.
+Verify limits (wrong codes, rolling 24 hours):
+- per email + IP: after 5 failures that IP waits before each further check
+  (2 s doubling, max 15 min; ``code_slow_down``, no attempt used);
+- per IP, across all emails: at most 50 failures, then ``code_slow_down``;
+- per email, from untrusted IPs (all of them together): at most 30 checks
+  that were wrong (``EMAIL_FAILURE_BUDGET``). Over it, an untrusted check is
+  refused with ``account_limited`` unless a CAPTCHA was solved. Each check is
+  reserved before hashing, so parallel requests cannot pass the budget.
+  Worst case without a CAPTCHA: 30 guesses per email per day from rotating
+  IPs (was ~4,800 with 6-digit codes), i.e. a 3 in 10 million daily chance.
+- a CAPTCHA (when configured; see ``auth/captcha.py``, off by default) is
+  asked after 3 failures from one IP, 15 for the email, or once the budget is
+  used up, and a solved CAPTCHA lets the real user through.
 
-A new user's account is created only after the code is verified, and the login
-session starts only then. No passwords anywhere.
+Send limits (codes and notices, rolling 15 minutes):
+- per email + IP: 5 (each IP has its own bucket; others cannot use it up);
+- per IP, across all emails: 30;
+- per email, from untrusted IPs: 20 (mail-bomb guard). Over it the request
+  is not silently dropped: with a CAPTCHA configured the user is asked to
+  solve it and the code is sent; without one the user is told to wait or use
+  a device they signed in from before. Trusted pairs are exempt.
+Own-bucket limits (email+IP, IP) answer like a sent request.
+
+Every request path runs one PBKDF2 hash so known and unknown emails take the
+same time. A new user's account is created only after the code is verified,
+and the login session starts only then. No passwords anywhere.
 """
 from __future__ import annotations
 
@@ -41,6 +58,9 @@ __all__ = [
     "CAPTCHA_AFTER_FAILURES",
     "CODE_DIGITS",
     "CODE_TTL_SECONDS",
+    "EMAIL_FAILURE_BUDGET",
+    "IP_FAILURE_BUDGET",
+    "TRUST_DAYS",
     "LoginCodeMixin",
     "LoginRequest",
     "MAX_ACTIVE_CODES",
@@ -54,7 +74,7 @@ __all__ = [
     "verify_code_hash",
 ]
 
-CODE_DIGITS = 6
+CODE_DIGITS = 8
 CODE_TTL_SECONDS = 15 * 60
 MAX_VERIFY_ATTEMPTS = 5
 MAX_ACTIVE_CODES = 3
@@ -64,11 +84,18 @@ BACKOFF_AFTER_FAILURES = 5
 BACKOFF_BASE_SECONDS = 2
 BACKOFF_MAX_SECONDS = 15 * 60
 CAPTCHA_AFTER_FAILURES = 3
-# Per email, all IPs (distributed guessing): CAPTCHA for everyone, never a lock.
+# Per email, all IPs (distributed guessing): ask for a CAPTCHA (when configured).
 CAPTCHA_AFTER_EMAIL_FAILURES = 15
+# Per email, untrusted IPs together: wrong checks allowed per FAILURE_WINDOW_SECONDS
+# without a solved CAPTCHA. This is the worst-case daily guess budget per email.
+EMAIL_FAILURE_BUDGET = 30
+# Per IP, across all emails, per FAILURE_WINDOW_SECONDS.
+IP_FAILURE_BUDGET = 50
+# An email + IP that signed in successfully stays trusted this long.
+TRUST_DAYS = 90
 SEND_WINDOW_SECONDS = 15 * 60
-# Sends allowed per SEND_WINDOW_SECONDS.
-SEND_LIMITS = {"email_ip": 5, "email": 10, "ip": 30}
+# Sends allowed per SEND_WINDOW_SECONDS. "email" counts untrusted IPs only.
+SEND_LIMITS = {"email_ip": 5, "email": 20, "ip": 30}
 _PBKDF2_ITERATIONS = 120_000
 
 PURPOSE_LOGIN = "login"
@@ -102,7 +129,18 @@ CREATE TABLE IF NOT EXISTS login_failures (
   failed_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_login_failures ON login_failures(email, client_ip, failed_at);
+CREATE TABLE IF NOT EXISTS login_trusted (
+  email TEXT NOT NULL,
+  client_ip TEXT NOT NULL,
+  trusted_at TEXT NOT NULL,
+  PRIMARY KEY (email, client_ip)
+);
 """
+
+_EXTRA_COLUMNS = {
+    "login_send_log": (("trusted", "INTEGER NOT NULL DEFAULT 0"),),
+    "login_failures": (("trusted", "INTEGER NOT NULL DEFAULT 0"),),
+}
 
 _LOGIN_CODE_EXTRA_COLUMNS = (
     ("failures", "INTEGER NOT NULL DEFAULT 0"),
@@ -168,11 +206,13 @@ class LoginRequest:
     """Outcome of a sign-in request. The HTTP response is the same for every kind.
 
     kind: "code" (send ``code``), "no_account" (send a notice, no code),
-    "rate_limited" (send nothing). ``challenge_id`` is always set; for the last
+    "rate_limited" (this IP's own bucket is full; send nothing, answer as if
+    sent), "email_limited" (the per-email cap for untrusted IPs is full; the
+    caller asks for a CAPTCHA or tells the user to wait, never drops silently). ``challenge_id`` is always set; for the last
     two it is a random value that matches no stored challenge.
     """
 
-    kind: Literal["code", "no_account", "rate_limited"]
+    kind: Literal["code", "no_account", "rate_limited", "email_limited"]
     email: str
     challenge_id: str
     code: str | None = None
@@ -187,25 +227,51 @@ class LoginCodeMixin:
         for col, decl in _LOGIN_CODE_EXTRA_COLUMNS:
             if col not in cols:
                 self._conn.execute(f"ALTER TABLE login_codes ADD COLUMN {col} {decl}")
+        for table, extra in _EXTRA_COLUMNS.items():
+            have = {row[1] for row in self._conn.execute(f"PRAGMA table_info({table})").fetchall()}
+            for col, decl in extra:
+                if col not in have:
+                    self._conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {decl}")
         self._conn.commit()
+
+    # ----- trusted email + IP pairs -----
+
+    def _is_trusted(self, email: str, client_ip: str, now: datetime) -> bool:
+        row = self._conn.execute(
+            "SELECT 1 FROM login_trusted WHERE email = ? AND client_ip = ? AND trusted_at > ?",
+            (email, client_ip, _ts(now - timedelta(days=TRUST_DAYS))),
+        ).fetchone()
+        return row is not None
+
+    def _mark_trusted(self, email: str, client_ip: str, now: datetime) -> None:
+        if client_ip in ("", "unknown"):
+            return  # never trust an unknown address
+        self._conn.execute(
+            "INSERT INTO login_trusted (email, client_ip, trusted_at) VALUES (?,?,?) "
+            "ON CONFLICT(email, client_ip) DO UPDATE SET trusted_at = excluded.trusted_at",
+            (email, client_ip, _ts(now)),
+        )
 
     # ----- sending -----
 
-    def _send_allowed(self, email: str, client_ip: str, now: datetime) -> bool:
+    def _send_status(self, email: str, client_ip: str, now: datetime, *, trusted: bool) -> str:
+        """"ok", "rate_limited" (this IP's own bucket) or "email_limited" (per-email cap, untrusted)."""
         since = _ts(now - timedelta(seconds=SEND_WINDOW_SECONDS))
         q = "SELECT COUNT(*) FROM login_send_log WHERE sent_at > ? AND "
         by_email_ip = self._conn.execute(q + "email = ? AND client_ip = ?", (since, email, client_ip)).fetchone()[0]
-        by_email = self._conn.execute(q + "email = ?", (since, email)).fetchone()[0]
         by_ip = self._conn.execute(q + "client_ip = ?", (since, client_ip)).fetchone()[0]
-        return (
-            by_email_ip < SEND_LIMITS["email_ip"]
-            and by_email < SEND_LIMITS["email"]
-            and by_ip < SEND_LIMITS["ip"]
-        )
+        if by_email_ip >= SEND_LIMITS["email_ip"] or by_ip >= SEND_LIMITS["ip"]:
+            return "rate_limited"
+        if not trusted:
+            by_email = self._conn.execute(q + "email = ? AND trusted = 0", (since, email)).fetchone()[0]
+            if by_email >= SEND_LIMITS["email"]:
+                return "email_limited"
+        return "ok"
 
-    def _log_send(self, email: str, client_ip: str, now: datetime) -> None:
+    def _log_send(self, email: str, client_ip: str, now: datetime, *, trusted: bool = False) -> None:
         self._conn.execute(
-            "INSERT INTO login_send_log (email, client_ip, sent_at) VALUES (?,?,?)", (email, client_ip, _ts(now))
+            "INSERT INTO login_send_log (email, client_ip, sent_at, trusted) VALUES (?,?,?,?)",
+            (email, client_ip, _ts(now), 1 if trusted else 0),
         )
 
     def _insert_code(
@@ -241,13 +307,16 @@ class LoginCodeMixin:
         locale: str = "he",
         client_ip: str = "unknown",
         now: datetime | None = None,
+        captcha_ok: bool = False,
     ) -> LoginRequest:
         """Neutral sign-in request: known and unknown emails look the same to the caller.
 
         - known email: a code for that account (names ignored);
         - unknown email with first+last name: a code that registers on verify;
         - unknown email without names: "no_account" (a notice email, no code);
-        - over a send limit: "rate_limited" (nothing sent).
+        - over this IP's own send bucket: "rate_limited" (nothing sent);
+        - over the per-email cap for untrusted IPs: "email_limited", unless
+          ``captcha_ok`` (the caller verified a CAPTCHA). Trusted pairs are exempt.
         Every path runs exactly one PBKDF2 hash, so they take the same time.
         Raises ValueError only for malformed input (email_required, email_invalid).
         """
@@ -256,10 +325,14 @@ class LoginCodeMixin:
         ip = _ip(client_ip)
         decoy = secrets.token_urlsafe(24)
         with self._lock:
-            if not self._send_allowed(email_n, ip, now):
-                kind: str = "rate_limited"
+            trusted = self._is_trusted(email_n, ip, now)
+            status = self._send_status(email_n, ip, now, trusted=trusted)
+            if status == "email_limited" and captcha_ok:
+                status = "ok"
+            if status != "ok":
+                kind: str = status
             else:
-                self._log_send(email_n, ip, now)
+                self._log_send(email_n, ip, now, trusted=trusted)
                 self._conn.commit()
                 first = (first_name or "").strip()
                 last = (last_name or "").strip()
@@ -301,13 +374,17 @@ class LoginCodeMixin:
                 email=email_n, code_hash=code_hash, now=now, purpose=PURPOSE_LOGIN, client_ip=client_ip,
                 first_name=first, last_name=last, locale=locale,
             )
-            # Keep at most MAX_ACTIVE_CODES usable login codes per email: retire the oldest.
+            # Keep at most MAX_ACTIVE_CODES usable login codes per email + IP: retire the oldest
+            # from the SAME IP only, so requests from other IPs never cancel the real user's code
+            # (#50). Guessing stays capped by the per-email failure budget, not by this count.
+            ip_key = client_ip or ""
             self._conn.execute(
                 "UPDATE login_codes SET used_at = ? WHERE email = ? AND purpose = ? AND used_at IS NULL "
-                "AND expires_at > ? AND challenge_id NOT IN (SELECT challenge_id FROM login_codes "
-                "WHERE email = ? AND purpose = ? AND used_at IS NULL AND expires_at > ? "
-                "ORDER BY created_at DESC, rowid DESC LIMIT ?)",
-                (_ts(now), email_n, PURPOSE_LOGIN, _ts(now), email_n, PURPOSE_LOGIN, _ts(now), MAX_ACTIVE_CODES),
+                "AND expires_at > ? AND IFNULL(client_ip, '') = ? AND challenge_id NOT IN "
+                "(SELECT challenge_id FROM login_codes WHERE email = ? AND purpose = ? AND used_at IS NULL "
+                "AND expires_at > ? AND IFNULL(client_ip, '') = ? ORDER BY created_at DESC, rowid DESC LIMIT ?)",
+                (_ts(now), email_n, PURPOSE_LOGIN, _ts(now), ip_key,
+                 email_n, PURPOSE_LOGIN, _ts(now), ip_key, MAX_ACTIVE_CODES),
             )
             self._conn.commit()
         return challenge_id, code
@@ -329,10 +406,16 @@ class LoginCodeMixin:
         ).fetchone()
         return int(row[0]), row[1]
 
-    def _email_failures(self, email: str, now: datetime) -> int:
+    def _email_failures(self, email: str, now: datetime, *, untrusted_only: bool = False) -> int:
+        q = "SELECT COUNT(*) FROM login_failures WHERE email = ? AND failed_at > ?"
+        if untrusted_only:
+            q += " AND trusted = 0"
+        return self._conn.execute(q, (email, _ts(now - timedelta(seconds=FAILURE_WINDOW_SECONDS)))).fetchone()[0]
+
+    def _ip_failures(self, client_ip: str, now: datetime) -> int:
         return self._conn.execute(
-            "SELECT COUNT(*) FROM login_failures WHERE email = ? AND failed_at > ?",
-            (email, _ts(now - timedelta(seconds=FAILURE_WINDOW_SECONDS))),
+            "SELECT COUNT(*) FROM login_failures WHERE client_ip = ? AND failed_at > ?",
+            (client_ip, _ts(now - timedelta(seconds=FAILURE_WINDOW_SECONDS))),
         ).fetchone()[0]
 
     def login_backoff_remaining(self, email: str, client_ip: str, now: datetime | None = None) -> float:
@@ -346,13 +429,24 @@ class LoginCodeMixin:
         remaining = (datetime.fromisoformat(last) + timedelta(seconds=wait) - now).total_seconds()
         return max(0.0, remaining)
 
+    def email_budget_exhausted(self, email: str, client_ip: str, now: datetime | None = None) -> bool:
+        """True when an untrusted check on this email needs a CAPTCHA (or must wait)."""
+        now = now or _now()
+        ip = _ip(client_ip)
+        with self._lock:
+            if self._is_trusted(email, ip, now):
+                return False
+            return self._email_failures(email, now, untrusted_only=True) >= EMAIL_FAILURE_BUDGET
+
     def captcha_required_for(
         self, challenge_ids: str | list[str | None] | None, client_ip: str, now: datetime | None = None
     ) -> bool:
         """True when a check on these challenges should first pass a CAPTCHA.
 
-        After CAPTCHA_AFTER_FAILURES from this IP for the email, or
-        CAPTCHA_AFTER_EMAIL_FAILURES for the email from all IPs. Only enforced
+        After CAPTCHA_AFTER_FAILURES from this IP for the email,
+        CAPTCHA_AFTER_EMAIL_FAILURES for the email from all IPs, or once the
+        email's untrusted budget is used up (the email-wide triggers skip
+        trusted pairs). Only enforced
         when a CAPTCHA provider is configured (the HTTP layer decides).
         """
         ids = [challenge_ids] if isinstance(challenge_ids, str) or challenge_ids is None else challenge_ids
@@ -367,9 +461,25 @@ class LoginCodeMixin:
                     continue
                 if self._failure_stats(row["email"], ip, now)[0] >= CAPTCHA_AFTER_FAILURES:
                     return True
+                if self._is_trusted(row["email"], ip, now):
+                    continue  # email-wide triggers never apply to a trusted pair
                 if self._email_failures(row["email"], now) >= CAPTCHA_AFTER_EMAIL_FAILURES:
                     return True
+                if self._email_failures(row["email"], now, untrusted_only=True) >= EMAIL_FAILURE_BUDGET:
+                    return True
         return False
+
+    def send_captcha_required(self, email: str, client_ip: str, now: datetime | None = None) -> bool:
+        """True when a send for this email from this IP is over the untrusted per-email cap."""
+        now = now or _now()
+        ip = _ip(client_ip)
+        try:
+            email_n = self._validate_email(email)  # type: ignore[attr-defined]
+        except ValueError:
+            return False
+        with self._lock:
+            trusted = self._is_trusted(email_n, ip, now)
+            return self._send_status(email_n, ip, now, trusted=trusted) == "email_limited"
 
     # ----- verifying -----
 
@@ -381,11 +491,12 @@ class LoginCodeMixin:
         purpose: str,
         client_ip: str | None,
         now: datetime,
+        captcha_ok: bool = False,
     ) -> dict[str, Any]:
         """Claim one check, then compare the code. Returns the row; does NOT mark it used.
 
         Raises ValueError: code_required, code_invalid, code_slow_down,
-        code_used, code_expired, code_locked, code_wrong.
+        account_limited, code_used, code_expired, code_locked, code_wrong.
         """
         entered = _normalize_code(code)
         if not entered:
@@ -399,14 +510,33 @@ class LoginCodeMixin:
             ).fetchone()
             if not row:
                 raise ValueError("code_invalid")
-            if self.login_backoff_remaining(row["email"], ip, now) > 0:
-                raise ValueError("code_slow_down")  # refused before any attempt or hashing
+            email = row["email"]
+            # All refusals below happen before any attempt is used or any hashing.
+            if self.login_backoff_remaining(email, ip, now) > 0:
+                raise ValueError("code_slow_down")
+            if self._ip_failures(ip, now) >= IP_FAILURE_BUDGET:
+                raise ValueError("code_slow_down")
+            trusted = self._is_trusted(email, ip, now)
+            if (
+                not trusted
+                and not captcha_ok
+                and self._email_failures(email, now, untrusted_only=True) >= EMAIL_FAILURE_BUDGET
+            ):
+                raise ValueError("account_limited")
             # Claim one check atomically BEFORE hashing: unused, unexpired, under the per-code limit.
             claimed = self._conn.execute(
                 "UPDATE login_codes SET attempts = attempts + 1 "
                 "WHERE challenge_id = ? AND purpose = ? AND used_at IS NULL AND expires_at > ? AND attempts < ?",
                 (challenge_id, purpose, _ts(now), MAX_VERIFY_ATTEMPTS),
             )
+            reservation = None
+            if claimed.rowcount == 1:
+                # Reserve the check as a failure now (removed again if the code is right), so
+                # parallel requests cannot get past the per-email / per-IP budgets.
+                reservation = self._conn.execute(
+                    "INSERT INTO login_failures (email, client_ip, failed_at, trusted) VALUES (?,?,?,?)",
+                    (email, ip, _ts(now), 1 if trusted else 0),
+                ).lastrowid
             self._conn.commit()
             row = self._conn.execute("SELECT * FROM login_codes WHERE challenge_id = ?", (challenge_id,)).fetchone()
             if claimed.rowcount != 1:
@@ -416,16 +546,15 @@ class LoginCodeMixin:
                     raise ValueError("code_expired")
                 raise ValueError("code_locked")
         ok = len(entered) == CODE_DIGITS and entered.isdigit() and verify_code_hash(entered, row["code_hash"])
-        if not ok:
-            with self._lock:
+        with self._lock:
+            if ok:
+                self._conn.execute("DELETE FROM login_failures WHERE rowid = ?", (reservation,))
+            else:
                 self._conn.execute(
                     "UPDATE login_codes SET failures = failures + 1 WHERE challenge_id = ?", (challenge_id,)
                 )
-                self._conn.execute(
-                    "INSERT INTO login_failures (email, client_ip, failed_at) VALUES (?,?,?)",
-                    (row["email"], ip, _ts(now)),
-                )
-                self._conn.commit()
+            self._conn.commit()
+        if not ok:
             raise ValueError("code_locked" if int(row["attempts"]) >= MAX_VERIFY_ATTEMPTS else "code_wrong")
         return dict(row)
 
@@ -442,20 +571,24 @@ class LoginCodeMixin:
         *,
         client_ip: str = "unknown",
         now: datetime | None = None,
+        captcha_ok: bool = False,
     ) -> dict[str, Any]:
         """Check a login code and return the (possibly new) learner.
 
         Raises ValueError: code_required, code_invalid (unknown challenge or a
-        code issued for another purpose), code_slow_down, code_used,
+        code issued for another purpose), code_slow_down, account_limited, code_used,
         code_expired, code_locked, code_wrong.
         """
         now = now or _now()
-        row = self._check_code(challenge_id, code, purpose=PURPOSE_LOGIN, client_ip=client_ip, now=now)
+        row = self._check_code(
+            challenge_id, code, purpose=PURPOSE_LOGIN, client_ip=client_ip, now=now, captcha_ok=captcha_ok
+        )
         with self._lock:
             # Single use: only one caller can flip used_at.
             if not self._mark_code_used(row["challenge_id"], now):
                 self._conn.commit()
                 raise ValueError("code_used")
+            self._mark_trusted(row["email"], _ip(client_ip), now)
             self._conn.commit()
             return self.register_or_login(  # type: ignore[attr-defined]
                 email=row["email"],

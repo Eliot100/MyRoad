@@ -39,9 +39,9 @@
     <form method="post" action="/settings/email/verify" class="login-form" autocomplete="off">
       <p class="lede">{{ t('settings_email_change_pending', current=learner.email, new=pending_email) }}</p>
       <label for="code_current">{{ t('settings_code_current', email=learner.email) }}</label>
-      <input id="code_current" name="code_current" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="one-time-code" />
+      <input id="code_current" name="code_current" type="text" inputmode="numeric" pattern="[0-9]{8}" minlength="8" maxlength="8" required autocomplete="one-time-code" />
       <label for="code_new">{{ t('settings_code_new', email=pending_email) }}</label>
-      <input id="code_new" name="code_new" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="one-time-code" />
+      <input id="code_new" name="code_new" type="text" inputmode="numeric" pattern="[0-9]{8}" minlength="8" maxlength="8" required autocomplete="one-time-code" />
       {% if captcha_needed and captcha_site_key %}
       <div class="cf-turnstile" data-sitekey="{{ captcha_site_key }}"></div>
       <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -51,7 +51,11 @@
     {% endif %}
     <form method="post" action="/settings/email" class="login-form" autocomplete="on">
       <label for="new_email">{{ t('settings_new_email') }}</label>
-      <input id="new_email" name="new_email" type="email" maxlength="120" required autocomplete="email" />
+      <input id="new_email" name="new_email" type="email" maxlength="120" required autocomplete="email" value="{{ retry_email }}" />
+      {% if send_captcha and captcha_site_key %}
+      <div class="cf-turnstile" data-sitekey="{{ captcha_site_key }}"></div>
+      {% if not (pending_email and captcha_needed) %}<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>{% endif %}
+      {% endif %}
       <button type="submit" class="secondary">{{ t('settings_email_change_send') }}</button>
     </form>
 

@@ -58,10 +58,13 @@ class EmailChangeRequest:
 
     kind "codes": send ``current_code`` to ``old_email``; send ``new_code`` to
     ``new_email``, or, when ``new_code`` is None (the new address already has
-    an account), a short notice instead. kind "rate_limited": send nothing.
+    an account), a short notice instead. kind "rate_limited": this IP's own send
+    bucket is full, send nothing. kind "email_limited": the per-email cap for
+    untrusted IPs is full for one of the addresses; the caller asks for a
+    CAPTCHA (when configured) or tells the user to wait. Never a silent drop.
     """
 
-    kind: Literal["codes", "rate_limited"]
+    kind: Literal["codes", "rate_limited", "email_limited"]
     change_id: str
     old_email: str
     new_email: str
@@ -77,7 +80,13 @@ class EmailChangeMixin:
         self._conn.commit()
 
     def start_email_change(
-        self, user_id: str, new_email: str, *, client_ip: str = "unknown", now: datetime | None = None
+        self,
+        user_id: str,
+        new_email: str,
+        *,
+        client_ip: str = "unknown",
+        now: datetime | None = None,
+        captcha_ok: bool = False,
     ) -> EmailChangeRequest:
         """Issue the two codes. Raises ValueError: email_required, email_invalid, email_same."""
         learner = self.get_learner(user_id)  # type: ignore[attr-defined]
@@ -93,12 +102,21 @@ class EmailChangeMixin:
         current_code, new_code = _new_code(), _new_code()
         current_hash, new_hash = hash_code(current_code), hash_code(new_code)
         with self._lock:
-            if not (self._send_allowed(old, ip, now) and self._send_allowed(new, ip, now)):  # type: ignore[attr-defined]
+            # Same send limits as sign-in, for both addresses (trusted pairs skip the per-email cap).
+            trust = {e: self._is_trusted(e, ip, now) for e in (old, new)}  # type: ignore[attr-defined]
+            statuses = {self._send_status(e, ip, now, trusted=trust[e]) for e in (old, new)}  # type: ignore[attr-defined]
+            if "rate_limited" in statuses:
+                refused: str | None = "rate_limited"
+            elif "email_limited" in statuses and not captcha_ok:
+                refused = "email_limited"
+            else:
+                refused = None
+            if refused:
                 return EmailChangeRequest(
-                    kind="rate_limited", change_id=secrets.token_urlsafe(24), old_email=old, new_email=new
+                    kind=refused, change_id=secrets.token_urlsafe(24), old_email=old, new_email=new  # type: ignore[arg-type]
                 )
-            self._log_send(old, ip, now)  # type: ignore[attr-defined]
-            self._log_send(new, ip, now)  # type: ignore[attr-defined]
+            self._log_send(old, ip, now, trusted=trust[old])  # type: ignore[attr-defined]
+            self._log_send(new, ip, now, trusted=trust[new])  # type: ignore[attr-defined]
             taken = self.get_learner_by_email(new) is not None  # type: ignore[attr-defined]
             # One pending change per user: cancel older ones and retire their codes.
             self._conn.execute(
@@ -158,12 +176,15 @@ class EmailChangeMixin:
         new_code: str | None,
         client_ip: str = "unknown",
         now: datetime | None = None,
+        captcha_ok: bool = False,
     ) -> dict[str, Any]:
         """Check both codes and switch the email. Returns {learner, old_email, new_email}.
 
         All of the user's sessions are revoked (the caller starts a new one).
         Raises ValueError: code_required, code_invalid, code_slow_down,
-        code_used, code_expired, code_locked, code_wrong, email_taken.
+        account_limited, code_used, code_expired, code_locked, code_wrong,
+        email_taken. ``captcha_ok``: the caller verified a CAPTCHA (lifts
+        account_limited for untrusted IPs).
         """
         now = now or _now()
         if not change_id:
@@ -186,11 +207,11 @@ class EmailChangeMixin:
             }
         cur = self._check_code(  # type: ignore[attr-defined]
             ids.get(PURPOSE_EMAIL_CHANGE_CURRENT), current_code,
-            purpose=PURPOSE_EMAIL_CHANGE_CURRENT, client_ip=client_ip, now=now,
+            purpose=PURPOSE_EMAIL_CHANGE_CURRENT, client_ip=client_ip, now=now, captcha_ok=captcha_ok,
         )
         new = self._check_code(  # type: ignore[attr-defined]
             ids.get(PURPOSE_EMAIL_CHANGE_NEW), new_code,
-            purpose=PURPOSE_EMAIL_CHANGE_NEW, client_ip=client_ip, now=now,
+            purpose=PURPOSE_EMAIL_CHANGE_NEW, client_ip=client_ip, now=now, captcha_ok=captcha_ok,
         )
         with self._lock:
             learner = self.get_learner(user_id)  # type: ignore[attr-defined]
@@ -218,6 +239,8 @@ class EmailChangeMixin:
                 "UPDATE learners SET email = ?, updated_at = ? WHERE user_id = ?",
                 (change["new_email"], _ts(now), user_id),
             )
+            # Proven control of the new address from this IP: trust the pair like a sign-in.
+            self._mark_trusted(change["new_email"], _ip(client_ip), now)  # type: ignore[attr-defined]
             self._conn.commit()
             self.revoke_user_sessions(user_id)  # type: ignore[attr-defined]
             updated = self.get_learner(user_id)  # type: ignore[attr-defined]

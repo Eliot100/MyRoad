@@ -519,6 +519,8 @@ def register_platform_routes(
             "email_same": "err_email_same",
             "code_slow_down": "err_code_slow_down",
             "captcha_required": "err_captcha_required",
+            "captcha_send": "err_captcha_required",
+            "account_limited": "err_account_limited",
         }
         key = codes.get(error or "")
         return t(locale, key) if key else ""
@@ -543,6 +545,9 @@ def register_platform_routes(
                 mode="register" if show_register else "signin",
                 current_email=email or "",
                 error=_login_error(locale, error),
+                # Over the per-email send cap: the send form asks for a CAPTCHA (when configured).
+                send_captcha=error == "captcha_required" and _captcha_verifier() is not None,
+                captcha_site_key=_captcha_site_key(),
             ),
         )
 
@@ -566,12 +571,19 @@ def register_platform_routes(
     def _captcha_needed(request: Request, challenge_ids) -> bool:
         return _captcha_verifier() is not None and store.captcha_required_for(challenge_ids, _client_ip(request))
 
-    def _captcha_passes(request: Request, challenge_ids, token: str) -> bool:
-        """False only when a CAPTCHA is configured, required here, and not solved."""
+    def _captcha_check(request: Request, challenge_ids, token: str) -> tuple[bool, bool]:
+        """(passes, solved). passes is False only when a CAPTCHA is configured,
+        required here, and not solved; solved lifts the per-email budget."""
         verifier = _captcha_verifier()
         if verifier is None or not store.captcha_required_for(challenge_ids, _client_ip(request)):
-            return True
-        return bool(token) and bool(verifier(token, _client_ip(request)))
+            return True, False
+        ok = bool(token) and bool(verifier(token, _client_ip(request)))
+        return ok, ok
+
+    def _captcha_solved(request: Request, token: str) -> bool:
+        """For send forms: True when a CAPTCHA is configured and this token checks out."""
+        verifier = _captcha_verifier()
+        return verifier is not None and bool(token) and bool(verifier(token, _client_ip(request)))
 
     @app.post("/login")
     def login_submit(
@@ -581,11 +593,15 @@ def register_platform_routes(
         email: str = Form(""),
         next: str = Form("/"),
         mode: str = Form("signin"),
+        captcha_token: str = Form(""),
+        turnstile_token: str = Form("", alias="cf-turnstile-response"),
     ) -> RedirectResponse:
         """Step 1: email a one-time code. No session (and no new account) yet.
 
         The response is the same whether or not the email has an account and
-        whether or not a send limit was hit; only the email content differs.
+        whether or not this IP's own send limit was hit; only the email content
+        differs. Over the per-email cap for untrusted IPs (#50) the user is told:
+        asked for a CAPTCHA when one is configured, else to wait (never a silent drop).
         """
         locale = _locale(request)
         dest = _safe_next(next)
@@ -610,9 +626,12 @@ def register_platform_routes(
                 last_name=last_name,
                 locale=locale,
                 client_ip=_client_ip(request),
+                captcha_ok=_captcha_solved(request, captcha_token or turnstile_token),
             )
         except ValueError as exc:
             return _back(str(exc) or "email_invalid")
+        if req.kind == "email_limited":
+            return _back("captcha_required" if _captcha_verifier() is not None else "too_many_codes")
         try:
             if req.kind == "code":
                 sender = getattr(app.state, "login_code_sender", None) or send_login_code
@@ -670,13 +689,20 @@ def register_platform_routes(
         dest = _safe_next(next)
         typed = email.strip()[:120]
         challenge_id = request.cookies.get(COOKIE_LOGIN_CHALLENGE)
-        if challenge_id and not _captcha_passes(request, challenge_id, captcha_token or turnstile_token):
+        passes, solved = (
+            _captcha_check(request, challenge_id, captcha_token or turnstile_token) if challenge_id else (True, False)
+        )
+        if not passes:
             return RedirectResponse(_verify_url(dest, typed, "captcha_required"), status_code=303)
         try:
-            learner = store.verify_login_challenge(challenge_id, code, client_ip=_client_ip(request))
+            learner = store.verify_login_challenge(
+                challenge_id, code, client_ip=_client_ip(request), captcha_ok=solved
+            )
         except ValueError as exc:
             err = str(exc) or "code_wrong"
-            if err in ("code_wrong", "code_required", "code_slow_down"):
+            if err == "account_limited" and _captcha_verifier() is not None:
+                err = "captcha_required"
+            if err in ("code_wrong", "code_required", "code_slow_down", "account_limited", "captcha_required"):
                 return RedirectResponse(_verify_url(dest, typed, err), status_code=303)
             resp = RedirectResponse(
                 "/login?next=" + quote(dest, safe="") + "&error=" + quote(err, safe="")
@@ -704,6 +730,7 @@ def register_platform_routes(
         saved: str | None = None,
         email_changed: str | None = None,
         pending_new: str | None = None,
+        new_email: str = "",
     ) -> HTMLResponse:
         learner = _require_learner(request)
         if not learner:
@@ -727,6 +754,8 @@ def register_platform_routes(
                 if change_id else "",
                 captcha_needed=_captcha_needed(request, store.email_change_challenges(change_id)),
                 captcha_site_key=_captcha_site_key(),
+                send_captcha=error == "captcha_send" and _captcha_verifier() is not None,
+                retry_email=new_email.strip()[:120] if error == "captcha_send" else "",
             ),
         )
 
@@ -775,19 +804,34 @@ def register_platform_routes(
         return resp
 
     @app.post("/settings/email")
-    def email_change_start(request: Request, new_email: str = Form("")) -> RedirectResponse:
+    def email_change_start(
+        request: Request,
+        new_email: str = Form(""),
+        captcha_token: str = Form(""),
+        turnstile_token: str = Form("", alias="cf-turnstile-response"),
+    ) -> RedirectResponse:
         """Step 1 of an email change: codes to the current AND the new address.
 
         Same response whether or not the new address has an account and
-        whether or not a send limit was hit. Nothing changes yet.
+        whether or not this IP's own send limit was hit. Over the per-email cap
+        for untrusted IPs: CAPTCHA (when configured) or "wait". Nothing changes yet.
         """
         learner = _require_learner(request)
         if not learner:
             return _login_redirect(request)
         try:
-            req = store.start_email_change(learner["userId"], new_email, client_ip=_client_ip(request))
+            req = store.start_email_change(
+                learner["userId"], new_email, client_ip=_client_ip(request),
+                captcha_ok=_captcha_solved(request, captcha_token or turnstile_token),
+            )
         except ValueError as exc:
             return _settings_error(str(exc) or "email_invalid")
+        if req.kind == "email_limited":
+            if _captcha_verifier() is not None:
+                return RedirectResponse(
+                    "/settings?error=captcha_send&new_email=" + quote(req.new_email, safe=""), status_code=303
+                )
+            return _settings_error("too_many_codes")
         try:
             if req.kind == "codes":
                 _email_change_mail("code_current", req.old_email, req.current_code)
@@ -820,18 +864,24 @@ def register_platform_routes(
         if not learner:
             return _login_redirect(request)
         change_id = request.cookies.get(EMAIL_CHANGE_COOKIE)
-        if change_id and not _captcha_passes(
-            request, store.email_change_challenges(change_id), captcha_token or turnstile_token
-        ):
+        passes, solved = (
+            _captcha_check(request, store.email_change_challenges(change_id), captcha_token or turnstile_token)
+            if change_id else (True, False)
+        )
+        if not passes:
             return _settings_error("captcha_required")
         try:
             result = store.confirm_email_change(
                 learner["userId"], change_id,
                 current_code=code_current, new_code=code_new, client_ip=_client_ip(request),
+                captcha_ok=solved,
             )
         except ValueError as exc:
             err = str(exc) or "code_wrong"
-            return _settings_error(err, drop_change=err not in ("code_wrong", "code_required", "code_slow_down"))
+            if err == "account_limited" and _captcha_verifier() is not None:
+                err = "captcha_required"
+            keep = ("code_wrong", "code_required", "code_slow_down", "account_limited", "captcha_required")
+            return _settings_error(err, drop_change=err not in keep)
         try:
             _email_change_mail("changed_notice", result["old_email"], new_email=result["new_email"])
         except Exception:  # noqa: BLE001 - the change is done; a failed notice must not undo it
