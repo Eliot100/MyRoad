@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Validate freeze path JSON
         run: |
@@ -33,6 +35,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Vendor MyRoad-content
         run: |
@@ -62,18 +66,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Pin MyRoad-content to its current main commit
         id: content
         run: echo "ref=$(git ls-remote https://github.com/Eliot100/MyRoad-content.git refs/heads/main | cut -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Build image
-        run: docker build --build-arg CONTENT_REF=${{ steps.content.outputs.ref }} -t myroad:ci .
+        env:
+          CONTENT_REF: ${{ steps.content.outputs.ref }}
+        run: |
+          echo "$CONTENT_REF" | grep -Eq '^[0-9a-f]{40}$'
+          docker build --build-arg CONTENT_REF="$CONTENT_REF" -t myroad:ci .
 
       - name: Image has no secrets or databases baked in
         run: |
           docker run --rm --entrypoint sh myroad:ci -c \
-            'test "$(id -u)" != 0 && ! find /app /data \( -name ".env" -o -name "*.db" -o -name "*.sqlite*" \) | grep .'
+            'test "$(id -u)" != 0 && ! find /app /data \( -name ".env*" -o -name "*.pem" -o -name "*.key" -o -name "id_rsa*" -o -name "secrets*" -o -name ".git" -o -name "*.db" -o -name "*.sqlite*" \) | grep .'
 
       - name: Run the image and smoke-test it
         run: |

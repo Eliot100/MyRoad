@@ -4,17 +4,19 @@
 set -euo pipefail
 BASE="${1:?usage: smoke.sh BASE_URL}"
 BASE="${BASE%/}"
+HEALTH="$(mktemp)"
+trap 'rm -f "$HEALTH"' EXIT
 
 echo "Waiting for $BASE/health"
 for i in $(seq 1 30); do
-  if curl -fsS "$BASE/health" -o /tmp/health.json 2>/dev/null; then break; fi
+  if curl -fsS "$BASE/health" -o "$HEALTH" 2>/dev/null; then break; fi
   [ "$i" = 30 ] && { echo "health never came up"; exit 1; }
   sleep 2
 done
 
-python3 - <<'PY'
+HEALTH="$HEALTH" python3 - <<'PY'
 import json
-h = json.load(open("/tmp/health.json"))
+h = json.load(open(__import__("os").environ["HEALTH"]))
 assert h.get("status") == "ok", h
 assert int(h.get("contentPaths") or 0) >= 1, f"no content loaded: {h}"
 print(f"health ok, {h['contentPaths']} content paths")
