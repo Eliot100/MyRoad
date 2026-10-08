@@ -91,7 +91,48 @@ authenticated principal the call gets `403 ACTOR_MISMATCH`.
   Cross-site, `Origin: null` or header-less requests get `403`. "This site" is
   `<scheme>://<Host>` as the app sees it; add the public origin to
   `MYROAD_ALLOWED_ORIGINS` (comma-separated, e.g. `https://myroad.example`)
-  when a proxy changes the scheme or host.
+  when a proxy changes the scheme or host. Origins are compared normalised:
+  lower-case, and the default port dropped (`:80` for http, `:443` for
+  https), so `https://myroad.example:443` equals `https://myroad.example`.
+- **No state change on GET (#53):** starting a new path (`POST /add-path/new`),
+  resuming a draft (`POST /add-path/resume/{pathId}/{versionId}`) and
+  recording a play attempt (`POST /play/{pathId}/finish`, or the answer that
+  finishes the path) are POSTs, so they get the Origin check. `GET
+  /play/{pathId}?view=stats` only shows the stats; `GET /add-path?new=1` no
+  longer clears anything.
+
+### TLS proxy
+
+When TLS ends at a reverse proxy (nginx, Caddy, a load balancer, Cloudflare),
+the app receives plain `http`. For the Origin check, secure cookies and the
+per-IP limits to work:
+
+1. The proxy forwards the public `Host` unchanged and sets
+   `X-Forwarded-Proto` and `X-Forwarded-For`. nginx example:
+
+   ```nginx
+   location / {
+       proxy_pass http://127.0.0.1:8000;
+       proxy_set_header Host $host;
+       proxy_set_header X-Forwarded-Proto $scheme;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   }
+   ```
+
+2. Run uvicorn so it trusts those headers from the proxy only:
+   `uvicorn ... --proxy-headers --forwarded-allow-ips=<proxy address>`
+   (for a proxy on the same host, `127.0.0.1`). **Never `*`**: then any
+   client could pick its own scheme and IP.
+   The app then sees `https://<public host>`, which matches the browser's
+   `Origin`.
+3. If the scheme or host still differ (for example the proxy rewrites
+   `Host`), set `MYROAD_ALLOWED_ORIGINS=https://myroad.example` (server env).
+4. Do not set `MYROAD_DEV_INSECURE_COOKIES` in production: the session
+   cookie stays `Secure`, which is right because browsers talk https to the
+   proxy.
+
+Check: a form POST from the public site works, and one sent with
+`Origin: https://evil.example` gets `403`.
 
 In-process callers (`AgentTools`, the path builder, the golden loop) do not go
 over HTTP and are unchanged.

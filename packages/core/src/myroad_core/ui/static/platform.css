@@ -615,6 +615,13 @@ button.secondary {
 .mode-pick legend { font-size: .9rem; color: var(--muted); padding: 0 .3rem; }
 .mode-pick .radio { display: flex; gap: .5rem; align-items: center; color: var(--ink); }
 .inline-form { display: inline-block; margin-top: .5rem; }
+/* A POST form that looks like the link it replaced (#53). */
+.link-form { display: inline; margin: 0; }
+.link-form button {
+  background: none; border: 0; border-radius: 0; padding: 0; font: inherit;
+  color: LinkText; text-decoration: underline; cursor: pointer;
+}
+.link-form button.text-link { color: var(--muted); text-decoration: none; font-size: .95rem; }
 .gateway-panel .security-note { margin-top: .85rem; }
 .plain-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .45rem; }
 .outline-topic {

@@ -124,7 +124,7 @@
     <ul class="plain-list">
       {% for d in drafts %}
       <li>
-        <a href="/add-path/resume/{{ d.pathId }}/{{ d.versionId }}">{{ d.name }}</a>
+        <form method="post" action="/add-path/resume/{{ d.pathId }}/{{ d.versionId }}" class="link-form"><button type="submit">{{ d.name }}</button></form>
         {% if d.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
         <span class="tiny muted">{{ t('builder_draft_progress', done=d.done, total=d.total, version=d.version) }}</span>
       </li>
@@ -388,7 +388,7 @@
       <li>{{ t('builder_version', n=v.version) }} · {{ t('path_status_' ~ v.status) }}</li>
       {% endfor %}
     </ul>
-    <a class="text-link" href="/add-path?new=1">{{ t('builder_start_new') }}</a>
+    <form method="post" action="/add-path/new" class="link-form"><button type="submit" class="text-link">{{ t('builder_start_new') }}</button></form>
   </section>
   {% endif %}
 

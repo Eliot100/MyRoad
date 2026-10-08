@@ -268,13 +268,12 @@ def register_agent_builder_routes(
 
     # --- step 1: goal ---
     @app.get("/add-path", response_class=HTMLResponse)
-    def add_path_goal(request: Request, new: str | None = None) -> HTMLResponse:
+    def add_path_goal(request: Request) -> HTMLResponse:
+        # Read-only (#53): starting over is POST /add-path/new. An old "?new=1" link is ignored.
         learner = current_learner(request)
         if not learner:
             return login_redirect(request)
         sess = _session(learner)
-        if new:
-            sess.clear()
         locale = locale_of(request)
         flash_ok = t(locale, "add_path_criterion_met") if (
             gateway_is_configured() and _author_gate_ok(request)
@@ -286,6 +285,15 @@ def register_agent_builder_routes(
             drafts=list_user_agent_drafts(store, learner["userId"]),
             flash_ok=flash_ok,
         )
+
+    @app.post("/add-path/new", response_model=None)
+    def add_path_new(request: Request):
+        """Start a new path: clears the builder session (was GET /add-path?new=1, #53)."""
+        learner = current_learner(request)
+        if not learner:
+            return login_redirect(request)
+        _session(learner).clear()
+        return RedirectResponse("/add-path", status_code=303)
 
     @app.post("/add-path/goal", response_model=None)
     def add_path_goal_submit(
@@ -476,8 +484,9 @@ def register_agent_builder_routes(
         sess["pathId"], sess["versionId"] = pid, vid
         return RedirectResponse("/add-path/build?auto=1", status_code=303)
 
-    @app.get("/add-path/resume/{path_id}/{version_id}", response_model=None)
+    @app.post("/add-path/resume/{path_id}/{version_id}", response_model=None)
     def add_path_resume(request: Request, path_id: str, version_id: str):
+        """Resume an owned draft (POST since #53: it replaces the builder session)."""
         learner = current_learner(request)
         if not learner:
             return login_redirect(request)
