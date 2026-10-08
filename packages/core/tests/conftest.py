@@ -17,6 +17,24 @@ def _http_test_client_cookies(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("MYROAD_DEV_INSECURE_COOKIES", "1")
 
 
+@pytest.fixture(autouse=True)
+def _test_client_sends_origin(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Browsers send Origin on form POSTs; the UI refuses unsafe requests without it.
+
+    Give every TestClient a same-origin Origin header by default, like a browser
+    on the site. Tests of the check override or remove it.
+    """
+    from starlette.testclient import TestClient
+
+    original = TestClient.__init__
+
+    def init(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        original(self, *args, **kwargs)
+        self.headers.setdefault("Origin", str(self.base_url).rstrip("/"))
+
+    monkeypatch.setattr(TestClient, "__init__", init)
+
+
 @pytest.fixture
 def store() -> PathStore:
     s = PathStore(":memory:")

@@ -245,7 +245,7 @@ class LearnerProgressMixin:
         email: str,
         locale: str | None = None,
     ) -> dict[str, Any]:
-        """Edit name and unique email for an existing learner. No password."""
+        """Edit the name of an existing learner. The email cannot be changed here."""
         current = self.get_learner(user_id)
         if not current:
             raise ValueError("name_required")
@@ -254,9 +254,10 @@ class LearnerProgressMixin:
         if not first or not last:
             raise ValueError("name_required")
         email_n = self._validate_email(email)
-        other = self.get_learner_by_email(email_n)
-        if other and other["userId"] != user_id:
-            raise ValueError("email_taken")
+        if email_n != self._normalize_email(current.get("email")):
+            # Changing the sign-in email needs proof of both addresses, which
+            # needs the emailed-code flow. Until then it is refused outright.
+            raise ValueError("email_change_disabled")
         loc = locale or current.get("locale") or "he"
         return self.upsert_learner(
             user_id,

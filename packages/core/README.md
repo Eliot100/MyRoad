@@ -83,8 +83,15 @@ authenticated principal the call gets `403 ACTOR_MISMATCH`.
 - **Session cookie:** `myroad_session` is `HttpOnly; SameSite=Lax; Secure`.
   Browsers accept Secure cookies on `http://localhost`; for other plain-http
   dev hosts set `MYROAD_DEV_INSECURE_COOKIES=1` (never in production).
-  `POST /logout` revokes the session; changing the email in settings revokes
-  all of the user's other sessions.
+  `POST /logout` revokes the session.
+- **Email change:** refused (`email_change_disabled`) until it can be verified
+  with emailed codes; settings can still change the name.
+- **Browser forms (UI app):** every POST/PUT/PATCH/DELETE needs an `Origin`
+  (or, failing that, `Referer`) from this site, on top of `SameSite=Lax`.
+  Cross-site, `Origin: null` or header-less requests get `403`. "This site" is
+  `<scheme>://<Host>` as the app sees it; add the public origin to
+  `MYROAD_ALLOWED_ORIGINS` (comma-separated, e.g. `https://myroad.example`)
+  when a proxy changes the scheme or host.
 
 In-process callers (`AgentTools`, the path builder, the golden loop) do not go
 over HTTP and are unchanged.

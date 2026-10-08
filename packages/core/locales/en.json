@@ -80,6 +80,7 @@
   "err_email_invalid": "Invalid email address.",
   "err_name_required": "First and last name are required.",
   "err_email_taken": "That email is already registered — try again or check the details.",
+  "err_email_change_disabled": "Changing your sign-in email is not available yet. Your email was not changed.",
   "add_path_gate_lede": "Add-path builds a full learning path with an agent. Grok is reached through Cloudflare AI Gateway; the xAI key stays in Cloudflare Secrets Store (BYOK). MyRoad never accepts that key.",
   "add_path_unlocked": "Gateway check succeeded.",
   "add_path_criterion_met": "Cloudflare AI Gateway is configured and responded. No provider API key was sent by MyRoad.",
