@@ -10,7 +10,7 @@
 <body class="platform play {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}" data-path="{{ doc.pathId }}">
   <header class="top shell-top">
     <div class="brand">
-      <a href="/play/{{ doc.pathId }}?view=map" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('path_map') }}</a>
+      <a href="/play/{{ doc.pathId }}?view=map#here" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('path_map') }}</a>
       <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
@@ -30,7 +30,11 @@
   {% endif %}
 
   {% if flash %}
-  <div class="flash {{ flash.level }}" role="status">{{ flash.text|bdi }}</div>
+  {#- No-JS fallback after a right answer: the flash carries the step's feedback_ok (explain-locale
+      content). Chrome strings (continue, gate, read-only) and the "✓" placeholder follow the UI locale. -#}
+  {%- set flash_from_content = flash.level == 'ok' and flash.text not in [t('continue'), '✓'] %}
+  {%- set flash_lang = (explain_locale or 'he') if flash_from_content and locale != (explain_locale or 'he') else none %}
+  <div class="flash {{ flash.level }}" role="status" dir="auto"{% if flash_lang %} lang="{{ flash_lang }}"{% endif %}>{{ flash.text|bdi }}</div>
   {% endif %}
 
   {% if block %}

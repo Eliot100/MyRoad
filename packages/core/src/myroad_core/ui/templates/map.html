@@ -42,20 +42,22 @@
     {% if long_map %}
     <p class="lede">{{ t('map_long_lede') }}</p>
     <p class="map-summary tiny">
-      {% if current_station and not read_only %}<span class="station-pill current">{{ t('station_of', n=current_station, total=topics|length) }}</span>{% endif %}
+      {#- Works without JS: the pill links to the current station (#here). -#}
+      {% if current_station and not read_only %}<a class="station-pill current jump-here" href="#here">{{ t('station_of', n=current_station, total=topics|length) }}<span class="visually-hidden"> · {{ t('map_jump_here') }}</span></a>{% endif %}
       <span class="station-pill">{{ t('stations_done', done=stations_done, total=topics|length) }}</span>
     </p>
     <ol class="station-list" data-stations="{{ topics|length }}">
       {% for tp in topics %}
-      <li class="station {% if tp.complete %}done{% elif tp.current %}current{% elif tp.doneCount %}started{% endif %}{% if tp.isReview %} review{% endif %}" data-topic-id="{{ tp.id }}">
+      {% set is_here = tp.current and not read_only %}
+      <li class="station {% if tp.complete %}done{% elif tp.current %}current{% elif tp.doneCount %}started{% endif %}{% if tp.isReview %} review{% endif %}" data-topic-id="{{ tp.id }}"{% if is_here %} id="here" aria-current="step"{% endif %}>
         <details {% if tp.current %}open{% endif %}>
           <summary>
             <span class="station-num" aria-hidden="true">{% if tp.complete %}✓{% else %}{{ loop.index }}{% endif %}</span>
             <span class="station-main">
               <span class="station-title">{{ tp.emoji }} {{ tp.title }}</span>
               <span class="station-meta tiny">
-                {% if tp.isReview %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
-                {% if tp.current and not read_only %}<span class="here-badge">{{ t('station_current') }}</span>{% endif %}
+                {% if tp.isReview %}<span class="review-badge"><span class="review-icon" aria-hidden="true">🔁</span> {{ t('step_kind_review') }}</span>{% endif %}
+                {% if is_here %}<span class="here-badge">{{ t('station_current') }}</span>{% endif %}
                 <span class="station-count">{{ tp.doneCount }}/{{ tp.stepCount }} {{ t('steps_count') }}</span>
               </span>
             </span>
@@ -87,10 +89,10 @@
 
     <div class="topic-diagram" role="list">
       {% for tp in topics %}
-      <div class="topic-station {% if tp.complete %}done{% endif %}{% if tp.current %} current{% endif %}" role="listitem" data-topic-id="{{ tp.id }}">
+      <div class="topic-station {% if tp.complete %}done{% endif %}{% if tp.current %} current{% endif %}{% if tp.isReview %} review{% endif %}" role="listitem" data-topic-id="{{ tp.id }}"{% if tp.current and not read_only %} id="here" aria-current="step"{% endif %}>
         <div class="topic-box" style="--subject: {{ meta.subjectColor }}">
           <div class="topic-emoji">{{ tp.emoji }}</div>
-          <h3>{{ tp.title }}{% if tp.isReview %} <span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}</h3>
+          <h3>{{ tp.title }}{% if tp.isReview %} <span class="review-badge"><span class="review-icon" aria-hidden="true">🔁</span> {{ t('step_kind_review') }}</span>{% endif %}</h3>
           <p class="tiny muted">{{ tp.stepCount }} {{ t('steps_count') }}
             {% if tp.doneCount %} · {{ tp.doneCount }}/{{ tp.stepCount }} {{ t('topic_progress') }}{% endif %}
           </p>
@@ -136,5 +138,7 @@
   <footer>
     <small><a href="/">{{ t('footer_play') }}</a> · {{ product }}</small>
   </footer>
+  {#- Scrolls the current station (#here) into view on load; the map works the same without it. -#}
+  <script src="/static/platform.js" defer></script>
 </body>
 </html>
