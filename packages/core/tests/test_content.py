@@ -518,7 +518,8 @@ def test_logout_revokes_the_session(platform_client: TestClient) -> None:
     assert platform_client.get("/settings", follow_redirects=False).status_code == 303
 
 
-def test_email_change_revokes_other_sessions(tmp_path) -> None:
+def test_email_change_is_refused_until_it_can_be_verified(tmp_path) -> None:
+    """Cyber security HIGH: no email change without proof of the new address."""
     store = PathStore(str(tmp_path / "email.db"))
     app = create_learner_app(store=store, seed=False, seed_content=False)
     try:
@@ -526,14 +527,68 @@ def test_email_change_revokes_other_sessions(tmp_path) -> None:
             _reg(c, "first@example.com", "Em", "Change")
             uid = _uid(c)
             other_device = store.create_session(uid)
-            r = c.post("/settings", data={"first_name": "Em", "last_name": "Change", "email": "second@example.com"},
+            # Attack 1: a stolen session tries to move the account to the attacker's address
+            # Attack 2: Alice points her account at an unregistered newcomer@ address
+            for target in ("attacker@example.com", "newcomer@example.com"):
+                r = c.post("/settings", data={"first_name": "Em", "last_name": "Change", "email": target},
+                           follow_redirects=False)
+                assert r.status_code == 303 and "error=email_change_disabled" in r.headers["location"]
+                assert store.get_learner(uid)["email"] == "first@example.com"
+                assert store.get_learner_by_email(target) is None
+            page = c.get("/settings?error=email_change_disabled")
+            assert "Changing your sign-in email is not available yet" in page.text or "האימייל לא שונה" in page.text
+            # Nobody else's sessions were touched, and the account keeps its email
+            assert store.get_session_user(other_device) == uid
+            # Saving the name with the same email (any case) still works
+            r = c.post("/settings", data={"first_name": "Em2", "last_name": "Change", "email": "First@Example.com"},
                        follow_redirects=False)
-            assert r.status_code == 303 and "saved=1" in r.headers["location"]
-            assert store.get_session_user(other_device) is None
-            assert _uid(c) == uid  # this browser stays signed in on a fresh session
-            # Same-email save does not revoke
-            keep = store.create_session(uid)
-            c.post("/settings", data={"first_name": "Em2", "last_name": "Change", "email": "second@example.com"})
-            assert store.get_session_user(keep) == uid
+            assert "saved=1" in r.headers["location"]
+            assert store.get_learner(uid)["firstName"] == "Em2"
+            with pytest.raises(ValueError, match="email_change_disabled"):
+                store.update_learner_profile(uid, first_name="E", last_name="C", email="x@example.com")
     finally:
         store.close()
+
+
+# ---------- Origin/Referer check on browser form POSTs ----------
+
+@pytest.mark.parametrize(
+    "headers",
+    [
+        {"Origin": "https://evil.example"},
+        {"Origin": "null"},
+        {"Origin": "http://testserver.evil.example"},
+        {"Referer": "https://evil.example/page"},
+        {},
+    ],
+)
+def test_cross_site_or_originless_form_posts_are_refused(platform_client: TestClient, headers) -> None:
+    store = platform_client.app.state.store
+    sid = platform_client.cookies.get("myroad_session")
+    del platform_client.headers["Origin"]
+    for path, data in (("/logout", {}), ("/settings", {"first_name": "X", "last_name": "Y", "email": "z@z.zz"}),
+                       ("/locale", {"locale": "en", "next": "/"})):
+        r = platform_client.post(path, data=data, headers=headers, follow_redirects=False)
+        assert r.status_code == 403, (path, headers)
+    assert store.get_session_user(sid)  # logout did not happen
+
+
+def test_same_origin_form_posts_pass(platform_client: TestClient) -> None:
+    del platform_client.headers["Origin"]
+    r = platform_client.post("/locale", data={"locale": "en", "next": "/"},
+                             headers={"Origin": "http://testserver"}, follow_redirects=False)
+    assert r.status_code == 303
+    r = platform_client.post("/locale", data={"locale": "he", "next": "/"},
+                             headers={"Referer": "http://testserver/settings"}, follow_redirects=False)
+    assert r.status_code == 303
+    assert platform_client.get("/settings").status_code == 200  # GET needs no Origin
+
+
+def test_allowed_origins_env_adds_the_public_origin(platform_client: TestClient, monkeypatch) -> None:
+    del platform_client.headers["Origin"]
+    hdr = {"Origin": "https://myroad.example"}
+    assert platform_client.post("/locale", data={"locale": "en"}, headers=hdr,
+                                follow_redirects=False).status_code == 403
+    monkeypatch.setenv("MYROAD_ALLOWED_ORIGINS", "https://other.example, https://MyRoad.example/")
+    assert platform_client.post("/locale", data={"locale": "en"}, headers=hdr,
+                                follow_redirects=False).status_code == 303

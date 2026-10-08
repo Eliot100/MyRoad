@@ -16,7 +16,7 @@ def main() -> int:
     os.environ.setdefault("MYROAD_DEV_INSECURE_COOKIES", "1")
     store = PathStore(":memory:")
     app = create_learner_app(store=store, seed=True, seed_content=False)
-    client = TestClient(app)
+    client = TestClient(app, headers={"Origin": "http://testserver"})  # same-origin, like a browser
     h = client.get("/health").json()
     assert h["status"] == "ok", h
     gated = client.get("/", follow_redirects=False)
