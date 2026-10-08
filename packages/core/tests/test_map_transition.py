@@ -16,6 +16,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login
 
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
@@ -48,7 +49,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
     store = PathStore(str(tmp_path / "vt.db"))
     c = TestClient(create_learner_app(store=store, seed=False, seed_content=True))
-    c.post("/login", data={"first_name": "V", "last_name": "T", "email": "vt@example.com", "next": "/"})
+    login(c, "vt@example.com", first_name="V", last_name="T")
     yield c
     store.close()
 

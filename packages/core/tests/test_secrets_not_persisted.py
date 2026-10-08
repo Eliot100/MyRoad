@@ -21,6 +21,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code
 
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
@@ -143,7 +144,7 @@ def test_registration_and_gateway_check_do_not_persist_secrets(
     monkeypatch.setattr("myroad_core.ui.cloudflare_gateway.urlopen", _fake_urlopen)
 
     with caplog.at_level(logging.DEBUG):
-        reg = c.post("/login", data=_login_payload(email), follow_redirects=True)
+        reg = login_with_code(c, data=_login_payload(email), follow_redirects=True)
         assert reg.status_code == 200
         assert "Ada" in reg.text
 
@@ -236,15 +237,15 @@ def test_registration_and_gateway_check_do_not_persist_secrets(
 def test_duplicate_email_registration_unique(client) -> None:
     c, app, store = client
     data = _login_payload("unique.user@example.com", "Noa", "Cohen")
-    r1 = c.post("/login", data=data, follow_redirects=True)
+    r1 = login_with_code(c, data=data, follow_redirects=True)
     assert r1.status_code == 200
     uid1 = store.get_session_user(c.cookies.get("myroad_session"))
     assert uid1
     # Second registration same email → same opaque user id (login), not a second row
     c2_store = store
     before = c2_store._conn.execute("SELECT COUNT(*) FROM learners WHERE email = ?", ("unique.user@example.com",)).fetchone()[0]
-    r2 = c.post(
-        "/login",
+    r2 = login_with_code(
+        c,
         data=_login_payload("unique.user@example.com", "Noa", "Cohen"),
         follow_redirects=True,
     )

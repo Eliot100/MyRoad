@@ -13,6 +13,16 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
+from myroad_core.auth.captcha import captcha_site_key, captcha_verifier_from_env
+from myroad_core.auth.email_change import EMAIL_CHANGE_COOKIE
+from myroad_core.auth.login_codes import CODE_TTL_SECONDS
+from myroad_core.auth.mailer import (
+    send_email_change_code,
+    send_email_change_taken_notice,
+    send_email_changed_notice,
+    send_login_code,
+    send_no_account_notice,
+)
 from myroad_core.auth.sessions import SESSION_COOKIE, SESSION_TTL_SECONDS, cookie_secure
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
@@ -37,6 +47,8 @@ from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.bidi import bidi_isolate
 
 ACTOR_LEARNER = "user_learner_poc"
+# Opaque id of the pending email-code challenge (not the code itself).
+COOKIE_LOGIN_CHALLENGE = "myroad_login"
 
 
 def _kids_payload(block: dict[str, Any] | None) -> dict[str, Any]:
@@ -495,7 +507,18 @@ def register_platform_routes(
             "email_invalid": "err_email_invalid",
             "name_required": "err_name_required",
             "email_taken": "err_email_taken",
+            "too_many_codes": "err_too_many_codes",
+            "mail_failed": "err_mail_failed",
+            "code_required": "err_code_required",
+            "code_wrong": "err_code_wrong",
+            "code_expired": "err_code_expired",
+            "code_used": "err_code_used",
+            "code_locked": "err_code_locked",
+            "code_invalid": "err_code_expired",
             "email_change_disabled": "err_email_change_disabled",
+            "email_same": "err_email_same",
+            "code_slow_down": "err_code_slow_down",
+            "captcha_required": "err_captcha_required",
         }
         key = codes.get(error or "")
         return t(locale, key) if key else ""
@@ -523,6 +546,33 @@ def register_platform_routes(
             ),
         )
 
+    def _client_ip(request: Request) -> str:
+        # Direct peer address. Behind a reverse proxy, configure uvicorn's
+        # --proxy-headers / --forwarded-allow-ips so this is the real client.
+        return (request.client.host if request.client else "") or "unknown"
+
+    def _verify_url(dest: str, email: str, error: str | None = None) -> str:
+        url = "/login/verify?next=" + quote(dest, safe="") + "&email=" + quote(email, safe="")
+        return url + ("&error=" + quote(error, safe="") if error else "")
+
+    def _captcha_verifier():
+        # Pluggable (app.state.captcha_verifier), else from env; None = CAPTCHA off.
+        hook = getattr(app.state, "captcha_verifier", None)
+        return hook if hook is not None else captcha_verifier_from_env()
+
+    def _captcha_site_key() -> str:
+        return getattr(app.state, "captcha_site_key", None) or captcha_site_key()
+
+    def _captcha_needed(request: Request, challenge_ids) -> bool:
+        return _captcha_verifier() is not None and store.captcha_required_for(challenge_ids, _client_ip(request))
+
+    def _captcha_passes(request: Request, challenge_ids, token: str) -> bool:
+        """False only when a CAPTCHA is configured, required here, and not solved."""
+        verifier = _captcha_verifier()
+        if verifier is None or not store.captcha_required_for(challenge_ids, _client_ip(request)):
+            return True
+        return bool(token) and bool(verifier(token, _client_ip(request)))
+
     @app.post("/login")
     def login_submit(
         request: Request,
@@ -532,27 +582,112 @@ def register_platform_routes(
         next: str = Form("/"),
         mode: str = Form("signin"),
     ) -> RedirectResponse:
+        """Step 1: email a one-time code. No session (and no new account) yet.
+
+        The response is the same whether or not the email has an account and
+        whether or not a send limit was hit; only the email content differs.
+        """
         locale = _locale(request)
         dest = _safe_next(next)
-        try:
-            learner = store.register_or_login(
-                email=email,
-                first_name=first_name,
-                last_name=last_name,
-                locale=locale,
-            )
-        except ValueError as exc:
-            code = str(exc) or "email_invalid"
+        typed = (email or "").strip()
+
+        def _back(code: str) -> RedirectResponse:
             show_mode = "register" if code == "name_required" or mode == "register" else "signin"
             qs = (
                 "/login?next=" + quote(dest, safe="")
                 + "&mode=" + show_mode
                 + "&error=" + quote(code, safe="")
-                + "&email=" + quote((email or "").strip(), safe="")
+                + "&email=" + quote(typed, safe="")
             )
             return RedirectResponse(qs, status_code=303)
+
+        if mode == "register" and (not first_name.strip() or not last_name.strip()):
+            return _back("name_required")  # form check; same for known and unknown emails
+        try:
+            req = store.request_login(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                locale=locale,
+                client_ip=_client_ip(request),
+            )
+        except ValueError as exc:
+            return _back(str(exc) or "email_invalid")
+        try:
+            if req.kind == "code":
+                sender = getattr(app.state, "login_code_sender", None) or send_login_code
+                sender(req.email, req.code)
+            elif req.kind == "no_account":
+                notice = getattr(app.state, "login_notice_sender", None) or send_no_account_notice
+                notice(req.email)
+        except Exception:  # noqa: BLE001 - SMTP failure or mail not configured: fail closed
+            return _back("mail_failed")
+        resp = RedirectResponse(_verify_url(dest, typed), status_code=303)
+        resp.set_cookie(
+            COOKIE_LOGIN_CHALLENGE, req.challenge_id, httponly=True, samesite="lax",
+            max_age=CODE_TTL_SECONDS, path="/login", secure=cookie_secure(),
+        )
+        return resp
+
+    @app.get("/login/verify", response_class=HTMLResponse)
+    def login_verify_page(
+        request: Request,
+        next: str = "/",
+        email: str = "",
+        error: str | None = None,
+    ):
+        locale = _locale(request)
+        dest = _safe_next(next)
+        if not request.cookies.get(COOKIE_LOGIN_CHALLENGE):
+            return RedirectResponse("/login?next=" + quote(dest, safe=""), status_code=303)
+        # The page only echoes what the user typed; it never reveals whether
+        # a code was really sent.
+        return templates.TemplateResponse(
+            request,
+            "login.html",
+            _shell_ctx(
+                request,
+                next_url=dest,
+                mode="verify",
+                current_email=email.strip()[:120],
+                error=_login_error(locale, error),
+                captcha_needed=_captcha_needed(request, request.cookies.get(COOKIE_LOGIN_CHALLENGE)),
+                captcha_site_key=_captcha_site_key(),
+            ),
+        )
+
+    @app.post("/login/verify")
+    def login_verify_submit(
+        request: Request,
+        code: str = Form(""),
+        next: str = Form("/"),
+        email: str = Form(""),
+        captcha_token: str = Form(""),
+        turnstile_token: str = Form("", alias="cf-turnstile-response"),
+    ) -> RedirectResponse:
+        """Step 2: the session starts only after the emailed code checks out."""
+        locale = _locale(request)
+        dest = _safe_next(next)
+        typed = email.strip()[:120]
+        challenge_id = request.cookies.get(COOKIE_LOGIN_CHALLENGE)
+        if challenge_id and not _captcha_passes(request, challenge_id, captcha_token or turnstile_token):
+            return RedirectResponse(_verify_url(dest, typed, "captcha_required"), status_code=303)
+        try:
+            learner = store.verify_login_challenge(challenge_id, code, client_ip=_client_ip(request))
+        except ValueError as exc:
+            err = str(exc) or "code_wrong"
+            if err in ("code_wrong", "code_required", "code_slow_down"):
+                return RedirectResponse(_verify_url(dest, typed, err), status_code=303)
+            resp = RedirectResponse(
+                "/login?next=" + quote(dest, safe="") + "&error=" + quote(err, safe="")
+                + "&email=" + quote(typed, safe=""),
+                status_code=303,
+            )
+            resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login", secure=cookie_secure(), httponly=True)
+            return resp
         resp = RedirectResponse(dest, status_code=303)
         _start_session(request, resp, learner, learner.get("locale") or locale)
+        resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login", secure=cookie_secure(), httponly=True)
         return resp
 
     @app.get("/accessibility", response_class=HTMLResponse)
@@ -567,11 +702,15 @@ def register_platform_routes(
         request: Request,
         error: str | None = None,
         saved: str | None = None,
+        email_changed: str | None = None,
+        pending_new: str | None = None,
     ) -> HTMLResponse:
         learner = _require_learner(request)
         if not learner:
             return _login_redirect(request)
         locale = learner.get("locale") or _locale(request)
+        change_id = request.cookies.get(EMAIL_CHANGE_COOKIE)
+        pending = store.pending_email_change(learner["userId"], change_id)
         return templates.TemplateResponse(
             request,
             "settings.html",
@@ -583,6 +722,11 @@ def register_platform_routes(
                 html_dir=dir_for(locale),
                 error=_login_error(locale, error),
                 saved=bool(saved),
+                email_changed=bool(email_changed),
+                pending_email=(pending or {}).get("new_email") or (pending_new or "").strip()[:120]
+                if change_id else "",
+                captcha_needed=_captcha_needed(request, store.email_change_challenges(change_id)),
+                captcha_site_key=_captcha_site_key(),
             ),
         )
 
@@ -609,6 +753,93 @@ def register_platform_routes(
             return RedirectResponse("/settings?error=" + quote(code, safe=""), status_code=303)
         resp = RedirectResponse("/settings?saved=1", status_code=303)
         _set_locale_cookie(resp, updated.get("locale") or "he")
+        return resp
+
+    def _email_change_mail(kind: str, to: str, code: str | None = None, new_email: str | None = None) -> None:
+        hook = getattr(app.state, "email_change_sender", None)
+        if hook is not None:
+            hook(kind, to, code or new_email)
+        elif kind == "code_current":
+            send_email_change_code(to, code or "", role="current")
+        elif kind == "code_new":
+            send_email_change_code(to, code or "", role="new")
+        elif kind == "taken_notice":
+            send_email_change_taken_notice(to)
+        elif kind == "changed_notice":
+            send_email_changed_notice(to, new_email or "")
+
+    def _settings_error(code: str, *, drop_change: bool = False) -> RedirectResponse:
+        resp = RedirectResponse("/settings?error=" + quote(code, safe=""), status_code=303)
+        if drop_change:
+            resp.delete_cookie(EMAIL_CHANGE_COOKIE, path="/settings", secure=cookie_secure(), httponly=True)
+        return resp
+
+    @app.post("/settings/email")
+    def email_change_start(request: Request, new_email: str = Form("")) -> RedirectResponse:
+        """Step 1 of an email change: codes to the current AND the new address.
+
+        Same response whether or not the new address has an account and
+        whether or not a send limit was hit. Nothing changes yet.
+        """
+        learner = _require_learner(request)
+        if not learner:
+            return _login_redirect(request)
+        try:
+            req = store.start_email_change(learner["userId"], new_email, client_ip=_client_ip(request))
+        except ValueError as exc:
+            return _settings_error(str(exc) or "email_invalid")
+        try:
+            if req.kind == "codes":
+                _email_change_mail("code_current", req.old_email, req.current_code)
+                if req.new_code:
+                    _email_change_mail("code_new", req.new_email, req.new_code)
+                else:
+                    _email_change_mail("taken_notice", req.new_email)
+        except Exception:  # noqa: BLE001 - mail not configured or SMTP failure: fail closed
+            return _settings_error("mail_failed")
+        resp = RedirectResponse(
+            "/settings?pending_new=" + quote(req.new_email, safe=""), status_code=303
+        )
+        resp.set_cookie(
+            EMAIL_CHANGE_COOKIE, req.change_id, httponly=True, samesite="lax",
+            max_age=CODE_TTL_SECONDS, path="/settings", secure=cookie_secure(),
+        )
+        return resp
+
+    @app.post("/settings/email/verify")
+    def email_change_verify(
+        request: Request,
+        code_current: str = Form(""),
+        code_new: str = Form(""),
+        captcha_token: str = Form(""),
+        turnstile_token: str = Form("", alias="cf-turnstile-response"),
+    ) -> RedirectResponse:
+        """Step 2: both codes must check out; then the email switches and every
+        session ends (this browser gets a fresh one); the old address is told."""
+        learner = _require_learner(request)
+        if not learner:
+            return _login_redirect(request)
+        change_id = request.cookies.get(EMAIL_CHANGE_COOKIE)
+        if change_id and not _captcha_passes(
+            request, store.email_change_challenges(change_id), captcha_token or turnstile_token
+        ):
+            return _settings_error("captcha_required")
+        try:
+            result = store.confirm_email_change(
+                learner["userId"], change_id,
+                current_code=code_current, new_code=code_new, client_ip=_client_ip(request),
+            )
+        except ValueError as exc:
+            err = str(exc) or "code_wrong"
+            return _settings_error(err, drop_change=err not in ("code_wrong", "code_required", "code_slow_down"))
+        try:
+            _email_change_mail("changed_notice", result["old_email"], new_email=result["new_email"])
+        except Exception:  # noqa: BLE001 - the change is done; a failed notice must not undo it
+            pass
+        updated = result["learner"]
+        resp = RedirectResponse("/settings?saved=1&email_changed=1", status_code=303)
+        _start_session(request, resp, updated, updated.get("locale") or "he")
+        resp.delete_cookie(EMAIL_CHANGE_COOKIE, path="/settings", secure=cookie_secure(), httponly=True)
         return resp
 
     @app.post("/logout")

@@ -1,6 +1,8 @@
 """PathStore write operations (create/save/revise/publish) + learner progress."""
 from __future__ import annotations
 
+from myroad_core.auth.email_change import EmailChangeMixin
+from myroad_core.auth.login_codes import LoginCodeMixin
 from myroad_core.auth.sessions import SessionMixin
 from myroad_core.errors import StoreError
 from myroad_core.learner_progress import LearnerProgressMixin
@@ -11,10 +13,13 @@ from myroad_core.store_publish_ops import PublishOpsMixin
 __all__ = ["PathStore", "StoreError"]
 
 
-class PathStore(PathStoreBase, DraftOpsMixin, PublishOpsMixin, LearnerProgressMixin, SessionMixin):
+class PathStore(PathStoreBase, DraftOpsMixin, PublishOpsMixin, LearnerProgressMixin, SessionMixin, LoginCodeMixin,
+                EmailChangeMixin):
     """Minimal SQLite-backed store implementing phase-1 persistence ops."""
 
     def __init__(self, db_path: str | object = ":memory:") -> None:
         super().__init__(db_path)  # type: ignore[arg-type]
         self.ensure_learner_schema()
         self.ensure_session_schema()
+        self.ensure_login_code_schema()
+        self.ensure_email_change_schema()

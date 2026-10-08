@@ -7,6 +7,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from auth_helpers import login_with_code
 from fastapi.testclient import TestClient
 
 from myroad_core.agent_builder.suggest import (
@@ -155,7 +156,8 @@ def app_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
 def _login(client: TestClient, locale: str = "en") -> None:
     client.cookies.set("myroad_locale", locale)
-    client.post("/login", data={"first_name": "Dana", "last_name": "Cohen", "email": "dana@example.com", "next": "/"})
+    # Two-step email-code sign-in (#41): request the code, then verify it.
+    login_with_code(client, {"first_name": "Dana", "last_name": "Cohen", "email": "dana@example.com", "next": "/"})
 
 
 def _goal(client: TestClient, goal: str, subject: str = "general", **extra: str) -> None:

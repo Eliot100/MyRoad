@@ -185,6 +185,7 @@ def test_fixing_the_format_error_unblocks_publish(store: PathStore) -> None:
 
 pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
+from auth_helpers import login_with_code
 
 from myroad_core.ui.app import create_learner_app  # noqa: E402
 
@@ -209,7 +210,7 @@ def app_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
 def _built_draft_over_http(client: TestClient) -> None:
     client.cookies.set("myroad_locale", "en")
-    client.post("/login", data={"first_name": "Noa", "last_name": "Levi", "email": "g@example.com", "next": "/"})
+    login_with_code(client, data={"first_name": "Noa", "last_name": "Levi", "email": "g@example.com", "next": "/"})
     client.post(
         "/add-path/goal",
         data={"goal": "Fractions", "subject": "math", "ui_locale": "he", "length": "short", "mode": "demo"},
