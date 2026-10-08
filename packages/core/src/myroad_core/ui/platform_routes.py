@@ -9,7 +9,7 @@ from typing import Any, Callable
 from urllib.parse import quote
 
 from fastapi import Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
@@ -30,6 +30,7 @@ from myroad_core.ui.i18n import (
     t,
 )
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
+from myroad_core.ui.bidi import bidi_isolate
 
 ACTOR_LEARNER = "user_learner_poc"
 
@@ -40,6 +41,19 @@ def _kids_payload(block: dict[str, Any] | None) -> dict[str, Any]:
     content = block.get("content") or {}
     kids = content.get("kids") or {}
     return kids if isinstance(kids, dict) else {}
+
+
+def _is_htmx(request: Request) -> bool:
+    """htmx swap request (not a history restore, which wants the full page)."""
+    return (
+        request.headers.get("HX-Request") == "true"
+        and request.headers.get("HX-History-Restore-Request") != "true"
+    )
+
+
+def _hx_redirect(url: str) -> Response:
+    """Tell htmx to do a full navigation instead of swapping a fragment."""
+    return Response(status_code=200, headers={"HX-Redirect": url, "Vary": "HX-Request"})
 
 
 def _parse_iso(ts: str | None) -> float | None:
@@ -767,6 +781,10 @@ def register_platform_routes(
         )
         return response
 
+    # Step text (titles, bodies, choices, feedback) renders through this filter so math
+    # and Latin runs stay readable inside Hebrew/Arabic sentences. See ui/bidi.py.
+    templates.env.filters["bdi"] = bidi_isolate
+
     @app.get("/play/{path_id}", response_class=HTMLResponse)
     def play_path(
         request: Request,
@@ -801,6 +819,10 @@ def register_platform_routes(
         if read_only and sess.get("view") == "stats":
             # Read-only paths never record an attempt or a completion.
             sess["view"] = "map"
+
+        if _is_htmx(request) and sess.get("view") != "learn":
+            # Only the learn view has a step card to swap; map and summary load as pages.
+            return _hx_redirect(f"/play/{path_id}")
 
         if sess.get("view") == "stats":
             attempt = _finalize_attempt(sess, doc, locale)
@@ -853,22 +875,53 @@ def register_platform_routes(
             return response
 
         # Learn view
-        idx = max(0, min(sess["index"], n - 1 if n else 0))
-        sess["index"] = idx
+        return _render_step(request, sess, doc, locked_by=locked_by, swap_focus="step-title")
+
+    def _render_step(
+        request: Request,
+        sess: dict[str, Any],
+        doc: dict[str, Any],
+        *,
+        locked_by: list[dict[str, str]],
+        idx: int | None = None,
+        answer: dict[str, Any] | None = None,
+        continue_url: str | None = None,
+        swap_focus: str | None = None,
+    ) -> Response:
+        """Render the step player: the full page, or only the step card for htmx.
+
+        ``idx`` defaults to the session's current step. After a right answer over htmx it
+        is the step just answered (the session has already moved on), so the learner sees
+        the feedback under the choices and continues with ``continue_url``.
+        """
+        locale = _locale(request)
+        blocks = doc.get("blocks") or []
+        n = len(blocks)
+        hx = _is_htmx(request)
+        if idx is None:
+            idx = max(0, min(sess["index"], n - 1 if n else 0))
+            sess["index"] = idx
         block = blocks[idx] if blocks else None
+        if hx and not block:
+            return _hx_redirect(f"/play/{sess['pathId']}")
         kids = _kids_payload(block)
         display = resolve_node_display(
             kids,
             ui_locale=locale,
             content_locale=doc.get("contentLocale") or doc.get("contentLanguage"),
         )
-        flash = sess.pop("flash", None)
+        if answer is None:
+            # No-JS path: a wrong pick redirects here; show its feedback under the choices once.
+            pending = sess.pop("answer_feedback", None)
+            if pending and block and pending.get("blockId") == block.get("blockId"):
+                answer = pending
+        flash = None if hx else sess.pop("flash", None)
         result = sess.get("last_result")
         progress = int(round(100 * len(sess["mastered"]) / n)) if n else 0
         ctx = _shell_ctx(
             request,
             doc=doc,
-            meta=meta,
+            meta=_card_meta(doc, locale),
             blocks=blocks,
             block=block,
             kids=kids,
@@ -884,11 +937,18 @@ def register_platform_routes(
             can_prev=idx > 0,
             can_next=idx < n - 1,
             is_done=_maybe_done(sess, n),
-            topics=topics,
+            topics=_topics_for_ui(doc, blocks, locale),
             locked_by=locked_by,
-            read_only=read_only,
+            read_only=bool(locked_by),
+            answer=answer,
+            continue_url=continue_url,
+            continue_hx=bool(continue_url) and "view=learn" in (continue_url or ""),
+            swap_focus=swap_focus if hx else None,
+            status_oob=hx,
         )
-        response = templates.TemplateResponse(request, "play.html", ctx)
+        template = "_step_swap.html" if hx else "play.html"
+        response = templates.TemplateResponse(request, template, ctx)
+        response.headers["Vary"] = "HX-Request"
         response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return response
 
@@ -984,18 +1044,23 @@ def register_platform_routes(
         request: Request,
         choice: str = Form(""),
         sequence: str = Form(""),
-    ) -> RedirectResponse:
+    ) -> Response:
         locale = _locale(request)
+        hx = _is_htmx(request)
         sess = _play_session(request, path_id)
         if _lock_state(request, path_id):
-            return _read_only_redirect(request, sess, path_id)
+            resp = _read_only_redirect(request, sess, path_id)
+            return _hx_redirect(resp.headers["location"]) if hx else resp
         sess["view"] = "learn"
         doc = _load_play_doc(sess)
         blocks = doc.get("blocks") or []
         block = blocks[sess["index"]] if blocks else None
         if not block:
+            if hx:
+                return _hx_redirect(f"/play/{path_id}?view=learn")
             resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
             return resp
+        answered_idx = sess["index"]
         kids = _kids_payload(block)
         node_type = kids.get("type") or (block.get("content") or {}).get("nodeType")
         ok = False
@@ -1035,24 +1100,49 @@ def register_platform_routes(
             else:
                 sess["incorrect_taps"] = int(sess.get("incorrect_taps") or 0) + 1
 
+        feedback = {
+            "blockId": block["blockId"],
+            "choice": choice,
+            "ok": ok,
+            "text": (kids.get("feedback_ok") or "✓") if ok else (kids.get("feedback_try") or t(locale, "gate_practice")),
+        }
         if ok:
             sess["mastered"].add(block["blockId"])
             sess["last_result"] = {"ok": True, "text": kids.get("feedback_ok") or "✓"}
+            # No-JS: the next step opens with this note (the answered card is htmx-only).
             sess["flash"] = {"level": "ok", "text": kids.get("feedback_ok") or "✓"}
+            sess.pop("answer_feedback", None)
             if sess["index"] < len(blocks) - 1:
                 sess["index"] += 1
                 sess["last_result"] = None
         else:
-            sess["last_result"] = {
-                "ok": False,
-                "text": kids.get("feedback_try") or t(locale, "gate_practice"),
-            }
-            sess["flash"] = {
-                "level": "warn",
-                "text": kids.get("feedback_try") or t(locale, "gate_practice"),
-            }
+            sess["last_result"] = {"ok": False, "text": feedback["text"]}
+            # Shown under the choices of this same step (not as a page-top flash).
+            sess["answer_feedback"] = feedback
         _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
-        if _maybe_done(sess, len(blocks)):
+        if hx:
+            # htmx: answer in place. Wrong -> same card with the explanation; right -> the
+            # answered card with its feedback and a button to the next step (or the summary).
+            sess.pop("answer_feedback", None)
+            continue_url = None
+            if ok:
+                sess.pop("flash", None)
+                done = _maybe_done(sess, len(blocks))
+                continue_url = f"/play/{path_id}?view=stats" if done else f"/play/{path_id}?view=learn"
+            return _render_step(
+                request,
+                sess,
+                doc,
+                locked_by=[],
+                idx=answered_idx,
+                answer=feedback,
+                continue_url=continue_url,
+                swap_focus="step-feedback",
+            )
+        if not ok:
+            # The fragment brings the feedback into view after the full-page reload.
+            resp = RedirectResponse(f"/play/{path_id}?view=learn#step-feedback", status_code=303)
+        elif _maybe_done(sess, len(blocks)):
             sess["view"] = "stats"
             resp = RedirectResponse(f"/play/{path_id}?view=stats", status_code=303)
         else:
