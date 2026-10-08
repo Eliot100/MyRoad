@@ -121,6 +121,7 @@
   "stations_done": "הושלמו {done} מתוך {total} תחנות",
   "map_long_lede": "לוחצים על תחנה כדי לראות את השלבים שלה. התחנה שבה אתם נמצאים פתוחה.",
   "station_current": "אתם כאן",
+  "map_jump_here": "מעבר לתחנה הנוכחית",
   "continue_step": "שלב {n} מתוך {total}",
   "unlocked_next": "עכשיו נפתחה לכם:",
   "builder_match_why": "למה זה מתאים:",
