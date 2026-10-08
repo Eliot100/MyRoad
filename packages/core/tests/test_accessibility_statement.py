@@ -18,6 +18,8 @@ pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
 
+from auth_helpers import login
+
 from myroad_core.store import PathStore
 from myroad_core.ui.a11y_statement import DONE, GAPS, OPTIONAL_FIELDS, REQUIRED_FIELDS, statement_details
 from myroad_core.ui.app import create_learner_app
@@ -59,7 +61,7 @@ def _anon(app, locale: str = "he") -> TestClient:
 
 def _signed_in(app, locale: str = "he") -> TestClient:
     c = _anon(app, locale)
-    c.post("/login", data={"first_name": "A", "last_name": "B", "email": f"a11y-{locale}@example.com", "next": "/"})
+    login(c, f"a11y-{locale}@example.com", first_name="A", last_name="B")
     c.cookies.set("myroad_locale", locale)
     return c
 

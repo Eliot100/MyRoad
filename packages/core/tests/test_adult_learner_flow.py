@@ -17,6 +17,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code
 
 from myroad_core.content.loader import default_content_dir, load_content_paths
 from myroad_core.store import PathStore
@@ -96,7 +97,7 @@ def adult_app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 def _client(app, *, locale: str = "en", email: str = EMAIL) -> TestClient:
     c = TestClient(app)
     c.cookies.set("myroad_locale", locale)
-    c.post("/login", data={"first_name": "Dana", "last_name": "Cohen", "email": email, "next": "/"})
+    login_with_code(c, {"first_name": "Dana", "last_name": "Cohen", "email": email, "next": "/"})
     c.cookies.set("myroad_locale", locale)
     return c
 

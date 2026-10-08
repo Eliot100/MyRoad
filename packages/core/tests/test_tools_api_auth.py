@@ -6,6 +6,7 @@ import pytest
 pytest.importorskip("fastapi")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code
 
 from myroad_core.api import create_app
 from myroad_core.auth import AGENT_ID_ENV, AGENT_TOKEN_ENV, SESSION_COOKIE
@@ -223,8 +224,8 @@ def test_ui_login_session_is_accepted_by_tools_api(tmp_path, monkeypatch) -> Non
     shared = PathStore(str(tmp_path / "shared.db"))
     try:
         ui = TestClient(create_learner_app(store=shared, seed=False, seed_content=False))
-        ui.post(
-            "/login",
+        login_with_code(
+            ui,
             data={"first_name": "Noa", "last_name": "Levi", "email": "noa.api@example.com", "next": "/"},
             follow_redirects=False,
         )

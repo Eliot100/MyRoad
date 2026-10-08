@@ -19,6 +19,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code, request_login_code
 
 from myroad_core.ui.app import create_learner_app
 
@@ -28,8 +29,8 @@ def _uid(client) -> str | None:
 
 
 def _reg(client, email: str, first: str = "Test", last: str = "User"):
-    return client.post(
-        "/login",
+    return login_with_code(
+        client,
         data={"first_name": first, "last_name": last, "email": email, "next": "/"},
         follow_redirects=True,
     )
@@ -147,8 +148,8 @@ def platform_client(tmp_path):
     store = PathStore(str(tmp_path / "plat.db"))
     app = create_learner_app(store=store, seed=True, seed_content=True)
     with TestClient(app) as c:
-        c.post(
-            "/login",
+        login_with_code(
+            c,
             data={
                 "first_name": "Test",
                 "last_name": "User",
@@ -426,15 +427,17 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             settings = c.get("/settings", follow_redirects=False)
             assert settings.status_code == 303
             assert "/login?next=" in settings.headers["location"]
-            missing = c.post(
-                "/login",
+            missing = login_with_code(
+                c,
                 data={"email": "gate@example.com", "next": "/settings"},
                 follow_redirects=False,
             )
+            # Unknown email: neutral answer (code page), no account, no session
             assert missing.status_code == 303
-            assert "mode=register" in missing.headers["location"]
-            created = c.post(
-                "/login",
+            assert missing.headers["location"].startswith("/login/verify")
+            assert _uid(c) is None and store.get_learner_by_email("gate@example.com") is None
+            created = login_with_code(
+                c,
                 data={
                     "email": "gate@example.com",
                     "first_name": "Gate",
@@ -449,8 +452,8 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             uid = _uid(c)
             assert uid and "@" not in uid
             c.cookies.clear()
-            again = c.post(
-                "/login",
+            again = login_with_code(
+                c,
                 data={"email": "gate@example.com", "next": "/settings"},
                 follow_redirects=True,
             )
@@ -474,15 +477,15 @@ def _cookie_headers(resp, name: str) -> list[str]:
 
 
 def test_session_cookie_is_secure_by_default(tmp_path, monkeypatch) -> None:
-    monkeypatch.delenv("MYROAD_DEV_INSECURE_COOKIES", raising=False)
     store = PathStore(str(tmp_path / "sec.db"))
     app = create_learner_app(store=store, seed=False, seed_content=False)
     try:
         with TestClient(app) as c:
-            r = c.post(
-                "/login", data={"first_name": "S", "last_name": "C", "email": "secure@example.com", "next": "/"},
-                follow_redirects=False,
-            )
+            _, outbox = request_login_code(
+                c, {"first_name": "S", "last_name": "C", "email": "secure@example.com", "next": "/"}
+            )  # step 1 with the dev flag so the test client keeps the challenge cookie
+            monkeypatch.delenv("MYROAD_DEV_INSECURE_COOKIES", raising=False)
+            r = c.post("/login/verify", data={"code": outbox[-1][1], "next": "/"}, follow_redirects=False)
             (cookie,) = _cookie_headers(r, "myroad_session")
             low = cookie.lower()
             assert "secure" in low and "httponly" in low and "samesite=lax" in low
@@ -533,7 +536,7 @@ def test_email_change_is_refused_until_it_can_be_verified(tmp_path) -> None:
                 assert store.get_learner(uid)["email"] == "first@example.com"
                 assert store.get_learner_by_email(target) is None
             page = c.get("/settings?error=email_change_disabled")
-            assert "Changing your sign-in email is not available yet" in page.text or "האימייל לא שונה" in page.text
+            assert 'class="flash warn"' in page.text
             # Nobody else's sessions were touched, and the account keeps its email
             assert store.get_session_user(other_device) == uid
             # Saving the name with the same email (any case) still works
