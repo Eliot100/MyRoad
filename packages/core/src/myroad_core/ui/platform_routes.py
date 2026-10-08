@@ -12,6 +12,7 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
 from myroad_core.content.schema import GROUPS, SUBJECTS
@@ -264,6 +265,23 @@ def register_platform_routes(
             start_index = 0
             if block_ids:
                 start_index = min(index_by_block.get(bid, 0) for bid in block_ids)
+            steps = []
+            for bid in block_ids:
+                blk = block_by_id.get(bid)
+                if not blk:
+                    continue
+                kids = _kids_payload(blk)
+                steps.append(
+                    {
+                        "blockId": bid,
+                        "index": index_by_block.get(bid, 0),
+                        "title": kids.get("title_en") if locale == "en" and kids.get("title_en") else blk.get("title"),
+                        "type": kids.get("type") or (blk.get("content") or {}).get("nodeType"),
+                        "kind": kids.get("kind") or "understanding",
+                        "reviewTopicIds": list(kids.get("review_topic_ids") or []),
+                    }
+                )
+            review_steps = sum(1 for st in steps if st["kind"] == "review")
             out.append(
                 {
                     "id": topic.get("id"),
@@ -274,6 +292,9 @@ def register_platform_routes(
                     "stepCount": len(block_ids) or len(node_ids),
                     "startIndex": start_index,
                     "blocks": [block_by_id[b] for b in block_ids if b in block_by_id],
+                    "steps": steps,
+                    "reviewCount": review_steps,
+                    "isReview": bool(steps) and review_steps == len(steps),
                 }
             )
         return out
@@ -325,6 +346,57 @@ def register_platform_routes(
 
     def _maybe_done(sess: dict[str, Any], n: int) -> bool:
         return n > 0 and len(sess.get("mastered") or set()) >= n
+
+    # --- schema v2 prerequisite_path_ids: a path stays locked (read-only) until they are finished ---
+    def _prereq_index(locale: str) -> tuple[dict[str, list[str]], dict[str, str]]:
+        """({pathId: prerequisite_path_ids}, {pathId: localized title}) for published catalog paths."""
+        try:
+            entries = catalog_entries(store, locale=locale)
+        except Exception:  # a broken row must not break the learner screens
+            return {}, {}
+        return (
+            {e.path_id: list(e.prerequisite_path_ids) for e in entries},
+            {e.path_id: e.title for e in entries},
+        )
+
+    def _locked_by(
+        path_id: str,
+        prereqs: dict[str, list[str]],
+        titles: dict[str, str],
+        completed: set[str],
+    ) -> list[dict[str, str]]:
+        # Unknown prerequisites (not in the catalog) cannot be finished, so they do not lock.
+        return [
+            {"pathId": pid, "title": titles[pid]}
+            for pid in prereqs.get(path_id, [])
+            if pid in titles and pid not in completed
+        ]
+
+    def _lock_state(request: Request, path_id: str) -> list[dict[str, str]]:
+        learner = _learner(request)
+        completed = completed_path_ids(store, learner["userId"] if learner else None)
+        prereqs, titles = _prereq_index(_locale(request))
+        return _locked_by(path_id, prereqs, titles, completed)
+
+    def _unlocked_next(request: Request, path_id: str) -> list[dict[str, str]]:
+        """Paths that list ``path_id`` as a prerequisite and are now fully open."""
+        learner = _learner(request)
+        completed = completed_path_ids(store, learner["userId"] if learner else None)
+        completed.add(path_id)
+        prereqs, titles = _prereq_index(_locale(request))
+        return [
+            {"pathId": pid, "title": titles[pid]}
+            for pid, needs in prereqs.items()
+            if path_id in needs and pid in titles and not _locked_by(pid, prereqs, titles, completed)
+        ]
+
+    def _read_only_redirect(request: Request, sess: dict[str, Any], path_id: str) -> RedirectResponse:
+        sess["view"] = "learn"
+        sess["last_result"] = None
+        sess["flash"] = {"level": "warn", "text": t(_locale(request), "read_only_blocked")}
+        resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+        return resp
 
     # --- Identity / locale (email registration; cookie = opaque user id only) ---
     def _login_error(locale: str, error: str | None) -> str:
@@ -477,7 +549,7 @@ def register_platform_routes(
     @app.get("/", response_class=HTMLResponse)
     def platform_home(
         request: Request,
-        group: str | None = "grade3",
+        group: str | None = None,
         subject: str | None = "all",
         tab: str | None = None,
         view: str | None = "status",
@@ -516,6 +588,48 @@ def register_platform_routes(
                 c["timeBucket"] = "recent"
             else:
                 c["timeBucket"] = "older"
+
+        # Locked paths (schema v2 prerequisite_path_ids not finished yet).
+        prereqs, prereq_titles = _prereq_index(locale)
+        completed = {c["pathId"] for c in cards if c.get("progressStatus") == "completed"}
+        for c in cards:
+            c["lockedBy"] = _locked_by(c["pathId"], prereqs, prereq_titles, completed)
+
+        # "Continue" resumes the most recently touched path at the step the learner was on.
+        continue_card = None
+        contenders = [c for c in cards if c.get("progressStatus") == "in_progress"]
+        if contenders:
+            contenders.sort(key=lambda c: c.get("updatedTs") or 0, reverse=True)
+            top = dict(contenders[0])
+            prog = top.get("userProgress") or {}
+            total_nodes = int(top.get("nodeCount") or 0)
+            done_nodes = int(prog.get("masteredCount") or 0)
+            top["continuePct"] = int(round(100 * done_nodes / total_nodes)) if total_nodes else 0
+            step_index = int(prog.get("nodeIndex") or 0)
+            if total_nodes:
+                step_index = max(0, min(step_index, total_nodes - 1))
+            top["continueStep"] = step_index + 1
+            top["continueTotal"] = total_nodes
+            top["continueTopic"] = ""
+            try:
+                cdoc = store.get_version(top["pathId"], top["versionId"]).model_dump(mode="json", by_alias=True)
+                cblocks = cdoc.get("blocks") or []
+                if 0 <= step_index < len(cblocks):
+                    bid = cblocks[step_index]["blockId"]
+                    for tp in _topics_for_ui(cdoc, cblocks, locale):
+                        if bid in tp["blockIds"]:
+                            top["continueTopic"] = tp["title"]
+                            break
+            except Exception:  # the card still works without the topic name
+                pass
+            top["continueHref"] = f"/play/{top['pathId']}?view=learn"
+            continue_card = top
+
+        # Default group: the group of the path the learner is on (e.g. adult), else grade3.
+        if group is None:
+            group = "grade3"
+            if continue_card and continue_card.get("groupIds"):
+                group = continue_card["groupIds"][0]
 
         catalog = group_catalog(cards, group_id=group or None, subject=subject)
         if (group == "grade3") and catalog["total"] == 0 and cards:
@@ -633,17 +747,6 @@ def register_platform_routes(
         else:
             tab_order = ["catalog", "in_progress", "completed", "practice"]
 
-        continue_card = None
-        contenders = [c for c in cards if c.get("progressStatus") == "in_progress"]
-        if contenders:
-            contenders.sort(key=lambda c: c.get("updatedTs") or 0, reverse=True)
-            top = dict(contenders[0])
-            prog = top.get("userProgress") or {}
-            total_nodes = int(top.get("nodeCount") or 0)
-            done_nodes = int(prog.get("masteredCount") or 0)
-            top["continuePct"] = int(round(100 * done_nodes / total_nodes)) if total_nodes else 0
-            continue_card = top
-
         response = templates.TemplateResponse(
             request,
             "home.html",
@@ -678,8 +781,8 @@ def register_platform_routes(
         n = len(blocks)
         meta = _card_meta(doc, locale)
         topics = _topics_for_ui(doc, blocks, locale)
-
-        # Explicit view overrides
+        locked_by = _lock_state(request, path_id)
+        read_only = bool(locked_by)
         if view == "map":
             sess["view"] = "map"
         elif view == "learn":
@@ -695,6 +798,9 @@ def register_platform_routes(
 
         if _maybe_done(sess, n) and sess.get("view") != "map":
             sess["view"] = "stats"
+        if read_only and sess.get("view") == "stats":
+            # Read-only paths never record an attempt or a completion.
+            sess["view"] = "map"
 
         if sess.get("view") == "stats":
             attempt = _finalize_attempt(sess, doc, locale)
@@ -704,6 +810,7 @@ def register_platform_routes(
                 meta=meta,
                 attempt=attempt,
                 total=n,
+                unlocked_next=_unlocked_next(request, path_id),
             )
             response = templates.TemplateResponse(request, "stats.html", ctx)
             response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
@@ -712,10 +819,20 @@ def register_platform_routes(
         if sess.get("view") != "learn":
             # Topic map first
             mastered = sess.get("mastered") or set()
-            for tp in topics:
+            resume_index = int(sess.get("index", 0) or 0)
+            current_bid = blocks[resume_index]["blockId"] if 0 <= resume_index < n else None
+            current_station = 0
+            for i, tp in enumerate(topics):
                 done = sum(1 for bid in tp["blockIds"] if bid in mastered)
                 tp["doneCount"] = done
                 tp["complete"] = tp["stepCount"] > 0 and done >= tp["stepCount"]
+                tp["pct"] = int(round(100 * done / tp["stepCount"])) if tp["stepCount"] else 0
+                tp["current"] = current_bid is not None and current_bid in tp["blockIds"]
+                if tp["current"]:
+                    current_station = i + 1
+                for st in tp["steps"]:
+                    st["done"] = st["blockId"] in mastered
+                    st["current"] = st["blockId"] == current_bid
             ctx = _shell_ctx(
                 request,
                 doc=doc,
@@ -725,7 +842,11 @@ def register_platform_routes(
                 total=n,
                 progress=int(round(100 * len(mastered) / n)) if n else 0,
                 can_resume=bool(mastered) or sess.get("index", 0) > 0,
-                resume_index=sess.get("index", 0),
+                resume_index=resume_index,
+                current_station=current_station,
+                stations_done=sum(1 for tp in topics if tp["complete"]),
+                locked_by=locked_by,
+                read_only=read_only,
             )
             response = templates.TemplateResponse(request, "map.html", ctx)
             response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
@@ -764,6 +885,8 @@ def register_platform_routes(
             can_next=idx < n - 1,
             is_done=_maybe_done(sess, n),
             topics=topics,
+            locked_by=locked_by,
+            read_only=read_only,
         )
         response = templates.TemplateResponse(request, "play.html", ctx)
         response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
@@ -777,6 +900,20 @@ def register_platform_routes(
         reset: str = Form(""),
     ) -> RedirectResponse:
         sess = _play_session(request, path_id, resume=not bool(reset))
+        if _lock_state(request, path_id):
+            # Read-only: open the path (or a topic) without writing any progress.
+            if topic:
+                doc = _load_play_doc(sess)
+                blocks = doc.get("blocks") or []
+                match = next(
+                    (tp for tp in _topics_for_ui(doc, blocks, _locale(request)) if tp["id"] == topic), None
+                )
+                if match:
+                    sess["index"] = match["startIndex"]
+            sess["view"] = "learn"
+            resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
+            resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+            return resp
         if reset:
             sess["index"] = 0
             sess["mastered"] = set()
@@ -816,6 +953,8 @@ def register_platform_routes(
     def play_ack(path_id: str, request: Request) -> RedirectResponse:
         locale = _locale(request)
         sess = _play_session(request, path_id)
+        if _lock_state(request, path_id):
+            return _read_only_redirect(request, sess, path_id)
         sess["view"] = "learn"
         doc = _load_play_doc(sess)
         blocks = doc.get("blocks") or []
@@ -848,6 +987,8 @@ def register_platform_routes(
     ) -> RedirectResponse:
         locale = _locale(request)
         sess = _play_session(request, path_id)
+        if _lock_state(request, path_id):
+            return _read_only_redirect(request, sess, path_id)
         sess["view"] = "learn"
         doc = _load_play_doc(sess)
         blocks = doc.get("blocks") or []
@@ -931,6 +1072,15 @@ def register_platform_routes(
         doc = _load_play_doc(sess)
         blocks = doc.get("blocks") or []
         sess["last_result"] = None
+        if _lock_state(request, path_id):
+            # Read-only browsing: move freely, never gate and never persist.
+            if direction == "prev":
+                sess["index"] = max(0, sess["index"] - 1)
+            else:
+                sess["index"] = min(max(len(blocks) - 1, 0), sess["index"] + 1)
+            resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
+            resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+            return resp
         if direction == "prev":
             sess["index"] = max(0, sess["index"] - 1)
         else:
