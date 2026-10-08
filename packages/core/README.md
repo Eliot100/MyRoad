@@ -76,6 +76,16 @@ authenticated principal the call gets `403 ACTOR_MISMATCH`.
 In-process callers (`AgentTools`, the path builder, the golden loop) do not go
 over HTTP and are unchanged.
 
+**Publish gate (every route).** `PathStore.publish` re-runs Path Builder's
+checks before changing status: the format check (`blocking_problems`) for any
+document in the player node format (`content.kids`), plus the completeness rule
+(`check_path_completeness`) for agent drafts (any version of the path carries
+`agentBuild`). On failure it records a deny audit event and raises
+`PublishBlockedError`; nothing changes status. `AgentTools.publish` returns
+`ok=false` with `PATH_FORMAT_ERROR` / `PATH_NOT_COMPLETE` and the list in
+`data.blockingProblems` / `data.issues`; `POST /tools/publish` answers `422`
+with that body. Legacy freeze-format documents (no `content.kids`) are not checked.
+
 ## What this package does
 
 - Pydantic types for PathVersion, Block, Edge, Source, Attempt, Feedback, Event

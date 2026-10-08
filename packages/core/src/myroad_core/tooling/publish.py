@@ -5,6 +5,7 @@ from typing import Any
 
 from myroad_core.errors import RbacDenyError, StoreError
 from myroad_core.models import Feedback, OpResponse, PathStatus, RbacDecision, new_id, utc_now
+from myroad_core.publish_gate import PublishBlockedError
 from myroad_core.store_schema import _iso_now
 
 __all__ = ["ToolsPublishMixin"]
@@ -127,7 +128,13 @@ class ToolsPublishMixin:
         publisher_id: str | None = None,
         human_publisher: bool = False,
     ) -> OpResponse:
-        """Publish the version. An agent may publish; human_publisher is ignored."""
+        """Publish the version. An agent may publish; human_publisher is ignored.
+
+        Goes through the store's publish gate (issue #42). A refusal returns
+        ok=False with the gate's error codes (PATH_FORMAT_ERROR /
+        PATH_NOT_COMPLETE) and the problem list in data["blockingProblems"] /
+        data["issues"]; HTTP callers map it to 422.
+        """
         del human_publisher  # kept so older callers still pass the flag
         try:
             return self.store.publish(
@@ -137,6 +144,11 @@ class ToolsPublishMixin:
                 version_id=version_id,
                 agent_id=agent_id,
                 publisher_id=publisher_id or actor_id,
+            )
+        except PublishBlockedError as exc:
+            return OpResponse(
+                ok=False, correlationId=correlation_id, pathId=path_id,
+                versionId=version_id, errors=exc.errors, data=exc.data,
             )
         except RbacDenyError as exc:
             return self._err(

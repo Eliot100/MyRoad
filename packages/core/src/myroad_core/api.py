@@ -22,6 +22,7 @@ from pydantic import BaseModel, Field
 
 from myroad_core.auth import Principal, resolve_principal
 from myroad_core.models import OpResponse
+from myroad_core.publish_gate import PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE
 from myroad_core.store import PathStore
 from myroad_core.tools import AgentTools
 
@@ -107,6 +108,14 @@ class PublishBody(Envelope):
 
 
 TOOLS_PREFIX = "/tools/"
+_PUBLISH_GATE_CODES = frozenset({PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE})
+
+
+def _publish_http(resp: OpResponse) -> OpResponse | JSONResponse:
+    """422 with the problem list when the publish gate refused (issue #42)."""
+    if not resp.ok and any(e.get("code") in _PUBLISH_GATE_CODES for e in resp.errors):
+        return JSONResponse(status_code=422, content=resp.model_dump(mode="json"))
+    return resp
 
 
 def _unauthorized() -> JSONResponse:
@@ -285,15 +294,19 @@ def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> 
             require_valid=body.requireValid,
         )
 
-    @app.post("/tools/publish", response_model=OpResponse)
-    def publish(body: PublishBody, principal: Principal = Depends(current_principal)) -> OpResponse:
+    @app.post(
+        "/tools/publish",
+        response_model=OpResponse,
+        responses={422: {"model": OpResponse, "description": "publish gate refused (problem list)"}},
+    )
+    def publish(body: PublishBody, principal: Principal = Depends(current_principal)):
         actor_id, agent_id = actor(body, principal)
-        return tools.publish(
+        return _publish_http(tools.publish(
             actor_id=actor_id, agent_id=agent_id,
             correlation_id=body.correlationId, path_id=body.pathId or "",
             version_id=body.versionId or "", publisher_id=actor_id,
             human_publisher=body.humanPublisher,
-        )
+        ))
 
     return app
 
