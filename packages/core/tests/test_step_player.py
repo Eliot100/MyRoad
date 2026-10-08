@@ -352,3 +352,53 @@ def test_new_locale_keys_exist_in_he_en_ar() -> None:
         data = json.loads((_CORE / "locales" / f"{code}.json").read_text(encoding="utf-8"))
         assert keys <= set(data), code
         assert all(data[k].strip() for k in keys)
+
+
+# --- feedback language (#57 follow-up from UX): Hebrew-only feedback in other UI locales ---
+
+def test_en_ui_marks_hebrew_feedback_fallback_with_lang_and_dir_auto(app) -> None:
+    c = _at_practice(app, "en")
+    card = _card(c.post(f"/play/{PID}/answer", data={"choice": "a"}, headers=HX).text)
+    region = re.search(r'<div id="step-feedback"[^>]*>', card).group(0)
+    assert 'dir="auto"' in region and 'role="status"' in region
+    text = re.search(r'<span class="feedback-text"[^>]*>', card).group(0)
+    assert text == '<span class="feedback-text" dir="auto" lang="he">'
+    assert "Not yet." in card and "Pick another answer." in card  # chrome stays in the UI locale
+    # The no-JS page renders the same region.
+    c.post(f"/play/{PID}/answer", data={"choice": "c"}, follow_redirects=False)
+    page = c.get(f"/play/{PID}?view=learn").text
+    assert '<span class="feedback-text" dir="auto" lang="he">' in page
+
+
+def test_he_ui_feedback_needs_no_lang_override(app) -> None:
+    c = _at_practice(app, "he")
+    card = _card(c.post(f"/play/{PID}/answer", data={"choice": "a"}, headers=HX).text)
+    assert '<span class="feedback-text" dir="auto">' in card and 'lang="he"' not in card
+
+
+def test_en_ui_flash_fallback_carries_lang_only_for_content_feedback(app) -> None:
+    c = _at_practice(app, "en")
+    c.post(f"/play/{PID}/answer", data={"choice": "b"}, follow_redirects=False)  # no-JS: flash on next step
+    page = c.get(f"/play/{PID}?view=learn").text
+    assert '<div class="flash ok" role="status" dir="auto" lang="he">' in page
+    # The step gate flash is UI chrome (English here): dir="auto", no lang override.
+    c.post(f"/play/{PID}/nav", data={"direction": "next"}, follow_redirects=False)
+    gate = c.get(f"/play/{PID}?view=learn").text
+    assert '<div class="flash warn" role="status" dir="auto">' in gate and "Finish this step" in gate
+
+
+def test_ui_locale_fallback_feedback_gets_no_lang(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    doc = _path()
+    del doc["nodes"][1]["feedback_try"]  # falls back to the UI string gate_practice
+    content = tmp_path / "content" / "adult"
+    content.mkdir(parents=True)
+    (content / f"{PID}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "f.db"))
+    try:
+        c = _at_practice(create_learner_app(store=store, seed=False, seed_content=True), "en")
+        card = _card(c.post(f"/play/{PID}/answer", data={"choice": "a"}, headers=HX).text)
+        assert "Finish this step before moving on." in card
+        assert '<span class="feedback-text" dir="auto">' in card and 'lang="he"' not in card
+    finally:
+        store.close()
