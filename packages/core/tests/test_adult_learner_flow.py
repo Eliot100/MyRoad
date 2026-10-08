@@ -294,7 +294,8 @@ def test_home_shows_adult_group_and_continue_resumes_last_step(adult_app) -> Non
 
     resumed = fresh.get(href)
     card = _step_card(resumed.text)
-    assert 'data-node-type="practice"' in card and "תרגול 1" in card
+    # Step text is bidi-isolated (#56): the "1" sits in its own <bdi>.
+    assert 'data-node-type="practice"' in card and "תרגול 1" in re.sub(r"</?bdi[^>]*>", "", card)
     assert "Step 4 of" in resumed.text
 
     # An explicit group choice still wins.

@@ -840,3 +840,73 @@ a.link-btn.small-btn { padding: .5rem 1rem; font-size: .95rem; }
 /* Choice tiles are buttons: keep their label ink-colored (the generic button rule sets white text). */
 .choice-tile { color: var(--ink); }
 .match-found { margin: .6rem 0 .75rem; color: var(--ok); font-weight: 600; }
+
+/* --- Step player (#56): answer in place, feedback under the choices, 24px+ targets --- */
+.visually-hidden {
+  position: absolute !important;
+  inline-size: 1px; block-size: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+/* WCAG 2.2 AA target size is 24x24 px; aim for 44 on the controls a learner taps most. */
+.play .choice-tile,
+.play .nav button,
+.play .step-card .primary,
+.play .step-card .secondary,
+.play .icon-btn,
+.play .piano-key,
+.play .beat-btn { min-block-size: 44px; min-inline-size: 44px; }
+.play .shell-top .back,
+.play .shell-top .settings-link,
+.play .lock-link { display: inline-flex; align-items: center; min-block-size: 24px; }
+.play .choice-tile { position: relative; }
+.play .choice-label bdi, .play .body-text bdi, .play .feedback-text bdi { unicode-bidi: isolate; }
+.play .choice-tile:focus-visible,
+.play .step-card a:focus-visible,
+.play .step-card button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.choice-tile.is-wrong { border-color: var(--warn); background: #fffbeb; }
+.choice-tile.is-correct { border-color: var(--ok); background: #ecfdf5; }
+.choice-mark {
+  position: absolute;
+  inset-block-start: .35rem;
+  inset-inline-end: .55rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.choice-tile.is-wrong .choice-mark { color: var(--warn); }
+.choice-tile.is-correct .choice-mark { color: var(--ok); }
+.step-card.is-answered .choice-tile:disabled { background: #fafafa; color: var(--ink); opacity: .65; cursor: default; }
+.step-card.is-answered .choice-tile.is-correct:disabled { background: #ecfdf5; opacity: 1; }
+/* While an htmx answer is on its way, a second tap does nothing. */
+form.htmx-request .choice-tile { pointer-events: none; }
+.step-feedback:empty { display: none; }
+.step-feedback {
+  margin: 0 0 1rem;
+  padding: .75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-inline-start-width: 5px;
+}
+.step-feedback.ok { background: #ecfdf5; border-color: #a7f3d0; border-inline-start-color: var(--ok); color: #065f46; }
+.step-feedback.try { background: #fffbeb; border-color: #fde68a; border-inline-start-color: var(--warn); color: #7c3d0c; }
+.step-feedback:focus { outline: 3px solid var(--accent); outline-offset: 2px; }
+.step-feedback:focus:not(:focus-visible) { outline: none; }
+.feedback-line { margin: 0; font-weight: 600; }
+.feedback-mark { font-weight: 700; margin-inline-end: .25rem; }
+.feedback-hint { margin: .25rem 0 0; font-weight: 400; }
+#step-title:focus { outline: none; }
+#step-title:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+a.continue-step { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+@media (max-width: 480px) {
+  .step-continue a.continue-step { inline-size: 100%; }
+}
+/* Motion only for people who have not asked for less. */
+@media (prefers-reduced-motion: no-preference) {
+  .play .step-card.htmx-added { opacity: 0; }
+  .play .step-card { transition: opacity .18s ease-out; }
+  .play .step-feedback { animation: feedback-in .2s ease-out; }
+  @keyframes feedback-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play *, .play *::before, .play *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
