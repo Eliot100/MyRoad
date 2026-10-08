@@ -117,9 +117,13 @@
 
   {% if answerable and not read_only %}
   {#- Feedback sits right under the choices. Focus moves here after an htmx answer (platform.js). -#}
-  <div id="step-feedback" class="step-feedback{% if answer %}{% if answer.ok %} ok{% else %} try{% endif %}{% endif %}" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
+  {#- Content feedback (feedback_ok / feedback_try) is authored in the path's explain locale only
+      (Hebrew today, PM decision). When the UI locale differs, mark that text with its own lang. -#}
+  {%- set fb_from_content = answer and answer.text and answer.text in [kids.feedback_ok, kids.feedback_try] %}
+  {%- set fb_lang = (explain_locale or 'he') if fb_from_content and locale != (explain_locale or 'he') else none %}
+  <div id="step-feedback" class="step-feedback{% if answer %}{% if answer.ok %} ok{% else %} try{% endif %}{% endif %}" dir="auto" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
     {%- if answer -%}
-    <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span> <span class="feedback-verdict visually-hidden">{% if answer.ok %}{{ t('feedback_correct') }}{% else %}{{ t('feedback_not_yet') }}{% endif %}</span> <span class="feedback-text" dir="auto">{{ answer.text|bdi }}</span></p>
+    <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span> <span class="feedback-verdict visually-hidden">{% if answer.ok %}{{ t('feedback_correct') }}{% else %}{{ t('feedback_not_yet') }}{% endif %}</span> <span class="feedback-text" dir="auto"{% if fb_lang %} lang="{{ fb_lang }}"{% endif %}>{{ answer.text|bdi }}</span></p>
     {%- if not answer.ok %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}
     {%- endif -%}
   </div>
