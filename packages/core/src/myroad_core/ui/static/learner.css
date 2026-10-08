@@ -65,7 +65,7 @@ h3 { margin-top: 0; }
 }
 .content { margin: .5rem 0; }
 .formula { font-size: 1.1rem; }
-.shell { color: var(--muted); font-style: italic; border-right: 3px solid var(--line); padding-right: .75rem; }
+.shell { color: var(--muted); font-style: italic; border-inline-start: 3px solid var(--line); padding-inline-start: .75rem; }
 .row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
 button, .quiz button {
   background: var(--accent);

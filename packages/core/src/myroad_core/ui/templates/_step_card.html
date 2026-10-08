@@ -1,0 +1,144 @@
+{#- One step of the player. Rendered inside play.html and on its own for htmx swaps (_step_swap.html).
+    answer: {"ok", "choice", "text"} after a pick; continue_url is set once the step is answered right
+    (htmx only: the learner reads the feedback, then continues). -#}
+{% set ntype = kids.type or (block.content.nodeType if block.content else 'learn') %}
+{% set is_review = kids.kind == 'review' %}
+{% set answered = answer and answer.ok and continue_url %}
+{% set answerable = (ntype in ['practice', 'check'] and kids.choices) or ntype in ['piano_keys', 'rhythm'] %}
+<section id="step-card" class="card step-card{% if is_review %} review-step{% endif %}{% if answered %} is-answered{% endif %}" data-node-type="{{ ntype }}" data-step-kind="{{ kids.kind or 'understanding' }}"{% if swap_focus %} data-swap-focus="{{ swap_focus }}"{% endif %} aria-labelledby="step-title">
+  <div class="step-head">
+    <span class="type-pill">{{ ntype }}</span>
+    {% if is_review %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
+    <h2 id="step-title" tabindex="-1" dir="auto">{% if display is defined and display.title %}{{ display.title|bdi }}{% else %}{{ block.title|bdi }}{% endif %}</h2>
+    <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">🔊 {{ t('speak') }}</button>
+  </div>
+  <p class="body-text" id="speak-source" dir="auto" data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}">
+    {% if display is defined %}{{ display.body|bdi }}{% elif locale == 'en' and kids.body_en %}{{ kids.body_en|bdi }}{% else %}{{ (kids.body_he or block.learningObjective)|bdi }}{% endif %}
+  </p>
+  {% if is_review and kids.review_topic_ids %}
+  <div class="review-mix">
+    <span class="review-mix-label">{{ t('review_mixes') }}</span>
+    <ul class="review-topics">
+      {% for tid in kids.review_topic_ids %}
+      {% set ns2 = namespace(title=tid, emoji='') %}
+      {% for tp in topics %}{% if tp.id == tid %}{% set ns2.title = tp.title %}{% set ns2.emoji = tp.emoji %}{% endif %}{% endfor %}
+      <li class="review-topic-chip" data-topic-id="{{ tid }}">{{ ns2.emoji }} {{ ns2.title }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  {% if display is defined and display.body_content %}
+  <div class="content-token" lang="{{ content_locale or 'en' }}" dir="ltr">
+    <span class="content-token-label">{{ t('content_token') }}</span>
+    <strong class="content-token-text">{{ display.body_content }}</strong>
+  </div>
+  {% elif kids.body_content %}
+  <div class="content-token" lang="en" dir="ltr">
+    <span class="content-token-label">{{ t('content_token') }}</span>
+    <strong class="content-token-text">{{ kids.body_content }}</strong>
+  </div>
+  {% endif %}
+
+  {% if read_only %}
+  {% if kids.choices %}
+  <ul class="choices read-only-choices" aria-label="{{ t('read_only_badge') }}">
+    {% for ch in kids.choices %}
+    <li class="choice-tile" aria-disabled="true">
+      {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
+      <span class="choice-label" dir="auto">{% if locale == 'en' and ch.label_en %}{{ ch.label_en|bdi }}{% else %}{{ ch.label|bdi }}{% endif %}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <p class="tiny muted read-only-hint">{{ t('locked_read_only') }}</p>
+  {% elif ntype in ['practice', 'check'] and kids.choices %}
+  {#- No JS: a plain form post (303 back to the player). With htmx: only this card is swapped. -#}
+  <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices" data-step-form
+        hx-post="/play/{{ doc.pathId }}/answer" hx-target="#step-card" hx-swap="outerHTML"
+        hx-sync="this:drop">
+    {% for ch in kids.choices %}
+    {% set picked = answer and answer.choice == ch.id %}
+    <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile{% if picked and answer.ok %} is-correct{% elif picked %} is-wrong{% endif %}"
+      {%- if picked %} aria-describedby="step-feedback"{% endif %}{% if answered %} disabled{% endif %}>
+      {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
+      <span class="choice-label" dir="auto">{% if locale == 'en' and ch.label_en %}{{ ch.label_en|bdi }}{% else %}{{ ch.label|bdi }}{% endif %}</span>
+      {% if picked %}<span class="choice-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span>{% endif %}
+    </button>
+    {% endfor %}
+  </form>
+  {% elif ntype == 'piano_keys' %}
+  <div class="piano" id="piano" data-keys="{{ kids.keys|join(',') }}" data-target="{{ (kids.target_sequence or [])|join(',') }}">
+    {% for k in kids.keys %}
+    <button type="button" class="piano-key" data-key="{{ k }}">{{ k }}</button>
+    {% endfor %}
+  </div>
+  <p class="muted tiny" id="piano-seq"></p>
+  {% if not answered %}
+  <form method="post" action="/play/{{ doc.pathId }}/answer" id="piano-form">
+    <input type="hidden" name="sequence" id="piano-sequence" value="" />
+    <button type="submit" class="primary big">
+      {% if kids.target_sequence %}{{ t('check_sequence') }}{% else %}{{ t('done_free') }}{% endif %}
+    </button>
+  </form>
+  {% endif %}
+  {% elif ntype == 'rhythm' %}
+  <div class="rhythm" id="rhythm" data-pattern="{{ kids.pattern|join(',') }}">
+    <div class="pattern-view" aria-hidden="true">
+      {% for beat in kids.pattern %}
+      <span class="beat-dot {% if beat %}on{% else %}off{% endif %}">{% if beat %}●{% else %}○{% endif %}</span>
+      {% endfor %}
+    </div>
+    <div class="beat-row">
+      {% for beat in kids.pattern %}
+      <button type="button" class="beat-btn" data-idx="{{ loop.index0 }}" data-expect="{{ beat }}">{{ loop.index }}</button>
+      {% endfor %}
+    </div>
+    <button type="button" class="secondary" id="rhythm-reset">{{ t('reset') }}</button>
+  </div>
+  {% if not answered %}
+  <form method="post" action="/play/{{ doc.pathId }}/answer" id="rhythm-form">
+    <input type="hidden" name="sequence" id="rhythm-sequence" value="" />
+    <button type="submit" class="primary big">{{ t('check_rhythm') }}</button>
+  </form>
+  {% endif %}
+  {% elif ntype == 'speak' %}
+  <div class="speak-tools">
+    <button type="button" class="icon-btn" id="btn-record" {% if not kids.record %}hidden{% endif %}>🎤 {{ t('record') }}</button>
+    <p class="muted tiny" id="record-status">{{ t('record_hint') }}</p>
+  </div>
+  <form method="post" action="/play/{{ doc.pathId }}/ack">
+    <button type="submit" class="primary big">{{ t('continue_speak') }}</button>
+  </form>
+  {% else %}
+  <form method="post" action="/play/{{ doc.pathId }}/ack">
+    <button type="submit" class="primary big">{% if ntype == 'celebrate' %}{{ t('finish') }}{% else %}{{ t('continue') }}{% endif %}</button>
+  </form>
+  {% endif %}
+
+  {% if answerable and not read_only %}
+  {#- Feedback sits right under the choices. Focus moves here after an htmx answer (platform.js). -#}
+  <div id="step-feedback" class="step-feedback{% if answer %}{% if answer.ok %} ok{% else %} try{% endif %}{% endif %}" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
+    {%- if answer -%}
+    <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span> <span class="feedback-verdict visually-hidden">{% if answer.ok %}{{ t('feedback_correct') }}{% else %}{{ t('feedback_not_yet') }}{% endif %}</span> <span class="feedback-text" dir="auto">{{ answer.text|bdi }}</span></p>
+    {%- if not answer.ok %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}
+    {%- endif -%}
+  </div>
+  {% endif %}
+
+  {% if answered %}
+  <div class="nav row step-continue">
+    <a class="primary big continue-step" href="{{ continue_url }}"{% if continue_hx %} hx-get="{{ continue_url }}" hx-target="#step-card" hx-swap="outerHTML"{% endif %}>{% if continue_hx %}{{ t('next_step') }}{% else %}{{ t('finish') }}{% endif %}</a>
+  </div>
+  {% else %}
+  <div class="nav row">
+    <form method="post" action="/play/{{ doc.pathId }}/nav">
+      <input type="hidden" name="direction" value="prev" />
+      <button type="submit" {% if not can_prev %}disabled{% endif %}>{{ t('prev') }}</button>
+    </form>
+    <form method="post" action="/play/{{ doc.pathId }}/nav">
+      <input type="hidden" name="direction" value="next" />
+      <button type="submit" {% if not can_next %}disabled{% endif %}>{{ t('next') }}</button>
+    </form>
+  </div>
+  {% endif %}
+</section>

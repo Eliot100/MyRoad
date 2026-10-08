@@ -9,7 +9,7 @@
 <body class="platform play stats-view {% if meta.kidsDemo %}tone-demo{% endif %}">
   <header class="top shell-top">
     <div class="brand">
-      <a href="/" class="back">→ {{ t('back_catalog') }}</a>
+      <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
       <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
@@ -47,6 +47,17 @@
         <div class="progress-bar"><div class="progress-fill" style="width: {{ attempt.masteryPct or 0 }}%"></div></div>
       </div>
     </div>
+
+    {% if unlocked_next %}
+    <div class="unlocked-next" role="status">
+      <p class="kicker">🔓 {{ t('unlocked_next') }}</p>
+      <ul class="plain-list">
+        {% for p in unlocked_next %}
+        <li><a class="lock-link" href="/play/{{ p.pathId }}"><bdi>{{ p.title }}</bdi></a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
 
     <div class="row map-actions">
       <a class="primary big link-btn" href="/">{{ t('back_to_catalog') }}</a>
