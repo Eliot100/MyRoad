@@ -99,22 +99,36 @@ over HTTP and are unchanged.
 ## Email sign-in (one-time code)
 
 `/login` asks for an email (plus first and last name for a new account) and
-emails a 6-digit code. The user enters it at `/login/verify`. The session
+emails an 8-digit code. The user enters it at `/login/verify`. The session
 (`myroad_session` cookie) starts only after the code checks out, and a new
 account is created only then.
 
-- A code expires after 15 minutes and works once. Up to 3 codes per email stay
-  active, so a stranger asking for codes cannot cancel the one you are typing
-  (a 4th retires the oldest).
+- A code expires after 15 minutes and works once. Up to 3 codes per email +
+  IP stay active (a 4th from the same IP retires that IP's oldest), so a
+  stranger asking for codes from other IPs cannot cancel the one you are
+  typing.
 - Guessing: each code allows 5 tries. The try is claimed with one conditional
   `UPDATE` (tries < 5, unused, unexpired) before the code is hashed, and store
   access is serialized by a lock, so parallel guesses cannot pass the limit.
-- Wrong codes are counted per email + client IP (24 hours), never as one
-  global lock per email, so a stranger cannot lock the real user out. After 5
-  failures that IP waits before each further check (2 s, doubling, max
-  15 min; `code_slow_down`, no attempt used). After 3 failures from that IP,
-  or 15 for the email from all IPs, a CAPTCHA is required if one is
-  configured.
+- Trusted pairs (#50): an email + client IP that signed in (or confirmed an
+  email change) in the last 90 days (`login_trusted`). Per-email limits never
+  apply to a trusted pair, so a stranger on other IPs cannot stop a returning
+  user's codes or lock their correct code.
+- Wrong codes (rolling 24 hours), never one global lock per email:
+  - per email + IP: after 5 failures that IP waits before each further check
+    (2 s, doubling, max 15 min; `code_slow_down`, no attempt used);
+  - per IP across all emails: at most 50 failures (`code_slow_down`);
+  - per email from untrusted IPs together: at most 30 wrong checks
+    (`EMAIL_FAILURE_BUDGET`). Then an untrusted check needs a solved CAPTCHA,
+    or without a CAPTCHA it is refused with `account_limited` ("try later, or
+    from a device you used before"). Each check is reserved as a failure
+    before hashing (and removed if right), so parallel requests cannot pass
+    the budgets.
+  - Worst case for guessing one email from rotating IPs without a CAPTCHA:
+    **30 guesses per day** against a 1-in-10^8 code (3 in 10 million per
+    day). Before: ~4,800 per day against 6-digit codes (~0.5% per day).
+  - A CAPTCHA (if configured) is asked after 3 failures from an IP, 15 for the
+    email from all IPs, or once the email's budget is used.
 - CAPTCHA hook (off by default, so dev and tests need nothing):
   `MYROAD_CAPTCHA_PROVIDER=turnstile` with `MYROAD_CAPTCHA_SITE_KEY` and
   `MYROAD_CAPTCHA_SECRET` (server env only) enables Cloudflare Turnstile.
@@ -124,9 +138,15 @@ account is created only then.
 - Timing: every request path (known, unknown, rate-limited) runs one PBKDF2
   hash, so known and unknown emails take the same time. Mail is still sent
   inline so a mail failure can be reported (`mail_failed`).
-- Sending: at most 5 codes per email+IP, 10 per email and 30 per IP every
-  15 minutes. Over the limit, no mail is sent but the answer looks the same.
-- Same answer for every email: known, unknown and rate-limited requests all go
+- Sending (every 15 minutes): at most 5 codes per email+IP and 30 per IP
+  (each IP's own bucket; over it, no mail but the answer looks the same), and
+  20 per email from untrusted IPs together (mail-bomb guard; trusted pairs
+  are exempt). Over the per-email cap nothing is dropped silently: with a
+  CAPTCHA configured the sign-in form asks for it and then sends the code;
+  without one the user sees "too many codes, wait or use a device you used
+  before" (`too_many_codes`). The message is the same for known and unknown
+  emails.
+- Same answer for every email: known, unknown and IP-rate-limited requests all go
   to the code page with the same cookie. A known email gets a code; an unknown
   email gets a short "no account, register here" note. Register mode (with
   names) creates the account after the code checks out.
@@ -137,7 +157,7 @@ account is created only then.
   `MYROAD_SMTP_STARTTLS` (`1`, uses a verified TLS context), `MYROAD_MAIL_FROM`.
 - Without `MYROAD_SMTP_HOST` sign-in **fails closed** (`mail_failed`), unless
   `MYROAD_DEV_MAIL_CONSOLE=1` is set for local dev. Then the code is printed to
-  stderr: `[MyRoad login] dev mail console ... Code for you@example.com: 123456`.
+  stderr: `[MyRoad login] dev mail console ... Code for you@example.com: 12345678`.
   Never set it on a shared or public server.
 - Client IP is the direct peer address. Behind a proxy, run uvicorn with
   `--proxy-headers --forwarded-allow-ips=<proxy address>`. That value must be
@@ -160,11 +180,14 @@ gets a "your email was changed" notice.
   registers it first, the change fails with `email_taken`.
 - If the new address already has an account, it gets a notice instead of a
   code, and the response looks the same.
-- The codes use the login-code rules (hash, 15 minutes, single use, 5 tries,
-  per email+IP backoff, CAPTCHA hook) but are bound to their purpose: a login
+- The codes use the login-code rules (8 digits, hash, 15 minutes, single use,
+  5 tries, per email+IP backoff, per-IP and per-email budgets, trusted pairs,
+  CAPTCHA hook) but are bound to their purpose: a login
   code is never accepted for an email change, and these codes never sign in.
-- Send limits are shared with sign-in. A new change request cancels the
-  previous pending one.
+- Send limits are shared with sign-in and checked for both addresses; over the
+  per-email cap the change form asks for a CAPTCHA (or says to wait). A new
+  change request cancels the previous pending one. Confirming a change
+  trusts the new address + IP pair.
 
 ## What this package does
 

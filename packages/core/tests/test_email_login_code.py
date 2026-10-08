@@ -1,4 +1,4 @@
-"""Issue #41: sign-in proves email ownership with a one-time 6-digit code."""
+"""Issue #41: sign-in proves email ownership with a one-time 8-digit code (#49)."""
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
@@ -9,6 +9,7 @@ from myroad_core.auth.login_codes import (
     CODE_TTL_SECONDS,
     BACKOFF_AFTER_FAILURES,
     MAX_ACTIVE_CODES,
+    EMAIL_FAILURE_BUDGET,
     MAX_VERIFY_ATTEMPTS,
     SEND_LIMITS,
     verify_code_hash,
@@ -27,14 +28,14 @@ NEW_USER = {"first_name": "Noa", "last_name": "Levi", "email": "noa.code@example
 
 
 def _wrong(code: str) -> str:
-    return f"{(int(code) + 1) % 10**6:06d}"
+    return f"{(int(code) + 1) % 10**8:08d}"
 
 
 # ---------- store level ----------
 
-def test_code_is_six_digits_and_only_hash_is_stored(store: PathStore) -> None:
+def test_code_is_eight_digits_and_only_hash_is_stored(store: PathStore) -> None:
     cid, code = store.start_login_challenge(email="a@example.com", first_name="A", last_name="B")
-    assert len(code) == 6 and code.isdigit()
+    assert len(code) == 8 and code.isdigit()
     row = store._conn.execute("SELECT * FROM login_codes WHERE challenge_id = ?", (cid,)).fetchone()
     assert row["code_hash"] != code
     assert row["code_hash"].startswith("pbkdf2_sha256$")
@@ -145,12 +146,16 @@ def test_attacker_on_another_ip_cannot_lock_out_the_real_user(store: PathStore) 
     """Cyber security re-review: failures count per email+IP, not as one global lock."""
     store.register_or_login(email="victim@example.com", first_name="V", last_name="I")
     t = datetime.now(timezone.utc)
-    for _ in range(40):  # far past the old 15-per-email hard lock
+    # The real user signed in from 1.2.3.4 before (a trusted pair, #50)
+    cid, code = store.start_login_challenge(email="victim@example.com", client_ip="1.2.3.4", now=t)
+    store.verify_login_challenge(cid, code, client_ip="1.2.3.4", now=t)
+    for i in range(40):  # far past the old 15-per-email hard lock
         t += timedelta(minutes=16)  # wait out the attacker's own backoff
         cid, code = store.start_login_challenge(email="victim@example.com", client_ip="6.6.6.6", now=t)
-        with pytest.raises(ValueError, match="code_wrong"):
+        expected = "code_wrong" if i < EMAIL_FAILURE_BUDGET else "account_limited"
+        with pytest.raises(ValueError, match=expected):
             store.verify_login_challenge(cid, _wrong(code), client_ip="6.6.6.6", now=t)
-    assert store._email_failures("victim@example.com", t) >= 40
+    assert store._email_failures("victim@example.com", t) == EMAIL_FAILURE_BUDGET
     # The real user, on their own IP, signs in with the correct code right away
     cid, code = store.start_login_challenge(email="victim@example.com", client_ip="1.2.3.4", now=t)
     learner = store.verify_login_challenge(cid, code, client_ip="1.2.3.4", now=t + timedelta(seconds=1))
@@ -258,11 +263,13 @@ def test_send_limits_per_email_ip_email_and_ip(store: PathStore) -> None:
     kinds = [store.request_login(email="lim@example.com", client_ip="1.1.1.1").kind
              for _ in range(SEND_LIMITS["email_ip"] + 1)]
     assert kinds[:-1] == ["code"] * SEND_LIMITS["email_ip"] and kinds[-1] == "rate_limited"
-    # Another IP may still ask for the same email until the per-email limit
+    # Other (untrusted) IPs may still ask for the same email until the per-email cap
     more = [store.request_login(email="lim@example.com", client_ip=f"2.2.2.{i}").kind
             for i in range(SEND_LIMITS["email"])]
-    assert "rate_limited" in more
     assert more.count("code") == SEND_LIMITS["email"] - SEND_LIMITS["email_ip"]
+    # Over the per-email cap: "email_limited" (the caller asks for a CAPTCHA / says wait), not silent
+    assert set(more[more.index("email_limited"):]) == {"email_limited"}
+    assert store.request_login(email="lim@example.com", client_ip="2.2.3.1", captcha_ok=True).kind == "code"
     # Per-IP limit across many emails
     ip_kinds = [store.request_login(email=f"u{i}@example.com", client_ip="9.9.9.9").kind
                 for i in range(SEND_LIMITS["ip"] + 1)]
@@ -456,7 +463,7 @@ def test_no_mail_config_without_dev_flag_fails_closed(ui, monkeypatch, capsys) -
     with pytest.raises(Exception, match="MYROAD_SMTP_HOST"):
         from myroad_core.auth.mailer import send_login_code
 
-        send_login_code("x@example.com", "123456")
+        send_login_code("x@example.com", "12345678")
 
 
 def test_dev_flag_logs_code_to_console(ui, capsys, monkeypatch) -> None:
@@ -466,7 +473,7 @@ def test_dev_flag_logs_code_to_console(ui, capsys, monkeypatch) -> None:
     assert r.headers["location"].startswith("/login/verify")
     err = capsys.readouterr().err
     assert "noa.code@example.com" in err
-    code = err.split("Code for noa.code@example.com: ")[1][:6]
+    code = err.split("Code for noa.code@example.com: ")[1][:8]
     assert code.isdigit()
     ok = c.post("/login/verify", data={"code": code, "next": "/settings"}, follow_redirects=False)
     assert ok.headers["location"] == "/settings" and c.cookies.get("myroad_session")
@@ -509,7 +516,7 @@ def test_smtp_config_sends_mail_and_does_not_log_code(ui, monkeypatch, capsys) -
     assert ("starttls",) in sent and ("login", "mailer@example.com") in sent
     to, body = sent[-1][1], sent[-1][2]
     assert to == "noa.code@example.com"
-    code = body.split("code is ")[1][:6]
+    code = body.split("code is ")[1][:8]
     assert code.isdigit()
     assert code not in capsys.readouterr().err
 
