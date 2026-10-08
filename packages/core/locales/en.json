@@ -247,5 +247,20 @@
   "builder_match_needs": "finish first: {titles}",
   "builder_match_prereqs_done": "you already finished what it requires",
   "builder_match_open": "Open this path",
-  "builder_match_build_anyway": "Build a new path anyway"
+  "builder_match_build_anyway": "Build a new path anyway",
+  "locked_badge": "Locked",
+  "locked_title": "This path is still locked",
+  "locked_finish_first": "Finish this first:",
+  "locked_read_only": "You can look inside in read-only mode. Answers and progress are not saved.",
+  "read_only_badge": "Read-only",
+  "read_only_open": "Look inside (read-only)",
+  "read_only_blocked": "Read-only: finish the earlier path first to answer and save progress.",
+  "review_mixes": "This review mixes:",
+  "station_of": "Station {n} of {total}",
+  "stations_done": "{done} of {total} stations done",
+  "map_long_lede": "Tap a station to see its steps. The station you are on is open.",
+  "station_current": "You are here",
+  "continue_step": "Step {n} of {total}",
+  "unlocked_next": "Now open for you:",
+  "builder_match_why": "Why it fits:"
 }

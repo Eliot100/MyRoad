@@ -247,5 +247,20 @@
   "builder_match_needs": "أنهِ أولًا: {titles}",
   "builder_match_prereqs_done": "لقد أنهيت ما يتطلبه هذا المسار",
   "builder_match_open": "افتح هذا المسار",
-  "builder_match_build_anyway": "ابنِ مسارًا جديدًا على أي حال"
+  "builder_match_build_anyway": "ابنِ مسارًا جديدًا على أي حال",
+  "locked_badge": "مقفل",
+  "locked_title": "هذا المسار ما زال مقفلًا",
+  "locked_finish_first": "أنهِ هذا أولًا:",
+  "locked_read_only": "يمكنك الاطلاع على المحتوى للقراءة فقط. لا تُحفظ الإجابات ولا التقدّم.",
+  "read_only_badge": "للقراءة فقط",
+  "read_only_open": "إلقاء نظرة (للقراءة فقط)",
+  "read_only_blocked": "للقراءة فقط: أنهِ المسار السابق أولًا كي تجيب ويُحفظ تقدّمك.",
+  "review_mixes": "هذه المراجعة تمزج:",
+  "station_of": "المحطة {n} من {total}",
+  "stations_done": "اكتملت {done} من {total} محطات",
+  "map_long_lede": "اضغط على محطة لرؤية خطواتها. المحطة التي أنت فيها مفتوحة.",
+  "station_current": "أنت هنا",
+  "continue_step": "الخطوة {n} من {total}",
+  "unlocked_next": "أصبح متاحًا لك الآن:",
+  "builder_match_why": "لماذا يناسب:"
 }

@@ -6,23 +6,39 @@
   <title>{{ product }} — {{ meta.title }}</title>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
-<body class="platform play {% if meta.kidsDemo %}tone-demo{% endif %}" data-path="{{ doc.pathId }}">
+<body class="platform play {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}" data-path="{{ doc.pathId }}">
   <header class="top shell-top">
     <div class="brand">
-      <a href="/play/{{ doc.pathId }}?view=map" class="back">→ {{ t('path_map') }}</a>
+      <a href="/play/{{ doc.pathId }}?view=map" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('path_map') }}</a>
       <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
   </header>
 
+  {% set ns = namespace(station=None, station_n=0) %}
+  {% if block %}
+  {% for tp in topics %}{% if block.blockId in tp.blockIds and ns.station is none %}{% set ns.station = tp %}{% set ns.station_n = loop.index %}{% endif %}{% endfor %}
+  {% endif %}
   <section class="card path-head">
-    <h1>{{ meta.emoji }} {{ meta.title }}</h1>
+    <h1>{{ meta.emoji }} {{ meta.title }}{% if read_only %} <span class="status-pill locked">🔒 {{ t('read_only_badge') }}</span>{% endif %}</h1>
+    {% if ns.station %}
+    <p class="station-line tiny"><span class="station-pill current">{{ t('station_of', n=ns.station_n, total=topics|length) }}</span> <span class="station-name">{{ ns.station.emoji }} {{ ns.station.title }}</span></p>
+    {% else %}
     <p class="lede">{{ meta.blurb }}</p>
+    {% endif %}
     <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
       <span class="progress-label">{{ t('progress_label', n=index + 1, total=total, done=mastered|length) }}</span>
     </div>
   </section>
+
+  {% if read_only %}
+  <div class="flash warn lock-note" role="note" data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}">
+    🔒 {{ t('locked_finish_first') }}
+    {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
+    <span class="tiny">· {{ t('locked_read_only') }}</span>
+  </div>
+  {% endif %}
 
   {% if flash %}
   <div class="flash {{ flash.level }}" role="status">{{ flash.text }}</div>
@@ -30,15 +46,29 @@
 
   {% if block %}
   {% set ntype = kids.type or (block.content.nodeType if block.content else 'learn') %}
-  <section class="card step-card" data-node-type="{{ ntype }}">
+  {% set is_review = kids.kind == 'review' %}
+  <section class="card step-card{% if is_review %} review-step{% endif %}" data-node-type="{{ ntype }}" data-step-kind="{{ kids.kind or 'understanding' }}">
     <div class="step-head">
       <span class="type-pill">{{ ntype }}</span>
-      <h2>{% if display is defined and display.title %}{{ display.title }}{% else %}{{ block.title }}{% endif %}</h2>
+      {% if is_review %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
+      <h2 dir="auto">{% if display is defined and display.title %}{{ display.title }}{% else %}{{ block.title }}{% endif %}</h2>
       <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">🔊 {{ t('speak') }}</button>
     </div>
     <p class="body-text" id="speak-source" data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}">
       {% if display is defined %}{{ display.body }}{% elif locale == 'en' and kids.body_en %}{{ kids.body_en }}{% else %}{{ kids.body_he or block.learningObjective }}{% endif %}
     </p>
+    {% if is_review and kids.review_topic_ids %}
+    <div class="review-mix">
+      <span class="review-mix-label">{{ t('review_mixes') }}</span>
+      <ul class="review-topics">
+        {% for tid in kids.review_topic_ids %}
+        {% set ns2 = namespace(title=tid, emoji='') %}
+        {% for tp in topics %}{% if tp.id == tid %}{% set ns2.title = tp.title %}{% set ns2.emoji = tp.emoji %}{% endif %}{% endfor %}
+        <li class="review-topic-chip" data-topic-id="{{ tid }}">{{ ns2.emoji }} {{ ns2.title }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
     {% if display is defined and display.body_content %}
     <div class="content-token" lang="{{ content_locale or 'en' }}" dir="ltr">
       <span class="content-token-label">{{ t('content_token') }}</span>
@@ -51,7 +81,19 @@
     </div>
     {% endif %}
 
-    {% if ntype in ['practice', 'check'] and kids.choices %}
+    {% if read_only %}
+    {% if kids.choices %}
+    <ul class="choices read-only-choices" aria-label="{{ t('read_only_badge') }}">
+      {% for ch in kids.choices %}
+      <li class="choice-tile" aria-disabled="true">
+        {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
+        <span>{% if locale == 'en' and ch.label_en %}{{ ch.label_en }}{% else %}{{ ch.label }}{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <p class="tiny muted read-only-hint">{{ t('locked_read_only') }}</p>
+    {% elif ntype in ['practice', 'check'] and kids.choices %}
     <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices">
       {% for ch in kids.choices %}
       <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile">
