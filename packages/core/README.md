@@ -98,6 +98,9 @@ document in the player node format (`content.kids`), plus the completeness rule
 `ok=false` with `PATH_FORMAT_ERROR` / `PATH_NOT_COMPLETE` and the list in
 `data.blockingProblems` / `data.issues`; `POST /tools/publish` answers `422`
 with that body. Legacy freeze-format documents (no `content.kids`) are not checked.
+The rules live in `myroad_core/content/publish_rules.py` (moved unchanged from
+`agent_builder/completeness.py`, which re-exports them for now), so the store,
+`/tools` and the path builder share one copy.
 
 ## What this package does
 

@@ -25,6 +25,7 @@ from myroad_core.agent_builder.models import (
     OutlineTopic,
     PathOutline,
 )
+from myroad_core.content.publish_rules import PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE
 from myroad_core.content.schema import NODE_BLOCK, SUBJECTS
 from myroad_core.models import (
     Block,
@@ -43,9 +44,6 @@ AGENT_ID_GATEWAY = "agent_path_builder_grok"
 AGENT_ID_DEMO = "agent_path_builder_demo"
 AGENT_GROUP_ID = "agent"
 
-# Error codes returned by AgentPathBuilder.publish when it refuses to publish.
-PUBLISH_NOT_COMPLETE = "PATH_NOT_COMPLETE"
-PUBLISH_FORMAT_ERROR = "PATH_FORMAT_ERROR"
 
 UI_LOCALE_TAGS = {"he": "he-IL", "en": "en-US", "ar": "ar-IL"}
 

@@ -1,8 +1,9 @@
 """Publish gate run inside ``PathStore.publish`` (issue #42).
 
 Publishing must be blocked by the same rules on every route, not only in the
-path builder. This module does NOT define rules. It calls the existing checks
-owned by Path Builder (``agent_builder/completeness.py``, #30/#32):
+path builder. This module does NOT define rules. It calls the shared checks in
+``myroad_core.content.publish_rules`` (moved there unchanged from Path
+Builder's ``agent_builder/completeness.py``, #30/#32):
 
 - format check: ``blocking_problems`` (the severity "error" subset of
   ``draft_problems``: step without body, ``correct`` not in choices / missing,
@@ -20,17 +21,18 @@ Scope:
 - Legacy freeze-format documents (no ``content.kids`` anywhere, e.g. the golden
   quadratic seed): not checked. ``draft_problems`` is defined over the
   ``kids`` node format and would flag every legacy block.
-
-Layering note: the checks live in ``myroad_core.agent_builder`` (a higher
-layer than the store). They are imported lazily here to avoid an import cycle
-and to keep the store importable without the builder's generator stack. The
-clean fix is to move the check functions into a shared module (see PR #42).
 """
 from __future__ import annotations
 
 import json
 from typing import Any
 
+from myroad_core.content.publish_rules import (
+    PUBLISH_FORMAT_ERROR,
+    PUBLISH_NOT_COMPLETE,
+    blocking_problems,
+    check_path_completeness,
+)
 from myroad_core.errors import StoreError
 from myroad_core.models import PathVersion
 
@@ -40,11 +42,6 @@ __all__ = [
     "PublishBlockedError",
     "publish_block",
 ]
-
-# Same codes as the builder (agent_builder.builder.PUBLISH_*); asserted equal in tests.
-PUBLISH_FORMAT_ERROR = "PATH_FORMAT_ERROR"
-PUBLISH_NOT_COMPLETE = "PATH_NOT_COMPLETE"
-
 
 class PublishBlockedError(StoreError):
     """Raised by ``PathStore.publish`` when the gate refuses; nothing changed."""
@@ -95,9 +92,6 @@ def publish_block(
     )
     if not agent_draft and not _uses_node_format(raw):
         return None
-
-    # Lazy import: Path Builder owns these rules (see module docstring).
-    from myroad_core.agent_builder.completeness import blocking_problems, check_path_completeness
 
     errors: list[dict[str, Any]] = []
     data: dict[str, Any] = {}

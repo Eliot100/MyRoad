@@ -25,7 +25,7 @@ from pydantic import BaseModel, Field
 
 from myroad_core.auth import Principal, may_act_on_path, resolve_principal
 from myroad_core.models import OpResponse
-from myroad_core.publish_gate import PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE
+from myroad_core.content.publish_rules import PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE
 from myroad_core.store import PathStore
 from myroad_core.tools import AgentTools
 

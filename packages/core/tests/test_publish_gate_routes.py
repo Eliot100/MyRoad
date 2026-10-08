@@ -1,7 +1,7 @@
 """Issue #42: every publish route runs the same gate as the path builder.
 
 Routes: PathStore.publish, AgentTools.publish, POST /tools/publish.
-The rules are Path Builder's (#30/#32): format errors (blocking_problems) and,
+The rules are Path Builder's (#30/#32), now in content/publish_rules.py: format errors (blocking_problems) and,
 for agent drafts, the completeness rule (check_path_completeness).
 """
 from __future__ import annotations
@@ -260,3 +260,115 @@ def test_builder_publish_route_unchanged(store, owner) -> None:
     resp = _builder(store).publish(actor_id=owner, path_id=pid, version_id=vid)
     assert not resp.ok and [e["code"] for e in resp.errors] == [PUBLISH_FORMAT_ERROR]
     assert store.get_path_latest_published(pid) is None
+
+
+# ---------- /tools/publish: the gate sits behind ownership and CSRF (#46) ----------
+
+AGENT_CRED = "test-agent-credential-0123456789"
+
+
+def _http_publish(client, pid: str, vid: str, headers: dict | None = None):
+    return client.post(
+        "/tools/publish",
+        json={"correlationId": "corr_gate", "pathId": pid, "versionId": vid},
+        headers=headers or {},
+    )
+
+
+def _assert_untouched(store: PathStore, pid: str, vid: str) -> None:
+    assert store.get_version(pid, vid).status == PathStatus.draft
+    assert store.get_path_latest_published(pid) is None
+    assert _deny_and_allow(store, vid) == (0, 0)  # the gate never ran
+
+
+@pytest.mark.parametrize("broken", [True, False])
+def test_http_publish_without_csrf_header_is_403_before_the_gate(store, owner, broken) -> None:
+    pid, vid = _draft(store, owner)
+    if broken:
+        _edit(store, owner, pid, vid, _break_body)
+    with TestClient(create_app(store)) as client:
+        client.cookies.set(SESSION_COOKIE, store.create_session(owner))
+        r = _http_publish(client, pid, vid)
+    assert r.status_code == 403
+    assert r.json()["detail"]["code"] == "CSRF_HEADER_REQUIRED"
+    assert "blockingProblems" not in r.text
+    _assert_untouched(store, pid, vid)
+
+
+@pytest.mark.parametrize("broken", [True, False])
+def test_http_publish_by_non_owner_is_404_and_leaks_no_problem_list(store, owner, broken) -> None:
+    pid, vid = _draft(store, owner)
+    if broken:
+        _edit(store, owner, pid, vid, _ghost_topic_node)
+    other = store.register_or_login(email="other@example.com", first_name="X", last_name="Y")["userId"]
+    with TestClient(create_app(store)) as client:
+        client.cookies.set(SESSION_COOKIE, store.create_session(other))
+        r = _http_publish(client, pid, vid, {"X-MyRoad-Request": "1"})
+    assert r.status_code == 404
+    assert "blockingProblems" not in r.text and "issues" not in r.text
+    _assert_untouched(store, pid, vid)
+
+
+def test_http_publish_by_agent_respects_scope_then_gate(store, owner, monkeypatch) -> None:
+    pid, vid = _draft(store, owner)
+    _edit(store, owner, pid, vid, _break_correct)
+    monkeypatch.setenv("MYROAD_AGENT_TOKEN", AGENT_CRED)
+    monkeypatch.delenv("MYROAD_AGENT_ALLOWED_PATHS", raising=False)
+    bearer = {"Authorization": f"Bearer {AGENT_CRED}"}  # bearer calls need no CSRF header
+    with TestClient(create_app(store)) as client:
+        r = _http_publish(client, pid, vid, bearer)
+        assert r.status_code == 404  # not the agent's path
+        _assert_untouched(store, pid, vid)
+        monkeypatch.setenv("MYROAD_AGENT_ALLOWED_PATHS", pid)
+        r = _http_publish(client, pid, vid, bearer)
+    assert r.status_code == 422
+    body = r.json()
+    assert [e["code"] for e in body["errors"]] == [PUBLISH_FORMAT_ERROR]
+    assert [p["code"] for p in body["data"]["blockingProblems"]] == ["node_correct_not_in_choices"]
+    assert store.get_version(pid, vid).status == PathStatus.draft
+    assert _deny_and_allow(store, vid) == (1, 0)
+
+
+def test_owner_with_csrf_header_gets_422_problem_items_in_builder_shape(store, owner) -> None:
+    pid, vid = _draft(store, owner)
+    _edit(store, owner, pid, vid, _drop_correct)
+    with TestClient(create_app(store)) as client:
+        client.cookies.set(SESSION_COOKIE, store.create_session(owner))
+        r = _http_publish(client, pid, vid, {"X-MyRoad-Request": "1"})
+    assert r.status_code == 422
+    (prob,) = r.json()["data"]["blockingProblems"]
+    assert {"code", "message_key", "field", "node_id", "block_id", "topic_id", "topic_index", "params"} <= set(prob)
+    assert prob["code"] == "node_correct_missing" and prob["node_id"] == "t3_s04"
+
+
+# ---------- shared module: one copy of the rules ----------
+
+def test_rules_live_in_the_shared_module_and_old_imports_still_work() -> None:
+    from myroad_core import publish_gate
+    from myroad_core.agent_builder import builder, completeness, models
+    from myroad_core.content import publish_rules
+
+    for name in (
+        "draft_problems", "blocking_problems", "check_path_completeness", "DraftProblem",
+        "CompletenessReport", "BLOCKING_CODES", "PROBLEM_CODES", "PROBLEM_KEY_PREFIX",
+        "SEVERITY_ERROR", "SEVERITY_WARNING", "MIN_TOPICS", "MIN_STAGES",
+        "REQUIRED_STAGE_TYPES", "STAGE_TYPES",
+    ):
+        assert getattr(completeness, name) is getattr(publish_rules, name), name
+    for name in ("MIN_TOPICS", "MIN_STAGES", "REQUIRED_STAGE_TYPES", "STAGE_TYPES"):
+        assert getattr(models, name) is getattr(publish_rules, name), name
+    assert publish_gate.blocking_problems is publish_rules.blocking_problems
+    assert publish_gate.check_path_completeness is publish_rules.check_path_completeness
+    assert builder.PUBLISH_FORMAT_ERROR == publish_rules.PUBLISH_FORMAT_ERROR == publish_gate.PUBLISH_FORMAT_ERROR
+    assert builder.PUBLISH_NOT_COMPLETE == publish_rules.PUBLISH_NOT_COMPLETE == publish_gate.PUBLISH_NOT_COMPLETE
+
+
+def test_store_imports_without_the_builder_package() -> None:
+    import subprocess
+    import sys
+
+    code = (
+        "import sys, myroad_core.store, myroad_core.publish_gate; "
+        "assert 'myroad_core.agent_builder' not in sys.modules, sorted(m for m in sys.modules if 'agent_builder' in m)"
+    )
+    subprocess.run([sys.executable, "-c", code], check=True)
