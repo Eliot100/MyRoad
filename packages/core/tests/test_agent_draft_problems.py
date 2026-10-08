@@ -224,6 +224,7 @@ def test_problem_locale_keys_exist_in_he_en_ar() -> None:
 
 pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
+from auth_helpers import login_with_code
 
 from myroad_core.ui.app import create_learner_app  # noqa: E402
 
@@ -249,7 +250,7 @@ def app_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 def test_route_passes_draft_problems_at_each_step(app_client) -> None:
     client, app, _store = app_client
     client.cookies.set("myroad_locale", "en")
-    client.post("/login", data={"first_name": "Noa", "last_name": "Levi", "email": "p@example.com", "next": "/"})
+    login_with_code(client, data={"first_name": "Noa", "last_name": "Levi", "email": "p@example.com", "next": "/"})
 
     goal = client.get("/add-path")
     assert goal.status_code == 200 and goal.context["draft_problems"] == []

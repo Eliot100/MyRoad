@@ -19,6 +19,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code
 
 from myroad_core.ui.app import create_learner_app
 
@@ -28,8 +29,8 @@ def _uid(client) -> str | None:
 
 
 def _reg(client, email: str, first: str = "Test", last: str = "User"):
-    return client.post(
-        "/login",
+    return login_with_code(
+        client,
         data={"first_name": first, "last_name": last, "email": email, "next": "/"},
         follow_redirects=True,
     )
@@ -147,8 +148,8 @@ def platform_client(tmp_path):
     store = PathStore(str(tmp_path / "plat.db"))
     app = create_learner_app(store=store, seed=True, seed_content=True)
     with TestClient(app) as c:
-        c.post(
-            "/login",
+        login_with_code(
+            c,
             data={
                 "first_name": "Test",
                 "last_name": "User",
@@ -426,15 +427,15 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             settings = c.get("/settings", follow_redirects=False)
             assert settings.status_code == 303
             assert "/login?next=" in settings.headers["location"]
-            missing = c.post(
-                "/login",
+            missing = login_with_code(
+                c,
                 data={"email": "gate@example.com", "next": "/settings"},
                 follow_redirects=False,
             )
             assert missing.status_code == 303
             assert "mode=register" in missing.headers["location"]
-            created = c.post(
-                "/login",
+            created = login_with_code(
+                c,
                 data={
                     "email": "gate@example.com",
                     "first_name": "Gate",
@@ -449,8 +450,8 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             uid = _uid(c)
             assert uid and "@" not in uid
             c.cookies.clear()
-            again = c.post(
-                "/login",
+            again = login_with_code(
+                c,
                 data={"email": "gate@example.com", "next": "/settings"},
                 follow_redirects=True,
             )

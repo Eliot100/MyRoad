@@ -14,7 +14,7 @@
   "who_am_i": "Who am I?",
   "who_guest": "Guest",
   "login_title": "Sign in",
-  "login_lede": "Returning users sign in with email only. New users register with a first name, last name, and email. No password.",
+  "login_lede": "Enter your email and we send you a one-time 6-digit code. New users register with a first name, last name, and email. No password.",
   "display_name": "Display name",
   "save_identity": "Save & continue",
   "switch_user": "Switch user",
@@ -240,5 +240,17 @@
   "builder_publish_blocked": "Publishing is blocked by format errors ({count}). Fix them and try again:",
   "draft_problem_severity_error": "Blocks publishing",
   "draft_problem_severity_warning": "Warning",
-  "builder_and_more": "and {n} more"
+  "builder_and_more": "and {n} more",
+  "login_code_title": "Check your email",
+  "login_code_lede": "We sent a 6-digit code to {email}. It works once and expires in 15 minutes.",
+  "login_code_label": "6-digit code",
+  "login_code_submit": "Verify and sign in",
+  "login_code_restart": "Use a different email or send a new code",
+  "err_code_required": "Enter the 6-digit code from the email.",
+  "err_code_wrong": "That code is not correct. Try again.",
+  "err_code_expired": "The code expired. Request a new one.",
+  "err_code_used": "That code was already used. Request a new one.",
+  "err_code_locked": "Too many wrong tries. Request a new code.",
+  "err_too_many_codes": "Too many codes requested for this email. Wait 15 minutes and try again.",
+  "err_mail_failed": "We could not send the email. Try again later."
 }

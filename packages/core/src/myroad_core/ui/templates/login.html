@@ -9,7 +9,10 @@
 <body class="platform auth-screen">
   <main class="auth-card card">
     <p class="brand-kicker">{{ product }}</p>
-    {% if mode == 'register' %}
+    {% if mode == 'verify' %}
+    <h1>{{ t('login_code_title') }}</h1>
+    <p class="lede">{{ t('login_code_lede', email=current_email) }}</p>
+    {% elif mode == 'register' %}
     <h1>{{ t('login_new_title') }}</h1>
     <p class="lede">{{ t('login_new_lede') }}</p>
     {% else %}
@@ -19,6 +22,15 @@
     {% if error %}
     <p class="flash warn">{{ error }}</p>
     {% endif %}
+    {% if mode == 'verify' %}
+    <form method="post" action="/login/verify" class="login-form" autocomplete="off">
+      <input type="hidden" name="next" value="{{ next_url }}" />
+      <label for="code">{{ t('login_code_label') }}</label>
+      <input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="one-time-code" autofocus />
+      <button type="submit" class="primary big">{{ t('login_code_submit') }}</button>
+    </form>
+    <p class="lede tiny"><a href="/login?next={{ next_url|urlencode }}&email={{ current_email|urlencode }}">{{ t('login_code_restart') }}</a></p>
+    {% else %}
     <form method="post" action="/login" class="login-form" autocomplete="on">
       <input type="hidden" name="next" value="{{ next_url }}" />
       <input type="hidden" name="mode" value="{{ mode }}" />
@@ -32,9 +44,10 @@
       <input id="email" name="email" type="email" maxlength="120" required value="{{ current_email }}" autocomplete="email" />
       <button type="submit" class="primary big">{% if mode == 'register' %}{{ t('register') }}{% else %}{{ t('sign_in') }}{% endif %}</button>
     </form>
+    {% endif %}
     {% if mode == 'register' %}
     <p class="lede tiny"><a href="/login?next={{ next_url }}">{{ t('login_have_account') }}</a></p>
-    {% else %}
+    {% elif mode != 'verify' %}
     <p class="lede tiny"><a href="/login?mode=register&next={{ next_url }}">{{ t('login_new_here') }}</a></p>
     {% endif %}
     <p class="lede tiny">{{ t('login_email_note') }}</p>

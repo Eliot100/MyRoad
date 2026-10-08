@@ -28,6 +28,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code
 
 from myroad_core.ui.app import create_learner_app
 
@@ -161,8 +162,8 @@ def platform_client(tmp_path):
     store = PathStore(str(tmp_path / "plat.db"))
     app = create_learner_app(store=store, seed=True, seed_content=True)
     with TestClient(app) as c:
-        c.post(
-            "/login",
+        login_with_code(
+            c,
             data={
                 "first_name": "Test",
                 "last_name": "User",

@@ -19,7 +19,10 @@ def main() -> int:
     gated = client.get("/", follow_redirects=False)
     assert gated.status_code == 303
     assert "/login" in gated.headers["location"]
-    client.post(
+    # Two-step email login: capture the code instead of mailing / printing it.
+    outbox: list[str] = []
+    app.state.login_code_sender = lambda email, code: outbox.append(code)
+    step1 = client.post(
         "/login",
         data={
             "first_name": "Smoke",
@@ -27,8 +30,11 @@ def main() -> int:
             "email": "smoke@example.com",
             "next": "/",
         },
-        follow_redirects=True,
+        follow_redirects=False,
     )
+    assert step1.headers["location"].startswith("/login/verify"), step1.headers
+    assert client.get("/", follow_redirects=False).status_code == 303  # no session before the code
+    client.post("/login/verify", data={"code": outbox[-1], "next": "/"}, follow_redirects=True)
     home = client.get("/")
     assert home.status_code == 200
     assert "MyRoad" in home.text

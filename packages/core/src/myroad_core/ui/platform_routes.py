@@ -12,6 +12,8 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.auth.login_codes import CODE_TTL_SECONDS
+from myroad_core.auth.mailer import send_login_code
 from myroad_core.auth.sessions import SESSION_COOKIE, SESSION_TTL_SECONDS
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
@@ -32,6 +34,8 @@ from myroad_core.ui.i18n import (
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 
 ACTOR_LEARNER = "user_learner_poc"
+# Opaque id of the pending email-code challenge (not the code itself).
+COOKIE_LOGIN_CHALLENGE = "myroad_login"
 
 
 def _kids_payload(block: dict[str, Any] | None) -> dict[str, Any]:
@@ -342,6 +346,14 @@ def register_platform_routes(
             "email_invalid": "err_email_invalid",
             "name_required": "err_name_required",
             "email_taken": "err_email_taken",
+            "too_many_codes": "err_too_many_codes",
+            "mail_failed": "err_mail_failed",
+            "code_required": "err_code_required",
+            "code_wrong": "err_code_wrong",
+            "code_expired": "err_code_expired",
+            "code_used": "err_code_used",
+            "code_locked": "err_code_locked",
+            "code_invalid": "err_code_expired",
         }
         key = codes.get(error or "")
         return t(locale, key) if key else ""
@@ -378,17 +390,11 @@ def register_platform_routes(
         next: str = Form("/"),
         mode: str = Form("signin"),
     ) -> RedirectResponse:
+        """Step 1: email a one-time code. No session (and no new account) yet."""
         locale = _locale(request)
         dest = _safe_next(next)
-        try:
-            learner = store.register_or_login(
-                email=email,
-                first_name=first_name,
-                last_name=last_name,
-                locale=locale,
-            )
-        except ValueError as exc:
-            code = str(exc) or "email_invalid"
+
+        def _back(code: str) -> RedirectResponse:
             show_mode = "register" if code == "name_required" or mode == "register" else "signin"
             qs = (
                 "/login?next=" + quote(dest, safe="")
@@ -397,8 +403,80 @@ def register_platform_routes(
                 + "&email=" + quote((email or "").strip(), safe="")
             )
             return RedirectResponse(qs, status_code=303)
+
+        try:
+            challenge_id, code = store.start_login_challenge(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                locale=locale,
+            )
+        except ValueError as exc:
+            return _back(str(exc) or "email_invalid")
+        sender = getattr(app.state, "login_code_sender", None) or send_login_code
+        try:
+            sender(store.get_login_challenge_email(challenge_id), code)
+        except Exception:  # noqa: BLE001 - SMTP/network failure; never echo the code
+            return _back("mail_failed")
+        resp = RedirectResponse("/login/verify?next=" + quote(dest, safe=""), status_code=303)
+        resp.set_cookie(
+            COOKIE_LOGIN_CHALLENGE, challenge_id, httponly=True, samesite="lax",
+            max_age=CODE_TTL_SECONDS, path="/login",
+        )
+        return resp
+
+    @app.get("/login/verify", response_class=HTMLResponse)
+    def login_verify_page(
+        request: Request,
+        next: str = "/",
+        error: str | None = None,
+    ):
+        locale = _locale(request)
+        dest = _safe_next(next)
+        pending_email = store.get_login_challenge_email(request.cookies.get(COOKIE_LOGIN_CHALLENGE))
+        if not pending_email:
+            return RedirectResponse("/login?next=" + quote(dest, safe=""), status_code=303)
+        return templates.TemplateResponse(
+            request,
+            "login.html",
+            _shell_ctx(
+                request,
+                next_url=dest,
+                mode="verify",
+                current_email=pending_email,
+                error=_login_error(locale, error),
+            ),
+        )
+
+    @app.post("/login/verify")
+    def login_verify_submit(
+        request: Request,
+        code: str = Form(""),
+        next: str = Form("/"),
+    ) -> RedirectResponse:
+        """Step 2: the session starts only after the emailed code checks out."""
+        locale = _locale(request)
+        dest = _safe_next(next)
+        challenge_id = request.cookies.get(COOKIE_LOGIN_CHALLENGE)
+        try:
+            learner = store.verify_login_challenge(challenge_id, code)
+        except ValueError as exc:
+            err = str(exc) or "code_wrong"
+            if err in ("code_wrong", "code_required"):
+                return RedirectResponse(
+                    "/login/verify?next=" + quote(dest, safe="") + "&error=" + err, status_code=303
+                )
+            pending = store.get_login_challenge_email(challenge_id) or ""
+            resp = RedirectResponse(
+                "/login?next=" + quote(dest, safe="") + "&error=" + quote(err, safe="")
+                + "&email=" + quote(pending, safe=""),
+                status_code=303,
+            )
+            resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login")
+            return resp
         resp = RedirectResponse(dest, status_code=303)
         _start_session(request, resp, learner, learner.get("locale") or locale)
+        resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login")
         return resp
 
     @app.get("/settings", response_class=HTMLResponse)

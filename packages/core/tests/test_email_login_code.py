@@ -1,0 +1,314 @@
+"""Issue #41: sign-in proves email ownership with a one-time 6-digit code."""
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+
+import pytest
+
+from myroad_core.auth.login_codes import (
+    CODE_TTL_SECONDS,
+    MAX_CODES_PER_WINDOW,
+    MAX_VERIFY_ATTEMPTS,
+    verify_code_hash,
+)
+from myroad_core.store import PathStore
+
+pytest.importorskip("fastapi")
+pytest.importorskip("jinja2")
+
+from fastapi.testclient import TestClient
+from auth_helpers import login_with_code, request_login_code
+
+from myroad_core.ui.app import create_learner_app
+
+NEW_USER = {"first_name": "Noa", "last_name": "Levi", "email": "noa.code@example.com", "next": "/settings"}
+
+
+def _wrong(code: str) -> str:
+    return f"{(int(code) + 1) % 10**6:06d}"
+
+
+# ---------- store level ----------
+
+def test_code_is_six_digits_and_only_hash_is_stored(store: PathStore) -> None:
+    cid, code = store.start_login_challenge(email="a@example.com", first_name="A", last_name="B")
+    assert len(code) == 6 and code.isdigit()
+    row = store._conn.execute("SELECT * FROM login_codes WHERE challenge_id = ?", (cid,)).fetchone()
+    assert row["code_hash"] != code
+    assert row["code_hash"].startswith("pbkdf2_sha256$")
+    assert verify_code_hash(code, row["code_hash"])
+    # Plain code appears nowhere in the database
+    dump = "\n".join(store._conn.iterdump())
+    assert f"'{code}'" not in dump
+    assert all(str(v) != code for v in tuple(row))
+    cols = {r[1] for r in store._conn.execute("PRAGMA table_info(login_codes)").fetchall()}
+    assert "code" not in cols and not any("password" in c for c in cols)
+
+
+def test_same_code_hashes_differently_each_time(store: PathStore) -> None:
+    from myroad_core.auth.login_codes import hash_code
+
+    assert hash_code("123456") != hash_code("123456")
+
+
+def test_new_user_created_only_after_verify(store: PathStore) -> None:
+    cid, code = store.start_login_challenge(email="new@example.com", first_name="N", last_name="U")
+    assert store.get_learner_by_email("new@example.com") is None
+    learner = store.verify_login_challenge(cid, code)
+    assert learner["email"] == "new@example.com"
+    assert learner["firstName"] == "N"
+    assert store.get_learner_by_email("new@example.com")["userId"] == learner["userId"]
+
+
+def test_new_email_needs_names_returning_email_does_not(store: PathStore) -> None:
+    with pytest.raises(ValueError, match="name_required"):
+        store.start_login_challenge(email="nobody@example.com")
+    store.register_or_login(email="back@example.com", first_name="B", last_name="K")
+    cid, code = store.start_login_challenge(email="BACK@example.com ")
+    assert store.verify_login_challenge(cid, code)["email"] == "back@example.com"
+
+
+def test_invalid_email_rejected(store: PathStore) -> None:
+    for bad, err in (("", "email_required"), ("not-an-email", "email_invalid")):
+        with pytest.raises(ValueError, match=err):
+            store.start_login_challenge(email=bad, first_name="A", last_name="B")
+
+
+def test_code_is_single_use(store: PathStore) -> None:
+    cid, code = store.start_login_challenge(email="once@example.com", first_name="O", last_name="N")
+    store.verify_login_challenge(cid, code)
+    with pytest.raises(ValueError, match="code_used"):
+        store.verify_login_challenge(cid, code)
+
+
+def test_code_expires_after_15_minutes(store: PathStore) -> None:
+    t0 = datetime.now(timezone.utc)
+    cid, code = store.start_login_challenge(email="exp@example.com", first_name="E", last_name="X", now=t0)
+    assert CODE_TTL_SECONDS == 15 * 60
+    with pytest.raises(ValueError, match="code_expired"):
+        store.verify_login_challenge(cid, code, now=t0 + timedelta(minutes=15, seconds=1))
+    cid2, code2 = store.start_login_challenge(email="exp2@example.com", first_name="E", last_name="X", now=t0)
+    assert store.verify_login_challenge(cid2, code2, now=t0 + timedelta(minutes=14, seconds=50))
+
+
+def test_wrong_code_counts_attempts_then_locks(store: PathStore) -> None:
+    cid, code = store.start_login_challenge(email="wrong@example.com", first_name="W", last_name="R")
+    for _ in range(MAX_VERIFY_ATTEMPTS - 1):
+        with pytest.raises(ValueError, match="code_wrong"):
+            store.verify_login_challenge(cid, _wrong(code))
+    with pytest.raises(ValueError, match="code_locked"):
+        store.verify_login_challenge(cid, _wrong(code))
+    # Locked: even the right code no longer works
+    with pytest.raises(ValueError, match="code_locked"):
+        store.verify_login_challenge(cid, code)
+    assert store.get_learner_by_email("wrong@example.com") is None
+
+
+def test_malformed_or_missing_code(store: PathStore) -> None:
+    cid, code = store.start_login_challenge(email="m@example.com", first_name="M", last_name="F")
+    with pytest.raises(ValueError, match="code_required"):
+        store.verify_login_challenge(cid, "  ")
+    with pytest.raises(ValueError, match="code_wrong"):
+        store.verify_login_challenge(cid, "12345")
+    with pytest.raises(ValueError, match="code_invalid"):
+        store.verify_login_challenge("no-such-challenge", code)
+    with pytest.raises(ValueError, match="code_invalid"):
+        store.verify_login_challenge(None, code)
+    # Spaces / dashes users paste are fine
+    assert store.verify_login_challenge(cid, f"{code[:3]} {code[3:]}")
+
+
+def test_new_code_replaces_older_one(store: PathStore) -> None:
+    cid1, code1 = store.start_login_challenge(email="re@example.com", first_name="R", last_name="E")
+    cid2, code2 = store.start_login_challenge(email="re@example.com", first_name="R", last_name="E")
+    with pytest.raises(ValueError, match="code_used"):
+        store.verify_login_challenge(cid1, code1)
+    assert store.verify_login_challenge(cid2, code2)
+
+
+def test_codes_per_email_are_rate_limited(store: PathStore) -> None:
+    for _ in range(MAX_CODES_PER_WINDOW):
+        store.start_login_challenge(email="flood@example.com", first_name="F", last_name="L")
+    with pytest.raises(ValueError, match="too_many_codes"):
+        store.start_login_challenge(email="flood@example.com", first_name="F", last_name="L")
+    later = datetime.now(timezone.utc) + timedelta(minutes=16)
+    assert store.start_login_challenge(email="flood@example.com", first_name="F", last_name="L", now=later)
+
+
+# ---------- HTTP flow ----------
+
+@pytest.fixture
+def ui(tmp_path, monkeypatch):
+    monkeypatch.delenv("MYROAD_SMTP_HOST", raising=False)
+    store = PathStore(str(tmp_path / "login.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    with TestClient(app) as c:
+        yield c, store
+    store.close()
+
+
+def test_post_login_sends_code_but_starts_no_session(ui) -> None:
+    c, store = ui
+    resp, outbox = request_login_code(c, NEW_USER)
+    assert resp.status_code == 303
+    assert resp.headers["location"].startswith("/login/verify")
+    assert [e for e, _ in outbox] == ["noa.code@example.com"]
+    code = outbox[0][1]
+    assert c.cookies.get("myroad_session") is None
+    assert c.cookies.get("myroad_uid") is None
+    assert store.get_learner_by_email("noa.code@example.com") is None
+    # The code never reaches the browser
+    assert code not in resp.text and code not in str(resp.headers)
+    assert all(code not in v for v in c.cookies.values())
+    # Still signed out
+    assert c.get("/settings", follow_redirects=False).status_code == 303
+    page = c.get(resp.headers["location"])
+    assert page.status_code == 200
+    assert 'name="code"' in page.text and 'autocomplete="one-time-code"' in page.text
+    assert 'action="/login/verify"' in page.text
+    assert 'type="password"' not in page.text
+    assert code not in page.text
+    assert "noa.code@example.com" in page.text
+
+
+def test_session_starts_only_after_correct_code(ui) -> None:
+    c, store = ui
+    _, outbox = request_login_code(c, NEW_USER)
+    code = outbox[-1][1]
+    bad = c.post("/login/verify", data={"code": _wrong(code), "next": "/settings"}, follow_redirects=False)
+    assert bad.status_code == 303
+    assert bad.headers["location"].startswith("/login/verify") and "error=code_wrong" in bad.headers["location"]
+    assert c.cookies.get("myroad_session") is None
+    assert c.get("/settings", follow_redirects=False).status_code == 303
+
+    good = c.post("/login/verify", data={"code": code, "next": "/settings"}, follow_redirects=False)
+    assert good.status_code == 303 and good.headers["location"] == "/settings"
+    sid = c.cookies.get("myroad_session")
+    assert sid
+    user_id = store.get_session_user(sid)
+    assert user_id == store.get_learner_by_email("noa.code@example.com")["userId"]
+    assert c.get("/settings").status_code == 200
+
+
+def test_code_cannot_be_replayed_over_http(ui) -> None:
+    c, store = ui
+    _, outbox = request_login_code(c, NEW_USER)
+    code = outbox[-1][1]
+    cid = c.cookies.get("myroad_login")
+    assert cid
+    assert c.post("/login/verify", data={"code": code}, follow_redirects=False).status_code == 303
+    c.cookies.clear()
+    c.cookies.set("myroad_login", cid, path="/login")
+    again = c.post("/login/verify", data={"code": code, "next": "/"}, follow_redirects=False)
+    assert "error=code_used" in again.headers["location"]
+    assert c.cookies.get("myroad_session") is None
+
+
+def test_expired_code_over_http(ui) -> None:
+    c, store = ui
+    _, outbox = request_login_code(c, NEW_USER)
+    past = (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat()
+    store._conn.execute("UPDATE login_codes SET expires_at = ?", (past,))
+    store._conn.commit()
+    r = c.post("/login/verify", data={"code": outbox[-1][1], "next": "/"}, follow_redirects=False)
+    assert r.headers["location"].startswith("/login?") and "error=code_expired" in r.headers["location"]
+    assert c.cookies.get("myroad_session") is None
+
+
+def test_lockout_over_http(ui) -> None:
+    c, _ = ui
+    _, outbox = request_login_code(c, NEW_USER)
+    code = outbox[-1][1]
+    for _ in range(MAX_VERIFY_ATTEMPTS):
+        last = c.post("/login/verify", data={"code": _wrong(code)}, follow_redirects=False)
+    assert "error=code_locked" in last.headers["location"]
+    r = c.post("/login/verify", data={"code": code}, follow_redirects=False)
+    assert c.cookies.get("myroad_session") is None
+    assert r.headers["location"].startswith("/login")
+
+
+def test_verify_without_challenge_goes_back_to_login(ui) -> None:
+    c, _ = ui
+    assert c.get("/login/verify", follow_redirects=False).headers["location"].startswith("/login?")
+    r = c.post("/login/verify", data={"code": "123456"}, follow_redirects=False)
+    assert r.headers["location"].startswith("/login?")
+    assert c.cookies.get("myroad_session") is None
+
+
+def test_step_one_errors_keep_old_behaviour(ui) -> None:
+    c, _ = ui
+    r, outbox = request_login_code(c, {"email": "fresh@example.com", "next": "/"})
+    assert "mode=register" in r.headers["location"] and "error=name_required" in r.headers["location"]
+    assert outbox == []
+
+
+def test_no_mail_config_logs_code_to_console(ui, capsys) -> None:
+    c, store = ui
+    r = c.post("/login", data=NEW_USER, follow_redirects=False)
+    assert r.headers["location"].startswith("/login/verify")
+    err = capsys.readouterr().err
+    assert "noa.code@example.com" in err
+    code = err.split("Code for noa.code@example.com: ")[1][:6]
+    assert code.isdigit()
+    ok = c.post("/login/verify", data={"code": code, "next": "/settings"}, follow_redirects=False)
+    assert ok.headers["location"] == "/settings" and c.cookies.get("myroad_session")
+
+
+def test_smtp_config_sends_mail_and_does_not_log_code(ui, monkeypatch, capsys) -> None:
+    c, _ = ui
+    sent: list = []
+
+    class FakeSMTP:
+        def __init__(self, host, port, timeout=None):
+            sent.append(("connect", host, port))
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def starttls(self):
+            sent.append(("starttls",))
+
+        def login(self, user, pw):
+            sent.append(("login", user))
+
+        def send_message(self, msg):
+            sent.append(("send", msg["To"], msg.get_content()))
+
+    monkeypatch.setattr("myroad_core.auth.mailer.smtplib.SMTP", FakeSMTP)
+    monkeypatch.setenv("MYROAD_SMTP_HOST", "smtp.test")
+    monkeypatch.setenv("MYROAD_SMTP_USER", "mailer@example.com")
+    monkeypatch.setenv("MYROAD_SMTP_PASSWORD", "x")
+    r = c.post("/login", data=NEW_USER, follow_redirects=False)
+    assert r.headers["location"].startswith("/login/verify")
+    assert sent[0] == ("connect", "smtp.test", 587)
+    assert ("starttls",) in sent and ("login", "mailer@example.com") in sent
+    to, body = sent[-1][1], sent[-1][2]
+    assert to == "noa.code@example.com"
+    code = body.split("code is ")[1][:6]
+    assert code.isdigit()
+    assert code not in capsys.readouterr().err
+
+
+def test_mail_failure_is_reported_without_code(ui, monkeypatch) -> None:
+    c, store = ui
+
+    def boom(email, code):
+        raise OSError("smtp down")
+
+    c.app.state.login_code_sender = boom
+    r = c.post("/login", data=NEW_USER, follow_redirects=False)
+    assert "error=mail_failed" in r.headers["location"]
+    assert c.cookies.get("myroad_login") is None
+
+
+def test_returning_user_signs_in_with_code(ui) -> None:
+    c, store = ui
+    login_with_code(c, NEW_USER)
+    uid = store.get_session_user(c.cookies.get("myroad_session"))
+    c.cookies.clear()
+    r = login_with_code(c, {"email": "noa.code@example.com", "next": "/settings"})
+    assert r.status_code == 200
+    assert store.get_session_user(c.cookies.get("myroad_session")) == uid

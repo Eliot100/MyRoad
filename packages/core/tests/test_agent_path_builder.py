@@ -343,6 +343,7 @@ def test_feedback_creates_new_draft_and_keeps_published(store: PathStore) -> Non
 
 pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
+from auth_helpers import login_with_code
 
 from myroad_core.ui.app import create_learner_app  # noqa: E402
 from myroad_core.ui.cloudflare_gateway import missing_gateway_env  # noqa: E402
@@ -366,8 +367,8 @@ def app_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
 def _login(client: TestClient, email: str = "builder@example.com", locale: str = "en") -> None:
     client.cookies.set("myroad_locale", locale)
-    r = client.post(
-        "/login",
+    r = login_with_code(
+        client,
         data={"first_name": "Noa", "last_name": "Levi", "email": email, "next": "/"},
         follow_redirects=True,
     )

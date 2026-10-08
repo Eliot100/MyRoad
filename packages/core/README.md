@@ -76,6 +76,24 @@ authenticated principal the call gets `403 ACTOR_MISMATCH`.
 In-process callers (`AgentTools`, the path builder, the golden loop) do not go
 over HTTP and are unchanged.
 
+## Email sign-in (one-time code)
+
+`/login` asks for an email (plus first and last name for a new account) and
+emails a 6-digit code. The user enters it at `/login/verify`. The session
+(`myroad_session` cookie) starts only after the code checks out, and a new
+account is created only then.
+
+- A code expires after 15 minutes and works once. A new code replaces the old
+  one. After 5 wrong tries the code is locked, and an email can get at most 5
+  codes per 15 minutes.
+- SQLite (`login_codes`) keeps only a salted PBKDF2-SHA256 hash of the code.
+  There are no passwords.
+- Mail settings (server env only, never in git): `MYROAD_SMTP_HOST` (enables
+  mail), `MYROAD_SMTP_PORT` (587), `MYROAD_SMTP_USER`, `MYROAD_SMTP_PASSWORD`,
+  `MYROAD_SMTP_STARTTLS` (`1`), `MYROAD_MAIL_FROM`.
+- **Local / demo:** without `MYROAD_SMTP_HOST` the code is printed to the server
+  console (stderr): `[MyRoad login] ... Code for you@example.com: 123456`.
+
 ## What this package does
 
 - Pydantic types for PathVersion, Block, Edge, Source, Attempt, Feedback, Event

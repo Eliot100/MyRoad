@@ -356,6 +356,7 @@ def test_new_locale_keys_in_he_en_ar() -> None:
 
 pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
+from auth_helpers import login_with_code
 
 from myroad_core.ui.app import create_learner_app  # noqa: E402
 
@@ -381,7 +382,7 @@ def app_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 def test_route_builds_v2_fields_end_to_end(app_client) -> None:
     client, app, store = app_client
     client.cookies.set("myroad_locale", "en")
-    client.post("/login", data={"first_name": "Noa", "last_name": "Levi", "email": "v2@example.com", "next": "/"})
+    login_with_code(client, data={"first_name": "Noa", "last_name": "Levi", "email": "v2@example.com", "next": "/"})
     goal = client.get("/add-path")
     assert "hebrew" in goal.context["subject_ids"]
     assert goal.context["step_kinds"] == ("understanding", "review")

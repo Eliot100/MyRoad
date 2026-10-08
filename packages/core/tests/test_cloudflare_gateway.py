@@ -10,6 +10,7 @@ import pytest
 pytest.importorskip("fastapi")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code
 
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
@@ -85,8 +86,8 @@ def test_add_path_missing_config_does_not_ask_for_provider_key(
     try:
         with TestClient(app) as client:
             client.cookies.set("myroad_locale", "en")
-            client.post(
-                "/login",
+            login_with_code(
+                client,
                 data={
                     "first_name": "Ada",
                     "last_name": "Lovelace",
