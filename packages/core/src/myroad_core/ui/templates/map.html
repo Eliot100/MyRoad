@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ product }} — {{ meta.title }}</title>
   <link rel="stylesheet" href="/static/platform.css" />
+  <link rel="stylesheet" href="/static/transitions.css" />
 </head>
 <body class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}">
   <header class="top shell-top">
@@ -16,8 +17,8 @@
   </header>
 
   <section class="card path-head">
-    <h1>{{ meta.emoji }} {{ meta.title }}{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}</h1>
-    <p class="lede">{{ meta.blurb }}</p>
+    <h1>{{ meta.emoji }} <span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}</h1>
+    <p class="lede" dir="auto"{{ meta.blurbLang|content_lang(locale) }}>{{ meta.blurb }}</p>
     {% if not read_only %}
     <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
@@ -30,14 +31,14 @@
   <section class="card lock-banner" role="note" data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}">
     <h2 class="lock-title">🔒 {{ t('locked_title') }}</h2>
     <p class="lock-needs">{{ t('locked_finish_first') }}
-      {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
+      {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
     </p>
     <p class="tiny muted">{{ t('locked_read_only') }}</p>
   </section>
   {% endif %}
 
   {% set long_map = topics|length > 8 %}
-  <section class="card">
+  <section class="card map-card">
     <h2>{{ t('path_map') }}</h2>
     {% if long_map %}
     <p class="lede">{{ t('map_long_lede') }}</p>
@@ -54,7 +55,7 @@
           <summary>
             <span class="station-num" aria-hidden="true">{% if tp.complete %}✓{% else %}{{ loop.index }}{% endif %}</span>
             <span class="station-main">
-              <span class="station-title">{{ tp.emoji }} {{ tp.title }}</span>
+              <span class="station-title" dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.emoji }} {{ tp.title }}</span>
               <span class="station-meta tiny">
                 {% if tp.isReview %}<span class="review-badge"><span class="review-icon" aria-hidden="true">🔁</span> {{ t('step_kind_review') }}</span>{% endif %}
                 {% if is_here %}<span class="here-badge">{{ t('station_current') }}</span>{% endif %}
@@ -67,7 +68,7 @@
             {% for st in tp.steps %}
             <li class="step-row {% if st.done %}done{% endif %}{% if st.current %} current{% endif %}">
               <span class="step-mark" aria-hidden="true">{% if st.done %}✓{% elif st.current %}▶{% else %}○{% endif %}</span>
-              <span class="step-title" dir="auto">{{ st.title }}</span>
+              <span class="step-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
               {% if st.kind == 'review' %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
             </li>
             {% endfor %}
@@ -92,7 +93,7 @@
       <div class="topic-station {% if tp.complete %}done{% endif %}{% if tp.current %} current{% endif %}{% if tp.isReview %} review{% endif %}" role="listitem" data-topic-id="{{ tp.id }}"{% if tp.current and not read_only %} id="here" aria-current="step"{% endif %}>
         <div class="topic-box" style="--subject: {{ meta.subjectColor }}">
           <div class="topic-emoji">{{ tp.emoji }}</div>
-          <h3>{{ tp.title }}{% if tp.isReview %} <span class="review-badge"><span class="review-icon" aria-hidden="true">🔁</span> {{ t('step_kind_review') }}</span>{% endif %}</h3>
+          <h3><span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span>{% if tp.isReview %} <span class="review-badge"><span class="review-icon" aria-hidden="true">🔁</span> {{ t('step_kind_review') }}</span>{% endif %}</h3>
           <p class="tiny muted">{{ tp.stepCount }} {{ t('steps_count') }}
             {% if tp.doneCount %} · {{ tp.doneCount }}/{{ tp.stepCount }} {{ t('topic_progress') }}{% endif %}
           </p>
