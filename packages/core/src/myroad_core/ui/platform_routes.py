@@ -297,7 +297,8 @@ def register_platform_routes(
             return t(locale, "stats_message_ok")
         return t(locale, "stats_message_retry")
 
-    def _finalize_attempt(sess: dict[str, Any], doc: dict[str, Any], locale: str) -> dict[str, Any]:
+    def _attempt_numbers(sess: dict[str, Any], doc: dict[str, Any], locale: str) -> dict[str, Any]:
+        """This play session's numbers in the attempt shape (nothing is written)."""
         blocks = doc.get("blocks") or []
         n = len(blocks)
         mastered = sess.get("mastered") or set()
@@ -312,28 +313,46 @@ def register_platform_routes(
         mono = sess.get("started_monotonic")
         if mono is not None:
             duration = max(duration, int(time.monotonic() - float(mono)))
-        message = _stats_message(locale, mastery)
+        return {
+            "durationSec": duration,
+            "nodesCompleted": nodes_completed,
+            "nodesTotal": n,
+            "correctTaps": int(sess.get("correct_taps") or 0),
+            "incorrectTaps": int(sess.get("incorrect_taps") or 0),
+            "masteryPct": mastery,
+            "message": _stats_message(locale, mastery),
+        }
+
+    def _finalize_attempt(sess: dict[str, Any], doc: dict[str, Any], locale: str) -> dict[str, Any]:
+        """Record the attempt once per play session. Called from POST handlers only (#53)."""
+        nums = _attempt_numbers(sess, doc, locale)
         if not sess.get("attempt_saved"):
             attempt = store.record_attempt(
                 user_id=sess["userId"],
                 path_id=sess["pathId"],
                 version_id=sess.get("versionId"),
                 started_at=sess.get("started_at") or datetime.now(timezone.utc).isoformat(),
-                duration_sec=duration,
-                nodes_completed=nodes_completed,
-                nodes_total=n,
-                correct_taps=int(sess.get("correct_taps") or 0),
-                incorrect_taps=int(sess.get("incorrect_taps") or 0),
-                mastery_pct=mastery,
-                message=message,
+                duration_sec=nums["durationSec"],
+                nodes_completed=nums["nodesCompleted"],
+                nodes_total=nums["nodesTotal"],
+                correct_taps=nums["correctTaps"],
+                incorrect_taps=nums["incorrectTaps"],
+                mastery_pct=nums["masteryPct"],
+                message=nums["message"],
             )
             sess["attempt_saved"] = True
             sess["last_attempt"] = attempt
         else:
             attempt = sess.get("last_attempt") or store.latest_attempt(sess["userId"], sess["pathId"])
-        needs = mastery < 85.0 or int(sess.get("incorrect_taps") or 0) >= 2
+        needs = nums["masteryPct"] < 85.0 or nums["incorrectTaps"] >= 2
         _persist_progress(sess, completed=True, needs_practice=needs)
         return attempt or {}
+
+    def _attempt_for_view(sess: dict[str, Any], doc: dict[str, Any], locale: str) -> dict[str, Any]:
+        """GET stats is read-only: the recorded attempt, else a preview of this session."""
+        if sess.get("attempt_saved") and sess.get("last_attempt"):
+            return sess["last_attempt"]
+        return _attempt_numbers(sess, doc, locale)
 
     def _maybe_done(sess: dict[str, Any], n: int) -> bool:
         return n > 0 and len(sess.get("mastered") or set()) >= n
@@ -715,7 +734,9 @@ def register_platform_routes(
             sess["view"] = "stats"
 
         if sess.get("view") == "stats":
-            attempt = _finalize_attempt(sess, doc, locale)
+            # Read-only (#53): the attempt is recorded by the POST that finished the path
+            # (answer / ack) or by POST /play/{id}/finish, never by this GET.
+            attempt = _attempt_for_view(sess, doc, locale)
             ctx = _shell_ctx(
                 request,
                 doc=doc,
@@ -851,6 +872,7 @@ def register_platform_routes(
         _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
         if _maybe_done(sess, len(blocks)):
             sess["view"] = "stats"
+            _finalize_attempt(sess, doc, locale)
             resp = RedirectResponse(f"/play/{path_id}?view=stats", status_code=303)
         else:
             resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
@@ -931,9 +953,22 @@ def register_platform_routes(
         _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
         if _maybe_done(sess, len(blocks)):
             sess["view"] = "stats"
+            _finalize_attempt(sess, doc, locale)
             resp = RedirectResponse(f"/play/{path_id}?view=stats", status_code=303)
         else:
             resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+        return resp
+
+    @app.post("/play/{path_id}/finish")
+    def play_finish(path_id: str, request: Request) -> RedirectResponse:
+        """Record this attempt and show the stats (was a side effect of GET ?view=stats, #53)."""
+        locale = _locale(request)
+        sess = _play_session(request, path_id)
+        doc = _load_play_doc(sess)
+        _finalize_attempt(sess, doc, locale)
+        sess["view"] = "stats"
+        resp = RedirectResponse(f"/play/{path_id}?view=stats", status_code=303)
         resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return resp
 
