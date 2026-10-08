@@ -104,7 +104,12 @@ document in the player node format (`content.kids`), plus the completeness rule
 `PublishBlockedError`; nothing changes status. `AgentTools.publish` returns
 `ok=false` with `PATH_FORMAT_ERROR` / `PATH_NOT_COMPLETE` and the list in
 `data.blockingProblems` / `data.issues`; `POST /tools/publish` answers `422`
-with that body. Legacy freeze-format documents (no `content.kids`) are not checked.
+with that body. A path with no blocks is always refused (`PATH_EMPTY`).
+Legacy freeze-format documents (no `content.kids`, e.g. blocks added with
+`/tools/addBlock` without a `kids` node) are refused (`PATH_LEGACY_FORMAT`)
+unless the in-process caller passes `allow_legacy=True`; only the golden loop
+demo does, and no HTTP route can set it (this includes `/author/publish` on
+the legacy demo screen).
 The rules live in `myroad_core/content/publish_rules.py` (moved unchanged from
 `agent_builder/completeness.py`, which re-exports them for now), so the store,
 `/tools` and the path builder share one copy.

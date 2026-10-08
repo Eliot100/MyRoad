@@ -123,6 +123,7 @@ def run_golden_loop(
         path_id=path_id,
         version_id=new_version_id,
         publisher_id=ACTOR_AUTHOR,
+        allow_legacy=True,  # in-process demo of the legacy freeze path; never from HTTP
     )
     if not pub.ok:
         raise RuntimeError(f"agent publish failed: {pub.errors}")

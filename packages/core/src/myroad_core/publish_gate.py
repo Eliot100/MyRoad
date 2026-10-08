@@ -18,9 +18,14 @@ Scope:
   the rule.
 - Other documents in the player/content node format (any block has
   ``content.kids``, e.g. the content-repo paths): format check only.
+- A document with no blocks is always refused (``PATH_EMPTY``), e.g. an empty
+  draft from ``/tools/createDraft``.
 - Legacy freeze-format documents (no ``content.kids`` anywhere, e.g. the golden
-  quadratic seed): not checked. ``draft_problems`` is defined over the
-  ``kids`` node format and would flag every legacy block.
+  quadratic seed) are refused (``PATH_LEGACY_FORMAT``) unless the caller passes
+  ``allow_legacy=True``. Only in-process seed/demo code (the golden loop) does;
+  no HTTP route can set it. ``draft_problems`` is defined over the ``kids``
+  node format and would flag every legacy block, so allowed legacy documents
+  get no format check.
 """
 from __future__ import annotations
 
@@ -37,11 +42,20 @@ from myroad_core.errors import StoreError
 from myroad_core.models import PathVersion
 
 __all__ = [
+    "PUBLISH_EMPTY",
     "PUBLISH_FORMAT_ERROR",
+    "PUBLISH_GATE_CODES",
+    "PUBLISH_LEGACY_FORMAT",
     "PUBLISH_NOT_COMPLETE",
     "PublishBlockedError",
     "publish_block",
 ]
+
+PUBLISH_EMPTY = "PATH_EMPTY"
+PUBLISH_LEGACY_FORMAT = "PATH_LEGACY_FORMAT"
+# Every refusal code of the gate (HTTP maps these to 422).
+PUBLISH_GATE_CODES = frozenset({PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE, PUBLISH_EMPTY, PUBLISH_LEGACY_FORMAT})
+
 
 class PublishBlockedError(StoreError):
     """Raised by ``PathStore.publish`` when the gate refuses; nothing changed."""
@@ -78,23 +92,30 @@ def _path_has_agent_build(conn: Any, path_id: str) -> bool:
 
 
 def publish_block(
-    doc: PathVersion | dict[str, Any], *, conn: Any | None = None
+    doc: PathVersion | dict[str, Any], *, conn: Any | None = None, allow_legacy: bool = False
 ) -> tuple[list[dict[str, Any]], dict[str, Any]] | None:
     """Return (errors, data) when publishing must be refused, else None.
 
     ``data`` has the same shape as the builder's refusal:
     ``blockingProblems`` (draft_problems items) and/or ``issues``
-    (completeness issues).
+    (completeness issues). ``allow_legacy`` is for in-process seed/demo code
+    only; it never comes from a request.
     """
     raw = _raw(doc)
+    errors: list[dict[str, Any]] = []
+    data: dict[str, Any] = {}
+    if not raw.get("blocks"):
+        errors.append({"code": PUBLISH_EMPTY, "message": "path has no blocks"})
     agent_draft = bool(raw.get("agentBuild")) or (
         conn is not None and bool(raw.get("pathId")) and _path_has_agent_build(conn, raw["pathId"])
     )
     if not agent_draft and not _uses_node_format(raw):
-        return None
+        if raw.get("blocks") and not allow_legacy:
+            errors.append(
+                {"code": PUBLISH_LEGACY_FORMAT, "message": "legacy-format paths cannot be published here"}
+            )
+        return (errors, data) if errors else None
 
-    errors: list[dict[str, Any]] = []
-    data: dict[str, Any] = {}
     blockers = blocking_problems(raw)
     if blockers:
         errors.append(

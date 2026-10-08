@@ -127,12 +127,15 @@ class PublishOpsMixin:
     def publish(
         self, *, actor_id: str, correlation_id: str, path_id: str, version_id: str,
         agent_id: str | None = None, publisher_id: str | None = None,
+        allow_legacy: bool = False,
     ) -> OpResponse:
         """Publish a draft or in-review version. An agent may publish.
 
-        The publish gate (issue #42) re-runs the format check and, for agent
-        drafts, the completeness rule. On failure it records a deny audit event
-        and raises PublishBlockedError; the version's status does not change.
+        The publish gate (issue #42) refuses empty paths, re-runs the format
+        check and, for agent drafts, the completeness rule; legacy-format
+        documents are refused unless ``allow_legacy`` (in-process seed/demo
+        code only, never from a request). On failure it records a deny audit
+        event and raises PublishBlockedError; the version's status does not change.
         """
         doc = self.get_version(path_id, version_id)
         if doc.status == PathStatus.published:
@@ -145,7 +148,7 @@ class PublishOpsMixin:
         if doc.status not in (PathStatus.draft, PathStatus.in_review):
             raise StatusError(f"cannot publish from status {doc.status.value}")
 
-        blocked = publish_block(doc, conn=self._conn)
+        blocked = publish_block(doc, conn=self._conn, allow_legacy=allow_legacy)
         if blocked is not None:
             errors, data = blocked
             self._emit(

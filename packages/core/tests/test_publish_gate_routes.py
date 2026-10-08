@@ -15,7 +15,9 @@ from myroad_core import agent_builder
 from myroad_core.agent_builder import AgentPathBuilder, FakePathGenerator, GoalSpec
 from myroad_core.models import PathStatus
 from myroad_core.publish_gate import (
+    PUBLISH_EMPTY,
     PUBLISH_FORMAT_ERROR,
+    PUBLISH_LEGACY_FORMAT,
     PUBLISH_NOT_COMPLETE,
     PublishBlockedError,
 )
@@ -244,14 +246,68 @@ def test_content_format_path_gets_format_check_but_not_completeness(store, owner
     assert store.get_version(broken["pathId"], broken["versionId"]).status == PathStatus.draft
 
 
-def test_legacy_freeze_format_path_still_publishes(store: PathStore, freeze_dir: Path) -> None:
+def test_legacy_freeze_format_path_is_refused_without_the_internal_flag(store: PathStore, freeze_dir: Path) -> None:
     seeded = seed_golden_quadratic(store, freeze_dir=freeze_dir)
-    vid = seeded["versionIds"][-1]
+    pid, vid = seeded["pathId"], seeded["versionIds"][-1]
+    with pytest.raises(PublishBlockedError) as exc:
+        store.publish(actor_id="user_author", correlation_id="c_legacy0", path_id=pid, version_id=vid)
+    assert [e["code"] for e in exc.value.errors] == [PUBLISH_LEGACY_FORMAT]
     resp = AgentTools(store).publish(
-        actor_id="user_author", agent_id="agent_revise", correlation_id="c_legacy",
-        path_id=seeded["pathId"], version_id=vid,
+        actor_id="user_author", agent_id="agent_revise", correlation_id="c_legacy1", path_id=pid, version_id=vid,
+    )
+    assert not resp.ok and [e["code"] for e in resp.errors] == [PUBLISH_LEGACY_FORMAT]
+    assert store.get_version(pid, vid).status != PathStatus.published
+    # In-process seed/demo code (the golden loop) may publish it explicitly
+    resp = AgentTools(store).publish(
+        actor_id="user_author", agent_id="agent_revise", correlation_id="c_legacy2",
+        path_id=pid, version_id=vid, allow_legacy=True,
     )
     assert resp.ok and resp.status == PathStatus.published
+
+
+def test_empty_path_is_refused_on_store_and_tools_even_with_the_flag(store: PathStore, owner) -> None:
+    created = AgentTools(store).create_draft(actor_id=owner, correlation_id="c_empty", name="Empty", goal="g")
+    pid, vid = created.pathId, created.versionId
+    for allow in (False, True):
+        with pytest.raises(PublishBlockedError) as exc:
+            store.publish(actor_id=owner, correlation_id="c_e1", path_id=pid, version_id=vid, allow_legacy=allow)
+        assert [e["code"] for e in exc.value.errors] == [PUBLISH_EMPTY]
+        resp = AgentTools(store).publish(
+            actor_id=owner, correlation_id="c_e2", path_id=pid, version_id=vid, allow_legacy=allow
+        )
+        assert not resp.ok and [e["code"] for e in resp.errors] == [PUBLISH_EMPTY]
+    assert store.get_version(pid, vid).status == PathStatus.draft
+
+
+def test_http_empty_draft_from_create_draft_is_422(store, owner) -> None:
+    with TestClient(create_app(store)) as client:
+        client.cookies.set(SESSION_COOKIE, store.create_session(owner))
+        client.headers["X-MyRoad-Request"] = "1"
+        created = client.post("/tools/createDraft", json={"correlationId": "c1", "name": "Empty", "goal": "g"}).json()
+        r = _http_publish(client, created["pathId"], created["versionId"], {"X-MyRoad-Request": "1"})
+    assert r.status_code == 422
+    assert [e["code"] for e in r.json()["errors"]] == [PUBLISH_EMPTY]
+    assert store.get_version(created["pathId"], created["versionId"]).status == PathStatus.draft
+    assert store.get_path_latest_published(created["pathId"]) is None
+
+
+def test_http_legacy_blocks_are_422_and_the_flag_is_not_reachable(store, owner) -> None:
+    with TestClient(create_app(store)) as client:
+        client.cookies.set(SESSION_COOKIE, store.create_session(owner))
+        client.headers["X-MyRoad-Request"] = "1"
+        created = client.post("/tools/createDraft", json={"correlationId": "c1", "name": "Old", "goal": "g"}).json()
+        pid, vid = created["pathId"], created["versionId"]
+        added = client.post("/tools/addBlock", json={
+            "correlationId": "c2", "pathId": pid, "versionId": vid, "type": "explanation", "title": "Intro",
+        })
+        assert added.status_code == 200 and added.json()["ok"], added.text
+        r = client.post("/tools/publish", json={
+            "correlationId": "c3", "pathId": pid, "versionId": vid,
+            "allow_legacy": True, "allowLegacy": True,  # ignored: not part of the API
+        })
+    assert r.status_code == 422
+    assert [e["code"] for e in r.json()["errors"]] == [PUBLISH_LEGACY_FORMAT]
+    assert store.get_path_latest_published(pid) is None
 
 
 def test_builder_publish_route_unchanged(store, owner) -> None:

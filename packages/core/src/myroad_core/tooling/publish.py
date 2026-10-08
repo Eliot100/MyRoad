@@ -127,13 +127,15 @@ class ToolsPublishMixin:
         agent_id: str | None = None,
         publisher_id: str | None = None,
         human_publisher: bool = False,
+        allow_legacy: bool = False,
     ) -> OpResponse:
         """Publish the version. An agent may publish; human_publisher is ignored.
 
         Goes through the store's publish gate (issue #42). A refusal returns
         ok=False with the gate's error codes (PATH_FORMAT_ERROR /
         PATH_NOT_COMPLETE) and the problem list in data["blockingProblems"] /
-        data["issues"]; HTTP callers map it to 422.
+        data["issues"]; HTTP callers map it to 422. ``allow_legacy`` is for
+        in-process seed/demo code (the golden loop) only; HTTP routes never pass it.
         """
         del human_publisher  # kept so older callers still pass the flag
         try:
@@ -144,6 +146,7 @@ class ToolsPublishMixin:
                 version_id=version_id,
                 agent_id=agent_id,
                 publisher_id=publisher_id or actor_id,
+                allow_legacy=allow_legacy,
             )
         except PublishBlockedError as exc:
             return OpResponse(

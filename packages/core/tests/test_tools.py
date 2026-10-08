@@ -134,6 +134,7 @@ def test_happy_path_create_block_edge_validate_publish(store: PathStore) -> None
         path_id=path_id,
         version_id=version_id,
         publisher_id="user_approver",
+        allow_legacy=True,  # in-process: blocks from add_block are the legacy format
     )
     assert pub.ok
     assert pub.status == PathStatus.published
@@ -174,6 +175,7 @@ def test_agent_can_publish(store: PathStore) -> None:
         path_id=created.pathId,  # type: ignore[arg-type]
         version_id=created.versionId,  # type: ignore[arg-type]
         publisher_id="user_author",
+        allow_legacy=True,  # in-process: blocks from add_block are the legacy format
     )
     assert published.ok is True
     assert published.status == PathStatus.published
