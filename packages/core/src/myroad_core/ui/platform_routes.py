@@ -345,6 +345,7 @@ def register_platform_routes(
             "email_invalid": "err_email_invalid",
             "name_required": "err_name_required",
             "email_taken": "err_email_taken",
+            "email_change_disabled": "err_email_change_disabled",
         }
         key = codes.get(error or "")
         return t(locale, key) if key else ""
@@ -451,10 +452,6 @@ def register_platform_routes(
             return RedirectResponse("/settings?error=" + quote(code, safe=""), status_code=303)
         resp = RedirectResponse("/settings?saved=1", status_code=303)
         _set_locale_cookie(resp, updated.get("locale") or "he")
-        if (updated.get("email") or "") != (learner.get("email") or ""):
-            # Email changed: end every session of this user, keep this one signed in.
-            store.revoke_user_sessions(learner["userId"])
-            _start_session(request, resp, updated, updated.get("locale") or "he")
         return resp
 
     @app.post("/logout")

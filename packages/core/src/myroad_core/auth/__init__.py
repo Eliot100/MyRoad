@@ -10,6 +10,7 @@ from myroad_core.auth.agent_credential import (
     agent_actor_id,
     agent_credential_matches,
 )
+from myroad_core.auth.origin import ALLOWED_ORIGINS_ENV, same_origin_ok
 from myroad_core.auth.ownership import AGENT_ALLOWED_PATHS_ENV, may_act_on_path, path_author
 from myroad_core.auth.principal import Principal, resolve_principal
 from myroad_core.auth.sessions import (
@@ -22,6 +23,7 @@ from myroad_core.auth.sessions import (
 
 __all__ = [
     "AGENT_ALLOWED_PATHS_ENV",
+    "ALLOWED_ORIGINS_ENV",
     "AGENT_ID_ENV",
     "AGENT_TOKEN_ENV",
     "DEFAULT_AGENT_ID",
@@ -37,4 +39,5 @@ __all__ = [
     "may_act_on_path",
     "path_author",
     "resolve_principal",
+    "same_origin_ok",
 ]

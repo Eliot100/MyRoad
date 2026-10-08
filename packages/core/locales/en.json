@@ -80,6 +80,7 @@
   "err_email_invalid": "Invalid email address.",
   "err_name_required": "First and last name are required.",
   "err_email_taken": "That email is already registered — try again or check the details.",
+  "err_email_change_disabled": "Changing your sign-in email is not available yet. Your email was not changed.",
   "add_path_gate_lede": "Add-path builds a full learning path with an agent. Grok is reached through Cloudflare AI Gateway; the xAI key stays in Cloudflare Secrets Store (BYOK). MyRoad never accepts that key.",
   "add_path_unlocked": "Gateway check succeeded.",
   "add_path_criterion_met": "Cloudflare AI Gateway is configured and responded. No provider API key was sent by MyRoad.",
@@ -240,5 +241,12 @@
   "builder_publish_blocked": "Publishing is blocked by format errors ({count}). Fix them and try again:",
   "draft_problem_severity_error": "Blocks publishing",
   "draft_problem_severity_warning": "Warning",
-  "builder_and_more": "and {n} more"
+  "builder_and_more": "and {n} more",
+  "builder_match_found": "Existing paths that fit your goal ({count}). Open one, or build a new path anyway:",
+  "builder_match_reason_terms": "matches {terms}",
+  "builder_match_reason_required": "needed before {title}",
+  "builder_match_needs": "finish first: {titles}",
+  "builder_match_prereqs_done": "you already finished what it requires",
+  "builder_match_open": "Open this path",
+  "builder_match_build_anyway": "Build a new path anyway"
 }
