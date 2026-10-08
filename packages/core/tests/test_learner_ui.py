@@ -136,3 +136,17 @@ def test_feedback_only_without_revise(client: TestClient) -> None:
     assert fb.status_code == 200
     assert "משוב נשמר" in fb.text
     assert "הפרש גרסאות" not in fb.text
+
+
+
+def test_author_publish_requires_a_session(tmp_path) -> None:
+    store = PathStore(str(tmp_path / "nosess.db"))
+    app = create_learner_app(store=store, seed=True)
+    try:
+        with TestClient(app) as c:
+            r = c.post("/author/publish", data={"publisher_id": "user_owner_poc"}, follow_redirects=False)
+            assert r.status_code == 303 and r.headers["location"].startswith("/login")
+            pid = app.state.seed["pathId"]
+            assert store.get_path_latest_published(pid) is None
+    finally:
+        store.close()

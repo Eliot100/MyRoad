@@ -73,6 +73,19 @@ The actor comes from the session or the credential. `actorId`, `agentId` and
 `publisherId` in the body are not trusted: if sent and they differ from the
 authenticated principal the call gets `403 ACTOR_MISMATCH`.
 
+- **CSRF:** cookie (session) calls must send the header `X-MyRoad-Request: 1`,
+  otherwise `403 CSRF_HEADER_REQUIRED`. Bearer (agent) calls do not need it.
+- **Ownership:** every op except `createDraft` needs a `pathId` the caller may
+  act on, otherwise `404` (same as a missing path). A user may act only on
+  paths they authored (`paths.author_id`, fixed at creation). The agent may act
+  only on paths it authored (`MYROAD_AGENT_ID`) or on path ids listed in
+  `MYROAD_AGENT_ALLOWED_PATHS` (comma-separated, server env).
+- **Session cookie:** `myroad_session` is `HttpOnly; SameSite=Lax; Secure`.
+  Browsers accept Secure cookies on `http://localhost`; for other plain-http
+  dev hosts set `MYROAD_DEV_INSECURE_COOKIES=1` (never in production).
+  `POST /logout` revokes the session; changing the email in settings revokes
+  all of the user's other sessions.
+
 In-process callers (`AgentTools`, the path builder, the golden loop) do not go
 over HTTP and are unchanged.
 

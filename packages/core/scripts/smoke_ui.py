@@ -2,6 +2,7 @@
 """Smoke: health is public, catalog requires a session, publish has no human checkbox."""
 from __future__ import annotations
 
+import os
 import sys
 
 from fastapi.testclient import TestClient
@@ -11,6 +12,8 @@ from myroad_core.ui.app import create_learner_app
 
 
 def main() -> int:
+    # The in-process test client is plain http, which drops Secure cookies.
+    os.environ.setdefault("MYROAD_DEV_INSECURE_COOKIES", "1")
     store = PathStore(":memory:")
     app = create_learner_app(store=store, seed=True, seed_content=False)
     client = TestClient(app)
@@ -35,8 +38,8 @@ def main() -> int:
     assert step1.headers["location"].startswith("/login/verify"), step1.headers
     assert client.get("/", follow_redirects=False).status_code == 303  # no session before the code
     client.post("/login/verify", data={"code": outbox[-1], "next": "/"}, follow_redirects=True)
-    home = client.get("/")
-    assert home.status_code == 200
+    home = client.get("/", follow_redirects=False)
+    assert home.status_code == 200, "not signed in"
     assert "MyRoad" in home.text
     author = client.get("/author")
     assert author.status_code == 200
