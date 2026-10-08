@@ -5,9 +5,9 @@
 {%- endif %}
 <div id="play-status" class="play-status"{% if status_oob %} hx-swap-oob="true"{% endif %}>
   {% if sns.station %}
-  <p class="station-line tiny"><span class="station-pill current">{{ t('station_of', n=sns.station_n, total=topics|length) }}</span> <span class="station-name">{{ sns.station.emoji }} {{ sns.station.title }}</span></p>
+  <p class="station-line tiny"><span class="station-pill current">{{ t('station_of', n=sns.station_n, total=topics|length) }}</span> <span class="station-name" dir="auto"{{ sns.station.titleLang|content_lang(locale) }}>{{ sns.station.emoji }} {{ sns.station.title }}</span></p>
   {% else %}
-  <p class="lede">{{ meta.blurb }}</p>
+  <p class="lede" dir="auto"{{ meta.blurbLang|content_lang(locale) }}>{{ meta.blurb }}</p>
   {% endif %}
   <div class="progress-wrap" aria-label="progress">
     <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>

@@ -1,0 +1,40 @@
+/* Map <-> step player view transition (#58). CSS only, loaded by map.html and play.html only,
+   so other pages navigate as before (cross-document transitions need both pages to opt in).
+
+   - prefers-reduced-motion: everything sits inside the no-preference query, so those users
+     get a plain navigation with no animation at all.
+   - Browsers without cross-document View Transitions (e.g. Firefox today) ignore the at-rule
+     and the pseudo-elements and simply navigate.
+   - htmx swaps on the player (#65) are not navigations, so they never trigger this.
+   - Direction follows the reading direction: going into a step moves "forward" (new content
+     comes from the inline end), back to the map moves the other way. --vt-shift flips in RTL.
+   - Short (220ms) so the transition overlay never holds input for long; focus is untouched.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  :root { --vt-shift: 28px; --vt-time: 220ms; }
+  :root[dir="rtl"] { --vt-shift: -28px; }
+
+  /* The path header stays put (it morphs between the two pages); the main card slides. */
+  .path-head { view-transition-name: vt-path-head; }
+  .map-view .map-card { view-transition-name: vt-map; }
+  body.play:not(.map-view) #step-card { view-transition-name: vt-step; }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation-duration: var(--vt-time); }
+
+  /* Map -> step: the map leaves toward the inline start, the step arrives from the inline end. */
+  ::view-transition-old(vt-map):only-child { animation: var(--vt-time) ease-in both vt-out-start; }
+  ::view-transition-new(vt-step):only-child { animation: var(--vt-time) ease-out both vt-in-end; }
+  /* Step -> map: the step leaves toward the inline end, the map arrives from the inline start. */
+  ::view-transition-old(vt-step):only-child { animation: var(--vt-time) ease-in both vt-out-end; }
+  ::view-transition-new(vt-map):only-child { animation: var(--vt-time) ease-out both vt-in-start; }
+  /* Step -> step (no-JS posts): the card is on both pages, so it only cross-fades in place. */
+
+  @keyframes vt-in-end { from { opacity: 0; transform: translateX(var(--vt-shift)); } }
+  @keyframes vt-in-start { from { opacity: 0; transform: translateX(calc(-1 * var(--vt-shift))); } }
+  @keyframes vt-out-start { to { opacity: 0; transform: translateX(calc(-1 * var(--vt-shift))); } }
+  @keyframes vt-out-end { to { opacity: 0; transform: translateX(var(--vt-shift)); } }
+}
