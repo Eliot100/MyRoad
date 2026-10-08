@@ -149,3 +149,13 @@ button.secondary {
   background: #6b736c;
 }
 button.primary { background: var(--accent); }
+
+/* ---- Site-wide accessibility basics (#60) ---- */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+footer .a11y-link { display: inline-block; min-height: 24px; padding-block: .2rem; }
