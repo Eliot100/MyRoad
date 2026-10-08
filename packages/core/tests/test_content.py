@@ -22,6 +22,11 @@ from fastapi.testclient import TestClient
 
 from myroad_core.ui.app import create_learner_app
 
+def _uid(client) -> str | None:
+    """Signed-in user id, resolved from the server-side session cookie."""
+    return client.app.state.store.get_session_user(client.cookies.get("myroad_session"))
+
+
 def _reg(client, email: str, first: str = "Test", last: str = "User"):
     return client.post(
         "/login",
@@ -182,9 +187,13 @@ def test_identity_login_and_whoami(platform_client: TestClient) -> None:
     r = _reg(platform_client, "noa@example.com", "נועה", "כהן")
     assert r.status_code == 200
     assert "נועה" in r.text
-    uid = platform_client.cookies.get("myroad_uid")
+    uid = _uid(platform_client)
     assert uid
     assert "@" not in uid
+    # Cookies hold an opaque session id, never the user id or email
+    assert platform_client.cookies.get("myroad_uid") is None
+    sid = platform_client.cookies.get("myroad_session")
+    assert sid and uid not in sid and "@" not in sid
 
 
 def test_play_shows_topic_map_first(platform_client: TestClient) -> None:
@@ -259,7 +268,7 @@ def test_completion_stats_and_attempt(platform_client: TestClient, tmp_path) -> 
     assert "סיכום" in done.text or "summary" in done.text.lower() or "Path summary" in done.text or "stats" in done.text.lower() or "אחוז" in done.text or "Mastery" in done.text
     assert "חזרה לקטלוג" in done.text or "Back to catalog" in done.text
 
-    uid = platform_client.cookies.get("myroad_uid")
+    uid = _uid(platform_client)
     assert uid
     attempt = store.latest_attempt(uid, "path_grade3_math_add20")
     assert attempt is not None
@@ -324,7 +333,7 @@ def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
     platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
     platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
 
-    uid = platform_client.cookies.get("myroad_uid")
+    uid = _uid(platform_client)
     assert uid
     prog = store.get_progress(uid, "path_grade3_math_add20")
     assert prog is not None
@@ -437,7 +446,7 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             )
             assert created.status_code == 303
             assert created.headers["location"].rstrip("/").endswith("/settings") or created.headers["location"].endswith("/settings")
-            uid = c.cookies.get("myroad_uid")
+            uid = _uid(c)
             assert uid and "@" not in uid
             c.cookies.clear()
             again = c.post(
@@ -446,7 +455,7 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
                 follow_redirects=True,
             )
             assert again.status_code == 200
-            assert c.cookies.get("myroad_uid") == uid
+            assert _uid(c) == uid
             assert "Gate" in again.text
             assert 'type="password"' not in again.text
             assert 'class="lang-switch"' not in again.text
@@ -456,3 +465,127 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             assert "<form" not in home_in.text.split("<header", 1)[-1].split("</header>", 1)[0]
     finally:
         store.close()
+
+
+# ---------- Cyber security review of #46: cookie flags, logout, email change ----------
+
+def _cookie_headers(resp, name: str) -> list[str]:
+    return [h for h in resp.headers.get_list("set-cookie") if h.startswith(name + "=")]
+
+
+def test_session_cookie_is_secure_by_default(tmp_path, monkeypatch) -> None:
+    monkeypatch.delenv("MYROAD_DEV_INSECURE_COOKIES", raising=False)
+    store = PathStore(str(tmp_path / "sec.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    try:
+        with TestClient(app) as c:
+            r = c.post(
+                "/login", data={"first_name": "S", "last_name": "C", "email": "secure@example.com", "next": "/"},
+                follow_redirects=False,
+            )
+            (cookie,) = _cookie_headers(r, "myroad_session")
+            low = cookie.lower()
+            assert "secure" in low and "httponly" in low and "samesite=lax" in low
+    finally:
+        store.close()
+
+
+def test_dev_flag_drops_secure_for_plain_http(tmp_path) -> None:
+    store = PathStore(str(tmp_path / "dev.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    try:
+        with TestClient(app) as c:  # conftest sets MYROAD_DEV_INSECURE_COOKIES=1
+            r = _reg(c, "dev@example.com")
+            assert r.status_code == 200
+            assert _uid(c)
+    finally:
+        store.close()
+
+
+def test_logout_revokes_the_session(platform_client: TestClient) -> None:
+    store = platform_client.app.state.store
+    sid = platform_client.cookies.get("myroad_session")
+    assert store.get_session_user(sid)
+    r = platform_client.post("/logout", follow_redirects=False)
+    assert r.status_code == 303 and r.headers["location"] == "/login"
+    assert store.get_session_user(sid) is None
+    assert platform_client.cookies.get("myroad_session") is None
+    # Replaying the old cookie does not sign in
+    platform_client.cookies.set("myroad_session", sid)
+    assert platform_client.get("/settings", follow_redirects=False).status_code == 303
+
+
+def test_email_change_is_refused_until_it_can_be_verified(tmp_path) -> None:
+    """Cyber security HIGH: no email change without proof of the new address."""
+    store = PathStore(str(tmp_path / "email.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    try:
+        with TestClient(app) as c:
+            _reg(c, "first@example.com", "Em", "Change")
+            uid = _uid(c)
+            other_device = store.create_session(uid)
+            # Attack 1: a stolen session tries to move the account to the attacker's address
+            # Attack 2: Alice points her account at an unregistered newcomer@ address
+            for target in ("attacker@example.com", "newcomer@example.com"):
+                r = c.post("/settings", data={"first_name": "Em", "last_name": "Change", "email": target},
+                           follow_redirects=False)
+                assert r.status_code == 303 and "error=email_change_disabled" in r.headers["location"]
+                assert store.get_learner(uid)["email"] == "first@example.com"
+                assert store.get_learner_by_email(target) is None
+            page = c.get("/settings?error=email_change_disabled")
+            assert "Changing your sign-in email is not available yet" in page.text or "האימייל לא שונה" in page.text
+            # Nobody else's sessions were touched, and the account keeps its email
+            assert store.get_session_user(other_device) == uid
+            # Saving the name with the same email (any case) still works
+            r = c.post("/settings", data={"first_name": "Em2", "last_name": "Change", "email": "First@Example.com"},
+                       follow_redirects=False)
+            assert "saved=1" in r.headers["location"]
+            assert store.get_learner(uid)["firstName"] == "Em2"
+            with pytest.raises(ValueError, match="email_change_disabled"):
+                store.update_learner_profile(uid, first_name="E", last_name="C", email="x@example.com")
+    finally:
+        store.close()
+
+
+# ---------- Origin/Referer check on browser form POSTs ----------
+
+@pytest.mark.parametrize(
+    "headers",
+    [
+        {"Origin": "https://evil.example"},
+        {"Origin": "null"},
+        {"Origin": "http://testserver.evil.example"},
+        {"Referer": "https://evil.example/page"},
+        {},
+    ],
+)
+def test_cross_site_or_originless_form_posts_are_refused(platform_client: TestClient, headers) -> None:
+    store = platform_client.app.state.store
+    sid = platform_client.cookies.get("myroad_session")
+    del platform_client.headers["Origin"]
+    for path, data in (("/logout", {}), ("/settings", {"first_name": "X", "last_name": "Y", "email": "z@z.zz"}),
+                       ("/locale", {"locale": "en", "next": "/"})):
+        r = platform_client.post(path, data=data, headers=headers, follow_redirects=False)
+        assert r.status_code == 403, (path, headers)
+    assert store.get_session_user(sid)  # logout did not happen
+
+
+def test_same_origin_form_posts_pass(platform_client: TestClient) -> None:
+    del platform_client.headers["Origin"]
+    r = platform_client.post("/locale", data={"locale": "en", "next": "/"},
+                             headers={"Origin": "http://testserver"}, follow_redirects=False)
+    assert r.status_code == 303
+    r = platform_client.post("/locale", data={"locale": "he", "next": "/"},
+                             headers={"Referer": "http://testserver/settings"}, follow_redirects=False)
+    assert r.status_code == 303
+    assert platform_client.get("/settings").status_code == 200  # GET needs no Origin
+
+
+def test_allowed_origins_env_adds_the_public_origin(platform_client: TestClient, monkeypatch) -> None:
+    del platform_client.headers["Origin"]
+    hdr = {"Origin": "https://myroad.example"}
+    assert platform_client.post("/locale", data={"locale": "en"}, headers=hdr,
+                                follow_redirects=False).status_code == 403
+    monkeypatch.setenv("MYROAD_ALLOWED_ORIGINS", "https://other.example, https://MyRoad.example/")
+    assert platform_client.post("/locale", data={"locale": "en"}, headers=hdr,
+                                follow_redirects=False).status_code == 303

@@ -15,10 +15,11 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.auth.origin import same_origin_ok
 from myroad_core.content.loader import default_content_dir, seed_content_paths
 from myroad_core.seed import find_repo_freeze_dir, seed_golden_quadratic
 from myroad_core.store import PathStore
@@ -91,6 +92,14 @@ def create_learner_app(
     app.state.play_sessions: dict[str, dict[str, Any]] = {}
     # Opaque sid -> gateway check passed. Never stores provider keys.
     app.state.author_gateway_ok: dict[str, bool] = {}
+
+    @app.middleware("http")
+    async def _same_origin_forms(request: Request, call_next):
+        # CSRF: every state-changing form POST must come from this site
+        # (Origin/Referer check on top of SameSite=Lax). See auth/origin.py.
+        if not same_origin_ok(request):
+            return PlainTextResponse("cross-site form submission refused", status_code=403)
+        return await call_next(request)
 
     static_dir = UI_DIR / "static"
     if static_dir.is_dir():

@@ -18,6 +18,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login
 from markupsafe import Markup
 
 from myroad_core.store import PathStore
@@ -73,7 +74,7 @@ def app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 def _client(app, locale: str = "he") -> TestClient:
     c = TestClient(app)
     c.cookies.set("myroad_locale", locale)
-    c.post("/login", data={"first_name": "Noa", "last_name": "Levi", "email": f"noa-{locale}@example.com", "next": "/"})
+    login(c, f"noa-{locale}@example.com", first_name="Noa", last_name="Levi")
     c.cookies.set("myroad_locale", locale)
     return c
 
@@ -87,7 +88,7 @@ def _at_practice(app, locale: str = "he") -> TestClient:
 
 def _progress(app, c: TestClient) -> dict:
     store = app.state.store
-    uid = c.cookies.get("myroad_uid")
+    uid = store.get_session_user(c.cookies.get("myroad_session"))  # server-side session (#46)
     return store.get_progress(uid, PID) or {}
 
 

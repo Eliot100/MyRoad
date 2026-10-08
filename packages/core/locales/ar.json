@@ -84,6 +84,7 @@
   "err_email_invalid": "بريد غير صالح.",
   "err_name_required": "الاسم الأول واسم العائلة مطلوبان.",
   "err_email_taken": "هذا البريد مسجّل مسبقًا.",
+  "err_email_change_disabled": "لا يمكن تغيير بريد تسجيل الدخول حاليًا. لم يتم تغيير بريدك.",
   "add_path_gate_lede": "إضافة مسار تبني مسار تعلم كاملًا مع وكيل. يُستدعى Grok عبر Cloudflare AI Gateway؛ ويبقى مفتاح xAI في Cloudflare Secrets Store (BYOK). MyRoad لا يقبل هذا المفتاح.",
   "add_path_unlocked": "نجح فحص البوابة.",
   "add_path_criterion_met": "بوابة Cloudflare مهيأة وردّت. لم يرسل MyRoad مفتاح مزود.",

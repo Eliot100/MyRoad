@@ -153,6 +153,10 @@ uvicorn myroad_core.api:app --reload
 # POST /tools/createDraft, /tools/addBlock, … /tools/publish
 ```
 
+Every `/tools/*` call needs a login session cookie or the agent credential
+(`Authorization: Bearer $MYROAD_AGENT_TOKEN`, server env only); otherwise `401`.
+The actor comes from that, never from the body. See `packages/core/README.md`.
+
 ## Next build steps / שלבי בנייה הבאים
 
 1. ~~**Persistence** — versions, statuses, event log~~

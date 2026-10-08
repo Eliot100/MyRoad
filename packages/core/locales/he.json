@@ -84,6 +84,7 @@
   "err_email_invalid": "כתובת אימייל לא תקינה.",
   "err_name_required": "נדרשים שם פרטי ושם משפחה.",
   "err_email_taken": "האימייל כבר רשום — נסו שוב או בדקו את הפרטים.",
+  "err_email_change_disabled": "עדיין אי אפשר לשנות את אימייל הכניסה. האימייל לא שונה.",
   "add_path_gate_lede": "הוספת דרך בונה דרך למידה מלאה עם סוכן. Grok מופעל דרך Cloudflare AI Gateway; מפתח xAI נשאר ב-Cloudflare Secrets Store (BYOK). MyRoad לא מקבל את המפתח.",
   "add_path_unlocked": "בדיקת השער הצליחה.",
   "add_path_criterion_met": "Cloudflare AI Gateway מוגדר והגיב. MyRoad לא שלח מפתח ספק.",

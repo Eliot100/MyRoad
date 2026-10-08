@@ -55,7 +55,46 @@ uvicorn myroad_core.api:app --reload
 ```
 
 POST endpoints under `/tools/<op>` (e.g. `/tools/createDraft`) accept the
-shared request envelope (`actorId`, `agentId?`, `correlationId`, …).
+shared request envelope (`correlationId`, `pathId?`, `versionId?`, …).
+
+**Auth (required on every `/tools/*` route).** A call without one of these
+gets `401`:
+
+- **Logged-in user:** the `myroad_session` cookie from the UI login. The
+  session id is random; SQLite keeps only its SHA-256 digest. To accept UI
+  sessions, run both apps on the same SQLite file (`MYROAD_DB=...`) or pass the
+  same `PathStore` to `create_app`.
+- **Agent:** `Authorization: Bearer <credential>`, compared in constant time
+  with the server env var `MYROAD_AGENT_TOKEN` (min 16 chars). Unset or empty =
+  agent access disabled. The agent acts as `MYROAD_AGENT_ID` (default
+  `agent_service`). Set these in the server environment only, never in git.
+
+The actor comes from the session or the credential. `actorId`, `agentId` and
+`publisherId` in the body are not trusted: if sent and they differ from the
+authenticated principal the call gets `403 ACTOR_MISMATCH`.
+
+- **CSRF:** cookie (session) calls must send the header `X-MyRoad-Request: 1`,
+  otherwise `403 CSRF_HEADER_REQUIRED`. Bearer (agent) calls do not need it.
+- **Ownership:** every op except `createDraft` needs a `pathId` the caller may
+  act on, otherwise `404` (same as a missing path). A user may act only on
+  paths they authored (`paths.author_id`, fixed at creation). The agent may act
+  only on paths it authored (`MYROAD_AGENT_ID`) or on path ids listed in
+  `MYROAD_AGENT_ALLOWED_PATHS` (comma-separated, server env).
+- **Session cookie:** `myroad_session` is `HttpOnly; SameSite=Lax; Secure`.
+  Browsers accept Secure cookies on `http://localhost`; for other plain-http
+  dev hosts set `MYROAD_DEV_INSECURE_COOKIES=1` (never in production).
+  `POST /logout` revokes the session.
+- **Email change:** refused (`email_change_disabled`) until it can be verified
+  with emailed codes; settings can still change the name.
+- **Browser forms (UI app):** every POST/PUT/PATCH/DELETE needs an `Origin`
+  (or, failing that, `Referer`) from this site, on top of `SameSite=Lax`.
+  Cross-site, `Origin: null` or header-less requests get `403`. "This site" is
+  `<scheme>://<Host>` as the app sees it; add the public origin to
+  `MYROAD_ALLOWED_ORIGINS` (comma-separated, e.g. `https://myroad.example`)
+  when a proxy changes the scheme or host.
+
+In-process callers (`AgentTools`, the path builder, the golden loop) do not go
+over HTTP and are unchanged.
 
 ## What this package does
 
