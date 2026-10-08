@@ -41,6 +41,7 @@ def client(store: PathStore, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.delenv(AGENT_TOKEN_ENV, raising=False)
     monkeypatch.delenv(AGENT_ID_ENV, raising=False)
     with TestClient(create_app(store)) as c:
+        c.headers["X-MyRoad-Request"] = "1"  # CSRF header for cookie-authenticated calls
         yield c
 
 
@@ -230,7 +231,7 @@ def test_ui_login_session_is_accepted_by_tools_api(tmp_path, monkeypatch) -> Non
         sid = ui.cookies.get(SESSION_COOKIE)
         assert sid
         user_id = shared.get_learner_by_email("noa.api@example.com")["userId"]
-        api = TestClient(create_app(shared))
+        api = TestClient(create_app(shared), headers={"X-MyRoad-Request": "1"})
         api.cookies.set(SESSION_COOKIE, sid)
         r = api.post("/tools/createDraft", json=_draft_body())
         assert r.status_code == 200 and r.json()["ok"] is True
@@ -252,3 +253,136 @@ def test_forged_uid_cookie_does_not_sign_in_to_ui(tmp_path) -> None:
         assert r.status_code == 303 and "/login" in r.headers["location"]
     finally:
         shared.close()
+
+
+# ---------- Cyber security review of #46: CSRF, ownership, agent scope ----------
+
+def _create(client, **extra) -> dict:
+    r = client.post("/tools/createDraft", json=_draft_body(**extra))
+    assert r.status_code == 200 and r.json()["ok"], r.text
+    return r.json()
+
+
+def test_cookie_call_without_csrf_header_is_403(client, store) -> None:
+    _, sid = _user_session(store)
+    client.cookies.set(SESSION_COOKIE, sid)
+    del client.headers["X-MyRoad-Request"]
+    r = client.post("/tools/createDraft", json=_draft_body())
+    assert r.status_code == 403 and r.json()["detail"]["code"] == "CSRF_HEADER_REQUIRED"
+    r = client.post("/tools/createDraft", json=_draft_body(), headers={"X-MyRoad-Request": "0"})
+    assert r.status_code == 403
+    assert store._conn.execute("SELECT COUNT(*) FROM paths").fetchone()[0] == 0
+
+
+def test_bearer_call_needs_no_csrf_header(client, store, monkeypatch) -> None:
+    monkeypatch.setenv(AGENT_TOKEN_ENV, AGENT_CRED)
+    del client.headers["X-MyRoad-Request"]
+    r = client.post("/tools/createDraft", json=_draft_body(), headers={"Authorization": f"Bearer {AGENT_CRED}"})
+    assert r.status_code == 200
+
+
+def _path_ops(path_id: str, version_id: str) -> list[tuple[str, dict]]:
+    base = {"correlationId": "corr_x", "pathId": path_id, "versionId": version_id}
+    return [
+        ("/tools/getPath", base),
+        ("/tools/getVersion", base),
+        ("/tools/addBlock", {**base, "type": "explanation", "title": "Injected"}),
+        ("/tools/editBlock", {**base, "blockId": "blk_x", "patch": {"title": "x"}}),
+        ("/tools/addEdge", {**base, "from": "a", "to": "b", "relationship": "sequence"}),
+        ("/tools/reviseDraft", {**base, "baseVersionId": version_id}),
+        ("/tools/validatePath", base),
+        ("/tools/recordFeedback", {**base, "comment": "x"}),
+        ("/tools/requestPublish", base),
+        ("/tools/publish", base),
+    ]
+
+
+def test_user_cannot_touch_another_users_path(client, store) -> None:
+    _, sid_a = _user_session(store, "alice@example.com")
+    client.cookies.set(SESSION_COOKIE, sid_a)
+    created = _create(client)
+    pid, vid = created["pathId"], created["versionId"]
+    events_before = store._conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+
+    _, sid_b = _user_session(store, "bob@example.com")
+    client.cookies.set(SESSION_COOKIE, sid_b)
+    for route, body in _path_ops(pid, vid):
+        r = client.post(route, json=body)
+        assert r.status_code == 404, (route, r.status_code, r.text)
+        assert r.json()["detail"]["code"] == "NOT_FOUND"
+        assert "Injected" not in r.text
+    # Same answer as a path that does not exist
+    missing = client.post("/tools/getPath", json={"correlationId": "c", "pathId": "path_nope"})
+    assert missing.status_code == 404
+    # Nothing written, nothing published
+    assert store._conn.execute("SELECT COUNT(*) FROM events").fetchone()[0] == events_before
+    assert store.get_version(pid, vid).status.value == "draft"
+    assert store.get_version(pid, vid).blocks == []
+
+
+def test_owner_can_read_and_edit_own_path(client, store) -> None:
+    _, sid = _user_session(store, "own@example.com")
+    client.cookies.set(SESSION_COOKIE, sid)
+    created = _create(client)
+    pid, vid = created["pathId"], created["versionId"]
+    r = client.post("/tools/addBlock", json={"correlationId": "c", "pathId": pid, "versionId": vid,
+                                             "type": "explanation", "title": "Mine"})
+    assert r.status_code == 200 and r.json()["ok"]
+    got = client.post("/tools/getVersion", json={"correlationId": "c", "pathId": pid, "versionId": vid})
+    assert got.status_code == 200 and "Mine" in got.text
+
+
+def test_agent_scoped_to_its_own_paths_or_allow_list(client, store, monkeypatch) -> None:
+    monkeypatch.setenv(AGENT_TOKEN_ENV, AGENT_CRED)
+    bearer = {"Authorization": f"Bearer {AGENT_CRED}"}
+    # A user's path: the agent may not touch it
+    _, sid = _user_session(store, "user.path@example.com")
+    client.cookies.set(SESSION_COOKIE, sid)
+    user_path = _create(client)
+    client.cookies.clear()
+    for route, body in _path_ops(user_path["pathId"], user_path["versionId"]):
+        assert client.post(route, json=body, headers=bearer).status_code == 404, route
+    # Its own draft: allowed
+    own = client.post("/tools/createDraft", json=_draft_body(), headers=bearer).json()
+    r = client.post("/tools/getPath", json={"correlationId": "c", "pathId": own["pathId"]}, headers=bearer)
+    assert r.status_code == 200 and r.json()["ok"]
+    # Explicit allow-list grants a named path
+    monkeypatch.setenv("MYROAD_AGENT_ALLOWED_PATHS", f"path_other, {user_path['pathId']}")
+    r = client.post("/tools/getPath", json={"correlationId": "c", "pathId": user_path["pathId"]}, headers=bearer)
+    assert r.status_code == 200
+    # The allow-list never applies to users
+    _, sid_c = _user_session(store, "carol@example.com")
+    client.cookies.set(SESSION_COOKIE, sid_c)
+    r = client.post("/tools/getPath", json={"correlationId": "c", "pathId": user_path["pathId"]})
+    assert r.status_code == 404
+
+
+def test_doc_author_field_cannot_grant_access(client, store) -> None:
+    _, sid_a = _user_session(store, "a2@example.com")
+    client.cookies.set(SESSION_COOKIE, sid_a)
+    created = _create(client)
+    bob_id, sid_b = _user_session(store, "b2@example.com")
+    # Even if the document claims bob is the author, ownership follows paths.author_id
+    rev = store.revise_draft(
+        actor_id="x", correlation_id="c", path_id=created["pathId"], base_version_id=created["versionId"],
+        change_set={"actors": {"authorId": bob_id}},
+    )
+    client.cookies.set(SESSION_COOKIE, sid_b)
+    r = client.post("/tools/getVersion", json={"correlationId": "c", "pathId": created["pathId"],
+                                               "versionId": rev.versionId})
+    assert r.status_code == 404
+
+
+def test_revise_change_set_cannot_publish_or_move_a_version(client, store) -> None:
+    _, sid = _user_session(store, "rev2@example.com")
+    client.cookies.set(SESSION_COOKIE, sid)
+    created = _create(client)
+    pid, vid = created["pathId"], created["versionId"]
+    r = client.post("/tools/reviseDraft", json={
+        "correlationId": "c", "pathId": pid, "baseVersionId": vid,
+        "changeSet": {"status": "published", "pathId": "path_victim", "versionId": "ver_x", "version": 99},
+    })
+    assert r.status_code == 200 and r.json()["ok"], r.text
+    new_vid = r.json()["versionId"]
+    doc = store.get_version(pid, new_vid)
+    assert doc.status.value == "draft" and doc.pathId == pid and new_vid != "ver_x" and doc.version == 2

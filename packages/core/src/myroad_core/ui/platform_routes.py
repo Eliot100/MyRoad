@@ -12,7 +12,7 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from myroad_core.auth.sessions import SESSION_COOKIE, SESSION_TTL_SECONDS
+from myroad_core.auth.sessions import SESSION_COOKIE, SESSION_TTL_SECONDS, cookie_secure
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
 from myroad_core.content.schema import GROUPS, SUBJECTS
@@ -92,7 +92,10 @@ def register_platform_routes(
         """Start a fresh server-side session (old one revoked) and set its cookie."""
         store.revoke_session(request.cookies.get(SESSION_COOKIE))
         sid = store.create_session(learner["userId"])
-        resp.set_cookie(SESSION_COOKIE, sid, httponly=True, samesite="lax", max_age=SESSION_TTL_SECONDS)
+        resp.set_cookie(
+            SESSION_COOKIE, sid, httponly=True, samesite="lax", max_age=SESSION_TTL_SECONDS,
+            secure=cookie_secure(),
+        )
         resp.delete_cookie(COOKIE_USER)  # legacy user-id cookie, no longer used
         _set_locale_cookie(resp, locale)
 
@@ -448,6 +451,17 @@ def register_platform_routes(
             return RedirectResponse("/settings?error=" + quote(code, safe=""), status_code=303)
         resp = RedirectResponse("/settings?saved=1", status_code=303)
         _set_locale_cookie(resp, updated.get("locale") or "he")
+        if (updated.get("email") or "") != (learner.get("email") or ""):
+            # Email changed: end every session of this user, keep this one signed in.
+            store.revoke_user_sessions(learner["userId"])
+            _start_session(request, resp, updated, updated.get("locale") or "he")
+        return resp
+
+    @app.post("/logout")
+    def logout(request: Request) -> RedirectResponse:
+        store.revoke_session(request.cookies.get(SESSION_COOKIE))
+        resp = RedirectResponse("/login", status_code=303)
+        resp.delete_cookie(SESSION_COOKIE, httponly=True, samesite="lax", secure=cookie_secure())
         return resp
 
     register_agent_builder_routes(

@@ -10,13 +10,22 @@ from myroad_core.auth.agent_credential import (
     agent_actor_id,
     agent_credential_matches,
 )
+from myroad_core.auth.ownership import AGENT_ALLOWED_PATHS_ENV, may_act_on_path, path_author
 from myroad_core.auth.principal import Principal, resolve_principal
-from myroad_core.auth.sessions import SESSION_COOKIE, SESSION_TTL_SECONDS, SessionMixin
+from myroad_core.auth.sessions import (
+    DEV_INSECURE_COOKIES_ENV,
+    SESSION_COOKIE,
+    SESSION_TTL_SECONDS,
+    SessionMixin,
+    cookie_secure,
+)
 
 __all__ = [
+    "AGENT_ALLOWED_PATHS_ENV",
     "AGENT_ID_ENV",
     "AGENT_TOKEN_ENV",
     "DEFAULT_AGENT_ID",
+    "DEV_INSECURE_COOKIES_ENV",
     "Principal",
     "SESSION_COOKIE",
     "SESSION_TTL_SECONDS",
@@ -24,5 +33,8 @@ __all__ = [
     "agent_access_enabled",
     "agent_actor_id",
     "agent_credential_matches",
+    "cookie_secure",
+    "may_act_on_path",
+    "path_author",
     "resolve_principal",
 ]
