@@ -16,6 +16,7 @@ from myroad_core.agent_builder.suggest import catalog_entries, completed_path_id
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
 from myroad_core.content.schema import GROUPS, SUBJECTS
+from myroad_core.ui.a11y_statement import statement_details
 from myroad_core.ui.i18n import (
     COOKIE_LOCALE,
     COOKIE_USER,
@@ -540,6 +541,13 @@ def register_platform_routes(
         resp = RedirectResponse(dest, status_code=303)
         _set_identity_cookies(resp, learner, learner.get("locale") or locale)
         return resp
+
+    @app.get("/accessibility", response_class=HTMLResponse)
+    def accessibility_statement(request: Request) -> HTMLResponse:
+        """Accessibility statement (#60), public like /login: reachable without signing in."""
+        return templates.TemplateResponse(
+            request, "accessibility.html", _shell_ctx(request, statement=statement_details())
+        )
 
     @app.get("/settings", response_class=HTMLResponse)
     def settings_page(

@@ -137,7 +137,7 @@
   </section>
 
   <footer>
-    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }}</small>
+    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>
   {#- Scrolls the current station (#here) into view on load; the map works the same without it. -#}
   <script src="/static/platform.js" defer></script>
