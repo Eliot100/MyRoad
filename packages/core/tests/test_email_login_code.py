@@ -7,8 +7,8 @@ import pytest
 
 from myroad_core.auth.login_codes import (
     CODE_TTL_SECONDS,
+    BACKOFF_AFTER_FAILURES,
     MAX_ACTIVE_CODES,
-    MAX_FAILURES_PER_EMAIL,
     MAX_VERIFY_ATTEMPTS,
     SEND_LIMITS,
     verify_code_hash,
@@ -100,9 +100,10 @@ def test_wrong_code_counts_attempts_then_locks(store: PathStore) -> None:
             store.verify_login_challenge(cid, _wrong(code))
     with pytest.raises(ValueError, match="code_locked"):
         store.verify_login_challenge(cid, _wrong(code))
-    # Locked: even the right code no longer works
+    # Locked: even the right code no longer works (checked from another IP,
+    # since this IP is now in backoff and would get code_slow_down first)
     with pytest.raises(ValueError, match="code_locked"):
-        store.verify_login_challenge(cid, code)
+        store.verify_login_challenge(cid, code, client_ip="10.9.9.9")
     assert store.get_learner_by_email("wrong@example.com") is None
 
 
@@ -140,25 +141,44 @@ def test_only_the_newest_active_codes_stay_usable(store: PathStore) -> None:
     assert store.verify_login_challenge(newest_cid, newest_code)
 
 
-def test_per_email_failure_cap_over_24h(store: PathStore) -> None:
-    store.register_or_login(email="cap24@example.com", first_name="C", last_name="F")
-    failures = 0
-    while failures < MAX_FAILURES_PER_EMAIL:
-        cid, code = store.start_login_challenge(email="cap24@example.com")
-        for _ in range(min(MAX_VERIFY_ATTEMPTS, MAX_FAILURES_PER_EMAIL - failures)):
-            with pytest.raises(ValueError):
-                store.verify_login_challenge(cid, _wrong(code))
-            failures += 1
-    # Cap reached: even a fresh code with the right value is refused
-    cid, code = store.start_login_challenge(email="cap24@example.com")
-    with pytest.raises(ValueError, match="code_locked"):
-        store.verify_login_challenge(cid, code)
+def test_attacker_on_another_ip_cannot_lock_out_the_real_user(store: PathStore) -> None:
+    """Cyber security re-review: failures count per email+IP, not as one global lock."""
+    store.register_or_login(email="victim@example.com", first_name="V", last_name="I")
+    t = datetime.now(timezone.utc)
+    for _ in range(40):  # far past the old 15-per-email hard lock
+        t += timedelta(minutes=16)  # wait out the attacker's own backoff
+        cid, code = store.start_login_challenge(email="victim@example.com", client_ip="6.6.6.6", now=t)
+        with pytest.raises(ValueError, match="code_wrong"):
+            store.verify_login_challenge(cid, _wrong(code), client_ip="6.6.6.6", now=t)
+    assert store._email_failures("victim@example.com", t) >= 40
+    # The real user, on their own IP, signs in with the correct code right away
+    cid, code = store.start_login_challenge(email="victim@example.com", client_ip="1.2.3.4", now=t)
+    learner = store.verify_login_challenge(cid, code, client_ip="1.2.3.4", now=t + timedelta(seconds=1))
+    assert learner["email"] == "victim@example.com"
+
+
+def test_backoff_slows_one_email_ip_without_using_attempts(store: PathStore) -> None:
+    store.register_or_login(email="slow@example.com", first_name="S", last_name="L")
+    t = datetime.now(timezone.utc)
+    for _ in range(BACKOFF_AFTER_FAILURES):
+        cid, code = store.start_login_challenge(email="slow@example.com", now=t)
+        with pytest.raises(ValueError, match="code_wrong"):
+            store.verify_login_challenge(cid, _wrong(code), client_ip="7.7.7.7", now=t)
+    cid, code = store.start_login_challenge(email="slow@example.com", now=t)
+    with pytest.raises(ValueError, match="code_slow_down"):
+        store.verify_login_challenge(cid, code, client_ip="7.7.7.7", now=t + timedelta(seconds=1))
     row = store._conn.execute("SELECT attempts FROM login_codes WHERE challenge_id = ?", (cid,)).fetchone()
-    assert row[0] == 0  # refused before any hashing / attempt
-    # After the window it works again
-    later = datetime.now(timezone.utc) + timedelta(hours=24, minutes=1)
-    cid2, code2 = store.start_login_challenge(email="cap24@example.com", now=later)
-    assert store.verify_login_challenge(cid2, code2, now=later + timedelta(seconds=1))
+    assert row[0] == 0  # refused before any attempt or hashing
+    assert store.login_backoff_remaining("slow@example.com", "7.7.7.7", t + timedelta(seconds=1)) > 0
+    # Another IP is not slowed down
+    assert store.login_backoff_remaining("slow@example.com", "8.8.8.8", t) == 0
+    # After the wait the right code works from the same IP
+    assert store.verify_login_challenge(cid, code, client_ip="7.7.7.7", now=t + timedelta(seconds=3))
+    # Delays grow with more failures (capped)
+    from myroad_core.auth.login_codes import BACKOFF_MAX_SECONDS, backoff_seconds
+
+    assert [backoff_seconds(n) for n in range(4, 8)] == [0, 2, 4, 8]
+    assert backoff_seconds(100) == BACKOFF_MAX_SECONDS
 
 
 def test_parallel_guesses_never_exceed_the_attempt_limit(tmp_path) -> None:
@@ -189,16 +209,17 @@ def test_parallel_guesses_never_exceed_the_attempt_limit(tmp_path) -> None:
             t.join()
         assert errors == []
         assert len(results) == 40
-        checked = [r for r in results if r in ("code_wrong", "code_locked") ]
+        # code_slow_down: the IP's own backoff kicked in after 5 failures
+        checked = [r for r in results if r in ("code_wrong", "code_locked", "code_slow_down")]
         row = store._conn.execute(
             "SELECT attempts, failures FROM login_codes WHERE challenge_id = ?", (cid,)
         ).fetchone()
         assert row["attempts"] == MAX_VERIFY_ATTEMPTS
         assert row["failures"] == MAX_VERIFY_ATTEMPTS  # only 5 guesses were ever hashed
-        assert results.count("code_wrong") + sum(1 for r in results if r == "code_locked") == 40
+        assert results.count("code_wrong") <= MAX_VERIFY_ATTEMPTS
         assert len(checked) == 40
         with pytest.raises(ValueError, match="code_locked"):
-            store.verify_login_challenge(cid, code)
+            store.verify_login_challenge(cid, code, client_ip="10.0.0.2")
     finally:
         store.close()
 

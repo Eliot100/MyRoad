@@ -80,7 +80,7 @@
   "err_email_invalid": "بريد غير صالح.",
   "err_name_required": "الاسم الأول واسم العائلة مطلوبان.",
   "err_email_taken": "هذا البريد مسجّل مسبقًا.",
-  "err_email_change_disabled": "لا يمكن تغيير بريد تسجيل الدخول حاليًا. لم يتم تغيير بريدك.",
+  "err_email_change_disabled": "يمكن تغيير بريد الدخول فقط عبر «تغيير البريد» أدناه (رمز لكلا العنوانين).",
   "add_path_gate_lede": "إضافة مسار تبني مسار تعلم كاملًا مع وكيل. يُستدعى Grok عبر Cloudflare AI Gateway؛ ويبقى مفتاح xAI في Cloudflare Secrets Store (BYOK). MyRoad لا يقبل هذا المفتاح.",
   "add_path_unlocked": "نجح فحص البوابة.",
   "add_path_criterion_met": "بوابة Cloudflare مهيأة وردّت. لم يرسل MyRoad مفتاح مزود.",
@@ -260,5 +260,15 @@
   "builder_match_needs": "أنهِ أولًا: {titles}",
   "builder_match_prereqs_done": "لقد أنهيت ما يتطلبه هذا المسار",
   "builder_match_open": "افتح هذا المسار",
-  "builder_match_build_anyway": "ابنِ مسارًا جديدًا على أي حال"
+  "builder_match_build_anyway": "ابنِ مسارًا جديدًا على أي حال",
+  "err_email_same": "هذا هو بريدك الحالي.",
+  "err_code_slow_down": "محاولات خاطئة كثيرة من هنا. انتظر قليلًا وحاول مجددًا.",
+  "err_captcha_required": "يرجى إكمال التحقق والمحاولة مجددًا.",
+  "settings_new_email": "البريد الجديد",
+  "settings_email_change_send": "تغيير البريد",
+  "settings_email_change_pending": "لتغيير {current} إلى {new}، أدخل الرمز المرسل إلى كل عنوان. يبقى بريدك كما هو حتى يتم التحقق من الرمزين.",
+  "settings_code_current": "الرمز المرسل إلى {email}",
+  "settings_code_new": "الرمز المرسل إلى {email}",
+  "settings_email_change_confirm": "تأكيد تغيير البريد",
+  "settings_email_changed": "تم تغيير بريدك. تم تسجيل الخروج من الأجهزة الأخرى."
 }

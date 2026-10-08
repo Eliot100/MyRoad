@@ -1,4 +1,4 @@
-"""Send login mail: the one-time code, or a "no account" notice.
+"""Send login mail: one-time codes (sign-in, email change) and notices.
 
 With SMTP configured (server env only, never in git):
   MYROAD_SMTP_HOST      required to enable mail
@@ -29,6 +29,9 @@ __all__ = [
     "MailNotConfigured",
     "dev_console_enabled",
     "mail_configured",
+    "send_email_change_code",
+    "send_email_change_taken_notice",
+    "send_email_changed_notice",
     "send_login_code",
     "send_no_account_notice",
 ]
@@ -97,4 +100,46 @@ def send_no_account_notice(email: str) -> None:
         "To create one, open the sign-in page and choose \"Register\".\n"
         "If this was not you, ignore this email.\n",
         f"No account for {email}; sent a register notice (no code).",
+    )
+
+
+def send_email_change_code(email: str, code: str, *, role: str) -> None:
+    """role "current": proof from the address on the account; "new": proof of the new address."""
+    minutes = CODE_TTL_SECONDS // 60
+    if role == "current":
+        body = (
+            f"Someone signed in to your MyRoad account asked to change its email. Code: {code}\n\n"
+            f"Only enter it if you made this request. It works once and expires in {minutes} minutes.\n"
+            "If this was not you, ignore this email and sign out of other devices; your email stays the same.\n"
+        )
+    else:
+        body = (
+            f"Use this code to confirm this address for your MyRoad account: {code}\n\n"
+            f"It works once and expires in {minutes} minutes. If you did not ask for this, ignore this email.\n"
+        )
+    _deliver(
+        email,
+        f"MyRoad email change code: {code}",
+        body,
+        f"Email-change code ({role}) for {email}: {code} (valid {minutes} min, single use)",
+    )
+
+
+def send_email_change_taken_notice(email: str) -> None:
+    _deliver(
+        email,
+        "MyRoad email change",
+        "Someone asked to move a MyRoad account to this address, but it already has an account.\n"
+        "Nothing was changed. If this was not you, ignore this email.\n",
+        f"Email change to {email} refused (address has an account); sent a notice (no code).",
+    )
+
+
+def send_email_changed_notice(old_email: str, new_email: str) -> None:
+    _deliver(
+        old_email,
+        "MyRoad: your sign-in email was changed",
+        f"The sign-in email of your MyRoad account was changed from this address to {new_email}.\n"
+        "All devices were signed out. If this was not you, contact support right away.\n",
+        f"Email changed notice to {old_email} (new address {new_email}).",
     )

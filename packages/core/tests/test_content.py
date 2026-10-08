@@ -536,7 +536,7 @@ def test_email_change_is_refused_until_it_can_be_verified(tmp_path) -> None:
                 assert store.get_learner(uid)["email"] == "first@example.com"
                 assert store.get_learner_by_email(target) is None
             page = c.get("/settings?error=email_change_disabled")
-            assert "Changing your sign-in email is not available yet" in page.text or "האימייל לא שונה" in page.text
+            assert 'class="flash warn"' in page.text
             # Nobody else's sessions were touched, and the account keeps its email
             assert store.get_session_user(other_device) == uid
             # Saving the name with the same email (any case) still works

@@ -84,8 +84,8 @@ authenticated principal the call gets `403 ACTOR_MISMATCH`.
   Browsers accept Secure cookies on `http://localhost`; for other plain-http
   dev hosts set `MYROAD_DEV_INSECURE_COOKIES=1` (never in production).
   `POST /logout` revokes the session.
-- **Email change:** refused (`email_change_disabled`) until it can be verified
-  with emailed codes; settings can still change the name.
+- **Email change:** only through the verified flow (see "Email change" below);
+  editing the email in the profile form is refused (`email_change_disabled`).
 - **Browser forms (UI app):** every POST/PUT/PATCH/DELETE needs an `Origin`
   (or, failing that, `Referer`) from this site, on top of `SameSite=Lax`.
   Cross-site, `Origin: null` or header-less requests get `403`. "This site" is
@@ -109,7 +109,21 @@ account is created only then.
 - Guessing: each code allows 5 tries. The try is claimed with one conditional
   `UPDATE` (tries < 5, unused, unexpired) before the code is hashed, and store
   access is serialized by a lock, so parallel guesses cannot pass the limit.
-  An email is also capped at 15 wrong codes per 24 hours, across all codes.
+- Wrong codes are counted per email + client IP (24 hours), never as one
+  global lock per email, so a stranger cannot lock the real user out. After 5
+  failures that IP waits before each further check (2 s, doubling, max
+  15 min; `code_slow_down`, no attempt used). After 3 failures from that IP,
+  or 15 for the email from all IPs, a CAPTCHA is required if one is
+  configured.
+- CAPTCHA hook (off by default, so dev and tests need nothing):
+  `MYROAD_CAPTCHA_PROVIDER=turnstile` with `MYROAD_CAPTCHA_SITE_KEY` and
+  `MYROAD_CAPTCHA_SECRET` (server env only) enables Cloudflare Turnstile.
+  Any other check can be plugged in as `app.state.captcha_verifier =
+  callable(token, client_ip) -> bool`. Without a CAPTCHA only the backoff
+  applies, so a public server should enable one.
+- Timing: every request path (known, unknown, rate-limited) runs one PBKDF2
+  hash, so known and unknown emails take the same time. Mail is still sent
+  inline so a mail failure can be reported (`mail_failed`).
 - Sending: at most 5 codes per email+IP, 10 per email and 30 per IP every
   15 minutes. Over the limit, no mail is sent but the answer looks the same.
 - Same answer for every email: known, unknown and rate-limited requests all go
@@ -126,7 +140,31 @@ account is created only then.
   stderr: `[MyRoad login] dev mail console ... Code for you@example.com: 123456`.
   Never set it on a shared or public server.
 - Client IP is the direct peer address. Behind a proxy, run uvicorn with
-  `--proxy-headers` and a trusted `--forwarded-allow-ips`.
+  `--proxy-headers --forwarded-allow-ips=<proxy address>`. That value must be
+  the proxy's own address, **never `*`**: with `*` any client can send
+  `X-Forwarded-For` and pick its own IP, which defeats the per-IP limits.
+
+## Email change (verified)
+
+Settings → "Change email" sends a code to the **current** address and a code
+to the **new** address (`POST /settings/email`). Both must be entered
+(`POST /settings/email/verify`) before anything changes. Then the email
+switches, every session of the user is revoked (this browser gets a fresh
+one), pending login codes for both addresses are retired, and the old address
+gets a "your email was changed" notice.
+
+- A stolen session alone cannot move the account: the current-address code
+  goes to the real owner.
+- Nobody can point an account at an address they do not control. The new
+  address is not reserved or claimed while the change is pending; if someone
+  registers it first, the change fails with `email_taken`.
+- If the new address already has an account, it gets a notice instead of a
+  code, and the response looks the same.
+- The codes use the login-code rules (hash, 15 minutes, single use, 5 tries,
+  per email+IP backoff, CAPTCHA hook) but are bound to their purpose: a login
+  code is never accepted for an email change, and these codes never sign in.
+- Send limits are shared with sign-in. A new change request cancels the
+  previous pending one.
 
 ## What this package does
 

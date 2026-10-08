@@ -80,7 +80,7 @@
   "err_email_invalid": "כתובת אימייל לא תקינה.",
   "err_name_required": "נדרשים שם פרטי ושם משפחה.",
   "err_email_taken": "האימייל כבר רשום — נסו שוב או בדקו את הפרטים.",
-  "err_email_change_disabled": "עדיין אי אפשר לשנות את אימייל הכניסה. האימייל לא שונה.",
+  "err_email_change_disabled": "אפשר לשנות את אימייל הכניסה רק דרך „שינוי אימייל” למטה (קוד לשתי הכתובות).",
   "add_path_gate_lede": "הוספת דרך בונה דרך למידה מלאה עם סוכן. Grok מופעל דרך Cloudflare AI Gateway; מפתח xAI נשאר ב-Cloudflare Secrets Store (BYOK). MyRoad לא מקבל את המפתח.",
   "add_path_unlocked": "בדיקת השער הצליחה.",
   "add_path_criterion_met": "Cloudflare AI Gateway מוגדר והגיב. MyRoad לא שלח מפתח ספק.",
@@ -260,5 +260,15 @@
   "builder_match_needs": "כדאי לסיים קודם: {titles}",
   "builder_match_prereqs_done": "כבר סיימת את מה שהיא דורשת",
   "builder_match_open": "לפתוח את הדרך",
-  "builder_match_build_anyway": "לבנות דרך חדשה בכל זאת"
+  "builder_match_build_anyway": "לבנות דרך חדשה בכל זאת",
+  "err_email_same": "זה כבר האימייל שלך.",
+  "err_code_slow_down": "יותר מדי ניסיונות שגויים מכאן. המתינו מעט ונסו שוב.",
+  "err_captcha_required": "השלימו את הבדיקה ונסו שוב.",
+  "settings_new_email": "אימייל חדש",
+  "settings_email_change_send": "שינוי אימייל",
+  "settings_email_change_pending": "כדי לשנות את {current} ל־{new}, הזינו את הקוד שנשלח לכל כתובת. האימייל לא משתנה עד ששני הקודים מאומתים.",
+  "settings_code_current": "הקוד שנשלח אל {email}",
+  "settings_code_new": "הקוד שנשלח אל {email}",
+  "settings_email_change_confirm": "אישור שינוי האימייל",
+  "settings_email_changed": "האימייל שונה. שאר המכשירים נותקו."
 }
