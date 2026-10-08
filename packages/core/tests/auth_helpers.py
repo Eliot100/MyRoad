@@ -1,13 +1,16 @@
-"""Test helper: sign in through the two-step email-code flow (issue #41).
+"""Test helpers: sign in through the two-step email-code flow (issue #41).
 
-Captures the emailed code with the app's ``login_code_sender`` hook, then posts
-it to ``/login/verify``. Mirrors ``client.post("/login", ...)`` return values.
+``login()`` is the stable entry point for tests (same signature as on #46,
+where it posts the one-step form), so tests that call it work in any merge
+order. ``login_with_code`` captures the emailed code with the app's
+``login_code_sender`` hook, then posts it to ``/login/verify``. Both mirror
+``client.post("/login", ...)`` return values.
 """
 from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["login_with_code", "request_login_code"]
+__all__ = ["login", "login_with_code", "request_login_code"]
 
 
 def request_login_code(client: Any, data: dict[str, str]) -> tuple[Any, list[tuple[str, str]]]:
@@ -35,5 +38,22 @@ def login_with_code(client: Any, data: dict[str, str], *, follow_redirects: bool
     return client.post(
         "/login/verify",
         data={"code": outbox[-1][1], "next": data.get("next", "/")},
+        follow_redirects=follow_redirects,
+    )
+
+
+def login(
+    client: Any,
+    email: str = "test@example.com",
+    *,
+    first_name: str = "Test",
+    last_name: str = "User",
+    next: str = "/",
+    follow_redirects: bool = True,
+) -> Any:
+    """Sign in (registering on first use) with the email-code flow; return the final response."""
+    return login_with_code(
+        client,
+        {"first_name": first_name, "last_name": last_name, "email": email, "next": next},
         follow_redirects=follow_redirects,
     )

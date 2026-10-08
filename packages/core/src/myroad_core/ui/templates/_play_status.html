@@ -1,0 +1,16 @@
+{#- Station line + progress for the step player. Swapped out-of-band with the step card on htmx answers. -#}
+{%- set sns = namespace(station=None, station_n=0) -%}
+{%- if block -%}
+{%- for tp in topics %}{% if block.blockId in tp.blockIds and sns.station is none %}{% set sns.station = tp %}{% set sns.station_n = loop.index %}{% endif %}{% endfor -%}
+{%- endif %}
+<div id="play-status" class="play-status"{% if status_oob %} hx-swap-oob="true"{% endif %}>
+  {% if sns.station %}
+  <p class="station-line tiny"><span class="station-pill current">{{ t('station_of', n=sns.station_n, total=topics|length) }}</span> <span class="station-name">{{ sns.station.emoji }} {{ sns.station.title }}</span></p>
+  {% else %}
+  <p class="lede">{{ meta.blurb }}</p>
+  {% endif %}
+  <div class="progress-wrap" aria-label="progress">
+    <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
+    <span class="progress-label">{{ t('progress_label', n=index + 1, total=total, done=mastered|length) }}</span>
+  </div>
+</div>
