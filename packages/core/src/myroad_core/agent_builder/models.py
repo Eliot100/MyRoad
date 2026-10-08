@@ -20,8 +20,14 @@ from myroad_core.content.schema import (
 )
 
 # Step types and subjects come from content/schema.py (the single source of truth).
-# Builder stage types are the distinct NODE_STAGE values, in schema order.
-STAGE_TYPES: tuple[str, ...] = tuple(dict.fromkeys(NODE_STAGE[n] for n in NODE_TYPES))
+# Builder stage types (distinct NODE_STAGE values) and the completeness rule
+# constants live with the publish rules (content/publish_rules.py).
+from myroad_core.content.publish_rules import (  # noqa: E402,F401  (re-exported)
+    MIN_STAGES,
+    MIN_TOPICS,
+    REQUIRED_STAGE_TYPES,
+    STAGE_TYPES,
+)
 # Stage type -> the node type the player gets (first schema node type for that stage).
 STAGE_NODE_TYPE: dict[str, str] = {}
 for _node_type in NODE_TYPES:
@@ -40,11 +46,6 @@ LENGTH_IDS: tuple[str, ...] = ("short", "medium", "long")
 CHANNELS: tuple[str, ...] = ("write", "read", "listen", "record", "mouse")
 # Optional extra audience for agent paths (schema groups; "agent" is always added).
 AUDIENCE_IDS: tuple[str, ...] = tuple(g for g in GROUPS if g != "agent")
-
-# Completeness rule for agent drafts (outline and filled path).
-MIN_TOPICS = 3
-MIN_STAGES = 12
-REQUIRED_STAGE_TYPES: tuple[str, ...] = ("explanation", "practice", "check")
 
 # Targets per requested length: (topics, stages per topic). All meet the minimum.
 LENGTH_TARGETS: dict[str, tuple[int, int]] = {

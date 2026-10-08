@@ -97,6 +97,16 @@ def test_revise_creates_new_version_id(store: PathStore) -> None:
     assert events[0].eventType == "path.revise_draft"
 
 
+def _add_node_block(store: PathStore, path_id: str, version_id: str) -> None:
+    """One player-format block, so the publish gate (no empty / legacy paths) accepts it."""
+    raw = store.get_version(path_id, version_id).model_dump(mode="json", by_alias=True)
+    raw["blocks"] = [{
+        "blockId": "blk_node_1", "type": "explanation", "title": "Intro",
+        "content": {"kids": {"id": "n001", "type": "learn", "title": "Intro", "body_he": "הסבר קצר"}},
+    }]
+    store.save_version(actor_id="user_author", correlation_id="corr_add_node", document=raw)
+
+
 def test_published_is_immutable(store: PathStore) -> None:
     created = store.create_draft(
         actor_id="user_author",
@@ -106,6 +116,7 @@ def test_published_is_immutable(store: PathStore) -> None:
     path_id = created.pathId
     version_id = created.versionId
     assert path_id and version_id
+    _add_node_block(store, path_id, version_id)
 
     # agent may request publish
     req = store.request_publish(
@@ -166,6 +177,7 @@ def test_agent_can_publish(store: PathStore) -> None:
         correlation_id="corr_agent_pub",
         name="Agent Publish",
     )
+    _add_node_block(store, created.pathId, created.versionId)  # type: ignore[arg-type]
     pub = store.publish(
         actor_id="user_author",
         agent_id="agent_author",

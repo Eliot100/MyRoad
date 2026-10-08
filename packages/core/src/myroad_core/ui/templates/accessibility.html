@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — {{ t('a11y_title') }}</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+{#- Accessibility statement (#60). Facts live in locales (a11y_*), the list in a11y_statement.py;
+    real-world details (coordinator, phone, email, dates) come from MYROAD_A11Y_* env vars and
+    show as a marked placeholder until set. Public: no sign-in needed. -#}
+{% macro detail(f) -%}
+  {%- if f.value and f.href -%}<a href="{{ f.href }}" dir="ltr">{{ f.value }}</a>
+  {%- elif f.value -%}<span dir="auto">{{ f.value }}</span>
+  {%- else -%}<mark class="a11y-placeholder" data-placeholder="{{ f.env }}">[{{ t('a11y_placeholder') }}: <bdi dir="ltr">{{ f.env }}</bdi>]</mark>
+  {%- endif -%}
+{%- endmacro %}
+<body class="platform a11y-page">
+  <header class="top shell-top">
+    <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    <a class="settings-link" href="/">{{ t('back_home') }}</a>
+  </header>
+
+  <main class="card a11y-card">
+    <h1>{{ t('a11y_title') }}</h1>
+    <p class="lede">{{ t('a11y_lede')|bdi }}</p>
+
+    <form method="post" action="/locale" class="a11y-langs" aria-label="{{ t('language') }}">
+      <input type="hidden" name="next" value="/accessibility" />
+      {% for loc in locales %}
+      <button type="submit" name="locale" value="{{ loc }}" lang="{{ loc }}" class="secondary"{% if loc == locale %} aria-current="true"{% endif %}>{{ locale_labels.get(loc, loc) }}</button>
+      {% endfor %}
+    </form>
+
+    <section aria-labelledby="a11y-standard">
+      <h2 id="a11y-standard">{{ t('a11y_standard_h') }}</h2>
+      <p>{{ t('a11y_standard')|bdi }}</p>
+    </section>
+
+    <section aria-labelledby="a11y-done">
+      <h2 id="a11y-done">{{ t('a11y_done_h') }}</h2>
+      <ul class="a11y-list">
+        {% for k in statement.done %}<li data-key="{{ k }}">{{ t(k)|bdi }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section aria-labelledby="a11y-gaps">
+      <h2 id="a11y-gaps">{{ t('a11y_gaps_h') }}</h2>
+      <ul class="a11y-list">
+        {% for k in statement.gaps %}<li data-key="{{ k }}">{{ t(k)|bdi }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    <section aria-labelledby="a11y-contact">
+      <h2 id="a11y-contact">{{ t('a11y_contact_h') }}</h2>
+      <p>{{ t('a11y_contact')|bdi }}</p>
+      <dl class="a11y-details">
+        {% for f in statement.contact %}
+        <div data-field="{{ f.key }}"><dt>{{ t(f.label) }}</dt><dd>{{ detail(f) }}</dd></div>
+        {% endfor %}
+      </dl>
+    </section>
+
+    <section aria-labelledby="a11y-tested">
+      <h2 id="a11y-tested">{{ t('a11y_tested_h') }}</h2>
+      <p>{{ t('a11y_tested')|bdi }}</p>
+      <dl class="a11y-details">
+        {% for key in ('org', 'updated', 'reviewed') %}{% set f = statement.fields[key] %}
+        <div data-field="{{ f.key }}"><dt>{{ t(f.label) }}</dt><dd>{{ detail(f) }}</dd></div>
+        {% endfor %}
+      </dl>
+    </section>
+  </main>
+
+  <footer>
+    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
+  </footer>
+</body>
+</html>

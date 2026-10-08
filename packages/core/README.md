@@ -96,6 +96,24 @@ authenticated principal the call gets `403 ACTOR_MISMATCH`.
 In-process callers (`AgentTools`, the path builder, the golden loop) do not go
 over HTTP and are unchanged.
 
+**Publish gate (every route).** `PathStore.publish` re-runs Path Builder's
+checks before changing status: the format check (`blocking_problems`) for any
+document in the player node format (`content.kids`), plus the completeness rule
+(`check_path_completeness`) for agent drafts (any version of the path carries
+`agentBuild`). On failure it records a deny audit event and raises
+`PublishBlockedError`; nothing changes status. `AgentTools.publish` returns
+`ok=false` with `PATH_FORMAT_ERROR` / `PATH_NOT_COMPLETE` and the list in
+`data.blockingProblems` / `data.issues`; `POST /tools/publish` answers `422`
+with that body. A path with no blocks is always refused (`PATH_EMPTY`).
+Legacy freeze-format documents (no `content.kids`, e.g. blocks added with
+`/tools/addBlock` without a `kids` node) are refused (`PATH_LEGACY_FORMAT`)
+unless the in-process caller passes `allow_legacy=True`; only the golden loop
+demo does, and no HTTP route can set it (this includes `/author/publish` on
+the legacy demo screen).
+The rules live in `myroad_core/content/publish_rules.py` (moved unchanged from
+`agent_builder/completeness.py`, which re-exports them for now), so the store,
+`/tools` and the path builder share one copy.
+
 ## Email sign-in (one-time code)
 
 `/login` asks for an email (plus first and last name for a new account) and
