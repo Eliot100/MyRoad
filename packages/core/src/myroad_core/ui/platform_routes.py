@@ -1168,6 +1168,9 @@ def register_platform_routes(
             if ok:
                 sess.pop("flash", None)
                 done = _maybe_done(sess, len(blocks))
+                if done:
+                    # Record the attempt here, in the POST; GET ?view=stats only shows it (#53).
+                    _finalize_attempt(sess, doc, locale)
                 continue_url = f"/play/{path_id}?view=stats" if done else f"/play/{path_id}?view=learn"
             return _render_step(
                 request,

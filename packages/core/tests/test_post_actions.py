@@ -12,6 +12,7 @@ from myroad_core.store import PathStore
 pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
+from auth_helpers import login  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from starlette.requests import Request  # noqa: E402
 
@@ -90,8 +91,7 @@ def builder_client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     app.state.path_generator_factory = lambda mode: FakePathGenerator()
     with TestClient(app) as client:
         client.cookies.set("myroad_locale", "en")
-        client.post("/login", data={"first_name": "Noa", "last_name": "Levi", "email": "post@example.com",
-                                    "next": "/"}, follow_redirects=True)
+        login(client, "post@example.com", first_name="Noa", last_name="Levi")
         yield client, store
     store.close()
 
@@ -154,7 +154,7 @@ def test_resume_someone_elses_draft_is_refused(builder_client) -> None:
     client.post("/add-path/new")
     action = re.findall(r'action="(/add-path/resume/[^"]+)"', client.get("/add-path").text)[0]
     client.post("/logout")
-    client.post("/login", data={"first_name": "Eve", "last_name": "X", "email": "eve@example.com", "next": "/"})
+    login(client, "eve@example.com", first_name="Eve", last_name="X")
     r = client.post(action, follow_redirects=False)
     assert r.headers["location"] == "/add-path"
 
@@ -166,8 +166,7 @@ def play_client(tmp_path):
     store = PathStore(str(tmp_path / "play.db"))
     app = create_learner_app(store=store, seed=True, seed_content=True)
     with TestClient(app) as c:
-        c.post("/login", data={"first_name": "P", "last_name": "L", "email": "play@example.com", "next": "/"},
-               follow_redirects=True)
+        login(c, "play@example.com", first_name="P", last_name="L")
         yield c, store
     store.close()
 
@@ -229,3 +228,22 @@ def test_finishing_answer_records_the_attempt_before_the_stats_get(play_client) 
     assert page.status_code == 200
     assert _attempt_count(store, uid) == 1
     assert store.latest_attempt(uid, PATH)["masteryPct"] >= 90
+
+
+def test_htmx_finishing_answer_records_the_attempt(play_client) -> None:
+    c, store = play_client
+    c.post(f"/play/{PATH}/start", data={}, follow_redirects=True)
+    app = c.app
+    sess = next(s for s in app.state.play_sessions.values() if s["pathId"] == PATH)
+    blocks = app.state.tools.get_version(actor_id="t", correlation_id="t", path_id=PATH,
+                                         version_id=sess["versionId"]).data["document"]["blocks"]
+    # Everything but the first practice step is mastered: a right answer finishes the path.
+    sess["mastered"] = {b["blockId"] for b in blocks if b["blockId"] != blocks[1]["blockId"]}
+    sess["index"] = 1
+    uid = _uid(c)
+    r = c.post(f"/play/{PATH}/answer", data={"choice": "b"}, headers={"HX-Request": "true"})
+    assert r.status_code == 200 and f'href="/play/{PATH}?view=stats"' in r.text
+    assert _attempt_count(store, uid) == 1  # recorded by the htmx POST
+    assert "stats-card" in c.get(f"/play/{PATH}?view=stats").text
+    assert _attempt_count(store, uid) == 1
+
