@@ -242,7 +242,7 @@
   "draft_problem_severity_warning": "Warning",
   "builder_and_more": "and {n} more",
   "login_code_title": "Check your email",
-  "login_code_lede": "We sent a 6-digit code to {email}. It works once and expires in 15 minutes.",
+  "login_code_lede": "If {email} can sign in, we sent a 6-digit code to it. A code works once and expires in 15 minutes.",
   "login_code_label": "6-digit code",
   "login_code_submit": "Verify and sign in",
   "login_code_restart": "Use a different email or send a new code",

@@ -242,7 +242,7 @@
   "draft_problem_severity_warning": "אזהרה",
   "builder_and_more": "ועוד {n}",
   "login_code_title": "בדקו את האימייל",
-  "login_code_lede": "שלחנו קוד בן 6 ספרות אל {email}. הקוד עובד פעם אחת ותקף 15 דקות.",
+  "login_code_lede": "אם אפשר להיכנס עם {email}, שלחנו אליו קוד בן 6 ספרות. הקוד עובד פעם אחת ותקף 15 דקות.",
   "login_code_label": "קוד בן 6 ספרות",
   "login_code_submit": "אימות וכניסה",
   "login_code_restart": "אימייל אחר או שליחת קוד חדש",

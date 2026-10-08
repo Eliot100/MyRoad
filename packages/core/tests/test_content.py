@@ -19,7 +19,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
-from auth_helpers import login_with_code
+from auth_helpers import login_with_code, request_login_code
 
 from myroad_core.ui.app import create_learner_app
 
@@ -432,8 +432,10 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
                 data={"email": "gate@example.com", "next": "/settings"},
                 follow_redirects=False,
             )
+            # Unknown email: neutral answer (code page), no account, no session
             assert missing.status_code == 303
-            assert "mode=register" in missing.headers["location"]
+            assert missing.headers["location"].startswith("/login/verify")
+            assert _uid(c) is None and store.get_learner_by_email("gate@example.com") is None
             created = login_with_code(
                 c,
                 data={
@@ -475,15 +477,15 @@ def _cookie_headers(resp, name: str) -> list[str]:
 
 
 def test_session_cookie_is_secure_by_default(tmp_path, monkeypatch) -> None:
-    monkeypatch.delenv("MYROAD_DEV_INSECURE_COOKIES", raising=False)
     store = PathStore(str(tmp_path / "sec.db"))
     app = create_learner_app(store=store, seed=False, seed_content=False)
     try:
         with TestClient(app) as c:
-            r = login_with_code(
-                c, data={"first_name": "S", "last_name": "C", "email": "secure@example.com", "next": "/"},
-                follow_redirects=False,
-            )
+            _, outbox = request_login_code(
+                c, {"first_name": "S", "last_name": "C", "email": "secure@example.com", "next": "/"}
+            )  # step 1 with the dev flag so the test client keeps the challenge cookie
+            monkeypatch.delenv("MYROAD_DEV_INSECURE_COOKIES", raising=False)
+            r = c.post("/login/verify", data={"code": outbox[-1][1], "next": "/"}, follow_redirects=False)
             (cookie,) = _cookie_headers(r, "myroad_session")
             low = cookie.lower()
             assert "secure" in low and "httponly" in low and "samesite=lax" in low

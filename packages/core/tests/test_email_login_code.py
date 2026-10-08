@@ -7,8 +7,10 @@ import pytest
 
 from myroad_core.auth.login_codes import (
     CODE_TTL_SECONDS,
-    MAX_CODES_PER_WINDOW,
+    MAX_ACTIVE_CODES,
+    MAX_FAILURES_PER_EMAIL,
     MAX_VERIFY_ATTEMPTS,
+    SEND_LIMITS,
     verify_code_hash,
 )
 from myroad_core.store import PathStore
@@ -118,21 +120,147 @@ def test_malformed_or_missing_code(store: PathStore) -> None:
     assert store.verify_login_challenge(cid, f"{code[:3]} {code[3:]}")
 
 
-def test_new_code_replaces_older_one(store: PathStore) -> None:
+def test_a_new_code_does_not_cancel_the_previous_ones(store: PathStore) -> None:
+    """Lockout abuse: someone else requesting codes must not kill the code I am typing."""
     cid1, code1 = store.start_login_challenge(email="re@example.com", first_name="R", last_name="E")
-    cid2, code2 = store.start_login_challenge(email="re@example.com", first_name="R", last_name="E")
+    others = [store.start_login_challenge(email="re@example.com", first_name="R", last_name="E")
+              for _ in range(MAX_ACTIVE_CODES - 1)]
+    assert store.verify_login_challenge(cid1, code1)["email"] == "re@example.com"
+    cid_x, code_x = others[-1]
+    assert store.verify_login_challenge(cid_x, code_x)
+
+
+def test_only_the_newest_active_codes_stay_usable(store: PathStore) -> None:
+    issued = [store.start_login_challenge(email="cap@example.com", first_name="C", last_name="P")
+              for _ in range(MAX_ACTIVE_CODES + 1)]
+    oldest_cid, oldest_code = issued[0]
     with pytest.raises(ValueError, match="code_used"):
-        store.verify_login_challenge(cid1, code1)
-    assert store.verify_login_challenge(cid2, code2)
+        store.verify_login_challenge(oldest_cid, oldest_code)
+    newest_cid, newest_code = issued[-1]
+    assert store.verify_login_challenge(newest_cid, newest_code)
 
 
-def test_codes_per_email_are_rate_limited(store: PathStore) -> None:
-    for _ in range(MAX_CODES_PER_WINDOW):
-        store.start_login_challenge(email="flood@example.com", first_name="F", last_name="L")
-    with pytest.raises(ValueError, match="too_many_codes"):
-        store.start_login_challenge(email="flood@example.com", first_name="F", last_name="L")
+def test_per_email_failure_cap_over_24h(store: PathStore) -> None:
+    store.register_or_login(email="cap24@example.com", first_name="C", last_name="F")
+    failures = 0
+    while failures < MAX_FAILURES_PER_EMAIL:
+        cid, code = store.start_login_challenge(email="cap24@example.com")
+        for _ in range(min(MAX_VERIFY_ATTEMPTS, MAX_FAILURES_PER_EMAIL - failures)):
+            with pytest.raises(ValueError):
+                store.verify_login_challenge(cid, _wrong(code))
+            failures += 1
+    # Cap reached: even a fresh code with the right value is refused
+    cid, code = store.start_login_challenge(email="cap24@example.com")
+    with pytest.raises(ValueError, match="code_locked"):
+        store.verify_login_challenge(cid, code)
+    row = store._conn.execute("SELECT attempts FROM login_codes WHERE challenge_id = ?", (cid,)).fetchone()
+    assert row[0] == 0  # refused before any hashing / attempt
+    # After the window it works again
+    later = datetime.now(timezone.utc) + timedelta(hours=24, minutes=1)
+    cid2, code2 = store.start_login_challenge(email="cap24@example.com", now=later)
+    assert store.verify_login_challenge(cid2, code2, now=later + timedelta(seconds=1))
+
+
+def test_parallel_guesses_never_exceed_the_attempt_limit(tmp_path) -> None:
+    import threading
+
+    store = PathStore(str(tmp_path / "race.db"))
+    try:
+        cid, code = store.start_login_challenge(email="race@example.com", first_name="R", last_name="C")
+        wrong = _wrong(code)
+        results: list[str] = []
+        errors: list[BaseException] = []
+        barrier = threading.Barrier(40)
+
+        def guess() -> None:
+            barrier.wait()
+            try:
+                store.verify_login_challenge(cid, wrong)
+                results.append("ok")
+            except ValueError as exc:
+                results.append(str(exc))
+            except BaseException as exc:  # noqa: BLE001 - e.g. sqlite misuse
+                errors.append(exc)
+
+        threads = [threading.Thread(target=guess) for _ in range(40)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        assert errors == []
+        assert len(results) == 40
+        checked = [r for r in results if r in ("code_wrong", "code_locked") ]
+        row = store._conn.execute(
+            "SELECT attempts, failures FROM login_codes WHERE challenge_id = ?", (cid,)
+        ).fetchone()
+        assert row["attempts"] == MAX_VERIFY_ATTEMPTS
+        assert row["failures"] == MAX_VERIFY_ATTEMPTS  # only 5 guesses were ever hashed
+        assert results.count("code_wrong") + sum(1 for r in results if r == "code_locked") == 40
+        assert len(checked) == 40
+        with pytest.raises(ValueError, match="code_locked"):
+            store.verify_login_challenge(cid, code)
+    finally:
+        store.close()
+
+
+def test_parallel_correct_code_logs_in_exactly_once(tmp_path) -> None:
+    import threading
+
+    store = PathStore(str(tmp_path / "race2.db"))
+    try:
+        cid, code = store.start_login_challenge(email="once2@example.com", first_name="O", last_name="T")
+        results: list[str] = []
+        barrier = threading.Barrier(10)
+
+        def go() -> None:
+            barrier.wait()
+            try:
+                store.verify_login_challenge(cid, code)
+                results.append("ok")
+            except ValueError as exc:
+                results.append(str(exc))
+
+        threads = [threading.Thread(target=go) for _ in range(10)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        assert results.count("ok") == 1
+        assert store._conn.execute("SELECT COUNT(*) FROM learners WHERE email = ?",
+                                   ("once2@example.com",)).fetchone()[0] == 1
+    finally:
+        store.close()
+
+
+def test_send_limits_per_email_ip_email_and_ip(store: PathStore) -> None:
+    store.register_or_login(email="lim@example.com", first_name="L", last_name="M")
+    kinds = [store.request_login(email="lim@example.com", client_ip="1.1.1.1").kind
+             for _ in range(SEND_LIMITS["email_ip"] + 1)]
+    assert kinds[:-1] == ["code"] * SEND_LIMITS["email_ip"] and kinds[-1] == "rate_limited"
+    # Another IP may still ask for the same email until the per-email limit
+    more = [store.request_login(email="lim@example.com", client_ip=f"2.2.2.{i}").kind
+            for i in range(SEND_LIMITS["email"])]
+    assert "rate_limited" in more
+    assert more.count("code") == SEND_LIMITS["email"] - SEND_LIMITS["email_ip"]
+    # Per-IP limit across many emails
+    ip_kinds = [store.request_login(email=f"u{i}@example.com", client_ip="9.9.9.9").kind
+                for i in range(SEND_LIMITS["ip"] + 1)]
+    assert ip_kinds[-1] == "rate_limited"
+    assert all(k == "no_account" for k in ip_kinds[:-1])
+    # Window passes: allowed again
     later = datetime.now(timezone.utc) + timedelta(minutes=16)
-    assert store.start_login_challenge(email="flood@example.com", first_name="F", last_name="L", now=later)
+    assert store.request_login(email="lim@example.com", client_ip="1.1.1.1", now=later).kind == "code"
+
+
+def test_request_login_is_neutral_about_accounts(store: PathStore) -> None:
+    store.register_or_login(email="known@example.com", first_name="K", last_name="N")
+    known = store.request_login(email="known@example.com", client_ip="3.3.3.3")
+    unknown = store.request_login(email="unknown@example.com", client_ip="3.3.3.3")
+    assert known.kind == "code" and known.code
+    assert unknown.kind == "no_account" and unknown.code is None
+    assert len(known.challenge_id) == len(unknown.challenge_id)
+    assert store.get_login_challenge_email(unknown.challenge_id) is None
+    assert store.get_learner_by_email("unknown@example.com") is None
 
 
 # ---------- HTTP flow ----------
@@ -235,15 +363,84 @@ def test_verify_without_challenge_goes_back_to_login(ui) -> None:
     assert c.cookies.get("myroad_session") is None
 
 
-def test_step_one_errors_keep_old_behaviour(ui) -> None:
+def test_register_form_without_names_is_a_form_error(ui) -> None:
     c, _ = ui
-    r, outbox = request_login_code(c, {"email": "fresh@example.com", "next": "/"})
+    r, outbox = request_login_code(c, {"email": "fresh@example.com", "next": "/", "mode": "register"})
     assert "mode=register" in r.headers["location"] and "error=name_required" in r.headers["location"]
     assert outbox == []
 
 
-def test_no_mail_config_logs_code_to_console(ui, capsys) -> None:
+def _strip_cookie_value(headers) -> list[str]:
+    out = []
+    for h in headers.get_list("set-cookie"):
+        name, _, rest = h.partition("=")
+        out.append(name + "=<v>;" + rest.partition(";")[2])
+    return out
+
+
+def test_known_and_unknown_email_get_the_same_response(ui) -> None:
     c, store = ui
+    store.register_or_login(email="known.user@example.com", first_name="K", last_name="U")
+    notices: list[str] = []
+    c.app.state.login_notice_sender = notices.append
+    r_known, out_known = request_login_code(c, {"email": "known.user@example.com", "next": "/"})
+    c.cookies.clear()
+    r_unknown, out_unknown = request_login_code(c, {"email": "nobody.here@example.com", "next": "/"})
+    loc = lambda r, e: r.headers["location"].replace(e.replace("@", "%40"), "<email>")  # noqa: E731
+    assert r_known.status_code == r_unknown.status_code == 303
+    assert loc(r_known, "known.user@example.com") == loc(r_unknown, "nobody.here@example.com")
+    assert _strip_cookie_value(r_known.headers) == _strip_cookie_value(r_unknown.headers)
+    assert r_known.text == r_unknown.text
+    # Only the email content differs: a code for the account, a notice otherwise
+    assert [e for e, _ in out_known] == ["known.user@example.com"] and out_unknown == []
+    assert notices == ["nobody.here@example.com"]
+    # The verify page looks the same too
+    p_known = c.get(r_known.headers["location"])
+    c.cookies.set("myroad_login", "x", path="/login")
+    p_unknown = c.get(r_unknown.headers["location"])
+    assert p_known.status_code == p_unknown.status_code == 200
+    norm = lambda text, e: text.replace(e, "E").replace(e.replace("@", "%40"), "E")  # noqa: E731
+    assert norm(p_known.text, "known.user@example.com") == norm(p_unknown.text, "nobody.here@example.com")
+    assert store.get_learner_by_email("nobody.here@example.com") is None
+
+
+def test_rate_limited_request_gets_the_same_response(ui) -> None:
+    c, store = ui
+    store.register_or_login(email="rl@example.com", first_name="R", last_name="L")
+    responses = [request_login_code(c, {"email": "rl@example.com", "next": "/"})
+                 for _ in range(SEND_LIMITS["email_ip"] + 1)]
+    sent = [len(out) for _, out in responses]
+    assert sent == [1] * SEND_LIMITS["email_ip"] + [0]
+    first, last = responses[0][0], responses[-1][0]
+    assert first.headers["location"] == last.headers["location"]
+    assert _strip_cookie_value(first.headers) == _strip_cookie_value(last.headers)
+
+
+def test_login_challenge_cookie_is_secure_by_default(ui, monkeypatch) -> None:
+    c, _ = ui
+    monkeypatch.delenv("MYROAD_DEV_INSECURE_COOKIES", raising=False)
+    r, _ = request_login_code(c, NEW_USER)
+    (cookie,) = [h for h in r.headers.get_list("set-cookie") if h.startswith("myroad_login=")]
+    low = cookie.lower()
+    assert "secure" in low and "httponly" in low and "path=/login" in low
+
+
+def test_no_mail_config_without_dev_flag_fails_closed(ui, monkeypatch, capsys) -> None:
+    c, store = ui
+    monkeypatch.delenv("MYROAD_DEV_MAIL_CONSOLE", raising=False)
+    r = c.post("/login", data=NEW_USER, follow_redirects=False)
+    assert "error=mail_failed" in r.headers["location"]
+    assert c.cookies.get("myroad_login") is None
+    assert "Code for" not in capsys.readouterr().err
+    with pytest.raises(Exception, match="MYROAD_SMTP_HOST"):
+        from myroad_core.auth.mailer import send_login_code
+
+        send_login_code("x@example.com", "123456")
+
+
+def test_dev_flag_logs_code_to_console(ui, capsys, monkeypatch) -> None:
+    c, store = ui
+    monkeypatch.setenv("MYROAD_DEV_MAIL_CONSOLE", "1")
     r = c.post("/login", data=NEW_USER, follow_redirects=False)
     assert r.headers["location"].startswith("/login/verify")
     err = capsys.readouterr().err
@@ -268,7 +465,11 @@ def test_smtp_config_sends_mail_and_does_not_log_code(ui, monkeypatch, capsys) -
         def __exit__(self, *a):
             return False
 
-        def starttls(self):
+        def starttls(self, context=None):
+            import ssl
+
+            assert isinstance(context, ssl.SSLContext)
+            assert context.verify_mode == ssl.CERT_REQUIRED and context.check_hostname
             sent.append(("starttls",))
 
         def login(self, user, pw):

@@ -11,7 +11,7 @@ from myroad_core.auth.agent_credential import (
     agent_credential_matches,
 )
 from myroad_core.auth.login_codes import CODE_TTL_SECONDS, MAX_VERIFY_ATTEMPTS, LoginCodeMixin
-from myroad_core.auth.mailer import mail_configured, send_login_code
+from myroad_core.auth.mailer import mail_configured, send_login_code, send_no_account_notice
 from myroad_core.auth.ownership import AGENT_ALLOWED_PATHS_ENV, may_act_on_path, path_author
 from myroad_core.auth.principal import Principal, resolve_principal
 from myroad_core.auth.sessions import (
@@ -44,4 +44,5 @@ __all__ = [
     "path_author",
     "resolve_principal",
     "send_login_code",
+    "send_no_account_notice",
 ]

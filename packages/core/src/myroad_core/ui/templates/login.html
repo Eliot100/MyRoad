@@ -25,6 +25,7 @@
     {% if mode == 'verify' %}
     <form method="post" action="/login/verify" class="login-form" autocomplete="off">
       <input type="hidden" name="next" value="{{ next_url }}" />
+      <input type="hidden" name="email" value="{{ current_email }}" />
       <label for="code">{{ t('login_code_label') }}</label>
       <input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required autocomplete="one-time-code" autofocus />
       <button type="submit" class="primary big">{{ t('login_code_submit') }}</button>

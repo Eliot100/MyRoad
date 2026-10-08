@@ -96,16 +96,30 @@ emails a 6-digit code. The user enters it at `/login/verify`. The session
 (`myroad_session` cookie) starts only after the code checks out, and a new
 account is created only then.
 
-- A code expires after 15 minutes and works once. A new code replaces the old
-  one. After 5 wrong tries the code is locked, and an email can get at most 5
-  codes per 15 minutes.
-- SQLite (`login_codes`) keeps only a salted PBKDF2-SHA256 hash of the code.
-  There are no passwords.
+- A code expires after 15 minutes and works once. Up to 3 codes per email stay
+  active, so a stranger asking for codes cannot cancel the one you are typing
+  (a 4th retires the oldest).
+- Guessing: each code allows 5 tries. The try is claimed with one conditional
+  `UPDATE` (tries < 5, unused, unexpired) before the code is hashed, and store
+  access is serialized by a lock, so parallel guesses cannot pass the limit.
+  An email is also capped at 15 wrong codes per 24 hours, across all codes.
+- Sending: at most 5 codes per email+IP, 10 per email and 30 per IP every
+  15 minutes. Over the limit, no mail is sent but the answer looks the same.
+- Same answer for every email: known, unknown and rate-limited requests all go
+  to the code page with the same cookie. A known email gets a code; an unknown
+  email gets a short "no account, register here" note. Register mode (with
+  names) creates the account after the code checks out.
+- SQLite (`login_codes`, `login_send_log`) keeps only a salted PBKDF2-SHA256
+  hash of the code. There are no passwords.
 - Mail settings (server env only, never in git): `MYROAD_SMTP_HOST` (enables
   mail), `MYROAD_SMTP_PORT` (587), `MYROAD_SMTP_USER`, `MYROAD_SMTP_PASSWORD`,
-  `MYROAD_SMTP_STARTTLS` (`1`), `MYROAD_MAIL_FROM`.
-- **Local / demo:** without `MYROAD_SMTP_HOST` the code is printed to the server
-  console (stderr): `[MyRoad login] ... Code for you@example.com: 123456`.
+  `MYROAD_SMTP_STARTTLS` (`1`, uses a verified TLS context), `MYROAD_MAIL_FROM`.
+- Without `MYROAD_SMTP_HOST` sign-in **fails closed** (`mail_failed`), unless
+  `MYROAD_DEV_MAIL_CONSOLE=1` is set for local dev. Then the code is printed to
+  stderr: `[MyRoad login] dev mail console ... Code for you@example.com: 123456`.
+  Never set it on a shared or public server.
+- Client IP is the direct peer address. Behind a proxy, run uvicorn with
+  `--proxy-headers` and a trusted `--forwarded-allow-ips`.
 
 ## What this package does
 

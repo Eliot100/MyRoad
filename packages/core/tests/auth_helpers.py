@@ -7,16 +7,22 @@ from __future__ import annotations
 
 from typing import Any
 
+__all__ = ["login_with_code", "request_login_code"]
+
 
 def request_login_code(client: Any, data: dict[str, str]) -> tuple[Any, list[tuple[str, str]]]:
     outbox: list[tuple[str, str]] = []
     app = client.app
     previous = getattr(app.state, "login_code_sender", None)
+    previous_notice = getattr(app.state, "login_notice_sender", None)
     app.state.login_code_sender = lambda email, code: outbox.append((email, code))
+    if previous_notice is None:
+        app.state.login_notice_sender = lambda email: None  # "no account" notice: nothing to capture
     try:
         resp = client.post("/login", data=data, follow_redirects=False)
     finally:
         app.state.login_code_sender = previous
+        app.state.login_notice_sender = previous_notice
     return resp, outbox
 
 
