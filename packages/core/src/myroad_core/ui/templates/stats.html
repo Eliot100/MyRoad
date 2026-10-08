@@ -17,7 +17,7 @@
 
   <section class="card hero stats-card">
     <h1>🎉 {{ t('stats_title') }}</h1>
-    <p class="lede">{{ meta.emoji }} {{ meta.title }}</p>
+    <p class="lede">{{ meta.emoji }} <span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span></p>
     <p class="stats-msg">{{ attempt.message or t('stats_message') }}</p>
 
     <div class="stats-grid">
@@ -53,7 +53,7 @@
       <p class="kicker">🔓 {{ t('unlocked_next') }}</p>
       <ul class="plain-list">
         {% for p in unlocked_next %}
-        <li><a class="lock-link" href="/play/{{ p.pathId }}"><bdi>{{ p.title }}</bdi></a></li>
+        <li><a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a></li>
         {% endfor %}
       </ul>
     </div>
