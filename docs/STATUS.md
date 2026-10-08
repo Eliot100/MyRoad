@@ -1,10 +1,14 @@
 # סטטוס MyRoad
 
-עודכן: 08.10.2026 04:40 (שעון ישראל). נוצר אוטומטית מ-GitHub (Eliot100/MyRoad, Eliot100/MyRoad-content, Stand-up #34), לא לערוך ידנית.
+עודכן: 08.10.2026 09:14 (שעון ישראל). נוצר אוטומטית מ-GitHub (Eliot100/MyRoad, Eliot100/MyRoad-content, Stand-up #34), לא לערוך ידנית.
 
-נעשה: 32 · בעבודה: 6 · חסום/מחכה לאליוט: 9 · להמשך: 15
+נעשה: 38 · בעבודה: 3 · חסום/מחכה לאליוט: 8 · להמשך: 14
 
 ## נעשה (14 ימים אחרונים)
+
+**backend**
+- 08.10 [PR MyRoad#47](https://github.com/Eliot100/MyRoad/pull/47) Email login: one-time 6-digit code proves email ownership (#41, stacked on #46) (סוגר [#41](https://github.com/Eliot100/MyRoad/issues/41))
+- 08.10 [PR MyRoad#46](https://github.com/Eliot100/MyRoad/pull/46) Auth on /tools/*: session or agent credential, actor never from the body (#40) (סוגר [#40](https://github.com/Eliot100/MyRoad/issues/40))
 
 **content**
 - 08.10 [PR content#5](https://github.com/Eliot100/MyRoad-content/pull/5) Math 3 units, new program (adult) (סוגר [#4](https://github.com/Eliot100/MyRoad-content/issues/4))
@@ -13,6 +17,10 @@
 **dev**
 - 08.10 [PR MyRoad#64](https://github.com/Eliot100/MyRoad/pull/64) cd: Docker image, smoke test, and CI image build (סוגר [#63](https://github.com/Eliot100/MyRoad/issues/63))
 - 08.10 [PR content#7](https://github.com/Eliot100/MyRoad-content/pull/7) ci: run MyRoad core tests against this repo's content (סוגר [#6](https://github.com/Eliot100/MyRoad-content/issues/6))
+
+**frank**
+- 08.10 [PR MyRoad#78](https://github.com/Eliot100/MyRoad/pull/78) docs: work plan for Eliot + SuperGrok (#77) (סוגר [#77](https://github.com/Eliot100/MyRoad/issues/77))
+- 08.10 [PR MyRoad#75](https://github.com/Eliot100/MyRoad/pull/75) docs: central status file docs/STATUS.md + SuperGrok prompts (#74) (סוגר [#74](https://github.com/Eliot100/MyRoad/issues/74))
 
 **path-builder**
 - 08.10 [PR MyRoad#45](https://github.com/Eliot100/MyRoad/pull/45) Builder: offer an existing path before building a new one (סוגר [#43](https://github.com/Eliot100/MyRoad/issues/43))
@@ -24,6 +32,8 @@
 - 08.10 [PR MyRoad#33](https://github.com/Eliot100/MyRoad/pull/33) Schema v2: adult paths, step kind, interleaved review, prerequisites, unified score (סוגר [#35](https://github.com/Eliot100/MyRoad/issues/35))
 
 **ui**
+- 08.10 [PR MyRoad#76](https://github.com/Eliot100/MyRoad/pull/76) UI: accessibility statement page in he/en/ar, linked from every footer and settings (#60) (סוגר [#60](https://github.com/Eliot100/MyRoad/issues/60))
+- 08.10 [PR MyRoad#73](https://github.com/Eliot100/MyRoad/pull/73) UI: bdi filter wraps a bracketed math group as one LTR run (#71) (סוגר [#71](https://github.com/Eliot100/MyRoad/issues/71))
 - 08.10 [PR MyRoad#69](https://github.com/Eliot100/MyRoad/pull/69) UI: map ↔ step player view transition; content falls back to the path's own language (#58) (סוגר [#58](https://github.com/Eliot100/MyRoad/issues/58))
 - 08.10 [PR MyRoad#68](https://github.com/Eliot100/MyRoad/pull/68) UI: long map jumps to the current station, compact on phones, review stations by shape (#… (סוגר [#57](https://github.com/Eliot100/MyRoad/issues/57))
 - 08.10 [PR MyRoad#65](https://github.com/Eliot100/MyRoad/pull/65) UI: step player answers in place (htmx), feedback under the choices, bdi for math (#56) (סוגר [#56](https://github.com/Eliot100/MyRoad/issues/56))
@@ -54,18 +64,12 @@
 PRs פתוחים, ומשימות עם משויך שאין להן PR.
 
 **backend**
-- [PR MyRoad#46](https://github.com/Eliot100/MyRoad/pull/46) Auth on /tools/*: session or agent credential, actor never from the body (#40) (משימה [#40](https://github.com/Eliot100/MyRoad/issues/40)). בדיקות ירוקות, מיזוג ידני אחרי ביקורת
-- [PR MyRoad#47](https://github.com/Eliot100/MyRoad/pull/47) Email login: one-time 6-digit code proves email ownership (#41, stacked on #46) (משימה [#41](https://github.com/Eliot100/MyRoad/issues/41)). מוערם על `backend/40-tools-auth`, אין בדיקות, מיזוג ידני אחרי ביקורת
-- [PR MyRoad#48](https://github.com/Eliot100/MyRoad/pull/48) Publish gate in store.publish, AgentTools.publish and POST /tools/publish (#42, stacked o… (משימה [#42](https://github.com/Eliot100/MyRoad/issues/42)). מוערם על `backend/40-tools-auth`, אין בדיקות, מיזוג ידני אחרי ביקורת
-- [PR MyRoad#62](https://github.com/Eliot100/MyRoad/pull/62) Login limits: 8-digit codes, per-email/per-IP send+verify limits, trusted devices (#49, #… (משימה [#49](https://github.com/Eliot100/MyRoad/issues/49), [#50](https://github.com/Eliot100/MyRoad/issues/50)). מוערם על `backend/41-email-login-code`, אין בדיקות, מיזוג ידני אחרי ביקורת
-- [PR MyRoad#66](https://github.com/Eliot100/MyRoad/pull/66) No state change on GET; default ports in Origin check; TLS proxy docs (#53) (משימה [#53](https://github.com/Eliot100/MyRoad/issues/53)). מוערם על `backend/40-tools-auth`, אין בדיקות, מיזוג ידני אחרי ביקורת
-
-**ui**
-- [PR MyRoad#73](https://github.com/Eliot100/MyRoad/pull/73) UI: bdi filter wraps a bracketed math group as one LTR run (#71) (משימה [#71](https://github.com/Eliot100/MyRoad/issues/71)). בדיקות רצות, auto-merge פעיל
+- [PR MyRoad#48](https://github.com/Eliot100/MyRoad/pull/48) Publish gate in store.publish, AgentTools.publish and POST /tools/publish (#42, stacked o… (משימה [#42](https://github.com/Eliot100/MyRoad/issues/42)). בדיקות ירוקות, מיזוג ידני אחרי ביקורת
+- [PR MyRoad#62](https://github.com/Eliot100/MyRoad/pull/62) Login limits: 8-digit codes, per-email/per-IP send+verify limits, trusted devices (#49, #… (משימה [#49](https://github.com/Eliot100/MyRoad/issues/49), [#50](https://github.com/Eliot100/MyRoad/issues/50)). אין בדיקות, מיזוג ידני אחרי ביקורת
+- [PR MyRoad#66](https://github.com/Eliot100/MyRoad/pull/66) No state change on GET; default ports in Origin check; TLS proxy docs (#53) (משימה [#53](https://github.com/Eliot100/MyRoad/issues/53)). אין בדיקות, מיזוג ידני אחרי ביקורת
 
 ## חסום / מחכה לאליוט
 - קבוע: חיבור Cloudflare AI Gateway (רק אליוט יכול). [הוראות](../packages/core/docs/cloudflare-ai-gateway.md)
-- [MyRoad#74](https://github.com/Eliot100/MyRoad/issues/74) Central status file docs/STATUS.md (frank: מחכה ל-Cloudflare, מזכיר את אליוט)
 - [MyRoad#72](https://github.com/Eliot100/MyRoad/issues/72) reuse-check: schema-valid JSON path generation from an LLM (builder) (researcher: מחכה ל-Cloudflare)
 - [MyRoad#54](https://github.com/Eliot100/MyRoad/issues/54) Send login mail from a background queue (backend: מחכה ל-Cloudflare)
 - [MyRoad#52](https://github.com/Eliot100/MyRoad/issues/52) Prune auth tables on a schedule (backend: מחכה ל-Cloudflare)
@@ -86,7 +90,6 @@ PRs פתוחים, ומשימות עם משויך שאין להן PR.
 
 **ui**
 - [MyRoad#59](https://github.com/Eliot100/MyRoad/issues/59) Login code field: one input, paste and autofill (with #41)
-- [MyRoad#60](https://github.com/Eliot100/MyRoad/issues/60) Accessibility statement page (he/ar/en)
 
 **ללא שיוך בוט** (רעיונות פתוחים): [#17](https://github.com/Eliot100/MyRoad/issues/17) מדד יעילות הלמידה · [#18](https://github.com/Eliot100/MyRoad/issues/18) ערוץ לכל שלב · [#19](https://github.com/Eliot100/MyRoad/issues/19) עטיפת עניין · [#20](https://github.com/Eliot100/MyRoad/issues/20) משחוק לפי שליטה · [#21](https://github.com/Eliot100/MyRoad/issues/21) גרף השלבים · [#22](https://github.com/Eliot100/MyRoad/issues/22) סיווג נושאים רקורסיבי · [#23](https://github.com/Eliot100/MyRoad/issues/23) קודם דרך קיימת · [#24](https://github.com/Eliot100/MyRoad/issues/24) משוב פותח גרסה · [#25](https://github.com/Eliot100/MyRoad/issues/25) מדידה ללומד · [#27](https://github.com/Eliot100/MyRoad/issues/27) תפקידים וקבוצה, אחר כך
 
