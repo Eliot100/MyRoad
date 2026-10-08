@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ product }} — {{ meta.title }}</title>
   <link rel="stylesheet" href="/static/platform.css" />
+  <link rel="stylesheet" href="/static/transitions.css" />
   <meta name="htmx-config" content='{"allowEval": false, "allowScriptTags": false, "historyEnabled": false}' />
 </head>
 <body class="platform play {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}" data-path="{{ doc.pathId }}">
@@ -17,14 +18,14 @@
   </header>
 
   <section class="card path-head">
-    <h1>{{ meta.emoji }} {{ meta.title }}{% if read_only %} <span class="status-pill locked">🔒 {{ t('read_only_badge') }}</span>{% endif %}</h1>
+    <h1>{{ meta.emoji }} <span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if read_only %} <span class="status-pill locked">🔒 {{ t('read_only_badge') }}</span>{% endif %}</h1>
     {% include "_play_status.html" %}
   </section>
 
   {% if read_only %}
   <div class="flash warn lock-note" role="note" data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}">
     🔒 {{ t('locked_finish_first') }}
-    {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
+    {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
     <span class="tiny">· {{ t('locked_read_only') }}</span>
   </div>
   {% endif %}

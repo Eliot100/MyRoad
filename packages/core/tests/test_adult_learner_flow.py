@@ -164,7 +164,7 @@ def test_review_step_has_badge_and_lists_mixed_topics(adult_app) -> None:
     assert 'data-step-kind="review"' in card
     assert '<span class="review-badge">Review</span>' in card
     assert "This review mixes:" in card
-    chips = re.findall(r'class="review-topic-chip" data-topic-id="([^"]+)">\s*([^<]*)<', card)
+    chips = re.findall(r'class="review-topic-chip" data-topic-id="([^"]+)"[^>]*>\s*([^<]*)<', card)
     assert [cid for cid, _ in chips] == ["t03", "t04"]
     assert "Topic 3" in chips[0][1] and "Topic 4" in chips[1][1]
     assert "Station 6 of 22" in page.text
