@@ -9,7 +9,7 @@
 <body class="platform builder" data-step="{{ step }}">
   <header class="top shell-top">
     <div class="brand">
-      <a href="/" class="back">→ {{ t('back_catalog') }}</a>
+      <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
       <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
@@ -31,7 +31,7 @@
     </ol>
   </section>
 
-  {% if flash_ok %}<p class="flash ok" role="status">{{ flash_ok }}</p>{% endif %}
+  {% if flash_ok and not (step == 'existing' and existing_matches) %}<p class="flash ok" role="status">{{ flash_ok }}</p>{% endif %}
   {% if error %}<p class="flash warn" role="alert">{{ error }}</p>{% endif %}
 
   {% if step == 'goal' %}
@@ -138,10 +138,13 @@
   <section class="card">
     <h2>{{ t('step_existing') }}</h2>
     <p class="lede">{{ t('builder_existing_lede', subject=subject_label_fn(spec.subject)) }}</p>
+    {% if existing_matches %}
+    <p class="match-found" role="status">{{ t('builder_match_found', count=existing_matches|length) }}</p>
+    {% endif %}
     {% if existing %}
     <div class="grid existing-grid">
       {% for c in existing %}
-      <a class="path-card" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}">
+      <a class="path-card{% if c.match %} match-card{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}">
         <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
         <div class="path-body">
           <div class="path-meta">
@@ -151,6 +154,12 @@
           </div>
           <h3>{{ c.title }}</h3>
           <p>{{ c.blurb }}</p>
+          {% if c.match %}
+          <p class="match-reason tiny"><strong>{{ t('builder_match_why') }}</strong> {{ c.match.reason_text }}</p>
+          {% if c.match.prerequisites_text %}
+          <p class="{% if c.match.missing_prerequisite_titles %}lock-needs{% else %}match-prereqs muted{% endif %} tiny">{% if c.match.missing_prerequisite_titles %}🔒 {% endif %}{{ c.match.prerequisites_text }}</p>
+          {% endif %}
+          {% endif %}
           <span class="tiny muted">{{ t('builder_open_path') }}</span>
         </div>
       </a>
