@@ -486,6 +486,18 @@ def test_demo_mode_end_to_end_over_http(app_client) -> None:
     assert play_map.status_code == 200
     assert "Edited first topic" in play_map.text
     assert 'class="status-pill demo"' in play_map.text
+    # The demo outline names a prerequisite path, so the new path opens locked and
+    # read-only until that path is finished (issue #44). Finish it, then play.
+    prereqs = raw.get("prerequisitePathIds") or []
+    if prereqs:
+        assert "lock-banner" in play_map.text
+        learner = store.get_learner_by_email("builder@example.com")
+        for pre in prereqs:
+            store.save_progress(
+                learner["userId"], pre, version_id=None, node_index=0, mastered=set(),
+                correct_taps=0, incorrect_taps=0, completed_at="2026-01-01T00:00:00+00:00",
+            )
+        assert "lock-banner" not in client.get(f"/play/{pid}").text
     start = client.post(f"/play/{pid}/start", follow_redirects=True)
     assert start.status_code == 200
     assert 'data-node-type="learn"' in start.text
