@@ -465,3 +465,72 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
             assert "<form" not in home_in.text.split("<header", 1)[-1].split("</header>", 1)[0]
     finally:
         store.close()
+
+
+# ---------- Cyber security review of #46: cookie flags, logout, email change ----------
+
+def _cookie_headers(resp, name: str) -> list[str]:
+    return [h for h in resp.headers.get_list("set-cookie") if h.startswith(name + "=")]
+
+
+def test_session_cookie_is_secure_by_default(tmp_path, monkeypatch) -> None:
+    monkeypatch.delenv("MYROAD_DEV_INSECURE_COOKIES", raising=False)
+    store = PathStore(str(tmp_path / "sec.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    try:
+        with TestClient(app) as c:
+            r = c.post(
+                "/login", data={"first_name": "S", "last_name": "C", "email": "secure@example.com", "next": "/"},
+                follow_redirects=False,
+            )
+            (cookie,) = _cookie_headers(r, "myroad_session")
+            low = cookie.lower()
+            assert "secure" in low and "httponly" in low and "samesite=lax" in low
+    finally:
+        store.close()
+
+
+def test_dev_flag_drops_secure_for_plain_http(tmp_path) -> None:
+    store = PathStore(str(tmp_path / "dev.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    try:
+        with TestClient(app) as c:  # conftest sets MYROAD_DEV_INSECURE_COOKIES=1
+            r = _reg(c, "dev@example.com")
+            assert r.status_code == 200
+            assert _uid(c)
+    finally:
+        store.close()
+
+
+def test_logout_revokes_the_session(platform_client: TestClient) -> None:
+    store = platform_client.app.state.store
+    sid = platform_client.cookies.get("myroad_session")
+    assert store.get_session_user(sid)
+    r = platform_client.post("/logout", follow_redirects=False)
+    assert r.status_code == 303 and r.headers["location"] == "/login"
+    assert store.get_session_user(sid) is None
+    assert platform_client.cookies.get("myroad_session") is None
+    # Replaying the old cookie does not sign in
+    platform_client.cookies.set("myroad_session", sid)
+    assert platform_client.get("/settings", follow_redirects=False).status_code == 303
+
+
+def test_email_change_revokes_other_sessions(tmp_path) -> None:
+    store = PathStore(str(tmp_path / "email.db"))
+    app = create_learner_app(store=store, seed=False, seed_content=False)
+    try:
+        with TestClient(app) as c:
+            _reg(c, "first@example.com", "Em", "Change")
+            uid = _uid(c)
+            other_device = store.create_session(uid)
+            r = c.post("/settings", data={"first_name": "Em", "last_name": "Change", "email": "second@example.com"},
+                       follow_redirects=False)
+            assert r.status_code == 303 and "saved=1" in r.headers["location"]
+            assert store.get_session_user(other_device) is None
+            assert _uid(c) == uid  # this browser stays signed in on a fresh session
+            # Same-email save does not revoke
+            keep = store.create_session(uid)
+            c.post("/settings", data={"first_name": "Em2", "last_name": "Change", "email": "second@example.com"})
+            assert store.get_session_user(keep) == uid
+    finally:
+        store.close()

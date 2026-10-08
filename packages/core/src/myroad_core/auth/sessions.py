@@ -8,13 +8,29 @@ fast digest is enough (no salt or slow hash needed, unlike short login codes).
 from __future__ import annotations
 
 import hashlib
+import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
-__all__ = ["SESSION_COOKIE", "SESSION_TTL_SECONDS", "SessionMixin", "session_digest"]
+__all__ = [
+    "DEV_INSECURE_COOKIES_ENV",
+    "SESSION_COOKIE",
+    "SESSION_TTL_SECONDS",
+    "SessionMixin",
+    "cookie_secure",
+    "session_digest",
+]
 
 SESSION_COOKIE = "myroad_session"
 SESSION_TTL_SECONDS = 30 * 24 * 3600  # 30 days
+# Auth cookies carry the Secure flag unless this dev flag is "1". Browsers treat
+# http://localhost as secure, so local dev normally works without it; set it
+# only for plain-http hosts other than localhost (and the test client).
+DEV_INSECURE_COOKIES_ENV = "MYROAD_DEV_INSECURE_COOKIES"
+
+
+def cookie_secure() -> bool:
+    return (os.environ.get(DEV_INSECURE_COOKIES_ENV) or "").strip() != "1"
 
 _SESSION_SCHEMA = """
 CREATE TABLE IF NOT EXISTS auth_sessions (
@@ -78,6 +94,15 @@ class SessionMixin:
         if expires <= _now():
             return None
         return row["user_id"]
+
+    def revoke_user_sessions(self, user_id: str) -> int:
+        """Revoke every live session of a user (e.g. after an email change)."""
+        cur = self._conn.execute(
+            "UPDATE auth_sessions SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL",
+            (_now().isoformat(), user_id),
+        )
+        self._conn.commit()
+        return cur.rowcount
 
     def revoke_session(self, session_id: str | None) -> None:
         if not session_id:

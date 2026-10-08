@@ -58,6 +58,19 @@ class PublishOpsMixin:
             if change_set:
                 for key, value in change_set.items():
                     raw[key] = value
+                # A change set may not rewrite identity, status, or lineage
+                # (e.g. status=published would skip the publish rules).
+                raw["pathId"] = path_id
+                raw["versionId"] = new_vid
+                raw["version"] = next_num
+                raw["status"] = PathStatus.draft.value
+                raw["lineage"] = {
+                    "previousVersionId": base_version_id,
+                    "basedOnPublishedVersionId": (
+                        base_version_id if base.status == PathStatus.published else None
+                    ),
+                    "publishedV1RemainsImmutable": True,
+                }
             if feedback_ids:
                 raw.setdefault("feedback", [])
             new_doc = PathVersion.model_validate(raw)

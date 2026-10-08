@@ -7,7 +7,10 @@ Auth (issue #40): every ``/tools/*`` call needs either
 - a logged-in user's session cookie (``myroad_session``), or
 - the server-side agent credential: ``Authorization: Bearer <MYROAD_AGENT_TOKEN>``.
 Otherwise the answer is 401. The actor is taken from the session or the
-credential. A body ``actorId`` / ``agentId`` / ``publisherId`` is never used; if
+credential. Cookie (session) calls must also send ``X-MyRoad-Request: 1``
+(CSRF guard: a cross-site form cannot set it), else 403. A principal may act
+only on paths it authored (agent: also ``MYROAD_AGENT_ALLOWED_PATHS``); any
+other path id answers 404 (see ``myroad_core.auth.ownership``). A body ``actorId`` / ``agentId`` / ``publisherId`` is never used; if
 one is sent and differs from the authenticated principal, the call gets 403.
 
 To accept the UI's login sessions, point both apps at the same SQLite file
@@ -20,7 +23,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from myroad_core.auth import Principal, resolve_principal
+from myroad_core.auth import Principal, may_act_on_path, resolve_principal
 from myroad_core.models import OpResponse
 from myroad_core.publish_gate import PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE
 from myroad_core.store import PathStore
@@ -108,6 +111,8 @@ class PublishBody(Envelope):
 
 
 TOOLS_PREFIX = "/tools/"
+CSRF_HEADER = "X-MyRoad-Request"
+
 _PUBLISH_GATE_CODES = frozenset({PUBLISH_FORMAT_ERROR, PUBLISH_NOT_COMPLETE})
 
 
@@ -170,11 +175,25 @@ def create_app(store: PathStore | None = None, *, db_path: str = ":memory:") -> 
             principal = resolve_principal(request, path_store)
             if principal is None:
                 return _unauthorized()
+            if principal.kind == "user" and request.headers.get(CSRF_HEADER) != "1":
+                # Cookie-authenticated: require a custom header (forces a CORS
+                # preflight, which this API does not allow cross-origin).
+                return JSONResponse(
+                    status_code=403,
+                    content={"detail": {"code": "CSRF_HEADER_REQUIRED",
+                                        "message": f"cookie-authenticated calls must send {CSRF_HEADER}: 1"}},
+                )
             request.state.principal = principal
         return await call_next(request)
 
     def actor(body: Any, principal: Principal) -> tuple[str, str | None]:
         _check_claimed_identity(body, principal)
+        # Ownership: every op except createDraft targets an existing path.
+        path_id = getattr(body, "pathId", None)
+        if not isinstance(body, CreateDraftBody) and path_id and not may_act_on_path(
+            path_store, principal, path_id
+        ):
+            raise HTTPException(status_code=404, detail={"code": "NOT_FOUND", "message": "path not found"})
         return principal.actor_id, principal.agent_id
 
     @app.get("/health")
