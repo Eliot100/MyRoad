@@ -65,7 +65,14 @@
       </select>
       <button type="submit" class="secondary">{{ t('save_language') }}</button>
     </form>
+    <section class="settings-a11y" aria-labelledby="settings-a11y">
+      <h2 id="settings-a11y">{{ t('a11y_settings_h') }}</h2>
+      <p class="lede tiny">{{ t('a11y_settings_text') }} <a href="/accessibility">{{ t('a11y_link') }}</a></p>
+    </section>
     <p class="lede tiny"><a href="/">{{ t('back_home') }}</a></p>
   </main>
+  <footer>
+    <small>{{ product }} · {% include "_a11y_link.html" %}</small>
+  </footer>
 </body>
 </html>

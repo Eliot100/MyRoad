@@ -43,7 +43,7 @@
   {% endif %}
 
   <footer>
-    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }}</small>
+    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>
   {#- htmx 2.0.11, vendored (0BSD, see static/VENDOR.md). Only the step player loads it. -#}
   <script src="/static/htmx-2.0.11.min.js"></script>
