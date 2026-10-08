@@ -3,16 +3,17 @@
     (htmx only: the learner reads the feedback, then continues). -#}
 {% set ntype = kids.type or (block.content.nodeType if block.content else 'learn') %}
 {% set is_review = kids.kind == 'review' %}
+{% set sl = step_langs or {} %}
 {% set answered = answer and answer.ok and continue_url %}
 {% set answerable = (ntype in ['practice', 'check'] and kids.choices) or ntype in ['piano_keys', 'rhythm'] %}
 <section id="step-card" class="card step-card{% if is_review %} review-step{% endif %}{% if answered %} is-answered{% endif %}" data-node-type="{{ ntype }}" data-step-kind="{{ kids.kind or 'understanding' }}"{% if swap_focus %} data-swap-focus="{{ swap_focus }}"{% endif %} aria-labelledby="step-title">
   <div class="step-head">
     <span class="type-pill">{{ ntype }}</span>
     {% if is_review %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
-    <h2 id="step-title" tabindex="-1" dir="auto">{% if display is defined and display.title %}{{ display.title|bdi }}{% else %}{{ block.title|bdi }}{% endif %}</h2>
+    <h2 id="step-title" tabindex="-1" dir="auto"{{ sl.title|content_lang(locale) }}>{% if display is defined and display.title %}{{ display.title|bdi }}{% else %}{{ block.title|bdi }}{% endif %}</h2>
     <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">🔊 {{ t('speak') }}</button>
   </div>
-  <p class="body-text" id="speak-source" dir="auto" data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}">
+  <p class="body-text" id="speak-source" dir="auto"{{ sl.body|content_lang(locale) }} data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}">
     {% if display is defined %}{{ display.body|bdi }}{% elif locale == 'en' and kids.body_en %}{{ kids.body_en|bdi }}{% else %}{{ (kids.body_he or block.learningObjective)|bdi }}{% endif %}
   </p>
   {% if is_review and kids.review_topic_ids %}
@@ -20,9 +21,9 @@
     <span class="review-mix-label">{{ t('review_mixes') }}</span>
     <ul class="review-topics">
       {% for tid in kids.review_topic_ids %}
-      {% set ns2 = namespace(title=tid, emoji='') %}
-      {% for tp in topics %}{% if tp.id == tid %}{% set ns2.title = tp.title %}{% set ns2.emoji = tp.emoji %}{% endif %}{% endfor %}
-      <li class="review-topic-chip" data-topic-id="{{ tid }}">{{ ns2.emoji }} {{ ns2.title }}</li>
+      {% set ns2 = namespace(title=tid, emoji='', lang='') %}
+      {% for tp in topics %}{% if tp.id == tid %}{% set ns2.title = tp.title %}{% set ns2.emoji = tp.emoji %}{% set ns2.lang = tp.titleLang %}{% endif %}{% endfor %}
+      <li class="review-topic-chip" data-topic-id="{{ tid }}" dir="auto"{{ ns2.lang|content_lang(locale) }}>{{ ns2.emoji }} {{ ns2.title }}</li>
       {% endfor %}
     </ul>
   </div>
@@ -45,7 +46,7 @@
     {% for ch in kids.choices %}
     <li class="choice-tile" aria-disabled="true">
       {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
-      <span class="choice-label" dir="auto">{% if locale == 'en' and ch.label_en %}{{ ch.label_en|bdi }}{% else %}{{ ch.label|bdi }}{% endif %}</span>
+      {% set chl = ch.label_en if (locale == 'en' and ch.label_en) else ch.label %}<span class="choice-label" dir="auto"{{ ('en' if (locale == 'en' and ch.label_en) else sl.choice)|content_lang(locale, chl) }}>{{ chl|bdi }}</span>
     </li>
     {% endfor %}
   </ul>
@@ -61,7 +62,7 @@
     <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile{% if picked and answer.ok %} is-correct{% elif picked %} is-wrong{% endif %}"
       {%- if picked %} aria-describedby="step-feedback"{% endif %}{% if answered %} disabled{% endif %}>
       {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
-      <span class="choice-label" dir="auto">{% if locale == 'en' and ch.label_en %}{{ ch.label_en|bdi }}{% else %}{{ ch.label|bdi }}{% endif %}</span>
+      {% set chl = ch.label_en if (locale == 'en' and ch.label_en) else ch.label %}<span class="choice-label" dir="auto"{{ ('en' if (locale == 'en' and ch.label_en) else sl.choice)|content_lang(locale, chl) }}>{{ chl|bdi }}</span>
       {% if picked %}<span class="choice-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span>{% endif %}
     </button>
     {% endfor %}

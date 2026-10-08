@@ -37,6 +37,8 @@ from myroad_core.ui.i18n import (
     locale_meta,
     normalize_locale,
     pick,
+    pick_content,
+    content_lang,
     subject_label,
     t,
 )
@@ -67,6 +69,38 @@ def _is_htmx(request: Request) -> bool:
 def _hx_redirect(url: str) -> Response:
     """Tell htmx to do a full navigation instead of swapping a fragment."""
     return Response(status_code=200, headers={"HX-Redirect": url, "Vary": "HX-Request"})
+
+
+def _explain_locale(doc: dict[str, Any]) -> str:
+    """The path's own language: content falls back to it when the UI locale is missing."""
+    return str(doc.get("explainLocale") or "he").strip().lower().split("-")[0] or "he"
+
+
+def _step_langs(kids: dict[str, Any], doc: dict[str, Any], locale: str) -> dict[str, str]:
+    """Language of each step string as resolve_node_display / the templates pick it.
+
+    Mirrors content.locale_rules.resolve_node_display (en: body_en → body_ui → body_he;
+    other UI locales: body_ui → body_he → body_en) so fallback text can carry ``lang``.
+    """
+    explain = _explain_locale(doc)
+    loc = (locale or "he").split("-")[0].lower()
+    if loc == "en" and kids.get("body_en"):
+        body = "en"
+    elif kids.get("body_ui"):
+        body = explain
+    elif kids.get("body_he"):
+        body = "he"
+    elif kids.get("body_en"):
+        body = "en"
+    else:
+        body = explain
+    return {
+        "title": "en" if loc == "en" and kids.get("title_en") else explain,
+        "body": body,
+        # Choice labels are content tokens in the path's content locale (label_en for the en UI).
+        "choice": str(doc.get("contentLocale") or doc.get("contentLanguage") or explain).split("-")[0].lower(),
+        "feedback": explain,
+    }
 
 
 def _parse_iso(ts: str | None) -> float | None:
@@ -264,6 +298,7 @@ def register_platform_routes(
             titles=titles,
             blurbs=blurbs,
             subject=subject,
+            source_locale=_explain_locale(doc),
         )
         return {
             "subject": subject,
@@ -275,10 +310,13 @@ def register_platform_routes(
             "groupIds": doc.get("groupIds") or [],
             "title": chrome["title"],
             "blurb": chrome["blurb"],
+            "titleLang": chrome["titleLang"],
+            "blurbLang": chrome["blurbLang"],
         }
 
     def _topics_for_ui(doc: dict[str, Any], blocks: list[dict], locale: str) -> list[dict[str, Any]]:
         topics = doc.get("topics") or []
+        explain = _explain_locale(doc)
         node_to_block = doc.get("nodeToBlock") or {}
         block_by_id = {b["blockId"]: b for b in blocks}
         # Build reverse: blockId -> index
@@ -292,7 +330,10 @@ def register_platform_routes(
                 topic_titles.setdefault("en", topic.get("title_en"))
             if topic.get("title_ar"):
                 topic_titles.setdefault("ar", topic.get("title_ar"))
-            title = pick(topic_titles, locale, default=topic.get("id") or "")
+            # Content: a missing translation falls back to the path's own language, not English.
+            title, title_lang = pick_content(
+                topic_titles, locale, source_locale=explain, default=topic.get("id") or ""
+            )
             node_ids = topic.get("node_ids") or []
             block_ids = []
             for nid in node_ids:
@@ -314,6 +355,7 @@ def register_platform_routes(
                         "blockId": bid,
                         "index": index_by_block.get(bid, 0),
                         "title": kids.get("title_en") if locale == "en" and kids.get("title_en") else blk.get("title"),
+                        "titleLang": "en" if locale == "en" and kids.get("title_en") else explain,
                         "type": kids.get("type") or (blk.get("content") or {}).get("nodeType"),
                         "kind": kids.get("kind") or "understanding",
                         "reviewTopicIds": list(kids.get("review_topic_ids") or []),
@@ -324,6 +366,7 @@ def register_platform_routes(
                 {
                     "id": topic.get("id"),
                     "title": title,
+                    "titleLang": title_lang or explain,
                     "emoji": topic.get("emoji") or doc.get("emoji") or "📍",
                     "nodeIds": node_ids,
                     "blockIds": block_ids,
@@ -397,6 +440,19 @@ def register_platform_routes(
             {e.path_id: e.title for e in entries},
         )
 
+    def _title_langs(locale: str) -> dict[str, str]:
+        """{pathId: language of its displayed title} for lock links (content fallback)."""
+        try:
+            cards = list_catalog_cards(store)
+        except Exception:
+            return {}
+        return {
+            c["pathId"]: localize_path_chrome(
+                locale=locale, titles=c.get("titles"), source_locale=c.get("explainLocale")
+            )["titleLang"]
+            for c in cards
+        }
+
     def _locked_by(
         path_id: str,
         prereqs: dict[str, list[str]],
@@ -410,11 +466,18 @@ def register_platform_routes(
             if pid in titles and pid not in completed
         ]
 
+    def _with_title_langs(items: list[dict[str, str]], locale: str) -> list[dict[str, str]]:
+        if items:  # only look the languages up when there is something to show
+            langs = _title_langs(locale)
+            for it in items:
+                it["titleLang"] = langs.get(it["pathId"], "")
+        return items
+
     def _lock_state(request: Request, path_id: str) -> list[dict[str, str]]:
         learner = _learner(request)
         completed = completed_path_ids(store, learner["userId"] if learner else None)
         prereqs, titles = _prereq_index(_locale(request))
-        return _locked_by(path_id, prereqs, titles, completed)
+        return _with_title_langs(_locked_by(path_id, prereqs, titles, completed), _locale(request))
 
     def _unlocked_next(request: Request, path_id: str) -> list[dict[str, str]]:
         """Paths that list ``path_id`` as a prerequisite and are now fully open."""
@@ -422,11 +485,11 @@ def register_platform_routes(
         completed = completed_path_ids(store, learner["userId"] if learner else None)
         completed.add(path_id)
         prereqs, titles = _prereq_index(_locale(request))
-        return [
+        return _with_title_langs([
             {"pathId": pid, "title": titles[pid]}
             for pid, needs in prereqs.items()
             if path_id in needs and pid in titles and not _locked_by(pid, prereqs, titles, completed)
-        ]
+        ], _locale(request))
 
     def _read_only_redirect(request: Request, sess: dict[str, Any], path_id: str) -> RedirectResponse:
         sess["view"] = "learn"
@@ -869,6 +932,16 @@ def register_platform_routes(
     ) -> HTMLResponse:
         locale = _locale(request)
         cards = list_catalog_cards(store, locale=locale)
+        for c in cards:
+            # Title/blurb are content: fall back to the path's own language, not English.
+            chrome = localize_path_chrome(
+                locale=locale,
+                titles=c.get("titles"),
+                blurbs=c.get("blurbs"),
+                source_locale=c.get("explainLocale"),
+            )
+            c.update(title=chrome["title"], blurb=chrome["blurb"],
+                     titleLang=chrome["titleLang"], blurbLang=chrome["blurbLang"])
         learner = _learner(request)
         progress_map: dict[str, Any] = {}
         if learner:
@@ -905,8 +978,11 @@ def register_platform_routes(
         # Locked paths (schema v2 prerequisite_path_ids not finished yet).
         prereqs, prereq_titles = _prereq_index(locale)
         completed = {c["pathId"] for c in cards if c.get("progressStatus") == "completed"}
+        card_langs = {c["pathId"]: c.get("titleLang", "") for c in cards}
         for c in cards:
             c["lockedBy"] = _locked_by(c["pathId"], prereqs, prereq_titles, completed)
+            for it in c["lockedBy"]:
+                it["titleLang"] = card_langs.get(it["pathId"], "")
 
         # "Continue" resumes the most recently touched path at the step the learner was on.
         continue_card = None
@@ -932,6 +1008,7 @@ def register_platform_routes(
                     for tp in _topics_for_ui(cdoc, cblocks, locale):
                         if bid in tp["blockIds"]:
                             top["continueTopic"] = tp["title"]
+                            top["continueTopicLang"] = tp.get("titleLang", "")
                             break
             except Exception:  # the card still works without the topic name
                 pass
@@ -1083,6 +1160,8 @@ def register_platform_routes(
     # Step text (titles, bodies, choices, feedback) renders through this filter so math
     # and Latin runs stay readable inside Hebrew/Arabic sentences. See ui/bidi.py.
     templates.env.filters["bdi"] = bidi_isolate
+    # `` lang="xx"`` on content text shown in a language other than the UI locale (see i18n.py).
+    templates.env.filters["content_lang"] = content_lang
 
     @app.get("/play/{path_id}", response_class=HTMLResponse)
     def play_path(
@@ -1240,6 +1319,7 @@ def register_platform_routes(
             locked_by=locked_by,
             read_only=bool(locked_by),
             answer=answer,
+            step_langs=_step_langs(kids, doc, locale),
             continue_url=continue_url,
             continue_hx=bool(continue_url) and "view=learn" in (continue_url or ""),
             swap_focus=swap_focus if hx else None,
