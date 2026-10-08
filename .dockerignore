@@ -1,0 +1,26 @@
+# Never ship secrets, keys, or databases in an image layer (any depth).
+**/.git
+.github
+**/.env
+**/.env.*
+!.env.example
+**/*.pem
+**/*.key
+**/id_rsa*
+**/secrets*
+**/*.db
+**/*.db-*
+**/*.sqlite*
+# Local clutter
+**/.venv
+**/venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/*.egg-info
+**/.coverage
+**/node_modules
+**/.cursor
+# Content comes from MyRoad-content at build time, not from a local copy.
+packages/core/content
+docs
