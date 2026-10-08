@@ -122,6 +122,7 @@
   "stations_done": "{done} of {total} stations done",
   "map_long_lede": "Tap a station to see its steps. The station you are on is open.",
   "station_current": "You are here",
+  "map_jump_here": "go to your current station",
   "continue_step": "Step {n} of {total}",
   "unlocked_next": "Now open for you:",
   "builder_match_why": "Why it fits:",

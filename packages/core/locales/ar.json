@@ -122,6 +122,7 @@
   "stations_done": "اكتملت {done} من {total} محطات",
   "map_long_lede": "اضغط على محطة لرؤية خطواتها. المحطة التي أنت فيها مفتوحة.",
   "station_current": "أنت هنا",
+  "map_jump_here": "الانتقال إلى محطتك الحالية",
   "continue_step": "الخطوة {n} من {total}",
   "unlocked_next": "أصبح متاحًا لك الآن:",
   "builder_match_why": "لماذا يناسب:",

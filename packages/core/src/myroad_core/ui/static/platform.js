@@ -134,6 +134,26 @@
 
   init(document);
 
+  // --- Path map: bring the current station (#here, aria-current="step") into view on load ---
+  // Without JS the "Station N of M" pill and the map links (?view=map#here) jump there instead.
+  function jumpToCurrentStation() {
+    var here = document.getElementById("here");
+    if (!here || !document.body.classList.contains("map-view")) return;
+    if (window.location.hash) return; // the browser already scrolled to the fragment
+    var nav = window.performance && performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+    if (nav && nav.type === "back_forward") return; // keep the restored scroll position
+    var r = here.getBoundingClientRect();
+    var fits = r.top >= 0 && r.bottom <= (window.innerHeight || document.documentElement.clientHeight);
+    if (fits) return; // already on screen: do not move the page
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", jumpToCurrentStation);
+  } else {
+    jumpToCurrentStation();
+  }
+
   // --- Step player + htmx (progressive enhancement: without JS the forms post normally) ---
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
