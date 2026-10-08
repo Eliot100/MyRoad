@@ -17,6 +17,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("jinja2")
 
 from fastapi.testclient import TestClient
+from auth_helpers import login_with_code
 
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
@@ -83,7 +84,7 @@ def app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 def _client(app, locale: str = "he") -> TestClient:
     c = TestClient(app)
     c.cookies.set("myroad_locale", locale)
-    c.post("/login", data={"first_name": "Map", "last_name": "User", "email": f"map-{locale}@example.com", "next": "/"})
+    login_with_code(c, {"first_name": "Map", "last_name": "User", "email": f"map-{locale}@example.com", "next": "/"})
     c.cookies.set("myroad_locale", locale)
     return c
 
