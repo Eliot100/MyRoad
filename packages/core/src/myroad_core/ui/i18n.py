@@ -13,11 +13,15 @@ No Python changes required.
 from __future__ import annotations
 
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping
 
+from markupsafe import Markup
+
 COOKIE_LOCALE = "myroad_locale"
+_LANG_RE = re.compile(r"[a-z]{2,3}(?:-[a-z0-9]{2,8})?")
 COOKIE_USER = "myroad_uid"
 
 # packages/core/src/myroad_core/ui -> packages/core/locales
@@ -141,6 +145,71 @@ def pick(
     return default
 
 
+def pick_content(
+    values: Mapping[str, str | None] | None,
+    locale: str | None,
+    *,
+    source_locale: str | None = None,
+    default: str = "",
+    default_lang: str | None = None,
+) -> tuple[str, str | None]:
+    """Pick a *content* string (path/topic/step text) and the language it is in.
+
+    Fallback order: UI locale → the path's own language (``source_locale``, its
+    ``explain_locale``; the platform default locale when unknown) → any other
+    non-empty value (manifest locales first, then the rest) → ``default``.
+
+    Unlike :func:`pick` (UI chrome, manifest chain en→he), content never jumps to
+    English just because a translation is missing: an adult Hebrew path shown in
+    the Arabic UI falls back to Hebrew, its own language.
+    Returns ``(text, lang)`` so templates can mark fallback text with ``lang``.
+    """
+    if not values:
+        return default, default_lang
+    loc = (locale or DEFAULT_LOCALE).strip().lower().split("-")[0]
+    src = (source_locale or DEFAULT_LOCALE).strip().lower().split("-")[0]
+    normalized = {str(k).strip().lower(): v for k, v in values.items()}
+    ordered: list[str] = []
+    for code in (loc, src, *LOCALES, *normalized.keys()):
+        if code and code not in ordered:
+            ordered.append(code)
+    for code in ordered:
+        val = normalized.get(code)
+        if val is not None and str(val).strip():
+            return str(val).strip(), code
+    return default, default_lang
+
+
+def _lang_of(values: Mapping[str, str | None], text: str, locale: str | None) -> str | None:
+    """Which key of ``values`` holds ``text`` (UI locale preferred on ties)."""
+    if not text:
+        return None
+    loc = (locale or DEFAULT_LOCALE).strip().lower().split("-")[0]
+    norm = {str(k).strip().lower(): v for k, v in values.items()}
+    for code in (loc, *norm.keys()):
+        val = norm.get(code)
+        if val is not None and str(val).strip() == text:
+            return code
+    return None
+
+
+def content_lang(text_lang: str | None, ui_locale: str | None, text: Any = None) -> Markup:
+    """Jinja filter: `` lang="xx"`` when content text is not in the UI locale, else nothing.
+
+    Pair it with ``dir="auto"`` on the same element (#57/#58): the browser then lays the
+    fallback text out in its own direction and screen readers switch voice.
+    ``text`` (optional) skips the attribute for text with no letters at all: a numeric
+    answer like "2" has no language to switch to.
+    """
+    code = (text_lang or "").strip().lower()
+    ui = (ui_locale or "").strip().lower().split("-")[0]
+    if text is not None and not any(ch.isalpha() for ch in str(text)):
+        return Markup("")
+    if not code or code == ui or not _LANG_RE.fullmatch(code):
+        return Markup("")
+    return Markup(f' lang="{code}"')
+
+
 def merge_locale_fields(
     data: dict[str, Any],
     *,
@@ -240,8 +309,17 @@ def localize_path_chrome(
     blurb_en: str | None = None,
     blurb_ar: str | None = None,
     subject: str | None = None,
+    source_locale: str | None = None,
 ) -> dict[str, str]:
-    """Resolve catalog/path card title, blurb, and subject label for the UI locale."""
+    """Resolve catalog/path card title, blurb, and subject label for the UI locale.
+
+    Title and blurb are content. When ``source_locale`` (the path's ``explain_locale``)
+    is given, a missing translation falls back to that language, not to English
+    (#58, see :func:`pick_content`). Without it the legacy manifest chain (en→he) is
+    kept, so callers outside the UI view layer (the content loader's catalog
+    localisation, the JSON API) behave exactly as before. ``titleLang`` /
+    ``blurbLang`` name the language actually shown.
+    """
     title_map: dict[str, str | None] = dict(titles or {})
     for code, val in (("he", title_he), ("en", title_en), ("ar", title_ar)):
         if val and not title_map.get(code):
@@ -250,10 +328,23 @@ def localize_path_chrome(
     for code, val in (("he", blurb_he), ("en", blurb_en), ("ar", blurb_ar)):
         if val and not blurb_map.get(code):
             blurb_map[code] = val
-    title = pick(title_map, locale, default=title_he or "")
-    blurb = pick(blurb_map, locale, default=blurb_he or "")
+    def _resolve(values: dict[str, str | None], default: str) -> tuple[str, str | None]:
+        default_lang = "he" if default else None
+        if source_locale:
+            return pick_content(values, locale, source_locale=source_locale, default=default, default_lang=default_lang)
+        text = pick(values, locale, default=default)
+        return text, _lang_of(values, text, locale) or default_lang
+
+    title, title_lang = _resolve(title_map, title_he or "")
+    blurb, blurb_lang = _resolve(blurb_map, blurb_he or "")
     label = subject_label(subject, locale) if subject else ""
-    return {"title": title, "blurb": blurb, "subjectLabel": label}
+    return {
+        "title": title,
+        "blurb": blurb,
+        "subjectLabel": label,
+        "titleLang": title_lang or "",
+        "blurbLang": blurb_lang or "",
+    }
 
 
 # Avoid circular import of schema SUBJECTS at module load for typing clarity
