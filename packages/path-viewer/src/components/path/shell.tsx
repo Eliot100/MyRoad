@@ -135,10 +135,8 @@ export function PathShell() {
               aria-expanded={settingsOpen}
               data-testid="settings-button"
               onClick={() => {
-                setSettingsOpen((open) => {
-                  if (!open) noteSettings();
-                  return !open;
-                });
+                if (!settingsOpen) noteSettings();
+                setSettingsOpen((open) => !open);
               }}
             >
               <Gear />

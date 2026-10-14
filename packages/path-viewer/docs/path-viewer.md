@@ -20,4 +20,6 @@ Locale, path, view or editing, and map or list sit behind the settings icon. Qua
 
 Progress is kept per path for `learner_sample`, in the shape PathStore already uses: a mastery result and the condition token that result satisfies. Draft edge edits stay on this device. A later slice can post the same `getPathVersion` / `getProgress` calls to FastAPI.
 
-Intended home in the monorepo: `packages/path-viewer`, reading `packages/core` models rather than translating them.
+## Tests
+
+Graph rules stay in `src/lib/path/graph.test.ts` (node:test). Component and store checks are in `src/components/path/view.test.tsx`, `src/lib/path/store.test.ts`, and `src/lib/path/i18n.test.ts`. Run them with `node scripts/run-path-tests.mjs` from the preview app. They cover the trail, the quiet settings menu, list, detail, the draft canvas, and the local quality counts.

@@ -20,3 +20,13 @@ Next-best (`explainNext` in `src/lib/path/graph.ts`) walks this path's edges and
 The default view is the trail. The React Flow canvas loads only after settings, then editing. Locale, path, view or editing, and map or list stay in that popover. Quality counts there are local numbers for this learner, not retention.
 
 Imports use the `@/` alias aimed at `src/`. Peer pieces the preview already has: React, Zustand, and `@xyflow/react` (draft editing only).
+
+## Tests
+
+- `src/lib/path/graph.test.ts` — next-best and trail grouping (node:test).
+- `src/lib/path/store.test.ts` — mastery, recovered checks, path switch, local quality counts.
+- `src/lib/path/i18n.test.ts` — he / en / ar copy and direction.
+- `src/components/path/view.test.tsx` — trail, settings, list, detail, draft canvas, block node.
+- `scripts/run-path-tests.mjs` — runner used by the preview app (`node scripts/run-path-tests.mjs`).
+
+These are the viewer checks. They do not call FastAPI.
