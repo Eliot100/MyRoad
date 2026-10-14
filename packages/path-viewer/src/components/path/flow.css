@@ -1,0 +1,56 @@
+.path-canvas .react-flow {
+  background: transparent;
+  --xy-background-color: transparent;
+}
+
+.path-canvas .react-flow__controls {
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.path-canvas .react-flow__controls-button {
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-line);
+  fill: var(--color-ink);
+  width: 2rem;
+  height: 2rem;
+}
+
+.path-canvas .react-flow__controls-button:hover {
+  background: var(--color-pine-soft);
+}
+
+.path-canvas .react-flow__edge-textbg {
+  fill: var(--color-paper);
+}
+
+.path-canvas .react-flow__edge-text {
+  fill: var(--color-stone);
+  font-size: 11px;
+}
+
+.path-canvas .react-flow__attribution {
+  background: transparent;
+  color: var(--color-stone);
+}
+
+.path-canvas .react-flow__handle.path-handle {
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--color-pine);
+  border: 2px solid var(--color-paper);
+}
+
+.path-canvas .react-flow__handle.path-handle.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .path-canvas .react-flow__edge-path {
+    animation: none !important;
+  }
+}
