@@ -20,6 +20,7 @@ from myroad_core.ui.i18n import (
     localize_path_chrome,
     locale_codes,
     pick,
+    pick_content,
     reload_locale_packs,
     subject_label,
 )
@@ -97,8 +98,11 @@ def test_list_catalog_cards_pick_by_ui_locale(store: PathStore) -> None:
         assert len(cards) == len(raw)
         for card in cards:
             assert card["uiLocale"] == loc
-            assert card["title"] == pick(card["titles"], loc)
-            assert card["blurb"] == pick(card["blurbs"], loc)
+            src = card.get("explainLocale") or None
+            expected_title, _ = pick_content(card["titles"], loc, source_locale=src)
+            expected_blurb, _ = pick_content(card["blurbs"], loc, source_locale=src)
+            assert card["title"] == expected_title
+            assert card["blurb"] == expected_blurb
             assert subject_label(card["subject"], loc) == card["subjectLabel"]
             if loc == "ar" and card["pathId"] in grade3:
                 assert _has_arabic(card["title"])
@@ -111,6 +115,64 @@ def test_list_catalog_cards_pick_by_ui_locale(store: PathStore) -> None:
     assert pick({"he": "א", "en": "A", "ar": "ع", "ru": "Р"}, "ru") == "Р"
     chrome = localize_path_chrome(locale="ar", titles=raw[0]["titles"], blurbs=raw[0]["blurbs"], subject=raw[0]["subject"])
     assert chrome["title"] == raw[0]["titles"]["ar"]
+
+
+def test_apply_catalog_locale_hebrew_only_falls_back_to_explain_locale() -> None:
+    """Hebrew-only path chrome requested as ar/en returns Hebrew, not English or empty (#70)."""
+    card = {
+        "pathId": "path_adult_he_only",
+        "subject": "math",
+        "explainLocale": "he",
+        "titles": {"he": "שברים למבוגרים"},
+        "blurbs": {"he": "מסלול בעברית בלבד."},
+        "titleHe": "שברים למבוגרים",
+        "blurbHe": "מסלול בעברית בלבד.",
+    }
+    for loc in ("ar", "en"):
+        out = apply_catalog_locale(card, loc)
+        assert out["title"] == "שברים למבוגרים", loc
+        assert out["blurb"] == "מסלול בעברית בלבד.", loc
+        assert out["title"], loc
+        assert out["blurb"], loc
+        assert _has_hebrew(out["title"])
+        assert not any(ch.isascii() and ch.isalpha() for ch in out["title"])
+
+
+def test_apply_catalog_locale_prefers_translated_title_when_present() -> None:
+    """A path that already has ar/en chrome still returns that translation (#70)."""
+    card = {
+        "pathId": "path_with_translations",
+        "subject": "math",
+        "explainLocale": "he",
+        "titles": {"he": "חיבור", "en": "Addition", "ar": "الجمع"},
+        "blurbs": {"he": "תיאור", "en": "Blurb", "ar": "نبذة"},
+    }
+    ar = apply_catalog_locale(card, "ar")
+    assert ar["title"] == "الجمع"
+    assert ar["blurb"] == "نبذة"
+    assert _has_arabic(ar["title"])
+    en = apply_catalog_locale(card, "en")
+    assert en["title"] == "Addition"
+    assert en["blurb"] == "Blurb"
+    he = apply_catalog_locale(card, "he")
+    assert he["title"] == "חיבור"
+    assert he["blurb"] == "תיאור"
+
+
+def test_apply_catalog_locale_empty_explain_locale_keeps_legacy_chain() -> None:
+    """Missing/blank explainLocale keeps the legacy en→he pick chain for callers without the key."""
+    card = {
+        "pathId": "path_legacy",
+        "subject": "math",
+        "titles": {"he": "מתמטיקה", "en": "Math"},
+        "blurbs": {"he": "תיאור"},
+    }
+    # No explainLocale → localize_path_chrome without source_locale → English-first
+    out = apply_catalog_locale(card, "ar")
+    assert out["title"] == "Math"
+    card_blank = {**card, "explainLocale": "  "}
+    out_blank = apply_catalog_locale(card_blank, "ar")
+    assert out_blank["title"] == "Math"
 
 
 def test_fake_ru_locale_needs_no_code_change(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
