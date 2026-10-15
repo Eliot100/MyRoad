@@ -311,7 +311,7 @@ def seed_content_paths(
 
 def apply_catalog_locale(card: dict[str, Any], locale: str) -> dict[str, Any]:
     """Mutate/return a catalog card so title/blurb/subjectLabel follow UI locale."""
-    from myroad_core.ui.i18n import localize_path_chrome, normalize_locale, pick
+    from myroad_core.ui.i18n import localize_path_chrome, normalize_locale
 
     loc = normalize_locale(locale)
     titles = dict(card.get("titles") or {})
@@ -333,11 +333,19 @@ def apply_catalog_locale(card: dict[str, Any], locale: str) -> dict[str, Any]:
         blurbs["ar"] = card["blurbAr"]
     if card.get("blurb") and "he" not in blurbs:
         blurbs["he"] = card["blurb"]
+    # Prefer path explainLocale so missing UI-locale chrome falls back to the
+    # path's own language (usually Hebrew), not English (#70 / D11).
+    src = card.get("explainLocale")
+    if isinstance(src, str):
+        src = src.strip() or None
+    else:
+        src = None
     chrome = localize_path_chrome(
         locale=loc,
         titles=titles,
         blurbs=blurbs,
         subject=card.get("subject"),
+        source_locale=src,
     )
     out = dict(card)
     out["titles"] = titles
