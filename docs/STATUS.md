@@ -1,12 +1,14 @@
 # סטטוס MyRoad
 
-עודכן: 08.10.2026 09:14 (שעון ישראל). נוצר אוטומטית מ-GitHub (Eliot100/MyRoad, Eliot100/MyRoad-content, Stand-up #34), לא לערוך ידנית.
+עודכן: 16.10.2026 07:59 (שעון ישראל). נוצר אוטומטית מ-GitHub (Eliot100/MyRoad, Eliot100/MyRoad-content, Stand-up #34), לא לערוך ידנית.
 
-נעשה: 38 · בעבודה: 3 · חסום/מחכה לאליוט: 8 · להמשך: 14
+נעשה: 43 · בעבודה: 1 · חסום/מחכה לאליוט: 8 · להמשך: 13
 
 ## נעשה (14 ימים אחרונים)
 
 **backend**
+- 08.10 [PR MyRoad#62](https://github.com/Eliot100/MyRoad/pull/62) Login limits: 8-digit codes, per-email/per-IP send+verify limits, trusted devices (#49, #… (סוגר [#49](https://github.com/Eliot100/MyRoad/issues/49), [#50](https://github.com/Eliot100/MyRoad/issues/50))
+- 08.10 [PR MyRoad#48](https://github.com/Eliot100/MyRoad/pull/48) Publish gate in store.publish, AgentTools.publish and POST /tools/publish (#42, stacked o… (סוגר [#42](https://github.com/Eliot100/MyRoad/issues/42))
 - 08.10 [PR MyRoad#47](https://github.com/Eliot100/MyRoad/pull/47) Email login: one-time 6-digit code proves email ownership (#41, stacked on #46) (סוגר [#41](https://github.com/Eliot100/MyRoad/issues/41))
 - 08.10 [PR MyRoad#46](https://github.com/Eliot100/MyRoad/pull/46) Auth on /tools/*: session or agent credential, actor never from the body (#40) (סוגר [#40](https://github.com/Eliot100/MyRoad/issues/40))
 
@@ -19,6 +21,7 @@
 - 08.10 [PR content#7](https://github.com/Eliot100/MyRoad-content/pull/7) ci: run MyRoad core tests against this repo's content (סוגר [#6](https://github.com/Eliot100/MyRoad-content/issues/6))
 
 **frank**
+- 08.10 [PR MyRoad#79](https://github.com/Eliot100/MyRoad/pull/79) docs: refresh STATUS.md (08.10 09:14)
 - 08.10 [PR MyRoad#78](https://github.com/Eliot100/MyRoad/pull/78) docs: work plan for Eliot + SuperGrok (#77) (סוגר [#77](https://github.com/Eliot100/MyRoad/issues/77))
 - 08.10 [PR MyRoad#75](https://github.com/Eliot100/MyRoad/pull/75) docs: central status file docs/STATUS.md + SuperGrok prompts (#74) (סוגר [#74](https://github.com/Eliot100/MyRoad/issues/74))
 
@@ -29,6 +32,7 @@
 - 08.10 [PR MyRoad#30](https://github.com/Eliot100/MyRoad/pull/30) Path builder: live completeness check at every step (סוגר [#36](https://github.com/Eliot100/MyRoad/issues/36))
 
 **pm**
+- 15.10 [PR MyRoad#81](https://github.com/Eliot100/MyRoad/pull/81) fix(catalog): fall back titles/blurbs to explainLocale (#70) (סוגר [#70](https://github.com/Eliot100/MyRoad/issues/70))
 - 08.10 [PR MyRoad#33](https://github.com/Eliot100/MyRoad/pull/33) Schema v2: adult paths, step kind, interleaved review, prerequisites, unified score (סוגר [#35](https://github.com/Eliot100/MyRoad/issues/35))
 
 **ui**
@@ -40,6 +44,7 @@
 - 08.10 [PR MyRoad#55](https://github.com/Eliot100/MyRoad/pull/55) UI: adult learner flow on long paths - locked prerequisites, review steps, station progre… (סוגר [#44](https://github.com/Eliot100/MyRoad/issues/44))
 
 **ללא שיוך בוט**
+- 14.10 [PR MyRoad#80](https://github.com/Eliot100/MyRoad/pull/80) feat: path trail viewer with quiet settings
 - 08.10 [PR MyRoad#31](https://github.com/Eliot100/MyRoad/pull/31) ci: drop the fixed 10-content-file requirement
 - 08.10 [PR content#1](https://github.com/Eliot100/MyRoad-content/pull/1) ci: validate every path JSON against the schema on MyRoad main
 - 08.10 [PR MyRoad#29](https://github.com/Eliot100/MyRoad/pull/29) docs: add vision docs (docs/vision) and mark design-extraction as superseded
@@ -64,8 +69,6 @@
 PRs פתוחים, ומשימות עם משויך שאין להן PR.
 
 **backend**
-- [PR MyRoad#48](https://github.com/Eliot100/MyRoad/pull/48) Publish gate in store.publish, AgentTools.publish and POST /tools/publish (#42, stacked o… (משימה [#42](https://github.com/Eliot100/MyRoad/issues/42)). בדיקות ירוקות, מיזוג ידני אחרי ביקורת
-- [PR MyRoad#62](https://github.com/Eliot100/MyRoad/pull/62) Login limits: 8-digit codes, per-email/per-IP send+verify limits, trusted devices (#49, #… (משימה [#49](https://github.com/Eliot100/MyRoad/issues/49), [#50](https://github.com/Eliot100/MyRoad/issues/50)). אין בדיקות, מיזוג ידני אחרי ביקורת
 - [PR MyRoad#66](https://github.com/Eliot100/MyRoad/pull/66) No state change on GET; default ports in Origin check; TLS proxy docs (#53) (משימה [#53](https://github.com/Eliot100/MyRoad/issues/53)). אין בדיקות, מיזוג ידני אחרי ביקורת
 
 ## חסום / מחכה לאליוט
@@ -80,9 +83,6 @@ PRs פתוחים, ומשימות עם משויך שאין להן PR.
 
 ## משימות להמשך
 משימות פתוחות בלי PR ובלי משויך.
-
-**backend**
-- [MyRoad#70](https://github.com/Eliot100/MyRoad/issues/70) Catalog locale fallback: pass source_locale=explainLocale in apply_catalog_locale
 
 **dev**
 - [MyRoad#61](https://github.com/Eliot100/MyRoad/issues/61) CI: axe-core + Playwright accessibility check
