@@ -142,3 +142,11 @@ def test_login_offers_language_switch_that_returns_to_login():
 def test_login_footer_stacks_under_card():
     rule = _rule(".auth-screen")
     assert "flex-direction: column" in rule
+
+
+def test_map_primary_action_sticks_to_bottom_on_phones():
+    phone = CSS[CSS.index("@media (max-width: 480px)"):]
+    rule = re.search(r"\.map-view \.map-actions\s*\{([^}]*)\}", phone).group(1)
+    assert "position: sticky" in rule and "inset-block-end: 0" in rule
+    assert "safe-area-inset-bottom" in rule
+    assert "background: var(--card)" in rule  # opaque so stations scroll beneath it
