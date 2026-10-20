@@ -345,5 +345,6 @@
   "stats_learned": "What you learned",
   "stats_next": "Next up",
   "stats_next_catalog": "Pick your next path from the catalog, or replay this one to strengthen it.",
-  "stats_details": "Time and answers"
+  "stats_details": "Time and answers",
+  "map_back_to_station": "Back to my station"
 }

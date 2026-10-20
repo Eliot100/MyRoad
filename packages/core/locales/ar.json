@@ -345,5 +345,6 @@
   "stats_learned": "ما تعلّمته",
   "stats_next": "التالي",
   "stats_next_catalog": "اختر مسارك التالي من الكتالوج، أو أعد هذا المسار لتقويته.",
-  "stats_details": "الوقت والإجابات"
+  "stats_details": "الوقت والإجابات",
+  "map_back_to_station": "العودة إلى محطتي"
 }
