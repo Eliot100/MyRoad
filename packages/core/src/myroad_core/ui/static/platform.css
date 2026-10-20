@@ -878,6 +878,19 @@ a.link-btn.small-btn { padding: .5rem 1rem; font-size: .95rem; }
   .station-num { width: 1.7rem; height: 1.7rem; }
   .mini-bar { min-width: 2.5rem; }
   .map-actions { flex-direction: column; align-items: stretch; }
+  /* Keep the main call to action in reach while scrolling a long map on a phone. */
+  .map-view .map-actions {
+    position: sticky;
+    inset-block-end: 0;
+    z-index: 2;
+    margin-inline: -.9rem;
+    margin-block-end: -.85rem;
+    padding: var(--space-3) .9rem calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    background: var(--card);
+    border-block-start: 1px solid var(--line);
+    border-end-start-radius: var(--radius);
+    border-end-end-radius: var(--radius);
+  }
   .map-actions form, .map-actions .link-btn { width: 100%; }
   .map-actions button { width: 100%; }
   .nav.row form { flex: 1; }
