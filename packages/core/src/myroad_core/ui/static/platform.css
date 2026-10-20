@@ -963,6 +963,14 @@ main:focus { outline: none; }
 .step-card.is-answered .choice-tile.is-correct:disabled { background: var(--tint-ok); opacity: 1; }
 /* While an htmx answer is on its way, a second tap does nothing. */
 form.htmx-request .choice-tile { pointer-events: none; }
+/* Pending: the tapped tile stays bright and outlined, the rest dim, cursor shows progress. */
+form.htmx-request { cursor: progress; }
+form.htmx-request .choice-tile:not([data-pending]) { opacity: .55; }
+.choice-tile[data-pending] { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+a.continue-step.htmx-request { opacity: .7; cursor: progress; }
+@media (prefers-reduced-motion: no-preference) {
+  form[data-step-form] .choice-tile, a.continue-step { transition: opacity .15s ease, box-shadow .15s ease; }
+}
 .step-feedback:empty { display: none; }
 .step-feedback {
   margin: 0 0 1rem;
@@ -1115,6 +1123,26 @@ footer .a11y-link,
   a.path-card.tone-demo { background: var(--card); }
 }
 
+/* Reading comfort (UX M7, issue 104): set on <html> by prefs.js before paint. rem-based sizes scale. */
+html[data-text-size="125"] { font-size: 125%; }
+html[data-text-size="150"] { font-size: 150%; }
+html[data-text-size] body { overflow-wrap: anywhere; }
+html[data-motion="reduce"] *,
+html[data-motion="reduce"] *::before,
+html[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-motion="reduce"] ::view-transition-group(*),
+html[data-motion="reduce"] ::view-transition-old(*),
+html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important; }
+.reading-prefs fieldset { border: 1px solid var(--line); border-radius: 12px; padding: .75rem 1rem; margin: 0 0 1rem; }
+.reading-prefs legend { font-weight: 600; padding: 0 .25rem; }
+.reading-prefs .opt { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
+.reading-prefs input[type="radio"], .reading-prefs input[type="checkbox"] { width: 1.25rem; height: 1.25rem; margin: 0; }
+.flash:empty { display: none; }
 /* End-of-path (UX M5): learning first, numbers collapsed, no warning colour. */
 .stats-learned h2, .stats-next h2 { font-size: var(--text-lg); margin: 1rem 0 .5rem; }
 .learned-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }

@@ -162,3 +162,15 @@ def test_type_scale_drives_headings_and_heading_order_is_not_inverted():
 
 def test_plain_links_inside_main_use_accent():
     assert "body.platform :where(main a:not([class])) { color: var(--accent);" in CSS
+
+
+def test_step_player_marks_pending_answer_visually_and_for_assistive_tech():
+    js = (_STATIC / "platform.js").read_text(encoding="utf-8")
+    assert 'tile.setAttribute("data-pending", "")' in js
+    assert '"htmx:beforeRequest"' in js and 'card.setAttribute("aria-busy", "true")' in js
+    assert '"htmx:afterRequest"' in js and 'card.removeAttribute("aria-busy")' in js
+    assert "form.htmx-request .choice-tile:not([data-pending]) { opacity: .55; }" in CSS
+    assert ".choice-tile[data-pending] {" in CSS
+    # The fade only animates when the learner has not asked for reduced motion.
+    motion = CSS[CSS.index(".choice-tile[data-pending] {"):]
+    assert motion.index("@media (prefers-reduced-motion: no-preference)") < motion.index("transition: opacity .15s")

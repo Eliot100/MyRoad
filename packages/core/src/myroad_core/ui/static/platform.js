@@ -145,7 +145,7 @@
     var r = here.getBoundingClientRect();
     var fits = r.top >= 0 && r.bottom <= (window.innerHeight || document.documentElement.clientHeight);
     if (fits) return; // already on screen: do not move the page
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
   }
   if (document.readyState === "loading") {
@@ -155,7 +155,7 @@
   }
 
   // --- Step player + htmx (progressive enhancement: without JS the forms post normally) ---
-  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reduceMotion = window.myroadReduceMotion ? window.myroadReduceMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   // After a swap, move focus to the feedback (answer) or the new step title (next step).
   document.addEventListener("htmx:load", function (e) {
@@ -174,7 +174,27 @@
   // Remember the tapped choice, so a failed htmx request can fall back to a normal post / link.
   document.addEventListener("click", function (e) {
     var tile = e.target.closest && e.target.closest("form[data-step-form] button[name=choice]");
-    if (tile) tile.form.setAttribute("data-last-choice", tile.value);
+    if (tile) {
+      tile.form.setAttribute("data-last-choice", tile.value);
+      tile.setAttribute("data-pending", "");
+    }
+  });
+  // Pending state: mark the step card busy while htmx works, so the tap visibly registered
+  // (CSS dims the other tiles) and assistive tech hears that content is updating.
+  function stepCard(e) {
+    var elt = e.detail && e.detail.elt;
+    return elt && elt.closest ? elt.closest("#step-card") : null;
+  }
+  document.addEventListener("htmx:beforeRequest", function (e) {
+    var card = stepCard(e);
+    if (card) card.setAttribute("aria-busy", "true");
+  });
+  document.addEventListener("htmx:afterRequest", function (e) {
+    var card = stepCard(e);
+    if (!card) return;
+    card.removeAttribute("aria-busy");
+    var pending = card.querySelectorAll("[data-pending]");
+    for (var i = 0; i < pending.length; i++) pending[i].removeAttribute("data-pending");
   });
   function fallbackPost(e) {
     var form = e.detail && e.detail.elt;
