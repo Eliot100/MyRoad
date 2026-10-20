@@ -12,7 +12,7 @@ from typing import Any
 
 SERIES: tuple[tuple[str, str, str], ...] = (
     ("path_english_bagrut5_00_placement", "מבדק רמה", "Level check"),
-    ("path_english_bagrut5_01_zero", "מאפס", "From zero"),
+    ("path_english_bagrut5_01_zero", "מאפס", "First letters"),
     ("path_english_bagrut5_02_present", "הווה ויום יום", "Present and daily life"),
     ("path_english_bagrut5_03_time", "זמן וסיפור", "Time and story"),
     ("path_english_bagrut5_04_accuracy", "דיוק", "Accuracy"),
