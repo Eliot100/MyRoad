@@ -425,6 +425,31 @@ def test_summary_leads_with_learning_and_collapses_numbers(app) -> None:
     assert "warn" not in main
 
 
+@pytest.mark.parametrize("locale, shown", [("en", True), ("ar", True), ("he", False)])
+def test_player_notes_when_explanations_are_in_another_language(app, locale, shown) -> None:
+    page = _at_practice(app, locale).get(f"/play/{PID}").text
+    assert ('class="explain-lang-note" role="note"' in page) is shown
+    if locale == "en":
+        assert "only available in Hebrew" in page
+
+
+def test_offline_answer_keeps_learner_on_the_step_with_a_message(app) -> None:
+    page = _at_practice(app, "en").get(f"/play/{PID}").text
+    assert "data-offline-msg=\"You seem to be offline" in page
+    js = (_STATIC / "platform.js").read_text(encoding="utf-8")
+    body = js.split("function sendError", 1)[1].split("\n  }\n", 1)[0]
+    assert "navigator.onLine === false" in body and "#step-feedback" in body
+    assert 'addEventListener("htmx:sendError", sendError)' in js
+
+
+def test_empty_home_tab_offers_a_way_to_the_catalog() -> None:
+    html = (_UI / "templates" / "home.html").read_text(encoding="utf-8")
+    assert "t('empty_browse_catalog')" in html and "tab=catalog" in html
+    for code in ("he", "en", "ar"):
+        j = json.loads((_CORE / "locales" / f"{code}.json").read_text(encoding="utf-8"))
+        assert j["empty_browse_catalog"].strip() and j["offline_answer_not_sent"].strip()
+
+
 @pytest.mark.parametrize("locale, label", [("he", "תרגול"), ("en", "Practice"), ("ar", "تمرين")])
 def test_step_type_pill_is_localised(app, locale, label) -> None:
     page = _at_practice(app, locale).get(f"/play/{PID}").text

@@ -137,7 +137,10 @@
         </div>
         {% endfor %}
       {% else %}
-        <p class="empty">{{ t('empty_tab') }}</p>
+        <div class="empty-state">
+          <p class="empty">{{ t('empty_tab') }}</p>
+          {% if active_tab != 'catalog' %}<a class="secondary link-btn" href="/?group={{ active_group }}&subject={{ active_subject }}&tab=catalog&view=status">{{ t('empty_browse_catalog') }}</a>{% endif %}
+        </div>
       {% endif %}
     </section>
     {% endfor %}
@@ -167,7 +170,10 @@
       </div>
     </a>
     {% else %}
-    <p class="empty">{{ t('empty_tab') if active_tab != 'catalog' else t('empty_catalog') }}</p>
+    <div class="empty-state">
+      <p class="empty">{{ t('empty_tab') if active_tab != 'catalog' else t('empty_catalog') }}</p>
+      {% if active_tab != 'catalog' %}<a class="secondary link-btn" href="/?group={{ active_group }}&subject={{ active_subject }}&tab=catalog&view=status">{{ t('empty_browse_catalog') }}</a>{% endif %}
+    </div>
     {% endfor %}
   </section>
   {% endif %}
