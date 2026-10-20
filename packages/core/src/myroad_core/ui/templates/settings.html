@@ -7,12 +7,13 @@
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     <a class="settings-link" href="/">{{ t('back_home') }}</a>
   </header>
 
-  <main class="card settings-card">
+  <main id="main" tabindex="-1" class="card settings-card">
     <h1>{{ t('settings_title') }}</h1>
     <p class="lede">{{ t('settings_lede') }}</p>
     {% if saved %}

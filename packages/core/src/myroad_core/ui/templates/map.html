@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/static/transitions.css" />
 </head>
 <body class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
@@ -15,6 +16,7 @@
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
   </header>
+  <main id="main" tabindex="-1">
 
   <section class="card path-head">
     <h1>{{ meta.emoji }} <span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}</h1>
@@ -136,6 +138,7 @@
     </div>
   </section>
 
+  </main>
   <footer>
     <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>

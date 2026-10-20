@@ -9,6 +9,7 @@
   <meta name="htmx-config" content='{"allowEval": false, "allowScriptTags": false, "historyEnabled": false}' />
 </head>
 <body class="platform play {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}" data-path="{{ doc.pathId }}">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <div class="brand">
       <a href="/play/{{ doc.pathId }}?view=map#here" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('path_map') }}</a>
@@ -16,6 +17,7 @@
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
   </header>
+  <main id="main" tabindex="-1">
 
   <section class="card path-head">
     <h1>{{ meta.emoji }} <span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if read_only %} <span class="status-pill locked">🔒 {{ t('read_only_badge') }}</span>{% endif %}</h1>
@@ -42,6 +44,7 @@
   {% include "_step_card.html" %}
   {% endif %}
 
+  </main>
   <footer>
     <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>

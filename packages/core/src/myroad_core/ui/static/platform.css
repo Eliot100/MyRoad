@@ -885,6 +885,20 @@ a.link-btn.small-btn { padding: .5rem 1rem; font-size: .95rem; }
 .match-found { margin: .6rem 0 .75rem; color: var(--ok); font-weight: 600; }
 
 /* --- Step player (#56): answer in place, feedback under the choices, 24px+ targets --- */
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-2);
+  inset-block-start: -3rem;
+  z-index: 10;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 650;
+  text-decoration: none;
+}
+.skip-link:focus { inset-block-start: var(--space-2); }
+main:focus { outline: none; }
 .visually-hidden {
   position: absolute !important;
   inline-size: 1px; block-size: 1px;

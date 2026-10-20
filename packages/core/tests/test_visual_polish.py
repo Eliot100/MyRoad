@@ -93,3 +93,23 @@ def test_dark_theme_text_pairs_pass_aa():
 
 def test_no_hard_coded_white_in_colour_mixes():
     assert ", white)" not in CSS
+
+
+def test_every_learner_screen_has_one_main_landmark_and_skip_link():
+    from pathlib import Path as _P
+    tpl = _P(__file__).resolve().parents[1] / "src" / "myroad_core" / "ui" / "templates"
+    for name in ("home.html", "map.html", "play.html", "settings.html", "login.html",
+                 "accessibility.html", "stats.html"):
+        html = (tpl / name).read_text(encoding="utf-8")
+        assert html.count("<main") == 1, name
+        assert 'id="main"' in html, name
+        assert '<a class="skip-link" href="#main">' in html, name
+        # Skip link is the first focusable thing in the body.
+        assert html.index("skip-link") < html.index("<header") if "<header" in html else True
+
+
+def test_skip_link_is_translated_in_every_locale():
+    import json
+    loc = Path(__file__).resolve().parents[1] / "locales"
+    for code in ("he", "en", "ar"):
+        assert json.loads((loc / f"{code}.json").read_text(encoding="utf-8"))["skip_to_main"].strip()
