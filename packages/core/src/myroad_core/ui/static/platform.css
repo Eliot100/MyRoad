@@ -1124,6 +1124,26 @@ footer .a11y-link,
   a.path-card.tone-demo { background: var(--card); }
 }
 
+/* Reading comfort (UX M7, issue 104): set on <html> by prefs.js before paint. rem-based sizes scale. */
+html[data-text-size="125"] { font-size: 125%; }
+html[data-text-size="150"] { font-size: 150%; }
+html[data-text-size] body { overflow-wrap: anywhere; }
+html[data-motion="reduce"] *,
+html[data-motion="reduce"] *::before,
+html[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-motion="reduce"] ::view-transition-group(*),
+html[data-motion="reduce"] ::view-transition-old(*),
+html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important; }
+.reading-prefs fieldset { border: 1px solid var(--line); border-radius: 12px; padding: .75rem 1rem; margin: 0 0 1rem; }
+.reading-prefs legend { font-weight: 600; padding: 0 .25rem; }
+.reading-prefs .opt { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
+.reading-prefs input[type="radio"], .reading-prefs input[type="checkbox"] { width: 1.25rem; height: 1.25rem; margin: 0; }
+.flash:empty { display: none; }
 /* Map: floating "back to my station" (logical insets, so it sits on the reading-end side in RTL too). */
 .float-here {
   position: fixed;
