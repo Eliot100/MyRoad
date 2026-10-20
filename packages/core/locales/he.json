@@ -350,5 +350,7 @@
   "explain_lang_note": "חלק מההסברים במסלול הזה זמינים רק ב{lang}.",
   "lang_name_he": "עברית",
   "lang_name_ar": "ערבית",
-  "lang_name_en": "אנגלית"
+  "lang_name_en": "אנגלית",
+  "offline_answer_not_sent": "נראה שאין חיבור לאינטרנט, ולכן התשובה לא נשלחה. בדקו את החיבור והקישו שוב על התשובה.",
+  "empty_browse_catalog": "לכל המסלולים"
 }

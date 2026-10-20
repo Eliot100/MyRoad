@@ -1176,3 +1176,7 @@ html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important
 
 /* Player: "explanations are in Hebrew" notice for ar/en learners (explain-locale fallback). */
 .explain-lang-note { margin: 0 0 var(--space-3); padding: .5rem .85rem; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: var(--text-sm); }
+
+/* Empty and offline states (home tabs, step player). */
+.grid > .empty-state { grid-column: 1 / -1; }
+.empty-state { display: grid; justify-items: start; gap: var(--space-3); padding: var(--space-3) 0; }

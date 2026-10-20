@@ -230,6 +230,21 @@
     form.appendChild(input);
     HTMLFormElement.prototype.submit.call(form); // native submit: htmx does not intercept it
   }
-  document.addEventListener("htmx:sendError", fallbackPost);
+  // Offline: a native post would land on the browser's error page and lose the learner's place.
+  // Keep them on the step and say what happened; the next tap retries.
+  function sendError(e) {
+    var card = stepCard(e);
+    if (card && navigator.onLine === false) {
+      var fb = card.querySelector("#step-feedback");
+      if (fb) {
+        fb.className = "step-feedback try offline";
+        fb.textContent = card.getAttribute("data-offline-msg") || "";
+      }
+      card.removeAttribute("aria-busy");
+      return;
+    }
+    fallbackPost(e);
+  }
+  document.addEventListener("htmx:sendError", sendError);
   document.addEventListener("htmx:responseError", fallbackPost);
 })();
