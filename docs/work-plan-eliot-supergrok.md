@@ -1,14 +1,23 @@
 # תוכנית עבודה: אליוט + SuperGrok
 
-עודכן: 08.10.2026, 09:30 (שעון ישראל). משימה: [#77](https://github.com/Eliot100/MyRoad/issues/77).
+עודכן: 20.10.2026 (שעון ישראל).
 
-## למה התוכנית הזו קיימת
+**הפוקוס עכשיו:** ממשק הלומד (זרימת לומד, מפת דרך, נגן שלבים, קטלוג, בית, הגדרות), כך שלומד יעבור דרך שלמה מתחילה ועד סוף. ושתי דרכי פיילוט כ-JSON סטטי ב-MyRoad-content: אנגלית מאפס למבוגרים ומתמטיקה 4 יחידות.
 
-מכסת השימוש של צוות הבוטים כמעט נגמרה (88% ומעלה אתמול). כדי ש-MyRoad ימשיך להתקדם למוצר עובד גם בלי הבוטים, העבודה מתחלקת לשניים:
-- **אליוט**: רק מה שאליוט יכול לעשות או להחליט (מיזוגים, Cloudflare, החלטות מוצר).
-- **SuperGrok** (הצ'אט של אליוט, מחוץ למערכת הבוטים): כתיבת תוכן, מחקר, אפיונים, וקוד שאליוט מדביק ומפרסם בעצמו.
+## החלטות של אליוט מ-20.10
 
-מצב היום (08.10 בבוקר): PR #46 ו-#47 מוזגו ל-main. PR #48 פתוח, מעודכן מול main, בדיקות ירוקות, מחכה לאישור אבטחה ולמיזוג. PR #62 (משימות #49, #50) פתוח עם קונפליקטים מול main, ואבטחה קבעה: אין פריסה ציבורית לפני שהוא מתמזג. PR #66 (משימה #53) פתוח. Path Builder ו-Researcher (#72) מחכים לחיבור Cloudflare.
+- אליוט לא מטפל ב-Cloudflare כרגע. אין פיצ'רים של סוכן או מודל כרגע: בונה הדרכים עם המודל, קריאות למודל, ו-reuse-check (#72) נדחו.
+- עבודת אבטחה מושהית כי עוד אין מוצר עובד. בוט Cyber security מושהה. PR #66 ו-#53 נדחו, בלי rebase עכשיו.
+- בוטים פעילים: MyRoad PM, UI, MyRoad Content, Dev (CI ובדיקות רק כשצריך).
+- מושהים עד הודעה חדשה: Cyber security, MyRoad Backend, Algo, MLOps, Data Scientist, QA, Budy, Path Builder, UX, Researcher.
+- רציפות: שגרת התוכנית היומית רצה כל יום ב-09:10 שעון ישראל (גם בסופ"ש). היא נותנת לבוטים הפעילים את ה-issue הבא שלהם גם כשאליוט לא פעיל, ופונה לאליוט רק להחלטות.
+
+## מצב היום (20.10)
+
+- מוזג מאז 15.10: PR #81 (קטלוג: גיבוי לשפת ההסבר של הדרך, #70) ו-PR #82 (רענון STATUS.md).
+- PR פתוח ב-MyRoad: רק #66 (אבטחה, נדחה).
+- ב-MyRoad-content אין PR או issue פתוחים.
+- שני קבצי הפיילוט עוד לא קיימים: `adult/path_english_zero_to_sentences.json` ו-`adult/path_math_bagrut_4_units.json`.
 
 ## איך משתמשים
 
@@ -42,23 +51,18 @@ gh pr merge --auto --squash
 
 ## משימות לאליוט
 
-לפי סדר השפעה.
-
 | # | משימה | מה זה משחרר | זמן משוער |
 |---|-------|-------------|-----------|
-| א1 | **למזג את [PR #48](https://github.com/Eliot100/MyRoad/pull/48)** (שער פרסום, #42). #46 ו-#47 כבר ב-main (בדוק: `git log --oneline -5` מראה את שניהם). ב-#48 לוודא שיש אישור של Cyber security ושהבדיקות ירוקות, ואז Merge. | סוגר את שרשרת האימות (#40 עד #42). אחריו #62 ו-#66 נבנים על main נקי. | 10 דק' |
-| א2 | **לחבר את Cloudflare AI Gateway.** לפי [packages/core/docs/cloudflare-ai-gateway.md](../packages/core/docs/cloudflare-ai-gateway.md): ליצור Gateway, לשמור את מפתח xAI ב-Cloudflare Secrets Store (BYOK), ולהגדיר בשרת רק את `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_GATEWAY_ID` ואם צריך `CLOUDFLARE_AI_GATEWAY_TOKEN`. המפתח לא נכנס לריפו ולא לצ'אט. בדיקה: `/add-path` לא מציג "gateway is not configured". | Path Builder (דרך אמיתית מקצה לקצה עם המודל), Researcher #72, ו-#51, #52, #54, #74 שמסומנים "מחכה ל-Cloudflare". | 30 עד 45 דק' |
-| א3 | **להחליט על [PR #62](https://github.com/Eliot100/MyRoad/pull/62)** (#49, #50: קודים של 8 ספרות, הגבלות לפי אימייל ו-IP, CAPTCHA). יש בו קונפליקטים מול main אחרי מיזוג #47. החלטה: לאשר את הכיוון ולבקש מ-Backend לפתור קונפליקטים כשהבוטים חוזרים, או לדחות. | פריסה ציבורית (אבטחה חוסמת עד שהוא מתמזג), ו-UI #59 (שדה הקוד). | 15 דק' |
-| א4 | **להחליט על [PR #66](https://github.com/Eliot100/MyRoad/pull/66)** (#53: אין שינוי מצב ב-GET, Origin עם פורטים ברירת מחדל). הוא כבר מכוון ל-main. לוודא בדיקות ירוקות ואישור אבטחה, ולמזג או להשאיר בהמתנה. | סוגר חור CSRF לפני פריסה. | 10 דק' |
-| א5 | **לסגור או לעדכן את [#26](https://github.com/Eliot100/MyRoad/issues/26)** ("השימוש ב-AI נעצר"). לפי יומן ההחלטות ההחלטה הזו הוחלפה (S2 הוחלפה ב-D5, D6), אבל ה-issue עדיין פתוח ומבלבל את התכנון. | כיוון ברור לבונה הדרכים ול-#16. | 5 דק' |
-| א6 | **לבדוק ולמזג את הפלטים של SuperGrok**: PR תוכן ב-MyRoad-content (משימות ס1, ס2), PR קוד (ס4), ותגובות ב-issues (ס3, ס5, ס6, ס7). | זה מה שמזיז את המוצר בזמן שהבוטים לא עובדים. | 15 עד 30 דק' לכל פלט |
-| א7 | **להחליט על השאלות הפתוחות** בעזרת המזכר של ס7, ולפתוח PR שמוסיף שורות ל-[05-decisions-log.md](vision/05-decisions-log.md). | מוריד ניחושים מהבוטים כשהם חוזרים. | 30 דק' |
+| א1 | **להריץ ב-SuperGrok את פרומפט ס1 (אנגלית)** ולהדביק את הפלט: PR ב-MyRoad-content, או הדבקה בצ'אט ל-frank. | דרך פיילוט ראשונה באנגלית. | 30 עד 60 דק' |
+| א2 | **להריץ ב-SuperGrok את פרומפט ס2 (מתמטיקה 4 יחידות)** ולהדביק את הפלט באותה דרך. | דרך פיילוט במתמטיקה. | 30 עד 60 דק' |
+| א3 | **לנסות את זרימת הלומד** מקצה לקצה (בית, קטלוג, מפת דרך, נגן שלבים, סיום) ולכתוב משוב קצר ב-issue או בצ'אט. | ה-UI מתקן את מה שבאמת מפריע. | 20 דק' |
+| א4 | **להחליט על שאלות מוצר פתוחות** כשהשגרה היומית שואלת. | הבוטים הפעילים לא נתקעים. | לפי הצורך |
 
 ---
 
 ## משימות לסופר גרוק
 
-מסודרות לפי ערך למוצר עובד. אף אחת מהן לא צריכה את מפתח Cloudflare.
+מסודרות לפי הפוקוס: קודם דרכי הפיילוט, אחר כך עזרה בטקסטים ובאפיון ל-UI. אף אחת לא צריכה מודל בתוך המוצר.
 
 קיצורים לקישורים:
 - `R` = `https://raw.githubusercontent.com/Eliot100/MyRoad/main/`
@@ -128,7 +132,57 @@ gh pr merge --auto --squash
 - אם הפלט ארוך מדי לתשובה אחת, כתוב אותו בשני חלקים לפי בקשה ("המשך"), באותו בלוק JSON אחד שאני אחבר.
 ```
 
-### ס3. reuse-check: ספרייה ל-JSON תקין ממודל שפה (#72)
+### ס3. טקסטים ואפיון לזרימת הלומד
+
+- **למה:** ה-UI הוא הפוקוס. SuperGrok יכול לנסח טקסטים במסכים ולמצוא חורים בזרימה, בלי מודל במוצר.
+- **קבצי קלט:** `R` + `docs/vision/02-product-spec.md`, ותבניות המסכים ב-`packages/core/src/myroad_core/ui/templates/`.
+- **פלט:** רשימת טקסטים מוצעים לכל מסך (בית, קטלוג, מפת דרך, נגן שלבים, הגדרות, סיום), ורשימת פערים בזרימה.
+- **לאן:** תגובה ב-issue של UI שהשגרה היומית פתחה, או הדבקה בצ'אט ל-frank.
+
+```text
+אתה עוזר לצוות UI של MyRoad, פלטפורמת למידה שבה לומד עובר דרך של נושאים ושלבים. קרא:
+- https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/02-product-spec.md
+- את התבניות בתיקייה https://github.com/Eliot100/MyRoad/tree/main/packages/core/src/myroad_core/ui/templates
+המטרה: לומד מבוגר עובר דרך שלמה מתחילה ועד סוף בלי להיתקע.
+כתוב בעברית: (1) לכל מסך (בית, קטלוג, מפת דרך, נגן שלבים, הגדרות, סיום): הטקסטים הקיימים שכדאי לשנות, והצעה קצרה לכל אחד. (2) עד 7 פערים בזרימה, לכל אחד: מה קורה, מה צריך לקרות, תנאי קבלה בשורה. עברית פשוטה, משפטים קצרים, בלי מקף ארוך (em dash). אל תמציא קבצים שלא ראית.
+```
+
+### ס4. מזכר החלטות: שאלות פתוחות באפיון
+
+- **למה:** ב-[05-decisions-log.md](vision/05-decisions-log.md) יש 10 שאלות פתוחות, וכמה מהן חוסמות עבודה שתחזור כשהבוטים חוזרים (תפקידים, גרסה חדשה באמצע דרך, אוצר מילים לשלבים, היקף הבגרות). רק אליוט מחליט, אבל SuperGrok יכול להכין את ההחלטה.
+- **issues קשורים:** [#27](https://github.com/Eliot100/MyRoad/issues/27) (תפקידים), [#26](https://github.com/Eliot100/MyRoad/issues/26), שאלות 1, 4 עד 9 ב-05.
+- **קבצי קלט:** `R` + `docs/vision/01-vision.md`, `R` + `docs/vision/02-product-spec.md`, `R` + `docs/vision/03-agent-and-publish.md`, `R` + `docs/vision/04-architecture-and-roadmap.md`, `R` + `docs/vision/05-decisions-log.md`.
+- **פלט:** מזכר Markdown בעברית: לכל שאלה 2 עד 3 אפשרויות, המלצה, ומה משתנה בקוד.
+- **לאן:** אליוט מחליט (משימה א4), ואז PR ב-MyRoad שמוסיף שורות D חדשות ל-`docs/vision/05-decisions-log.md` לפי הכללים ב-[README](vision/README.md).
+
+```text
+אתה עוזר למנהל מוצר להחליט. המוצר: MyRoad, פלטפורמת למידה עם דרכים (גרף נושאים ושלבים), מצב בנייה ומצב למידה, וסוכן שרשאי לפרסם. קרא את כל מסמכי החזון:
+https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/01-vision.md
+https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/02-product-spec.md
+https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/03-agent-and-publish.md
+https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/04-architecture-and-roadmap.md
+https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/05-decisions-log.md
+
+עדכון מצב מעבר למסמכים: אימות בעלות על אימייל (קוד חד-פעמי) ואימות ל-/tools/* כבר מוזגו ל-main (PR #46, #47). שער פרסום עם ולידציה (שאלה 4) נמצא ב-PR #48. אוצר מילים אחד לסוגי שלבים כבר קיים ב-schema.py (NODE_TYPES), ונשארה רק השאלה אם "הסבר" (learn) נשאר סוג נפרד.
+
+כתוב מזכר החלטות בעברית, עד 2 עמודים, על השאלות הפתוחות 1, 4, 5, 6, 7, 8, 9 ברשימה בסוף 05-decisions-log.md, ועל issue #26 ("להוציא את ה-AI ממסלול המוצר", שנשען על החלטה S2 שהוחלפה). לכל שאלה:
+### <מספר>. <השאלה בשורה אחת>
+- **אפשרויות:** 2 עד 3, שורה לכל אחת
+- **המלצה:** אחת, ולמה, ב-2 שורות
+- **מה משתנה בקוד או בתוכן:** שמות קבצים מהמסמכים בלבד, בלי להמציא
+- **שורה מוכנה ליומן:** | D<מספר> | <תאריך ריק> | <ההחלטה> | אליוט |
+בסוף: סדר מומלץ להחלטה (מה חוסם הכי הרבה עבודה). עברית פשוטה, בלי מקף ארוך (em dash). מה שלא ידוע, כתוב "פתוח" ואל תנחש.
+```
+
+## נדחה
+
+לא עובדים על זה עכשיו. הטקסט נשמר לפעם הבאה.
+
+- **אליוט: חיבור Cloudflare AI Gateway.** לפי [packages/core/docs/cloudflare-ai-gateway.md](../packages/core/docs/cloudflare-ai-gateway.md). נדחה עד שיש מוצר עובד.
+- **אליוט: החלטות אבטחה** (PR #66, #53, #62). נדחו, בלי rebase עכשיו.
+- **ס4 הקודם (#70):** כבר תוקן ומוזג ב-PR #81.
+
+### (נדחה) reuse-check, reuse-check: ספרייה ל-JSON תקין ממודל שפה (#72)
 
 - **למה:** Path Builder צריך לייצר נושא שלם עם המודל ולתקן פלט לא תקין אוטומטית. המחקר לא צריך את המפתח, ואחרי החיבור של א2 Path Builder יכול להתחיל מיד.
 - **issues קשורים:** [#72](https://github.com/Eliot100/MyRoad/issues/72).
@@ -150,37 +204,7 @@ Bot: researcher (via SuperGrok)
 **דוגמה:** בלוק קוד קצר
 ```
 
-### ס4. תיקון קוד: שפת גיבוי בקטלוג (#70)
-
-- **למה:** בקטלוג של ה-API, דרך שכתובה רק בעברית מופיעה בערבית ובאנגלית עם גיבוי לאנגלית או ריק. המסכים כבר תוקנו (#58, PR #69); ה-API לא. תיקון קטן, מוגדר היטב, עם בדיקות.
-- **issues קשורים:** [#70](https://github.com/Eliot100/MyRoad/issues/70).
-- **קבצי קלט:** טקסט ה-issue #70, `R` + `packages/core/src/myroad_core/content/loader.py`, `R` + `packages/core/src/myroad_core/ui/i18n.py`, `R` + `packages/core/tests/test_catalog_locale.py`.
-- **פלט:** הפונקציה `apply_catalog_locale` המתוקנת, וקובץ `test_catalog_locale.py` המלא אחרי העדכון.
-- **לאן:** PR ב-MyRoad, ענף `eliot/70-catalog-locale-fallback`, גוף `Closes #70`. בדיקה מקומית: `cd MyRoad/packages/core && pytest -q tests/test_catalog_locale.py`, ואז `pytest -q`.
-
-```text
-You are fixing a small bug in MyRoad (Python 3.12, FastAPI, Pydantic v2, pytest). Read these files first:
-- https://raw.githubusercontent.com/Eliot100/MyRoad/main/packages/core/src/myroad_core/content/loader.py
-- https://raw.githubusercontent.com/Eliot100/MyRoad/main/packages/core/src/myroad_core/ui/i18n.py
-- https://raw.githubusercontent.com/Eliot100/MyRoad/main/packages/core/tests/test_catalog_locale.py
-
-Issue #70: `apply_catalog_locale()` in `content/loader.py` calls `localize_path_chrome(...)` without `source_locale`, so the API catalog in `ar`/`en` falls back to English first. Product rule: missing text falls back to the path's own `explain_locale` (usually Hebrew), not English. The UI screens already do this.
-
-Change: pass `source_locale=card.get("explainLocale")` (check the exact card key name and the `localize_path_chrome` signature in the files; adapt if it differs) and keep every other behaviour the same.
-
-Acceptance:
-1. A Hebrew-only path requested with `ar` or `en` returns the Hebrew title and blurb, not English and not empty.
-2. A path that has an `ar` or `en` title still returns that title for that locale.
-3. Existing tests keep passing.
-
-Output exactly:
-1. The full new `apply_catalog_locale` function in one code block (drop-in replacement).
-2. The full updated `packages/core/tests/test_catalog_locale.py` in one code block, adding tests for both acceptance cases. Use the fixtures and helpers already used in that file; do not invent fixtures that don't exist there.
-3. One line: the commit message, "Catalog: fall back to the path's explain locale, not English (#70)".
-Do not change any other file. No explanations inside code blocks.
-```
-
-### ס5. אפיון: תכנון דרך מהיר בלי מודל (#16, #23, #22)
+### (נדחה) אפיון: תכנון דרך מהיר בלי מודל (#16, #23, #22)
 
 - **למה:** לפי #16 "המהירות של תכנון החומר היא המוצר". מסך שמרכיב דרך מנושאים ושלבים קיימים עובד בלי Cloudflare, ונותן למצב הבנייה ערך גם כשאין מודל. היום יש רק בונה עם סוכן (`/add-path`) ובדיקת "דרך קיימת" (PR #45).
 - **issues קשורים:** [#16](https://github.com/Eliot100/MyRoad/issues/16), [#23](https://github.com/Eliot100/MyRoad/issues/23), [#22](https://github.com/Eliot100/MyRoad/issues/22).
@@ -215,7 +239,7 @@ Bot: pm (via SuperGrok)
 עברית פשוטה, משפטים קצרים, בלי מקף ארוך (em dash). אל תמציא קבצים או פונקציות שלא ראית.
 ```
 
-### ס6. מדד יעילות למידה ללומד (#17, #25)
+### (נדחה) מדד יעילות למידה ללומד (#17, #25)
 
 - **למה:** החלטה D1: "שיפור מדיד". שאלה פתוחה 9: אין עדיין מדדים רשמיים. הנתונים כבר נשמרים (`learner_attempts`: משך, שלבים, לחיצות נכונות ושגויות, אחוז שליטה), חסרים הגדרה וחישוב. אליוט הוא דאטה סיינטיסט, אז קל לו לבדוק את ההגדרה.
 - **issues קשורים:** [#17](https://github.com/Eliot100/MyRoad/issues/17), [#25](https://github.com/Eliot100/MyRoad/issues/25).
@@ -248,54 +272,20 @@ Part B, code:
 Output each file in its own code block with the path as the first line comment. Do not modify existing files.
 ```
 
-### ס7. מזכר החלטות: שאלות פתוחות באפיון
-
-- **למה:** ב-[05-decisions-log.md](vision/05-decisions-log.md) יש 10 שאלות פתוחות, וכמה מהן חוסמות עבודה שתחזור כשהבוטים חוזרים (תפקידים, גרסה חדשה באמצע דרך, אוצר מילים לשלבים, היקף הבגרות). רק אליוט מחליט, אבל SuperGrok יכול להכין את ההחלטה.
-- **issues קשורים:** [#27](https://github.com/Eliot100/MyRoad/issues/27) (תפקידים), [#26](https://github.com/Eliot100/MyRoad/issues/26), שאלות 1, 4 עד 9 ב-05.
-- **קבצי קלט:** `R` + `docs/vision/01-vision.md`, `R` + `docs/vision/02-product-spec.md`, `R` + `docs/vision/03-agent-and-publish.md`, `R` + `docs/vision/04-architecture-and-roadmap.md`, `R` + `docs/vision/05-decisions-log.md`.
-- **פלט:** מזכר Markdown בעברית: לכל שאלה 2 עד 3 אפשרויות, המלצה, ומה משתנה בקוד.
-- **לאן:** אליוט מחליט (משימה א7), ואז PR ב-MyRoad שמוסיף שורות D חדשות ל-`docs/vision/05-decisions-log.md` לפי הכללים ב-[README](vision/README.md).
-
-```text
-אתה עוזר למנהל מוצר להחליט. המוצר: MyRoad, פלטפורמת למידה עם דרכים (גרף נושאים ושלבים), מצב בנייה ומצב למידה, וסוכן שרשאי לפרסם. קרא את כל מסמכי החזון:
-https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/01-vision.md
-https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/02-product-spec.md
-https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/03-agent-and-publish.md
-https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/04-architecture-and-roadmap.md
-https://raw.githubusercontent.com/Eliot100/MyRoad/main/docs/vision/05-decisions-log.md
-
-עדכון מצב מעבר למסמכים: אימות בעלות על אימייל (קוד חד-פעמי) ואימות ל-/tools/* כבר מוזגו ל-main (PR #46, #47). שער פרסום עם ולידציה (שאלה 4) נמצא ב-PR #48. אוצר מילים אחד לסוגי שלבים כבר קיים ב-schema.py (NODE_TYPES), ונשארה רק השאלה אם "הסבר" (learn) נשאר סוג נפרד.
-
-כתוב מזכר החלטות בעברית, עד 2 עמודים, על השאלות הפתוחות 1, 4, 5, 6, 7, 8, 9 ברשימה בסוף 05-decisions-log.md, ועל issue #26 ("להוציא את ה-AI ממסלול המוצר", שנשען על החלטה S2 שהוחלפה). לכל שאלה:
-### <מספר>. <השאלה בשורה אחת>
-- **אפשרויות:** 2 עד 3, שורה לכל אחת
-- **המלצה:** אחת, ולמה, ב-2 שורות
-- **מה משתנה בקוד או בתוכן:** שמות קבצים מהמסמכים בלבד, בלי להמציא
-- **שורה מוכנה ליומן:** | D<מספר> | <תאריך ריק> | <ההחלטה> | אליוט |
-בסוף: סדר מומלץ להחלטה (מה חוסם הכי הרבה עבודה). עברית פשוטה, בלי מקף ארוך (em dash). מה שלא ידוע, כתוב "פתוח" ואל תנחש.
-```
-
 ---
 
-## סדר מומלץ
+## סדר ל-3 ימים
 
-**יום 1 (היום, 08.10)**
-1. א1: למזג את #48 (אחרי אישור אבטחה). 10 דק'.
-2. א2: לחבר Cloudflare AI Gateway. 30 עד 45 דק'. זה הדבר היחיד שרק אליוט יכול לעשות ושמשחרר הכי הרבה.
-3. ס1 ב-SuperGrok (דרך אנגלית), בדיקה מקומית, PR ב-MyRoad-content.
-4. ס3 במקביל (reuse-check), תגובה ב-#72.
-5. א5: לסגור או לעדכן את #26.
+**יום 1 (20.10)**
+1. א1: ס1 (אנגלית) ב-SuperGrok, בדיקה מקומית, PR ב-MyRoad-content.
+2. UI ממשיך ב-issue הבא שלו לפי השגרה היומית.
 
-**יום 2 (09.10)**
-1. א3 ו-א4: החלטות על #62 ו-#66.
-2. ס2 (מתמטיקה 4 יחידות), בדיקה מקומית, PR.
-3. ס4 (#70), PR קוד קטן. לוודא ש-`core-tests` ירוק.
-4. ס7 (מזכר החלטות), לקרוא בערב.
+**יום 2 (21.10)**
+1. א2: ס2 (מתמטיקה 4 יחידות), בדיקה מקומית, PR.
+2. ס3: טקסטים ופערים בזרימת הלומד.
 
-**יום 3 (10.10)**
-1. א7: להחליט על השאלות הפתוחות ולפתוח PR ל-05-decisions-log.md.
-2. ס5 (אפיון תכנון בלי מודל), תגובה ב-#16.
-3. ס6 (מדד יעילות), תגובה ב-#17 ו-PR עם המודול.
-4. א6: לעבור על כל ה-PR הפתוחים של SuperGrok ולמזג מה שירוק.
+**יום 3 (22.10)**
+1. א3: לעבור דרך שלמה כלומד ולתת משוב.
+2. ס4: מזכר החלטות, ואליוט מחליט על מה שחוסם.
 
-כשהבוטים חוזרים: frank קורא את התגובות ב-#16, #17, #72 ואת יומן ההחלטות, ומחלק משימות לפי הסדר שאליוט קבע.
+השגרה היומית ב-09:10 ממשיכה לחלק issues לבוטים הפעילים גם בלי אליוט.
