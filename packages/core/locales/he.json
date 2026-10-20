@@ -352,5 +352,12 @@
   "lang_name_ar": "ערבית",
   "lang_name_en": "אנגלית",
   "offline_answer_not_sent": "נראה שאין חיבור לאינטרנט, ולכן התשובה לא נשלחה. בדקו את החיבור והקישו שוב על התשובה.",
-  "empty_browse_catalog": "לכל המסלולים"
+  "empty_browse_catalog": "לכל המסלולים",
+  "node_type_learn": "לומדים",
+  "node_type_practice": "תרגול",
+  "node_type_check": "בדיקה",
+  "node_type_celebrate": "כל הכבוד",
+  "node_type_piano_keys": "מנגנים",
+  "node_type_rhythm": "קצב",
+  "node_type_speak": "אומרים"
 }

@@ -8,7 +8,9 @@
 {% set answerable = (ntype in ['practice', 'check'] and kids.choices) or ntype in ['piano_keys', 'rhythm'] %}
 <section id="step-card" class="card step-card{% if is_review %} review-step{% endif %}{% if answered %} is-answered{% endif %}" data-node-type="{{ ntype }}" data-step-kind="{{ kids.kind or 'understanding' }}"{% if swap_focus %} data-swap-focus="{{ swap_focus }}"{% endif %} data-offline-msg="{{ t('offline_answer_not_sent') }}" aria-labelledby="step-title">
   <div class="step-head">
-    <span class="type-pill">{{ ntype }}</span>
+    {#- Localised step-type label; an unknown type shows no pill rather than a raw English id. -#}
+    {%- set type_key = 'node_type_' ~ (ntype or '') %}{% set type_label = t(type_key) %}
+    {% if type_label != type_key %}<span class="type-pill" data-node-type="{{ ntype }}">{{ type_label }}</span>{% endif %}
     {% if is_review %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
     <h2 id="step-title" tabindex="-1" dir="auto"{{ sl.title|content_lang(locale) }}>{% if display is defined and display.title %}{{ display.title|bdi }}{% else %}{{ block.title|bdi }}{% endif %}</h2>
     <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">🔊 {{ t('speak') }}</button>

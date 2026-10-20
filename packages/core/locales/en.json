@@ -352,5 +352,12 @@
   "lang_name_ar": "Arabic",
   "lang_name_en": "English",
   "offline_answer_not_sent": "You seem to be offline, so your answer wasn't sent. Check your connection and tap your answer again.",
-  "empty_browse_catalog": "Browse all paths"
+  "empty_browse_catalog": "Browse all paths",
+  "node_type_learn": "Learn",
+  "node_type_practice": "Practice",
+  "node_type_check": "Check",
+  "node_type_celebrate": "Well done",
+  "node_type_piano_keys": "Play",
+  "node_type_rhythm": "Rhythm",
+  "node_type_speak": "Say it"
 }

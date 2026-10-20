@@ -352,5 +352,12 @@
   "lang_name_ar": "العربية",
   "lang_name_en": "الإنجليزية",
   "offline_answer_not_sent": "يبدو أنك غير متصل بالإنترنت، لذلك لم تُرسَل إجابتك. تحقّق من الاتصال واضغط على إجابتك مرة أخرى.",
-  "empty_browse_catalog": "تصفّح كل المسارات"
+  "empty_browse_catalog": "تصفّح كل المسارات",
+  "node_type_learn": "تعلُّم",
+  "node_type_practice": "تمرين",
+  "node_type_check": "تحقُّق",
+  "node_type_celebrate": "أحسنت",
+  "node_type_piano_keys": "عزف",
+  "node_type_rhythm": "إيقاع",
+  "node_type_speak": "انطق"
 }
