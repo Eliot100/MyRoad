@@ -113,3 +113,32 @@ def test_skip_link_is_translated_in_every_locale():
     loc = Path(__file__).resolve().parents[1] / "locales"
     for code in ("he", "en", "ar"):
         assert json.loads((loc / f"{code}.json").read_text(encoding="utf-8"))["skip_to_main"].strip()
+
+
+def _login_client():
+    import os
+    os.environ.setdefault("MYROAD_DEV_INSECURE_COOKIES", "1")
+    from fastapi.testclient import TestClient
+    from myroad_core.store import PathStore
+    from myroad_core.ui.app import create_learner_app
+    app = create_learner_app(store=PathStore(":memory:"), seed=False, seed_content=False)
+    return TestClient(app, headers={"Origin": "http://testserver"})
+
+
+def test_login_offers_language_switch_that_returns_to_login():
+    c = _login_client()
+    page = c.get("/login?mode=register").text
+    assert 'class="auth-lang"' in page
+    for code in ("he", "en", "ar"):
+        assert f'name="locale" value="{code}"' in page
+    assert 'name="next" value="/login?mode=register"' in page
+    r = c.post("/locale", data={"locale": "en", "next": "/login?mode=register"}, follow_redirects=False)
+    assert r.status_code == 303 and r.headers["location"] == "/login?mode=register"
+    en = c.get("/login?mode=register").text
+    assert 'lang="en"' in en and 'dir="ltr"' in en
+    assert 'value="en" lang="en" class="lang-btn active" aria-pressed="true"' in en
+
+
+def test_login_footer_stacks_under_card():
+    rule = _rule(".auth-screen")
+    assert "flex-direction: column" in rule
