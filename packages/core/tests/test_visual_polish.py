@@ -65,3 +65,31 @@ def test_components_use_tokens_not_raw_hex():
         and "--accent:" not in line and "linear-gradient" not in line
     ]
     assert leftovers == []
+
+
+def _dark_root() -> str:
+    m = re.search(r"@media \(prefers-color-scheme: dark\)\s*\{\s*:root\s*\{([^}]*)\}", CSS)
+    assert m, "dark theme block missing"
+    return m.group(1)
+
+
+def _tok(block: str, name: str) -> str:
+    return re.search(re.escape(name) + r":\s*(#[0-9a-fA-F]{6})", block).group(1)
+
+
+def test_dark_theme_follows_system_and_declares_color_scheme():
+    assert "color-scheme: light dark" in _root_block()
+    _dark_root()
+
+
+def test_dark_theme_text_pairs_pass_aa():
+    d = _dark_root()
+    pairs = [("--ink", "--bg"), ("--ink", "--card"), ("--muted", "--card"), ("--muted", "--bg"),
+             ("--on-accent", "--accent"), ("--accent", "--card"), ("--ok-ink", "--tint-ok"),
+             ("--warn-ink", "--tint-warn"), ("--agent-ink", "--tint-agent"), ("--ink", "--surface")]
+    for fg, bg in pairs:
+        assert contrast(_tok(d, fg), _tok(d, bg)) >= 4.5, (fg, bg)
+
+
+def test_no_hard_coded_white_in_colour_mixes():
+    assert ", white)" not in CSS
