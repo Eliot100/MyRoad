@@ -425,6 +425,14 @@ def test_summary_leads_with_learning_and_collapses_numbers(app) -> None:
     assert "warn" not in main
 
 
+@pytest.mark.parametrize("locale, shown", [("en", True), ("ar", True), ("he", False)])
+def test_player_notes_when_explanations_are_in_another_language(app, locale, shown) -> None:
+    page = _at_practice(app, locale).get(f"/play/{PID}").text
+    assert ('class="explain-lang-note" role="note"' in page) is shown
+    if locale == "en":
+        assert "only available in Hebrew" in page
+
+
 def test_offline_answer_keeps_learner_on_the_step_with_a_message(app) -> None:
     page = _at_practice(app, "en").get(f"/play/{PID}").text
     assert "data-offline-msg=\"You seem to be offline" in page
