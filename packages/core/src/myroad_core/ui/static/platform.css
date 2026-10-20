@@ -425,7 +425,6 @@ a.link-btn.secondary { background: var(--btn-secondary); }
 .stat-label { font-size: .8rem; color: var(--muted); margin-bottom: .25rem; }
 .stat-value { font-size: 1.35rem; font-weight: 650; }
 .stat-value.ok { color: var(--ok); }
-.stat-value.warn { color: var(--warn); }
 .stats-msg { font-size: 1.1rem; margin: .75rem 0 0; }
 /* Only the arrow is mirrored in LTR; mirroring the whole link would mirror its text too. */
 html[dir="ltr"] .back .back-arrow { transform: scaleX(-1); display: inline-block; }
@@ -1144,6 +1143,12 @@ html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important
 .reading-prefs .opt { display: flex; align-items: center; gap: .5rem; min-height: 44px; }
 .reading-prefs input[type="radio"], .reading-prefs input[type="checkbox"] { width: 1.25rem; height: 1.25rem; margin: 0; }
 .flash:empty { display: none; }
+/* End-of-path (UX M5): learning first, numbers collapsed, no warning colour. */
+.stats-learned h2, .stats-next h2 { font-size: var(--text-lg); margin: 1rem 0 .5rem; }
+.learned-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.learned-list span[aria-hidden] { color: var(--ok); font-weight: 700; }
+.stats-details { margin: 1rem 0; }
+.stats-details summary { cursor: pointer; padding: .65rem 0; font-weight: 600; }
 /* Map: floating "back to my station" (logical insets, so it sits on the reading-end side in RTL too). */
 .float-here {
   position: fixed;
