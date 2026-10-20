@@ -174,7 +174,27 @@
   // Remember the tapped choice, so a failed htmx request can fall back to a normal post / link.
   document.addEventListener("click", function (e) {
     var tile = e.target.closest && e.target.closest("form[data-step-form] button[name=choice]");
-    if (tile) tile.form.setAttribute("data-last-choice", tile.value);
+    if (tile) {
+      tile.form.setAttribute("data-last-choice", tile.value);
+      tile.setAttribute("data-pending", "");
+    }
+  });
+  // Pending state: mark the step card busy while htmx works, so the tap visibly registered
+  // (CSS dims the other tiles) and assistive tech hears that content is updating.
+  function stepCard(e) {
+    var elt = e.detail && e.detail.elt;
+    return elt && elt.closest ? elt.closest("#step-card") : null;
+  }
+  document.addEventListener("htmx:beforeRequest", function (e) {
+    var card = stepCard(e);
+    if (card) card.setAttribute("aria-busy", "true");
+  });
+  document.addEventListener("htmx:afterRequest", function (e) {
+    var card = stepCard(e);
+    if (!card) return;
+    card.removeAttribute("aria-busy");
+    var pending = card.querySelectorAll("[data-pending]");
+    for (var i = 0; i < pending.length; i++) pending[i].removeAttribute("data-pending");
   });
   function fallbackPost(e) {
     var form = e.detail && e.detail.elt;
