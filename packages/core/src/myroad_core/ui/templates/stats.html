@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform play stats-view {% if meta.kidsDemo %}tone-demo{% endif %}">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
@@ -14,6 +15,7 @@
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
   </header>
+  <main id="main" tabindex="-1">
 
   <section class="card hero stats-card">
     <h1>🎉 {{ t('stats_title') }}</h1>
@@ -68,6 +70,7 @@
       <a class="secondary big link-btn" href="/play/{{ doc.pathId }}?view=map#here">{{ t('path_map') }}</a>
     </div>
   </section>
+  </main>
   <footer>
     <small>{{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>

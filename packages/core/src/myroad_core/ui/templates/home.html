@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     <nav class="shell-links">
@@ -14,6 +15,7 @@
       <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
     </nav>
   </header>
+  <main id="main" tabindex="-1">
 
 
   {% if continue_card %}
@@ -171,6 +173,7 @@
   </div>
   </div>
 
+  </main>
   <footer>
     <small>{{ product }} · {{ t('footer_catalog') }} · {% include "_a11y_link.html" %}</small>
   </footer>

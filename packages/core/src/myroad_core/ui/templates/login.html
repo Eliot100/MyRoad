@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform auth-screen">
-  <main class="auth-card card">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
+  <main id="main" tabindex="-1" class="auth-card card">
     <p class="brand-kicker">{{ product }}</p>
     {% if mode == 'verify' %}
     <h1>{{ t('login_code_title') }}</h1>
