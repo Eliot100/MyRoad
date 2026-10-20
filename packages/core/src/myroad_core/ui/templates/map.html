@@ -13,6 +13,7 @@
   <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
+      {% if linear_rows|default(false) %}<a class="back" href="/series/english-bagrut5">{{ t('back_series') }}</a>{% endif %}
       <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
@@ -41,9 +42,41 @@
   {% endif %}
 
   {% set long_map = topics|length > 8 %}
+  {% set use_linear = linear_rows|default(false) %}
+  {% set gap = open_index|default(0) %}
   <section class="card map-card">
     <h2>{{ t('path_map') }}</h2>
-    {% if long_map %}
+    {% if use_linear %}
+    <p class="lede">{{ t('linear_map_lede') }}</p>
+    <div class="linear-rows" data-map="linear">
+      {% for tp in topics %}
+      <h3 class="linear-section"><span class="linear-part">{{ t('linear_part', n=loop.index) }}</span> · <span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.emoji }} {{ tp.title }}</span></h3>
+      {% for st in tp.steps %}
+      {% set ahead = (not read_only) and (gap < total) and (st.index > gap) %}
+      {% if ahead %}
+      <div class="linear-tile ahead" data-block-id="{{ st.blockId }}" aria-disabled="true">
+        <span class="linear-mark" aria-hidden="true">○</span>
+        <span class="linear-copy">
+          <span class="linear-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
+          <span class="tiny">{{ t('linear_ahead') }}</span>
+        </span>
+      </div>
+      {% else %}
+      <form method="post" action="/play/{{ doc.pathId }}/start" class="linear-form">
+        <input type="hidden" name="node" value="{{ st.blockId }}" />
+        <button type="submit" class="linear-tile {% if st.done %}done{% elif st.current %}current{% else %}open{% endif %}{% if st.kind == 'review' %} review{% endif %}"{% if st.current %} id="here"{% endif %}>
+          <span class="linear-mark" aria-hidden="true">{% if st.done %}✓{% elif st.current %}●{% else %}○{% endif %}</span>
+          <span class="linear-copy">
+            <span class="linear-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
+            <span class="tiny">{% if st.done %}{{ t('linear_done') }}{% elif st.current %}{{ t('station_current') }}{% else %}{{ t('linear_open') }}{% endif %}</span>
+          </span>
+        </button>
+      </form>
+      {% endif %}
+      {% endfor %}
+      {% endfor %}
+    </div>
+    {% elif long_map %}
     <p class="lede">{{ t('map_long_lede') }}</p>
     <p class="map-summary tiny">
       {#- Works without JS: the pill links to the current station (#here). -#}

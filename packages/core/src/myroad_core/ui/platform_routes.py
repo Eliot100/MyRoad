@@ -24,6 +24,14 @@ from myroad_core.auth.mailer import (
     send_no_account_notice,
 )
 from myroad_core.auth.sessions import SESSION_COOKIE, SESSION_TTL_SECONDS, cookie_secure
+from myroad_core.content.english_bagrut import (
+    SERIES as ENGLISH_SERIES,
+    extra_lock as english_extra_lock,
+    is_series as is_english_series,
+    open_through as english_open_through,
+    placement_band as english_placement_band,
+    recommended_index as english_recommended_index,
+)
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
 from myroad_core.content.schema import GROUPS, SUBJECTS
@@ -467,6 +475,26 @@ def register_platform_routes(
             if pid in titles and pid not in completed
         ]
 
+    def _placement_progress(user_id: str | None) -> dict[str, Any] | None:
+        if not user_id:
+            return None
+        try:
+            return store.get_progress(user_id, ENGLISH_SERIES[0][0])
+        except Exception:
+            return None
+
+    def _with_series_lock(
+        path_id: str,
+        items: list[dict[str, str]],
+        progress: dict[str, Any] | None,
+        completed: set[str],
+        titles: dict[str, str],
+    ) -> list[dict[str, str]]:
+        hold = english_extra_lock(path_id, progress, completed)
+        if not hold or any(it.get("pathId") == hold["pathId"] for it in items):
+            return items
+        return [*items, {"pathId": hold["pathId"], "title": titles.get(hold["pathId"]) or hold["title"]}]
+
     def _with_title_langs(items: list[dict[str, str]], locale: str) -> list[dict[str, str]]:
         if items:  # only look the languages up when there is something to show
             langs = _title_langs(locale)
@@ -478,19 +506,47 @@ def register_platform_routes(
         learner = _learner(request)
         completed = completed_path_ids(store, learner["userId"] if learner else None)
         prereqs, titles = _prereq_index(_locale(request))
-        return _with_title_langs(_locked_by(path_id, prereqs, titles, completed), _locale(request))
+        progress = _placement_progress(learner["userId"] if learner else None)
+        locked = _with_series_lock(path_id, _locked_by(path_id, prereqs, titles, completed), progress, completed, titles)
+        return _with_title_langs(locked, _locale(request))
 
     def _unlocked_next(request: Request, path_id: str) -> list[dict[str, str]]:
-        """Paths that list ``path_id`` as a prerequisite and are now fully open."""
+        """Paths that list ``path_id`` as a prerequisite and are now fully open.
+
+        In the English series only the recommended road is announced. The
+        others may be open as review, but they are not the gap.
+        """
         learner = _learner(request)
-        completed = completed_path_ids(store, learner["userId"] if learner else None)
+        user_id = learner["userId"] if learner else None
+        completed = completed_path_ids(store, user_id)
         completed.add(path_id)
         prereqs, titles = _prereq_index(_locale(request))
-        return _with_title_langs([
-            {"pathId": pid, "title": titles[pid]}
-            for pid, needs in prereqs.items()
-            if path_id in needs and pid in titles and not _locked_by(pid, prereqs, titles, completed)
-        ], _locale(request))
+        progress = _placement_progress(user_id)
+        weak: set[str] = set()
+        if user_id:
+            try:
+                for row in store.list_user_progress(user_id):
+                    if row.get("needsPractice"):
+                        weak.add(row["pathId"])
+            except Exception:
+                weak = set()
+        rec = english_recommended_index(progress, completed, weak)
+        announced = []
+        if is_english_series(path_id):
+            rec_id = ENGLISH_SERIES[rec][0]
+            if (
+                rec_id != path_id
+                and rec_id in titles
+                and not _with_series_lock(rec_id, _locked_by(rec_id, prereqs, titles, completed), progress, completed, titles)
+            ):
+                announced.append({"pathId": rec_id, "title": titles[rec_id]})
+        for pid, needs in prereqs.items():
+            if path_id not in needs or pid not in titles or is_english_series(pid):
+                continue
+            if _locked_by(pid, prereqs, titles, completed):
+                continue
+            announced.append({"pathId": pid, "title": titles[pid]})
+        return _with_title_langs(announced, _locale(request))
 
     def _read_only_redirect(request: Request, sess: dict[str, Any], path_id: str) -> RedirectResponse:
         sess["view"] = "learn"
@@ -987,10 +1043,14 @@ def register_platform_routes(
         prereqs, prereq_titles = _prereq_index(locale)
         completed = {c["pathId"] for c in cards if c.get("progressStatus") == "completed"}
         card_langs = {c["pathId"]: c.get("titleLang", "") for c in cards}
+        progress = _placement_progress(learner["userId"] if learner else None)
         for c in cards:
-            c["lockedBy"] = _locked_by(c["pathId"], prereqs, prereq_titles, completed)
+            c["lockedBy"] = _with_series_lock(
+                c["pathId"], _locked_by(c["pathId"], prereqs, prereq_titles, completed), progress, completed, prereq_titles,
+            )
             for it in c["lockedBy"]:
                 it["titleLang"] = card_langs.get(it["pathId"], "")
+        series_home = any(str(c.get("pathId") or "").startswith("path_english_bagrut5_") for c in cards)
 
         # "Continue" resumes the most recently touched path at the step the learner was on.
         continue_card = None
@@ -1161,6 +1221,7 @@ def register_platform_routes(
                 time_groups=time_groups,
                 groups=groups_ui,
                 subjects=subjects_ui,
+                series_home=series_home,
             ),
         )
         return response
@@ -1170,6 +1231,64 @@ def register_platform_routes(
     templates.env.filters["bdi"] = bidi_isolate
     # `` lang="xx"`` on content text shown in a language other than the UI locale (see i18n.py).
     templates.env.filters["content_lang"] = content_lang
+
+    @app.get("/series/english-bagrut5", response_class=HTMLResponse)
+    def english_bagrut_series(request: Request) -> HTMLResponse:
+        """The English 5-unit chain. The linear path is the drill-down of one road."""
+        locale = _locale(request)
+        learner = _learner(request)
+        user_id = learner["userId"] if learner else None
+        cards = {c["pathId"]: c for c in list_catalog_cards(store, locale=locale)}
+        completed = completed_path_ids(store, user_id)
+        progress = _placement_progress(user_id)
+        weak: set[str] = set()
+        if user_id:
+            try:
+                for row in store.list_user_progress(user_id):
+                    if row.get("needsPractice"):
+                        weak.add(row["pathId"])
+            except Exception:
+                weak = set()
+        band = english_placement_band(progress)
+        ceiling = english_open_through(progress, completed)
+        rec = english_recommended_index(progress, completed, weak)
+        roads = []
+        for i, (pid, he, en) in enumerate(ENGLISH_SERIES):
+            card = cards.get(pid) or {}
+            chrome = localize_path_chrome(
+                locale=locale,
+                titles=card.get("titles") or {"he": he, "en": en},
+                blurbs=card.get("blurbs"),
+                source_locale=card.get("explainLocale") or "he",
+            )
+            if pid in completed and pid not in weak and i != rec:
+                state = "done"
+            elif i == rec:
+                state = "gap"
+            elif i <= ceiling:
+                state = "review" if i < band else "open"
+            else:
+                state = "locked"
+            hold = english_extra_lock(pid, progress, completed)
+            roads.append({
+                "pathId": pid,
+                "index": i,
+                "title": chrome["title"] or (en if locale == "en" else he),
+                "titleLang": chrome["titleLang"],
+                "blurb": chrome["blurb"],
+                "blurbLang": chrome["blurbLang"],
+                "emoji": card.get("emoji") or "א",
+                "minutes": card.get("estimatedMinutes"),
+                "state": state,
+                "inCatalog": bool(card),
+                "holdTitle": (hold or {}).get("title") or "",
+                "holdId": (hold or {}).get("pathId") or "",
+            })
+        return templates.TemplateResponse(
+            request,
+            "series.html",
+            _shell_ctx(request, roads=roads, band=band, ceiling=ceiling),
+        )
 
     @app.get("/play/{path_id}", response_class=HTMLResponse)
     def play_path(
@@ -1242,6 +1361,7 @@ def register_platform_routes(
                 for st in tp["steps"]:
                     st["done"] = st["blockId"] in mastered
                     st["current"] = st["blockId"] == current_bid
+            open_index = next((i for i, b in enumerate(blocks) if b["blockId"] not in mastered), n)
             ctx = _shell_ctx(
                 request,
                 doc=doc,
@@ -1256,6 +1376,8 @@ def register_platform_routes(
                 stations_done=sum(1 for tp in topics if tp["complete"]),
                 locked_by=locked_by,
                 read_only=read_only,
+                open_index=open_index,
+                linear_rows=str(path_id).startswith("path_english_bagrut5_"),
             )
             response = templates.TemplateResponse(request, "map.html", ctx)
             response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
@@ -1340,19 +1462,40 @@ def register_platform_routes(
         response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return response
 
+    def _block_index(blocks: list[dict], node_id: str) -> int | None:
+        for i, block in enumerate(blocks):
+            if block.get("blockId") == node_id:
+                return i
+        return None
+
+    def _clamp_to_gap(blocks: list[dict], mastered: set[str], requested: int) -> int:
+        """Done tiles can be reopened. A tile past the first gap snaps back to it."""
+        if not blocks:
+            return 0
+        requested = max(0, min(int(requested), len(blocks) - 1))
+        gap = next((i for i, block in enumerate(blocks) if block["blockId"] not in mastered), len(blocks))
+        if gap >= len(blocks) or requested <= gap:
+            return requested
+        return gap
+
     @app.post("/play/{path_id}/start")
     def play_start(
         path_id: str,
         request: Request,
         topic: str = Form(""),
+        node: str = Form(""),
         reset: str = Form(""),
     ) -> RedirectResponse:
         sess = _play_session(request, path_id, resume=not bool(reset))
         if _lock_state(request, path_id):
-            # Read-only: open the path (or a topic) without writing any progress.
-            if topic:
-                doc = _load_play_doc(sess)
-                blocks = doc.get("blocks") or []
+            # Read-only: open a topic or a tile without writing progress, and without skipping rules.
+            doc = _load_play_doc(sess)
+            blocks = doc.get("blocks") or []
+            if node:
+                found = _block_index(blocks, node)
+                if found is not None:
+                    sess["index"] = found
+            elif topic:
                 match = next(
                     (tp for tp in _topics_for_ui(doc, blocks, _locale(request)) if tp["id"] == topic), None
                 )
@@ -1384,13 +1527,19 @@ def register_platform_routes(
                 completed_at=None,
                 needs_practice=False,
             )
-        if topic:
-            doc = _load_play_doc(sess)
-            blocks = doc.get("blocks") or []
+        doc = _load_play_doc(sess)
+        blocks = doc.get("blocks") or []
+        mastered = set(sess.get("mastered") or set())
+        requested = None
+        if node:
+            requested = _block_index(blocks, node)
+        elif topic:
             topics = _topics_for_ui(doc, blocks, _locale(request))
             match = next((tp for tp in topics if tp["id"] == topic), None)
             if match:
-                sess["index"] = match["startIndex"]
+                requested = match["startIndex"]
+        if requested is not None:
+            sess["index"] = _clamp_to_gap(blocks, mastered, requested)
         sess["view"] = "learn"
         _persist_progress(sess)
         resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)

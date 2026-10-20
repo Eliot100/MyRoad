@@ -19,6 +19,15 @@
   <main id="main" tabindex="-1">
 
 
+  {% if series_home %}
+  <section class="card series-banner">
+    <p class="kicker">{{ t('series_kicker') }}</p>
+    <h2>{{ t('series_home_title') }}</h2>
+    <p class="lede">{{ t('series_home_lede') }}</p>
+    <a class="primary" href="/series/english-bagrut5">{{ t('series_home_open') }}</a>
+  </section>
+  {% endif %}
+
   {% if continue_card %}
   <section class="continue-card card">
     <p class="kicker">{{ t('continue_kicker') }}</p>

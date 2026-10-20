@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ product }} — {{ t('series_home_title') }}</title>
+  <link rel="stylesheet" href="/static/platform.css" />
+</head>
+<body class="platform series-view">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
+  <header class="top shell-top">
+    <div class="brand">
+      <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
+      <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    </div>
+    <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="card path-head">
+      <h1>{{ t('series_home_title') }}</h1>
+      <p class="lede">{{ t('series_lede') }}</p>
+    </section>
+    <ol class="series-chain">
+      {% for road in roads %}
+      <li class="series-road {{ road.state }}" data-path-id="{{ road.pathId }}" data-state="{{ road.state }}">
+        <span class="series-index" aria-hidden="true">{% if road.state == 'done' %}✓{% else %}{{ loop.index }}{% endif %}</span>
+        <div class="series-body">
+          <h2 dir="auto"{{ road.titleLang|content_lang(locale) }}>{{ road.emoji }} {{ road.title }}</h2>
+          {% if road.blurb %}<p dir="auto"{{ road.blurbLang|content_lang(locale) }}>{{ road.blurb }}</p>{% endif %}
+          <p class="tiny series-state">
+            {% if road.state == 'gap' %}{{ t('series_gap') }}
+            {% elif road.state == 'done' %}{{ t('series_done') }}
+            {% elif road.state == 'review' %}{{ t('series_review') }}
+            {% elif road.state == 'open' %}{{ t('series_open') }}
+            {% else %}{{ t('series_locked') }}{% if road.holdTitle %}: {{ road.holdTitle }}{% endif %}
+            {% endif %}
+          </p>
+          {% if road.inCatalog %}
+          <a class="secondary" href="/play/{{ road.pathId }}">{{ t('series_enter') }}</a>
+          {% else %}
+          <p class="tiny">{{ t('series_missing') }}</p>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </main>
+  <footer>
+    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
+  </footer>
+</body>
+</html>
