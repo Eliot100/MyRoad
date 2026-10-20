@@ -186,9 +186,9 @@ a.path-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,
 }
 .step-head h2 { margin: 0; flex: 1; font-size: 1.2rem; }
 .type-pill {
-  font-size: .72rem;
-  text-transform: uppercase;
-  letter-spacing: .03em;
+  /* No uppercase/letter-spacing: they break Arabic letter joining and add nothing in Hebrew. */
+  font-size: var(--text-sm);
+  font-weight: 600;
   background: var(--tint-info);
   color: var(--accent);
   padding: .15rem .45rem;

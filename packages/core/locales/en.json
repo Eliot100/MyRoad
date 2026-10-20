@@ -346,5 +346,12 @@
   "stats_next": "Next up",
   "stats_next_catalog": "Pick your next path from the catalog, or replay this one to strengthen it.",
   "stats_details": "Time and answers",
-  "map_back_to_station": "Back to my station"
+  "map_back_to_station": "Back to my station",
+  "node_type_learn": "Learn",
+  "node_type_practice": "Practice",
+  "node_type_check": "Check",
+  "node_type_celebrate": "Well done",
+  "node_type_piano_keys": "Play",
+  "node_type_rhythm": "Rhythm",
+  "node_type_speak": "Say it"
 }

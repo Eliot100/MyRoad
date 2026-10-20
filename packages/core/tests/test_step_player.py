@@ -423,3 +423,17 @@ def test_summary_leads_with_learning_and_collapses_numbers(app) -> None:
     assert "stat-label" in details and details.count("stat-tile") == 4
     assert before.count("stat-tile") == 1  # only mastery stays visible
     assert "warn" not in main
+
+
+@pytest.mark.parametrize("locale, label", [("he", "תרגול"), ("en", "Practice"), ("ar", "تمرين")])
+def test_step_type_pill_is_localised(app, locale, label) -> None:
+    page = _at_practice(app, locale).get(f"/play/{PID}").text
+    pill = re.search(r'<span class="type-pill" data-node-type="practice">([^<]*)</span>', page)
+    assert pill and pill.group(1) == label
+
+
+def test_every_content_node_type_has_a_label_in_every_locale() -> None:
+    for code in ("he", "en", "ar"):
+        j = json.loads((_CORE / "locales" / f"{code}.json").read_text(encoding="utf-8"))
+        for nt in ("learn", "practice", "check", "celebrate", "piano_keys", "rhythm", "speak"):
+            assert j[f"node_type_{nt}"].strip(), (code, nt)

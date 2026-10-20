@@ -346,5 +346,12 @@
   "stats_next": "التالي",
   "stats_next_catalog": "اختر مسارك التالي من الكتالوج، أو أعد هذا المسار لتقويته.",
   "stats_details": "الوقت والإجابات",
-  "map_back_to_station": "العودة إلى محطتي"
+  "map_back_to_station": "العودة إلى محطتي",
+  "node_type_learn": "تعلُّم",
+  "node_type_practice": "تمرين",
+  "node_type_check": "تحقُّق",
+  "node_type_celebrate": "أحسنت",
+  "node_type_piano_keys": "عزف",
+  "node_type_rhythm": "إيقاع",
+  "node_type_speak": "انطق"
 }
