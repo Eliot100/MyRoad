@@ -6,7 +6,7 @@
 {% set sl = step_langs or {} %}
 {% set answered = answer and answer.ok and continue_url %}
 {% set answerable = (ntype in ['practice', 'check'] and kids.choices) or ntype in ['piano_keys', 'rhythm'] %}
-<section id="step-card" class="card step-card{% if is_review %} review-step{% endif %}{% if answered %} is-answered{% endif %}" data-node-type="{{ ntype }}" data-step-kind="{{ kids.kind or 'understanding' }}"{% if swap_focus %} data-swap-focus="{{ swap_focus }}"{% endif %} aria-labelledby="step-title">
+<section id="step-card" class="card step-card{% if is_review %} review-step{% endif %}{% if answered %} is-answered{% endif %}" data-node-type="{{ ntype }}" data-step-kind="{{ kids.kind or 'understanding' }}"{% if swap_focus %} data-swap-focus="{{ swap_focus }}"{% endif %} data-offline-msg="{{ t('offline_answer_not_sent') }}" aria-labelledby="step-title">
   <div class="step-head">
     <span class="type-pill">{{ ntype }}</span>
     {% if is_review %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}

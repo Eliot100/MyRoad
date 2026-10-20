@@ -1149,3 +1149,7 @@ html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important
 .learned-list span[aria-hidden] { color: var(--ok); font-weight: 700; }
 .stats-details { margin: 1rem 0; }
 .stats-details summary { cursor: pointer; padding: .65rem 0; font-weight: 600; }
+
+/* Empty and offline states (home tabs, step player). */
+.grid > .empty-state { grid-column: 1 / -1; }
+.empty-state { display: grid; justify-items: start; gap: var(--space-3); padding: var(--space-3) 0; }
