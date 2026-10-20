@@ -150,3 +150,15 @@ def test_map_primary_action_sticks_to_bottom_on_phones():
     assert "position: sticky" in rule and "inset-block-end: 0" in rule
     assert "safe-area-inset-bottom" in rule
     assert "background: var(--card)" in rule  # opaque so stations scroll beneath it
+
+
+def test_type_scale_drives_headings_and_heading_order_is_not_inverted():
+    assert "body.platform :where(h1) { font-size: var(--text-xl); }" in CSS
+    assert "body.platform :where(h2) { font-size: var(--text-lg); }" in CSS
+    # Phones shrink via tokens, never below the next level down.
+    phone = re.search(r":root \{ --text-xl: ([0-9.]+)rem; --text-lg: ([0-9.]+)rem;", CSS)
+    assert phone and float(phone.group(1)) > float(phone.group(2)) > 1.05
+
+
+def test_plain_links_inside_main_use_accent():
+    assert "body.platform :where(main a:not([class])) { color: var(--accent);" in CSS
