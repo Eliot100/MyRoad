@@ -334,5 +334,9 @@
   "a11y_placeholder": "למילוי",
   "a11y_settings_h": "נגישות",
   "a11y_settings_text": "מה עשינו כדי ש-MyRoad יהיה נגיש, מה עוד חסר ואיך פונים אלינו:",
-  "skip_to_main": "דילוג לתוכן הראשי"
+  "skip_to_main": "דילוג לתוכן הראשי",
+  "stats_learned": "מה למדת",
+  "stats_next": "מה הלאה",
+  "stats_next_catalog": "בחרו את המסלול הבא בקטלוג, או חזרו על המסלול הזה כדי לחזק אותו.",
+  "stats_details": "זמן ותשובות"
 }

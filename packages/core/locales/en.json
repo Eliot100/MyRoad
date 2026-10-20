@@ -334,5 +334,9 @@
   "a11y_placeholder": "To be filled in",
   "a11y_settings_h": "Accessibility",
   "a11y_settings_text": "What we have done to make MyRoad accessible, what is still missing, and how to reach us:",
-  "skip_to_main": "Skip to main content"
+  "skip_to_main": "Skip to main content",
+  "stats_learned": "What you learned",
+  "stats_next": "Next up",
+  "stats_next_catalog": "Pick your next path from the catalog, or replay this one to strengthen it.",
+  "stats_details": "Time and answers"
 }
