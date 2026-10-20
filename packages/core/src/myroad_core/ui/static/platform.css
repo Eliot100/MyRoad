@@ -242,7 +242,8 @@ a.path-card.tone-demo {
   background: linear-gradient(180deg, #fffdf9 0%, #ffffff 55%);
 }
 body.tone-demo {
-  --accent: #3b82f6;
+  /* blue-600: white text on it passes WCAG AA (5.2:1); blue-500 did not. */
+  --accent: #2563eb;
 }
 body.tone-demo .choice-tile {
   border-radius: 20px;
@@ -323,8 +324,11 @@ body.tone-demo .progress-fill {
   transform: translateX(-50%);
   background: color-mix(in srgb, var(--accent) 35%, var(--line));
   border-radius: 999px;
+  /* The connector sits behind the station cards and never takes clicks. */
+  z-index: 0;
+  pointer-events: none;
 }
-.topic-station { width: min(100%, 340px); text-align: center; }
+.topic-station { width: min(100%, 340px); text-align: center; position: relative; z-index: 1; }
 .topic-box {
   background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
   border: 2px solid color-mix(in srgb, var(--subject, var(--accent)) 45%, var(--line));
