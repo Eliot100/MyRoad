@@ -556,7 +556,13 @@ body.platform:has(.home-layout) { max-width: 1120px; }
   font-size: .95rem;
 }
 .settings-link { color: var(--accent); }
-.auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.auth-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-4); }
+.auth-top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; margin-block-end: var(--space-2); }
+.auth-top .brand-kicker { margin: 0; }
+.auth-lang { display: inline-flex; gap: var(--space-1); }
+.auth-lang .lang-btn { min-height: 2rem; min-width: 2.75rem; }
+.auth-card a { color: var(--accent); }
+.auth-card .tiny a { display: inline-block; padding-block: var(--space-1); }
 .auth-card, .settings-card { width: min(100%, 32rem); }
 .auth-card h1, .settings-card h1, .continue-card h2 { letter-spacing: -0.02em; }
 .brand-kicker { margin: 0 0 .4rem; color: var(--accent); font-weight: 700; letter-spacing: .04em; }

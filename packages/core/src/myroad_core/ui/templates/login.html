@@ -9,7 +9,15 @@
 <body class="platform auth-screen">
   <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <main id="main" tabindex="-1" class="auth-card card">
-    <p class="brand-kicker">{{ product }}</p>
+    <div class="auth-top">
+      <p class="brand-kicker">{{ product }}</p>
+    <form method="post" action="/locale" class="auth-lang" aria-label="{{ t('language') }}">
+      <input type="hidden" name="next" value="{{ request.url.path }}{% if request.url.query %}?{{ request.url.query }}{% endif %}" />
+      {% for loc in locales %}
+      <button type="submit" name="locale" value="{{ loc }}" lang="{{ loc }}" class="lang-btn{% if locale == loc %} active{% endif %}"{% if locale == loc %} aria-pressed="true"{% else %} aria-pressed="false"{% endif %}>{{ locale_labels.get(loc, loc) }}</button>
+      {% endfor %}
+    </form>
+    </div>
     {% if mode == 'verify' %}
     <h1>{{ t('login_code_title') }}</h1>
     <p class="lede">{{ t('login_code_lede', email=current_email) }}</p>
