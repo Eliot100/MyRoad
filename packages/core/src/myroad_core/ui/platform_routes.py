@@ -1218,6 +1218,7 @@ def register_platform_routes(
                 meta=meta,
                 attempt=attempt,
                 total=n,
+                topics=topics,
                 unlocked_next=_unlocked_next(request, path_id),
             )
             response = templates.TemplateResponse(request, "stats.html", ctx)
