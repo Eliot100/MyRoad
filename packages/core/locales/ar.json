@@ -346,5 +346,9 @@
   "stats_next": "التالي",
   "stats_next_catalog": "اختر مسارك التالي من الكتالوج، أو أعد هذا المسار لتقويته.",
   "stats_details": "الوقت والإجابات",
-  "map_back_to_station": "العودة إلى محطتي"
+  "map_back_to_station": "العودة إلى محطتي",
+  "explain_lang_note": "بعض الشروحات في هذا المسار متوفرة فقط باللغة {lang}.",
+  "lang_name_he": "العبرية",
+  "lang_name_ar": "العربية",
+  "lang_name_en": "الإنجليزية"
 }
