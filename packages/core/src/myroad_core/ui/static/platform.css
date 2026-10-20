@@ -63,6 +63,15 @@ body.platform {
   line-height: 1.6;
   font-size: 1.05rem;
 }
+/* Type scale: zero-specificity defaults, so component rules still win. */
+body.platform :where(h1, h2, h3) { line-height: var(--leading-tight); letter-spacing: -0.01em; text-wrap: balance; }
+body.platform :where(h1) { font-size: var(--text-xl); }
+body.platform :where(h2) { font-size: var(--text-lg); }
+body.platform :where(h3) { font-size: var(--text-md); }
+body.platform :where(p, li) { text-wrap: pretty; }
+.progress-label, .stat-value, .station-pill, .mins { font-variant-numeric: tabular-nums; }
+.auth-card h1 { font-size: var(--text-2xl); }
+body.platform :where(main a:not([class])) { color: var(--accent); text-underline-offset: .15em; }
 .top {
   display: flex;
   justify-content: space-between;
@@ -91,7 +100,7 @@ body.platform {
   margin-bottom: 1rem;
   box-shadow: var(--shadow);
 }
-.hero h1, .path-head h1 { margin: 0 0 .4rem; font-size: 1.55rem; }
+.hero h1, .path-head h1 { margin: 0 0 .4rem; font-size: var(--text-xl); }
 .lede { color: var(--muted); margin: 0; }
 .filters .filter-row { margin: .55rem 0; }
 .filter-label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: .35rem; }
@@ -869,9 +878,9 @@ a.link-btn.small-btn { padding: .5rem 1rem; font-size: .95rem; }
 /* Phones (down to 375px wide): tighter shell, nothing wider than the screen. */
 @media (max-width: 480px) {
   body.platform { padding: .85rem .75rem 3rem; font-size: 1rem; }
+  :root { --text-xl: 1.3rem; --text-lg: 1.15rem; --text-2xl: 1.6rem; }
   .card { padding: .85rem .9rem; }
   .step-card { padding: 1rem; }
-  .hero h1, .path-head h1 { font-size: 1.3rem; }
   .shell-top { margin-bottom: 1rem; }
   .grid { grid-template-columns: minmax(0, 1fr); }
   .station summary { grid-template-columns: 1.7rem minmax(0, 1fr) 3rem; gap: .45rem; padding: .5rem .55rem; }
