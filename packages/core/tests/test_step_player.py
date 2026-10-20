@@ -405,9 +405,30 @@ def test_ui_locale_fallback_feedback_gets_no_lang(tmp_path: Path, monkeypatch: p
         store.close()
 
 
+<<<<<<< HEAD
 @pytest.mark.parametrize("locale, shown", [("en", True), ("ar", True), ("he", False)])
 def test_player_notes_when_explanations_are_in_another_language(app, locale, shown) -> None:
     page = _at_practice(app, locale).get(f"/play/{PID}").text
     assert ('class="explain-lang-note" role="note"' in page) is shown
     if locale == "en":
         assert "only available in Hebrew" in page
+=======
+def test_summary_leads_with_learning_and_collapses_numbers(app) -> None:
+    """UX M5 (#107): learned stations + next up first; time/mistakes in <details>; no warn colour."""
+    c = _at_practice(app)
+    sess = next(s for s in app.state.play_sessions.values() if s["pathId"] == PID)
+    blocks = app.state.tools.get_version(actor_id="t", correlation_id="t", path_id=PID,
+                                         version_id=sess["versionId"]).data["document"]["blocks"]
+    sess["mastered"] = {b["blockId"] for b in blocks}
+    page = c.get(f"/play/{PID}?view=stats").text
+    main = page.split('<main', 1)[1]
+    first_h2 = re.search(r"<h2[^>]*>([^<]*)</h2>", main).group(1)
+    assert first_h2 in ("What you learned", "מה למדת", "ما تعلّمته")
+    assert 'class="learned-list"' in main and 'id="stats-next-h"' in main
+    details = main.split('<details class="stats-details">', 1)[1].split("</details>", 1)[0]
+    assert "stats_time" not in page
+    before = main.split('<details class="stats-details">', 1)[0]
+    assert "stat-label" in details and details.count("stat-tile") == 4
+    assert before.count("stat-tile") == 1  # only mastery stays visible
+    assert "warn" not in main
+>>>>>>> origin/main
