@@ -341,5 +341,9 @@
   "text_size_150": "Extra large (150%)",
   "motion": "Motion",
   "reduce_motion": "Reduce motion (no page animations or smooth scrolling)",
-  "reading_prefs_note": "Saved on this device only. Changes apply right away."
+  "reading_prefs_note": "Saved on this device only. Changes apply right away.",
+  "explain_lang_note": "Some explanations in this path are only available in {lang}.",
+  "lang_name_he": "Hebrew",
+  "lang_name_ar": "Arabic",
+  "lang_name_en": "English"
 }

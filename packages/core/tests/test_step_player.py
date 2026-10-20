@@ -403,3 +403,11 @@ def test_ui_locale_fallback_feedback_gets_no_lang(tmp_path: Path, monkeypatch: p
         assert '<span class="feedback-text" dir="auto">' in card and 'lang="he"' not in card
     finally:
         store.close()
+
+
+@pytest.mark.parametrize("locale, shown", [("en", True), ("ar", True), ("he", False)])
+def test_player_notes_when_explanations_are_in_another_language(app, locale, shown) -> None:
+    page = _at_practice(app, locale).get(f"/play/{PID}").text
+    assert ('class="explain-lang-note" role="note"' in page) is shown
+    if locale == "en":
+        assert "only available in Hebrew" in page

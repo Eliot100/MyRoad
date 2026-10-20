@@ -25,6 +25,12 @@
     {% include "_play_status.html" %}
   </section>
 
+  {#- ar/en learners on a path whose explanations exist only in its explain locale (#69 fallback). -#}
+  {%- set xl = (explain_locale or 'he')|lower %}
+  {% if xl != locale and xl in ('he', 'ar', 'en') %}
+  <p class="explain-lang-note" role="note"><span aria-hidden="true">ℹ️</span> {{ t('explain_lang_note', lang=t('lang_name_' ~ xl)) }}</p>
+  {% endif %}
+
   {% if read_only %}
   <div class="flash warn lock-note" role="note" data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}">
     🔒 {{ t('locked_finish_first') }}
