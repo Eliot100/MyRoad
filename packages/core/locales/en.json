@@ -334,5 +334,6 @@
   "a11y_placeholder": "To be filled in",
   "a11y_settings_h": "Accessibility",
   "a11y_settings_text": "What we have done to make MyRoad accessible, what is still missing, and how to reach us:",
-  "skip_to_main": "Skip to main content"
+  "skip_to_main": "Skip to main content",
+  "map_back_to_station": "Back to my station"
 }

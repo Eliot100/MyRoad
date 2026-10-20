@@ -138,6 +138,8 @@
     </div>
   </section>
 
+  {#- Floating shortcut back to the current station; shown by platform.js only while #here is off screen. -#}
+  {% if current_station and not read_only %}<a class="float-here" href="#here" hidden><span aria-hidden="true">📍</span> {{ t('map_back_to_station') }}</a>{% endif %}
   </main>
   <footer>
     <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>

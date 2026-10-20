@@ -148,6 +148,28 @@
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
   }
+  // Floating "back to my station" (UI): visible only while the current station is off screen.
+  // Without JS (or IntersectionObserver) it stays hidden and the #here pill link still works.
+  function floatBackToStation() {
+    var here = document.getElementById("here");
+    var btn = document.querySelector(".float-here");
+    if (!here || !btn || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (entries) {
+      btn.hidden = entries[entries.length - 1].isIntersecting;
+    }).observe(here);
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : false;
+      here.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+      var f = here.querySelector("summary, a, button");
+      if (f) f.focus({ preventScroll: true });
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", floatBackToStation);
+  } else {
+    floatBackToStation();
+  }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", jumpToCurrentStation);
   } else {

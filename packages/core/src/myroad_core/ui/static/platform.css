@@ -721,7 +721,7 @@ button.secondary {
 .review-stage p { margin: .25rem 0; }
 .choice-preview { margin: .25rem 0 0; padding-inline-start: 1.2rem; }
 .choice-preview .correct { color: var(--ok); font-weight: 650; }
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .stage-row { grid-template-columns: 3.5rem 1fr; }
   .topic-edit { grid-template-columns: 1fr; }
 }
@@ -1122,4 +1122,29 @@ footer .a11y-link,
   .tone-demo.group-banner,
   body.tone-demo .step-card,
   a.path-card.tone-demo { background: var(--card); }
+}
+
+/* Map: floating "back to my station" (logical insets, so it sits on the reading-end side in RTL too). */
+.float-here {
+  position: fixed;
+  inset-inline-end: var(--space-3);
+  inset-block-end: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 44px;
+  padding: .5rem 1rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--ink) 25%, transparent);
+}
+.float-here[hidden] { display: none; }
+.float-here:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 480px) {
+  /* The sticky Start/Continue bar owns the bottom edge on phones. */
+  .float-here { inset-block-end: auto; inset-block-start: calc(var(--space-3) + env(safe-area-inset-top, 0px)); }
 }
