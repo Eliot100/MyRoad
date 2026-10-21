@@ -4,15 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ product }} — {{ t('settings_title') }}</title>
+  <script src="/static/prefs.js"></script>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     <a class="settings-link" href="/">{{ t('back_home') }}</a>
   </header>
 
-  <main class="card settings-card">
+  <main id="main" tabindex="-1" class="card settings-card">
     <h1>{{ t('settings_title') }}</h1>
     <p class="lede">{{ t('settings_lede') }}</p>
     {% if saved %}
@@ -72,6 +74,40 @@
     <section class="settings-a11y" aria-labelledby="settings-a11y">
       <h2 id="settings-a11y">{{ t('a11y_settings_h') }}</h2>
       <p class="lede tiny">{{ t('a11y_settings_text') }} <a href="/accessibility">{{ t('a11y_link') }}</a></p>
+      <form class="reading-prefs" id="reading-prefs" hidden onsubmit="return false">
+        <fieldset>
+          <legend>{{ t('text_size') }}</legend>
+          {% for v in ['100', '125', '150'] %}
+          <label class="opt"><input type="radio" name="text_size" value="{{ v }}" {% if v == '100' %}checked{% endif %} /> {{ t('text_size_' ~ v) }}</label>
+          {% endfor %}
+        </fieldset>
+        <fieldset>
+          <legend>{{ t('motion') }}</legend>
+          <label class="opt"><input type="checkbox" name="reduce_motion" /> {{ t('reduce_motion') }}</label>
+          <p class="lede tiny">{{ t('reading_prefs_note') }}</p>
+        </fieldset>
+        <p class="flash ok" role="status" aria-live="polite" id="reading-prefs-saved"></p>
+      </form>
+      <script>
+      (function () {
+        var f = document.getElementById("reading-prefs"), d = document.documentElement, msg = document.getElementById("reading-prefs-saved");
+        if (!f) return;
+        f.hidden = false;
+        var size = d.getAttribute("data-text-size") || "100";
+        f.querySelectorAll('input[name="text_size"]').forEach(function (r) { r.checked = r.value === size; });
+        f.reduce_motion.checked = window.myroadReduceMotion ? window.myroadReduceMotion() : false;
+        function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+        f.addEventListener("change", function (e) {
+          if (e.target.name === "text_size") {
+            var v = e.target.value; save("myroad.textSize", v);
+            if (v === "100") d.removeAttribute("data-text-size"); else d.setAttribute("data-text-size", v);
+          } else if (e.target.name === "reduce_motion") {
+            var m = e.target.checked ? "reduce" : "full"; save("myroad.motion", m); d.setAttribute("data-motion", m);
+          }
+          msg.textContent = {{ t('settings_saved')|tojson }};
+        });
+      })();
+      </script>
     </section>
     <p class="lede tiny"><a href="/">{{ t('back_home') }}</a></p>
   </main>

@@ -145,8 +145,30 @@
     var r = here.getBoundingClientRect();
     var fits = r.top >= 0 && r.bottom <= (window.innerHeight || document.documentElement.clientHeight);
     if (fits) return; // already on screen: do not move the page
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+  }
+  // Floating "back to my station" (UI): visible only while the current station is off screen.
+  // Without JS (or IntersectionObserver) it stays hidden and the #here pill link still works.
+  function floatBackToStation() {
+    var here = document.getElementById("here");
+    var btn = document.querySelector(".float-here");
+    if (!here || !btn || !("IntersectionObserver" in window)) return;
+    new IntersectionObserver(function (entries) {
+      btn.hidden = entries[entries.length - 1].isIntersecting;
+    }).observe(here);
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : false;
+      here.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+      var f = here.querySelector("summary, a, button");
+      if (f) f.focus({ preventScroll: true });
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", floatBackToStation);
+  } else {
+    floatBackToStation();
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", jumpToCurrentStation);
@@ -155,7 +177,7 @@
   }
 
   // --- Step player + htmx (progressive enhancement: without JS the forms post normally) ---
-  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reduceMotion = window.myroadReduceMotion ? window.myroadReduceMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   // After a swap, move focus to the feedback (answer) or the new step title (next step).
   document.addEventListener("htmx:load", function (e) {
@@ -174,7 +196,27 @@
   // Remember the tapped choice, so a failed htmx request can fall back to a normal post / link.
   document.addEventListener("click", function (e) {
     var tile = e.target.closest && e.target.closest("form[data-step-form] button[name=choice]");
-    if (tile) tile.form.setAttribute("data-last-choice", tile.value);
+    if (tile) {
+      tile.form.setAttribute("data-last-choice", tile.value);
+      tile.setAttribute("data-pending", "");
+    }
+  });
+  // Pending state: mark the step card busy while htmx works, so the tap visibly registered
+  // (CSS dims the other tiles) and assistive tech hears that content is updating.
+  function stepCard(e) {
+    var elt = e.detail && e.detail.elt;
+    return elt && elt.closest ? elt.closest("#step-card") : null;
+  }
+  document.addEventListener("htmx:beforeRequest", function (e) {
+    var card = stepCard(e);
+    if (card) card.setAttribute("aria-busy", "true");
+  });
+  document.addEventListener("htmx:afterRequest", function (e) {
+    var card = stepCard(e);
+    if (!card) return;
+    card.removeAttribute("aria-busy");
+    var pending = card.querySelectorAll("[data-pending]");
+    for (var i = 0; i < pending.length; i++) pending[i].removeAttribute("data-pending");
   });
   function fallbackPost(e) {
     var form = e.detail && e.detail.elt;
@@ -188,6 +230,21 @@
     form.appendChild(input);
     HTMLFormElement.prototype.submit.call(form); // native submit: htmx does not intercept it
   }
-  document.addEventListener("htmx:sendError", fallbackPost);
+  // Offline: a native post would land on the browser's error page and lose the learner's place.
+  // Keep them on the step and say what happened; the next tap retries.
+  function sendError(e) {
+    var card = stepCard(e);
+    if (card && navigator.onLine === false) {
+      var fb = card.querySelector("#step-feedback");
+      if (fb) {
+        fb.className = "step-feedback try offline";
+        fb.textContent = card.getAttribute("data-offline-msg") || "";
+      }
+      card.removeAttribute("aria-busy");
+      return;
+    }
+    fallbackPost(e);
+  }
+  document.addEventListener("htmx:sendError", sendError);
   document.addEventListener("htmx:responseError", fallbackPost);
 })();

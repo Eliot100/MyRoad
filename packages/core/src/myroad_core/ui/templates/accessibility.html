@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ product }} — {{ t('a11y_title') }}</title>
+  <script src="/static/prefs.js"></script>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 {#- Accessibility statement (#60). Facts live in locales (a11y_*), the list in a11y_statement.py;
@@ -16,12 +17,13 @@
   {%- endif -%}
 {%- endmacro %}
 <body class="platform a11y-page">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     <a class="settings-link" href="/">{{ t('back_home') }}</a>
   </header>
 
-  <main class="card a11y-card">
+  <main id="main" tabindex="-1" class="card a11y-card">
     <h1>{{ t('a11y_title') }}</h1>
     <p class="lede">{{ t('a11y_lede')|bdi }}</p>
 

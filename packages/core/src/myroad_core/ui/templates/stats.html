@@ -4,9 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ product }} — {{ t('stats_title') }}</title>
+  <script src="/static/prefs.js"></script>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform play stats-view {% if meta.kidsDemo %}tone-demo{% endif %}">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
@@ -14,33 +16,42 @@
     </div>
     <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
   </header>
+  <main id="main" tabindex="-1">
 
   <section class="card hero stats-card">
     <h1>🎉 {{ t('stats_title') }}</h1>
     <p class="lede">{{ meta.emoji }} <span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span></p>
     <p class="stats-msg">{{ attempt.message or t('stats_message') }}</p>
 
+    {% set learned = (topics or [])|rejectattr('isReview')|list %}
+    {% if learned %}
+    <section class="stats-learned" aria-labelledby="stats-learned-h">
+      <h2 id="stats-learned-h">{{ t('stats_learned') }}</h2>
+      <ul class="learned-list">
+        {% for tp in learned %}
+        <li><span aria-hidden="true">✓</span> <bdi{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</bdi></li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+
+    <section class="stats-next" aria-labelledby="stats-next-h">
+      <h2 id="stats-next-h">{{ t('stats_next') }}</h2>
+      {% if unlocked_next %}
+      <div class="unlocked-next" role="status">
+      <p class="kicker">🔓 {{ t('unlocked_next') }}</p>
+      <ul class="plain-list">
+        {% for p in unlocked_next %}
+        <li><a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a></li>
+        {% endfor %}
+      </ul>
+      </div>
+      {% else %}
+      <p class="lede tiny">{{ t('stats_next_catalog') }}</p>
+      {% endif %}
+    </section>
+
     <div class="stats-grid">
-      <div class="stat-tile">
-        <div class="stat-label">{{ t('stats_time') }}</div>
-        <div class="stat-value">
-          {% set secs = attempt.durationSec or 0 %}
-          {% if secs >= 60 %}{{ (secs / 60)|int }} {{ t('minutes') }} · {{ secs % 60 }} {{ t('seconds') }}
-          {% else %}{{ secs }} {{ t('seconds') }}{% endif %}
-        </div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">{{ t('stats_nodes') }}</div>
-        <div class="stat-value">{{ attempt.nodesCompleted or 0 }} / {{ attempt.nodesTotal or total }}</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">{{ t('stats_correct') }}</div>
-        <div class="stat-value ok">{{ attempt.correctTaps or 0 }}</div>
-      </div>
-      <div class="stat-tile">
-        <div class="stat-label">{{ t('stats_incorrect') }}</div>
-        <div class="stat-value warn">{{ attempt.incorrectTaps or 0 }}</div>
-      </div>
       <div class="stat-tile wide">
         <div class="stat-label">{{ t('stats_mastery') }}</div>
         <div class="stat-value">{{ attempt.masteryPct or 0 }}%</div>
@@ -48,16 +59,31 @@
       </div>
     </div>
 
-    {% if unlocked_next %}
-    <div class="unlocked-next" role="status">
-      <p class="kicker">🔓 {{ t('unlocked_next') }}</p>
-      <ul class="plain-list">
-        {% for p in unlocked_next %}
-        <li><a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a></li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
+    <details class="stats-details">
+      <summary>{{ t('stats_details') }}</summary>
+      <div class="stats-grid">
+        <div class="stat-tile">
+          <div class="stat-label">{{ t('stats_time') }}</div>
+          <div class="stat-value">
+            {% set secs = attempt.durationSec or 0 %}
+            {% if secs >= 60 %}{{ (secs / 60)|int }} {{ t('minutes') }} · {{ secs % 60 }} {{ t('seconds') }}
+            {% else %}{{ secs }} {{ t('seconds') }}{% endif %}
+          </div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">{{ t('stats_nodes') }}</div>
+          <div class="stat-value">{{ attempt.nodesCompleted or 0 }} / {{ attempt.nodesTotal or total }}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">{{ t('stats_correct') }}</div>
+          <div class="stat-value">{{ attempt.correctTaps or 0 }}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-label">{{ t('stats_incorrect') }}</div>
+          <div class="stat-value">{{ attempt.incorrectTaps or 0 }}</div>
+        </div>
+      </div>
+    </details>
 
     <div class="row map-actions">
       <a class="primary big link-btn" href="/">{{ t('back_to_catalog') }}</a>
@@ -68,6 +94,7 @@
       <a class="secondary big link-btn" href="/play/{{ doc.pathId }}?view=map#here">{{ t('path_map') }}</a>
     </div>
   </section>
+  </main>
   <footer>
     <small>{{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>

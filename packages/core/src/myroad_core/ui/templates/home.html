@@ -4,9 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ product }} — {{ t('catalog') }}</title>
+  <script src="/static/prefs.js"></script>
   <link rel="stylesheet" href="/static/platform.css" />
 </head>
 <body class="platform">
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     <nav class="shell-links">
@@ -14,6 +16,7 @@
       <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
     </nav>
   </header>
+  <main id="main" tabindex="-1">
 
 
   {% if continue_card %}
@@ -134,7 +137,10 @@
         </div>
         {% endfor %}
       {% else %}
-        <p class="empty">{{ t('empty_tab') }}</p>
+        <div class="empty-state">
+          <p class="empty">{{ t('empty_tab') }}</p>
+          {% if active_tab != 'catalog' %}<a class="secondary link-btn" href="/?group={{ active_group }}&subject={{ active_subject }}&tab=catalog&view=status">{{ t('empty_browse_catalog') }}</a>{% endif %}
+        </div>
       {% endif %}
     </section>
     {% endfor %}
@@ -164,13 +170,17 @@
       </div>
     </a>
     {% else %}
-    <p class="empty">{{ t('empty_tab') if active_tab != 'catalog' else t('empty_catalog') }}</p>
+    <div class="empty-state">
+      <p class="empty">{{ t('empty_tab') if active_tab != 'catalog' else t('empty_catalog') }}</p>
+      {% if active_tab != 'catalog' %}<a class="secondary link-btn" href="/?group={{ active_group }}&subject={{ active_subject }}&tab=catalog&view=status">{{ t('empty_browse_catalog') }}</a>{% endif %}
+    </div>
     {% endfor %}
   </section>
   {% endif %}
   </div>
   </div>
 
+  </main>
   <footer>
     <small>{{ product }} · {{ t('footer_catalog') }} · {% include "_a11y_link.html" %}</small>
   </footer>
