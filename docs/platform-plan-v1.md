@@ -1,5 +1,9 @@
 # MyRoad platform plan v1
 
+> **Stage note (2026-10-21):** This plan is history, not the source of product direction (see `docs/product/00`). Its milestones (M1–M7) start only after stage 1 opens per [`docs/product/07-מפת-שלבים.md`](product/07-מפת-שלבים.md); while stage 0 (language) is active, no code, new content or new screens. Where this plan conflicts with `docs/product/01`–`09`, those win.
+>
+> **Terms (per [`docs/product/09-מילון-והחלטות.md`](product/09-מילון-והחלטות.md)):** path = דרך, path map = נתיב, station / review station = משבצת / נושא חזרה, step = שלב, step player = מסך שלב, catalog = קטלוג (outside the series flow, not a gate), placement/band = מבדק/פס. "Pick a path from the catalog" and onboarding "subject (English / math)" below conflict with 03 rule 1 (placement first, no catalog choice) and 01 (one subject, English 5 units, for now); 01–09 win. On screens use the Hebrew terms, not path/node/band/station.
+
 Status: **v1, ready to merge**. Owner: MyRoad PM. Written 2026-10-21 (Israel time).
 Inputs folded in: [`docs/ux-research-2026-10.md`](ux-research-2026-10.md) (UX, Must M1–M8 / Should S1–S5 / Could C1–C4, cited below as **UX M#**) and [`docs/ui-audit-2026-10.md`](ui-audit-2026-10.md) (UI, cited as **UI audit**). Learner we design for (from UX): an adult Hebrew speaker returning to bagrut English or math, on a phone, in short gaps, often anxious about math.
 
