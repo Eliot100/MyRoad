@@ -1056,6 +1056,73 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
   .map-view, .map-view * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
 
+/* English 5-unit roads: one centered tile per row. Other paths keep the station list or diagram. */
+.linear-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .55rem;
+  margin: 1rem 0 1.25rem;
+}
+.linear-section {
+  width: min(100%, 28rem);
+  margin: .85rem 0 .15rem;
+  font-size: .95rem;
+  font-weight: 650;
+}
+.linear-part { color: var(--accent); }
+.linear-form { width: min(100%, 22rem); margin: 0; }
+.linear-tile {
+  width: min(100%, 22rem);
+  min-block-size: 52px;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  text-align: start;
+  padding: .7rem .9rem;
+  border-radius: 16px;
+  border: 2px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  box-shadow: var(--shadow);
+}
+button.linear-tile { cursor: pointer; }
+.linear-tile.current { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.linear-tile.done { border-style: solid; }
+.linear-tile.ahead { opacity: .55; box-shadow: none; }
+.linear-tile.review { border-style: dashed; }
+.linear-mark {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  flex: none;
+}
+.linear-copy { display: flex; flex-direction: column; min-width: 0; }
+.linear-title { font-weight: 650; }
+.series-banner .primary { display: inline-flex; margin-top: .4rem; }
+.series-chain { list-style: none; padding: 0; margin: 1rem auto 2rem; max-width: 40rem; display: flex; flex-direction: column; gap: .75rem; }
+.series-road {
+  display: flex;
+  gap: .8rem;
+  padding: .9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.series-road.gap { border-color: var(--accent); box-shadow: var(--shadow); }
+.series-road.locked { opacity: .72; }
+.series-index {
+  width: 2rem; height: 2rem; border-radius: 999px; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface)); flex: none;
+}
+.series-body h2 { margin: 0 0 .25rem; font-size: 1.15rem; }
+.series-body p { margin: .2rem 0; }
+.series-body .secondary { display: inline-flex; margin-top: .35rem; }
+
 /* ---- Accessibility statement + site-wide basics (#60) ---------------------------------- */
 /* Every focusable element gets a visible outline (WCAG 2.4.7); :where keeps specificity 0,
    so the step player / map rules above still win where they differ. */

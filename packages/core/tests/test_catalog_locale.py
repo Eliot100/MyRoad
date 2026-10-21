@@ -110,11 +110,12 @@ def test_list_catalog_cards_pick_by_ui_locale(store: PathStore) -> None:
             if loc == "he" and card["subject"] in {"math", "physics", "piano"}:
                 assert _has_hebrew(card["title"])
 
-    localized = apply_catalog_locale(raw[0], "ar")
-    assert localized["title"] == raw[0]["titles"]["ar"]
+    sample = next(card for card in raw if card["pathId"] in grade3)
+    localized = apply_catalog_locale(sample, "ar")
+    assert localized["title"] == sample["titles"]["ar"]
     assert pick({"he": "א", "en": "A", "ar": "ع", "ru": "Р"}, "ru") == "Р"
-    chrome = localize_path_chrome(locale="ar", titles=raw[0]["titles"], blurbs=raw[0]["blurbs"], subject=raw[0]["subject"])
-    assert chrome["title"] == raw[0]["titles"]["ar"]
+    chrome = localize_path_chrome(locale="ar", titles=sample["titles"], blurbs=sample["blurbs"], subject=sample["subject"])
+    assert chrome["title"] == sample["titles"]["ar"]
 
 
 def test_apply_catalog_locale_hebrew_only_falls_back_to_explain_locale() -> None:
