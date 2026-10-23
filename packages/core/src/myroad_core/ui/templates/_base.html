@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+{#- Shared shell for every learner/platform page: lang/dir, meta, prefs bootstrap (text size,
+    reduce motion, theme run before first paint), and the one stylesheet. Pages add their own
+    title, extra head tags (transitions.css, htmx config) and body class/attributes. -#}
+<html lang="{{ html_lang }}" dir="{{ html_dir }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}{{ product }}{% endblock %}</title>
+  <script src="/static/prefs.js"></script>
+  <link rel="stylesheet" href="/static/platform.css" />
+{% block head_extra %}{% endblock %}
+</head>
+<body{% block body_attrs %}{% endblock %}>
+{% block body %}{% endblock %}
+</body>
+</html>

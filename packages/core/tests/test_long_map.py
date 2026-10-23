@@ -167,8 +167,9 @@ def test_review_stations_differ_by_shape_and_icon(app) -> None:
     html = c.get(f"/play/{LONG}?view=map").text
     review = _station(html, "s03")
     assert review.split(">", 1)[0].split('"')[1].split()[-1] == "review"
-    assert '<span class="review-icon" aria-hidden="true">🔁</span>' in review and "review-badge" in review
-    assert "review-icon" not in _station(html, "s02")
+    # No decorative emoji (#shell): the text badge + square number + dashed edge carry "review".
+    assert "review-badge" in review and "🔁" not in review
+    assert "review-badge" not in _station(html, "s02")
     css = (_STATIC / "platform.css").read_text(encoding="utf-8")
     assert re.search(r"\.station-num \{[^}]*border-radius: 50%", css)
     assert re.search(r"\.station\.review \.station-num \{[^}]*border-radius: 5px", css)

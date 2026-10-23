@@ -38,9 +38,23 @@ def test_map_connector_is_behind_stations_and_ignores_clicks():
     assert "position: relative" in station and "z-index: 1" in station
 
 
-def test_demo_accent_passes_aa_with_white_text():
-    accent = re.search(r"body\.tone-demo\s*\{[^}]*--accent:\s*(#[0-9a-fA-F]{6})", CSS).group(1)
-    assert contrast(accent, "#ffffff") >= 4.5
+def test_one_accent_passes_aa_in_light_and_dark():
+    # Ink & teal shell: a single accent everywhere (no per-tone override), AA both ways.
+    assert not re.search(r"body\.tone-demo\s*\{[^}]*--accent:", CSS)
+    light = re.search(r":root\s*\{[^}]*--accent:\s*(#[0-9a-fA-F]{6})", CSS).group(1)
+    on_light = re.search(r":root\s*\{[^}]*--on-accent:\s*(#[0-9a-fA-F]{6})", CSS).group(1)
+    assert light.lower() == "#0f766e" and contrast(light, on_light) >= 4.5 and contrast(light, "#ffffff") >= 4.5
+    dark_root = CSS[CSS.index("@media (prefers-color-scheme: dark)"):]
+    dark = re.search(r"--accent:\s*(#[0-9a-fA-F]{6})", dark_root).group(1)
+    on_dark = re.search(r"--on-accent:\s*(#[0-9a-fA-F]{6})", dark_root).group(1)
+    bg_dark = re.search(r"--bg:\s*(#[0-9a-fA-F]{6})", dark_root).group(1)
+    assert dark.lower() == "#5fd4c4" and contrast(dark, on_dark) >= 4.5 and contrast(dark, bg_dark) >= 4.5
+
+
+def test_one_button_system_52px_radius_14():
+    root = _root_block()
+    assert "--btn-h: 52px" in root and "--btn-radius: 14px" in root
+    assert re.search(r"button, \.primary, \.secondary, a\.link-btn \{[^}]*min-block-size: var\(--btn-h\)", CSS)
 
 
 def _root_block() -> str:

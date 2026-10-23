@@ -198,7 +198,7 @@ def test_locked_path_names_the_prerequisite_on_home_and_map(adult_app) -> None:
     home = c.get("/?group=adult&tab=catalog&view=status").text
     card = home[home.find(f'data-path-id="{NEXT}"'):]
     card = card[:card.find("</a>")]
-    assert "🔒 Locked" in card and f'data-locked-by="{LONG}"' in card and "Long adult math" in card
+    assert ">Locked<" in card and "🔒" not in card and f'data-locked-by="{LONG}"' in card and "Long adult math" in card
     unlocked = home[home.find(f'data-path-id="{LONG}"'):]
     assert "status-pill locked" not in unlocked[:unlocked.find("</a>")]
 

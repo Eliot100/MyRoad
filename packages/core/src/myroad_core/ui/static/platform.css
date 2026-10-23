@@ -1,28 +1,29 @@
-/* MyRoad platform shell — age-agnostic. Optional .tone-demo for sample Grade-3 paths. */
+/* MyRoad platform shell — age-agnostic. "Ink & teal": near-black ink, one teal accent, hairline
+   borders, no shadows, no filled pills, no decorative emoji. */
 :root {
-  --bg: #f4f1ea;
-  --card: #fffdf8;
-  --ink: #1c1915;
-  --muted: #5c564c;
-  --accent: #0f6e6b;
-  --line: #e4dccf;
+  --bg: #ffffff;
+  --card: #ffffff;
+  --ink: #0b0f0e;
+  --muted: #4a5553;
+  --accent: #0f766e;
+  --line: #e3e7e6;
   --ok: #0f6b45;
   --warn: #9a5416;
-  --radius: 18px;
+  --radius: 12px;
   color-scheme: light dark;
   /* Colour roles. Components use these, never raw hex, so themes (dark mode) only swap values here. */
-  --surface: #fff;
-  --surface-2: #f9fafb;
-  --surface-3: #f3f4f6;
-  --track: #efe8dc;
-  --ink-2: #374151;
-  --on-accent: #fff;
-  --btn-secondary: #4b5563;
+  --surface: #ffffff;
+  --surface-2: #f7f9f9;
+  --surface-3: #f0f3f3;
+  --track: #e9eeed;
+  --ink-2: #2b3332;
+  --on-accent: #ffffff;
+  --btn-secondary: #0b0f0e;
   --disabled: #9ca3af;
   --inverse: #111827;
-  --line-strong: #d1d5db;
-  --tint-info: #eff6ff;
-  --tint-info-strong: #dbeafe;
+  --line-strong: #7d8987;
+  --tint-info: #eef6f5;
+  --tint-info-strong: #d5ebe8;
   --tint-ok: #ecfdf5;
   --tint-ok-line: #a7f3d0;
   --ok-ink: #065f46;
@@ -48,7 +49,10 @@
   --leading-tight: 1.25;
   --radius-sm: 8px;
   --radius-md: 12px;
-  --shadow: 0 1px 2px rgba(40, 32, 20, 0.04), 0 12px 32px rgba(40, 32, 20, 0.05);
+  --shadow: none;
+  /* One button system (Ink & teal, issue shell): every primary/secondary is this size. */
+  --btn-h: 52px;
+  --btn-radius: 14px;
   font-family: "Segoe UI", "Avenir Next", "Rubik", "Heebo", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
@@ -56,9 +60,7 @@ body.platform {
   margin: 0 auto;
   max-width: 1040px;
   padding: 1.5rem 1.5rem 4rem;
-  background:
-    radial-gradient(1200px 400px at 50% -10%, rgba(15, 110, 107, 0.08), transparent 60%),
-    var(--bg);
+  background: var(--bg);
   color: var(--ink);
   line-height: 1.6;
   font-size: 1.05rem;
@@ -83,10 +85,10 @@ body.platform :where(main a:not([class])) { color: var(--accent); text-underline
 .brand { display: flex; gap: .65rem; align-items: center; flex-wrap: wrap; }
 .badge {
   font-size: .75rem;
-  background: var(--tint-info);
-  color: var(--accent);
-  padding: .15rem .55rem;
-  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 0;
 }
 .top-nav { display: flex; gap: 1rem; font-size: .95rem; }
 .top-nav a { color: var(--ink); text-decoration: none; }
@@ -110,17 +112,20 @@ body.platform :where(main a:not([class])) { color: var(--accent); text-underline
   align-items: center;
   gap: .3rem;
   padding: .4rem .75rem;
-  border-radius: 999px;
+  border-radius: 10px;
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: transparent;
   color: var(--ink);
   text-decoration: none;
   font-size: .92rem;
 }
+.chip:hover { border-color: var(--line-strong); }
+/* Selected = accent outline + accent text, never a filled pill. */
 .chip.active {
-  background: var(--accent);
   border-color: var(--accent);
-  color: var(--on-accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--accent);
+  font-weight: 650;
 }
 .group-banner h2 { margin: 0 0 .35rem; font-size: 1.15rem; }
 .grid {
@@ -137,22 +142,17 @@ a.path-card {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: .95rem;
-  box-shadow: var(--shadow);
-  border-inline-start: 4px solid var(--subject, var(--accent));
-  transition: transform .12s ease, box-shadow .12s ease;
+  transition: border-color .12s ease;
 }
-a.path-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,24,40,.08); }
-.path-emoji { font-size: 1.8rem; line-height: 1; }
+a.path-card:hover { border-color: var(--line-strong); }
 .path-body h3 { margin: .25rem 0; font-size: 1.05rem; }
 .path-body p { margin: 0; color: var(--muted); font-size: .92rem; }
 .path-meta { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
 .subject-pill {
   display: inline-block;
   font-size: .75rem;
-  background: color-mix(in srgb, var(--subject, var(--accent)) 18%, var(--surface));
-  color: var(--ink);
-  padding: .12rem .45rem;
-  border-radius: 6px;
+  font-weight: 650;
+  color: var(--muted);
 }
 .mins { font-size: .8rem; color: var(--muted); }
 .empty { color: var(--muted); }
@@ -189,10 +189,7 @@ a.path-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,
   /* No uppercase/letter-spacing: they break Arabic letter joining and add nothing in Hebrew. */
   font-size: var(--text-sm);
   font-weight: 600;
-  background: var(--tint-info);
-  color: var(--accent);
-  padding: .15rem .45rem;
-  border-radius: 6px;
+  color: var(--muted);
 }
 .body-text { font-size: 1.05rem; }
 .choices {
@@ -218,23 +215,40 @@ a.path-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16,
 }
 .choice-tile:hover { border-color: var(--accent); background: var(--tint-info); }
 .choice-emoji { font-size: 1.6rem; }
-button, .primary, .secondary {
-  border: 0;
-  border-radius: 10px;
-  padding: .6rem 1.05rem;
+/* One button system: primary = filled accent; secondary = same size, outlined; tertiary
+   (.nav Prev/Next) = quiet text. Size comes from --btn-h / --btn-radius only. */
+button, .primary, .secondary, a.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-block-size: var(--btn-h);
+  padding: 0 1.25rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--btn-radius);
   cursor: pointer;
   font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
   background: var(--accent);
   color: var(--on-accent);
 }
-button:disabled { background: var(--disabled); cursor: not-allowed; }
-button.secondary { background: var(--btn-secondary); }
-.big { font-size: 1.05rem; padding: .75rem 1.25rem; }
-.icon-btn {
-  background: var(--surface-3);
+button:disabled { background: var(--surface-3); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
+button.secondary, .secondary, a.link-btn.secondary, .icon-btn {
+  background: transparent;
   color: var(--ink);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
 }
+button.secondary:hover, .secondary:hover, a.link-btn.secondary:hover, .icon-btn:hover { border-color: var(--ink); }
+.nav.row button {
+  background: transparent;
+  border-color: transparent;
+  color: var(--accent);
+}
+.nav.row button:hover { border-color: var(--line); }
+.nav.row button:disabled { background: transparent; border-color: transparent; color: var(--muted); }
 .row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .85rem; }
 .piano {
   display: flex;
@@ -283,23 +297,11 @@ button.secondary { background: var(--btn-secondary); }
 footer { color: var(--muted); margin-top: 1.5rem; text-align: center; }
 footer a { color: var(--accent); }
 
-/* Sample Grade-3 demos only — soft accents, not a global kids rebrand */
-.tone-demo.group-banner,
-body.tone-demo .step-card,
-a.path-card.tone-demo {
-  background: linear-gradient(180deg, #fffdf9 0%, var(--surface) 55%);
-}
-body.tone-demo {
-  /* blue-600: white text on it passes WCAG AA (5.2:1); blue-500 did not. */
-  --accent: #2563eb;
-}
+/* Sample Grade-3 demos only: slightly larger tiles; same single accent as every other path. */
 body.tone-demo .choice-tile {
   border-radius: 20px;
   min-height: 96px;
   font-size: 1.12rem;
-}
-body.tone-demo .progress-fill {
-  background: linear-gradient(90deg, #60a5fa, #34d399);
 }
 
 /* --- Platform polish: identity, i18n, topic map, stats --- */
@@ -319,6 +321,8 @@ body.tone-demo .progress-fill {
   border: 1px solid var(--line);
 }
 .lang-switch { display: inline-flex; gap: .2rem; }
+/* Compact toggles keep their own size (outside the 52px action-button system). */
+.lang-btn, .piano-key, .beat-btn, .choice-tile, .linear-tile { min-block-size: 0; font-weight: inherit; }
 .lang-btn {
   padding: .25rem .45rem !important;
   font-size: .75rem !important;
@@ -329,19 +333,22 @@ body.tone-demo .progress-fill {
   min-width: 2.2rem;
 }
 .lang-btn.active {
-  background: var(--accent) !important;
-  color: var(--on-accent) !important;
+  background: transparent !important;
+  color: var(--accent) !important;
   border-color: var(--accent) !important;
+  box-shadow: inset 0 0 0 1px var(--accent);
+  font-weight: 650;
 }
 .status-pill {
   display: inline-block;
   margin-top: .45rem;
   font-size: .75rem;
-  padding: .12rem .45rem;
-  border-radius: 6px;
+  font-weight: 650;
+  color: var(--muted);
 }
-.status-pill.done { background: var(--tint-ok); color: var(--ok); }
-.status-pill.prog { background: var(--tint-info); color: var(--accent); }
+/* Quiet text labels, no fills; state is carried by the word itself. */
+.status-pill.done { color: var(--ok); }
+.status-pill.prog { color: var(--accent); }
 .login-form {
   display: flex;
   flex-direction: column;
@@ -378,14 +385,12 @@ body.tone-demo .progress-fill {
 }
 .topic-station { width: min(100%, 340px); text-align: center; position: relative; z-index: 1; }
 .topic-box {
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
-  border: 2px solid color-mix(in srgb, var(--subject, var(--accent)) 45%, var(--line));
-  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   padding: 1rem;
-  box-shadow: var(--shadow);
 }
 .topic-box h3 { margin: .35rem 0; font-size: 1.1rem; }
-.topic-emoji { font-size: 1.75rem; }
 .topic-arrow {
   font-size: 1.4rem;
   color: var(--muted);
@@ -397,18 +402,6 @@ body.tone-demo .progress-fill {
   background: var(--tint-ok);
 }
 .map-actions { justify-content: center; margin-top: 1rem; }
-a.link-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  border-radius: 10px;
-  padding: .75rem 1.25rem;
-  background: var(--accent);
-  color: var(--on-accent);
-  font: inherit;
-}
-a.link-btn.secondary { background: var(--btn-secondary); }
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -416,9 +409,9 @@ a.link-btn.secondary { background: var(--btn-secondary); }
   margin: 1.25rem 0;
 }
 .stat-tile {
-  background: var(--surface-2);
+  background: transparent;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius);
   padding: .85rem;
 }
 .stat-tile.wide { grid-column: 1 / -1; }
@@ -473,18 +466,18 @@ body.platform:has(.home-layout) { max-width: 1120px; }
   align-items: center;
   gap: .4rem;
   padding: .55rem .9rem;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: transparent;
   color: var(--ink);
   text-decoration: none;
   font-size: .95rem;
   font-weight: 600;
 }
 .home-tab.active {
-  background: var(--accent);
   border-color: var(--accent);
-  color: var(--on-accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--accent);
 }
 .tab-count {
   display: inline-flex;
@@ -493,8 +486,7 @@ body.platform:has(.home-layout) { max-width: 1120px; }
   font-size: .75rem;
   font-weight: 700;
   padding: .05rem .35rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, currentColor 14%, transparent);
+  color: var(--muted);
 }
 .tabs-rtl { justify-content: flex-start; }
 .tabs-ltr { justify-content: flex-start; }
@@ -506,7 +498,7 @@ body.platform:has(.home-layout) { max-width: 1120px; }
   .home-nav .view-toggle .chip,
   .home-nav .home-tab { width: auto; }
 }
-.status-pill.practice { background: var(--tint-warn); color: var(--warn-ink); }
+.status-pill.practice { color: var(--warn-ink); }
 .time-heading { margin: 0 0 .75rem; font-size: 1.15rem; display: flex; gap: .5rem; align-items: center; }
 .subject-heading {
   margin: .85rem 0 .45rem;
@@ -587,24 +579,6 @@ body.platform:has(.home-layout) { max-width: 1120px; }
 }
 .lang-form { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
 .step-card { padding: 1.4rem 1.5rem; }
-.primary.big, button.primary {
-  background: var(--accent);
-  color: var(--on-accent);
-  border: 0;
-  border-radius: 999px;
-  padding: .75rem 1.3rem;
-  font: inherit;
-  cursor: pointer;
-}
-button.secondary {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: .7rem 1.1rem;
-  font: inherit;
-  cursor: pointer;
-}
 
 /* Agent path builder (/add-path) */
 .stepper {
@@ -752,21 +726,14 @@ button.secondary {
   font-size: .72rem;
   font-weight: 700;
   line-height: 1.4;
-  padding: .05rem .45rem;
-  border-radius: 999px;
-  background: var(--tint-agent);
   color: var(--agent-ink);
-  border: 1px solid var(--tint-agent-line);
   white-space: nowrap;
 }
 .here-badge {
   display: inline-block;
   font-size: .72rem;
   font-weight: 700;
-  padding: .05rem .45rem;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-accent);
+  color: var(--accent);
   white-space: nowrap;
 }
 .review-mix {
@@ -781,20 +748,17 @@ button.secondary {
 .review-topic-chip {
   font-size: .85rem;
   padding: .15rem .55rem;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--tint-agent-line);
+  border-radius: 8px;
+  border: 1px solid var(--line);
 }
 .station-pill {
   display: inline-block;
   font-size: .78rem;
-  padding: .1rem .5rem;
-  border-radius: 999px;
-  background: var(--surface-3);
+  font-weight: 650;
   color: var(--muted);
   margin-inline-end: .35rem;
 }
-.station-pill.current { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); color: color-mix(in srgb, var(--accent) 65%, var(--ink)); font-weight: 650; }
+.station-pill.current { color: var(--accent); }
 .station-line { margin: 0; color: var(--muted); }
 .station-name { color: var(--ink); font-weight: 600; }
 .map-summary { margin: .6rem 0 .25rem; }
@@ -1160,27 +1124,27 @@ footer .a11y-link,
 /* Dark theme: follows the OS (no in-app theme setting exists yet). Only token values change. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #14130f;
-    --card: #1d1b17;
-    --ink: #ece7de;
-    --muted: #b0a99c;
-    --accent: #5cc2bc;
-    --line: #36322b;
+    --bg: #0a0c0c;
+    --card: #0f1312;
+    --ink: #eef2f1;
+    --muted: #9eaaa8;
+    --accent: #5fd4c4;
+    --line: #252c2b;
     --ok: #5ad192;
     --warn: #f0a35c;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --surface: #23211c;
-    --surface-2: #26231e;
-    --surface-3: #2e2b25;
-    --track: #3a352d;
-    --ink-2: #d4cec3;
-    --on-accent: #0a1f1e;
-    --btn-secondary: #c9c3b8;
+    --shadow: none;
+    --surface: #0f1312;
+    --surface-2: #141918;
+    --surface-3: #1a201f;
+    --track: #252c2b;
+    --ink-2: #d3dbd9;
+    --on-accent: #03211e;
+    --btn-secondary: #eef2f1;
     --disabled: #5a554c;
     --inverse: #ece7de;
-    --line-strong: #4a453c;
-    --tint-info: #16233a;
-    --tint-info-strong: #1e3a5f;
+    --line-strong: #5d6967;
+    --tint-info: #0f2422;
+    --tint-info-strong: #163a36;
     --tint-ok: #11281d;
     --tint-ok-line: #1f5138;
     --ok-ink: #86efac;
@@ -1191,10 +1155,6 @@ footer .a11y-link,
     --tint-agent-line: #4c3d7a;
     --agent-ink: #c4b5fd;
   }
-  body.tone-demo { --accent: #7cb4fa; }
-  .tone-demo.group-banner,
-  body.tone-demo .step-card,
-  a.path-card.tone-demo { background: var(--card); }
 }
 
 /* Reading comfort (UX M7, issue 104): set on <html> by prefs.js before paint. rem-based sizes scale. */
@@ -1234,7 +1194,7 @@ html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important
   gap: .35rem;
   min-height: 44px;
   padding: .5rem 1rem;
-  border-radius: 999px;
+  border-radius: var(--btn-radius);
   background: var(--accent);
   color: var(--on-accent);
   font-weight: 600;

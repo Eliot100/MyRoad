@@ -19,6 +19,8 @@ def test_prefs_script_loads_before_css_on_every_learner_page():
     for name in ("home.html", "map.html", "play.html", "settings.html", "login.html",
                  "accessibility.html", "stats.html", "add_path.html"):
         html = (_UI / "templates" / name).read_text(encoding="utf-8")
+        if html.startswith('{% extends "_base.html" %}'):  # head lives in the shared shell
+            html = (_UI / "templates" / "_base.html").read_text(encoding="utf-8")
         head = html.split("</head>")[0]
         i = head.index('<script src="/static/prefs.js"></script>')  # sync, not defer
         assert i < head.index("platform.css"), name

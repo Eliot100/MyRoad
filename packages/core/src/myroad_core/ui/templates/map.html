@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="{{ html_lang }}" dir="{{ html_dir }}">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — {{ meta.title }}</title>
-  <script src="/static/prefs.js"></script>
-  <link rel="stylesheet" href="/static/platform.css" />
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ meta.title }}{% endblock %}
+{% block head_extra %}
   <link rel="stylesheet" href="/static/transitions.css" />
-</head>
-<body class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}">
+{% endblock %}
+{% block body_attrs %} class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}"{% endblock %}
+{% block body %}
   <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <div class="brand">
@@ -21,7 +17,7 @@
   <main id="main" tabindex="-1">
 
   <section class="card path-head">
-    <h1>{{ meta.emoji }} <span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}</h1>
+    <h1><span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}</h1>
     <p class="lede" dir="auto"{{ meta.blurbLang|content_lang(locale) }}>{{ meta.blurb }}</p>
     {% if not read_only %}
     <div class="progress-wrap" aria-label="progress">
@@ -33,7 +29,7 @@
 
   {% if read_only %}
   <section class="card lock-banner" role="note" data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}">
-    <h2 class="lock-title">🔒 {{ t('locked_title') }}</h2>
+    <h2 class="lock-title">{{ t('locked_title') }}</h2>
     <p class="lock-needs">{{ t('locked_finish_first') }}
       {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
     </p>
@@ -50,7 +46,7 @@
     <p class="lede">{{ t('linear_map_lede') }}</p>
     <div class="linear-rows" data-map="linear">
       {% for tp in topics %}
-      <h3 class="linear-section"><span class="linear-part">{{ t('linear_part', n=loop.index) }}</span> · <span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.emoji }} {{ tp.title }}</span></h3>
+      <h3 class="linear-section"><span class="linear-part">{{ t('linear_part', n=loop.index) }}</span> · <span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span></h3>
       {% for st in tp.steps %}
       {% set ahead = (not read_only) and (gap < total) and (st.index > gap) %}
       {% if ahead %}
@@ -91,9 +87,9 @@
           <summary>
             <span class="station-num" aria-hidden="true">{% if tp.complete %}✓{% else %}{{ loop.index }}{% endif %}</span>
             <span class="station-main">
-              <span class="station-title" dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.emoji }} {{ tp.title }}</span>
+              <span class="station-title" dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span>
               <span class="station-meta tiny">
-                {% if tp.isReview %}<span class="review-badge"><span class="review-icon" aria-hidden="true">🔁</span> {{ t('step_kind_review') }}</span>{% endif %}
+                {% if tp.isReview %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
                 {% if is_here %}<span class="here-badge">{{ t('station_current') }}</span>{% endif %}
                 <span class="station-count">{{ tp.doneCount }}/{{ tp.stepCount }} {{ t('steps_count') }}</span>
               </span>
@@ -128,8 +124,7 @@
       {% for tp in topics %}
       <div class="topic-station {% if tp.complete %}done{% endif %}{% if tp.current %} current{% endif %}{% if tp.isReview %} review{% endif %}" role="listitem" data-topic-id="{{ tp.id }}"{% if tp.current and not read_only %} id="here" aria-current="step"{% endif %}>
         <div class="topic-box" style="--subject: {{ meta.subjectColor }}">
-          <div class="topic-emoji">{{ tp.emoji }}</div>
-          <h3><span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span>{% if tp.isReview %} <span class="review-badge"><span class="review-icon" aria-hidden="true">🔁</span> {{ t('step_kind_review') }}</span>{% endif %}</h3>
+          <h3><span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span>{% if tp.isReview %} <span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}</h3>
           <p class="tiny muted">{{ tp.stepCount }} {{ t('steps_count') }}
             {% if tp.doneCount %} · {{ tp.doneCount }}/{{ tp.stepCount }} {{ t('topic_progress') }}{% endif %}
           </p>
@@ -173,12 +168,11 @@
   </section>
 
   {#- Floating shortcut back to the current station; shown by platform.js only while #here is off screen. -#}
-  {% if current_station and not read_only %}<a class="float-here" href="#here" hidden><span aria-hidden="true">📍</span> {{ t('map_back_to_station') }}</a>{% endif %}
+  {% if current_station and not read_only %}<a class="float-here" href="#here" hidden>{{ t('map_back_to_station') }}</a>{% endif %}
   </main>
   <footer>
     <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>
   {#- Scrolls the current station (#here) into view on load; the map works the same without it. -#}
   <script src="/static/platform.js" defer></script>
-</body>
-</html>
+{% endblock %}
