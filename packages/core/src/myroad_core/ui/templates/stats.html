@@ -8,12 +8,21 @@
       <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
       <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
+    {% if sidebar is defined and sidebar %}<a class="ibtn menu-btn" href="#roads" aria-controls="roads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="visually-hidden">{{ t('side_open') }}</span></a>{% endif %}
   </header>
   <main id="main" tabindex="-1">
-
-  <section class="card hero stats-card">
+  {% set rm = road_metrics or {} %}
+  <section class="road-metrics">
+    <p class="kicker">{{ meta.subjectLabel or subject_label_fn(meta.subject) }}</p>
+    {% if finished %}
     <h1>{{ t('stats_title') }}</h1>
     <p class="lede"><span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span></p>
+    {% else %}
+    <h1><span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span></h1>
+    {% endif %}
+    <div class="rm-cols">
+    {% if finished %}
+  <section class="card hero stats-card">
     <p class="stats-msg">{{ attempt.message or t('stats_message') }}</p>
 
     {% set learned = (topics or [])|rejectattr('isReview')|list %}
@@ -85,6 +94,46 @@
         <button type="submit" class="secondary big">{{ t('replay') }}</button>
       </form>
       <a class="secondary big link-btn" href="/play/{{ doc.pathId }}?view=map#here">{{ t('path_map') }}</a>
+    </div>
+  </section>
+    {% else %}
+  <section class="card stats-card rm-path" aria-labelledby="rm-path-h">
+    <h2 id="rm-path-h">{{ t('metrics_path_h') }}</h2>
+    <ul class="rm-units">
+      {% for tp in topics or [] %}
+      <li{% if tp.current %} class="is-current" aria-current="step"{% endif %}>
+        <a href="/play/{{ doc.pathId }}?topic={{ tp.id }}"><bdi{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</bdi></a>
+        <span class="rm-bar" aria-hidden="true"><i style="inline-size: {{ tp.pct }}%"></i></span>
+        <span class="rm-count">{{ tp.doneCount }}/{{ tp.stepCount }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="row map-actions">
+      <a class="primary big link-btn" href="/play/{{ doc.pathId }}?view=learn">{{ t('road_continue') }}</a>
+      <a class="secondary big link-btn" href="/play/{{ doc.pathId }}?view=map#here">{{ t('path_map') }}</a>
+    </div>
+  </section>
+    {% endif %}
+
+  <aside class="card rm-side" aria-label="{{ t('metrics_aria') }}">
+    {#- Metrics list: one block, edit freely. Every row reads learner_progress /
+        learner_attempts (via road_metrics) or this play session. -#}
+    {#- metrics list: start -#}
+    <dl class="rm-list">
+      <div><dt>{{ t('metrics_progress') }}</dt><dd>{{ rm.pct or 0 }}% · {{ rm.done or 0 }}/{{ rm.total or total }}</dd></div>
+      {% if not finished %}<div><dt>{{ t('metrics_current_step') }}</dt><dd>{{ t('metrics_step_of', n=rm.currentStep, total=rm.total) }}</dd></div>{% endif %}
+      <div><dt>{{ t('metrics_accuracy') }}</dt><dd>{% if rm.accuracy is not none %}{{ rm.accuracy }}%{% else %}{{ t('metrics_none') }}{% endif %}<small>{{ t('metrics_answers', correct=rm.correct or 0, wrong=rm.wrong or 0) }}</small></dd></div>
+      {% if rm.startedAt %}<div><dt>{{ t('metrics_started') }}</dt><dd>{{ rm.startedAt|short_date }}</dd></div>{% endif %}
+      {% set ago = rm.lastActivity|days_ago %}
+      {% if ago is not none %}<div><dt>{{ t('metrics_last_activity') }}</dt><dd>{% if ago == 0 %}{{ t('metrics_today') }}{% elif ago == 1 %}{{ t('metrics_yesterday') }}{% else %}{{ t('metrics_days_ago', n=ago) }}{% endif %}</dd></div>{% endif %}
+      {% if rm.completedAt %}<div><dt>{{ t('metrics_completed') }}</dt><dd>{{ rm.completedAt|short_date }}</dd></div>{% endif %}
+      {% if rm.lastRun %}<div><dt>{{ t('metrics_last_run') }}</dt><dd>{{ rm.lastRun.masteryPct|round|int }}% · {{ rm.lastRun.finishedAt|short_date }}</dd></div>{% endif %}
+      {% if rm.needsPractice %}<div><dt>{{ t('metrics_practice') }}</dt><dd>{{ t('metrics_practice_yes') }}</dd></div>{% endif %}
+    </dl>
+    {#- metrics list: end -#}
+    <h2 class="rm-goals-h">{{ t('metrics_goals_h') }}</h2>
+    <p class="rm-empty">{{ t('metrics_goals_soon') }}</p>
+  </aside>
     </div>
   </section>
   </main>

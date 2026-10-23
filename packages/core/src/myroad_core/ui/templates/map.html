@@ -24,6 +24,7 @@
     <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
       <span class="progress-label">{{ progress }}% · {{ mastered|length }}/{{ total }}</span>
+      <a class="text-link rm-link" href="/play/{{ doc.pathId }}?view=stats">{{ t('metrics_link') }}</a>
     </div>
     <div class="row road-actions">
       <form method="post" action="/play/{{ doc.pathId }}/start">
