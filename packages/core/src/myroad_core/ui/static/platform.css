@@ -1376,7 +1376,8 @@ html[data-motion="reduce"] .side { transition: none !important; }
 }
 
 /* ---- /roads search screen (preview/netflix-home) ---- */
-.rs-main { display: grid; gap: 1rem; align-content: start; }
+.rs-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-content: start; min-inline-size: 0; }
+.rs-results, .rs-row { min-inline-size: 0; }
 .rs-h { margin: 0; font-size: 1.6rem; }
 .rs-form { display: grid; gap: .8rem; }
 .rs-bar { display: flex; gap: .8rem; align-items: end; flex-wrap: wrap; }
@@ -1417,4 +1418,24 @@ html[data-motion="reduce"] .side { transition: none !important; }
   .rs-facets { grid-template-columns: 1fr; }
   .rs-sort { flex: 1 1 100%; }
   .rs-grid { grid-template-columns: 1fr; }
+}
+/* /roads TV rows */
+.rs-results { display: grid; gap: .4rem; }
+.rs-row { margin-block: .6rem; }
+.rs-row-h { align-items: center; }
+.rs-row-tools { margin-inline-start: auto; display: flex; align-items: center; gap: .4rem; }
+.rs-arrow { inline-size: 40px; block-size: 40px; min-block-size: 40px; }
+.rs-arrow[aria-disabled="true"] { opacity: .4; cursor: default; }
+[dir="ltr"] .rs-arrow svg { scale: -1 1; }
+.rs-arrow:focus-visible, .rs-seeall:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rs-seeall { font-weight: 650; color: var(--accent); min-block-size: 40px; display: inline-flex; align-items: center; padding-inline: .3rem; }
+.rs-shelf { scroll-padding-inline: .2rem; scrollbar-width: thin; }
+.rs-shelf > li { inline-size: 19rem; }
+.rs-shelf .tv-tile { inline-size: 100%; }
+.rs-res-head { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; margin-block-end: .4rem; }
+.rs-res-head h2 { margin: 0; font-size: var(--text-lg); }
+.rs-res-head .rs-clear { margin-inline-start: auto; }
+@media (max-width: 760px) {
+  .rs-shelf > li { inline-size: 82%; flex-basis: 82%; }
+  .rs-arrow { display: none; }
 }

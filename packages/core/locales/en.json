@@ -455,5 +455,13 @@
   "rs_count": "{n} of {total} roads",
   "rs_empty_h": "No road found",
   "rs_empty_p": "Try another word or clear some filters.",
-  "rs_pct": "{n}% done"
+  "rs_pct": "{n}% done",
+  "rs_results_h": "Results",
+  "rs_row_continue": "Continue",
+  "rs_row_short": "Short (up to 10 min)",
+  "rs_row_done": "Done",
+  "rs_row_count": "{n} roads",
+  "rs_see_all": "See all",
+  "rs_prev": "Scroll back in {row}",
+  "rs_next": "Scroll forward in {row}"
 }

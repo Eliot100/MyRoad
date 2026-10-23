@@ -1313,9 +1313,25 @@ def register_platform_routes(
                                         -(c["updatedTs"] or 0)))
         active = bool(q or f_subject or f_group or f_status or f_dur)
         active_n = len(f_subject) + len(f_group) + len(f_status) + len(f_dur)
+        rows: list[dict[str, Any]] = []
+        if not active:
+            def row(key: str, title: str, items: list[dict[str, Any]], href: str) -> None:
+                if items:
+                    rows.append({"key": key, "title": title, "tiles": items, "href": href})
+            row("continue", t(locale, "rs_row_continue"), [c for c in results if c["state"] == "in_progress"],
+                "/roads?status=in_progress")
+            for sid in subj_ids:
+                row("subject-" + sid, SUBJECTS[sid].get(locale) or SUBJECTS[sid]["he"],
+                    [c for c in results if c.get("subject") == sid], f"/roads?subject={sid}")
+            for g in group_ids:
+                row("group-" + g, GROUPS[g]["titles"].get(locale) or GROUPS[g]["titles"]["he"],
+                    [c for c in results if g in c["groups"]], f"/roads?group={g}")
+            row("short", t(locale, "rs_row_short"), [c for c in results if c["dur"] == "short"], "/roads?dur=short")
+            row("done", t(locale, "rs_row_done"), [c for c in results if c["state"] == "completed"],
+                "/roads?status=completed")
         return templates.TemplateResponse(request, "roads.html", {
             **_shell_ctx(request), "q": q, "facets": facets, "results": results, "total": len(cards),
-            "sort": sort, "active": active, "active_n": active_n,
+            "sort": sort, "active": active, "active_n": active_n, "rows": rows,
             "sidebar": {**_sidebar_ctx(request), "active_search": True},
         })
 

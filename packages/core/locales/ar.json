@@ -455,5 +455,13 @@
   "rs_count": "{n} طرق من {total}",
   "rs_empty_h": "لم يُعثر على طريق",
   "rs_empty_p": "جرّب كلمة أخرى أو امسح بعض التصفية.",
-  "rs_pct": "اكتمل {n}%"
+  "rs_pct": "اكتمل {n}%",
+  "rs_results_h": "النتائج",
+  "rs_row_continue": "متابعة",
+  "rs_row_short": "قصيرة (حتى 10 دقائق)",
+  "rs_row_done": "مكتملة",
+  "rs_row_count": "{n} طرق",
+  "rs_see_all": "عرض الكل",
+  "rs_prev": "التمرير للخلف في {row}",
+  "rs_next": "التمرير للأمام في {row}"
 }

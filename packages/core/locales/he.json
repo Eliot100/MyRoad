@@ -455,5 +455,13 @@
   "rs_count": "{n} דרכים מתוך {total}",
   "rs_empty_h": "לא נמצאה דרך",
   "rs_empty_p": "אפשר לנסות מילה אחרת או לנקות חלק מהסינון.",
-  "rs_pct": "{n}% הושלמו"
+  "rs_pct": "{n}% הושלמו",
+  "rs_results_h": "תוצאות",
+  "rs_row_continue": "ממשיכים",
+  "rs_row_short": "קצרות (עד 10 דק׳)",
+  "rs_row_done": "הושלמו",
+  "rs_row_count": "{n} דרכים",
+  "rs_see_all": "הצגת הכול",
+  "rs_prev": "גלילה אחורה ב{row}",
+  "rs_next": "גלילה קדימה ב{row}"
 }

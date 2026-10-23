@@ -70,8 +70,21 @@ def test_sort_by_duration_and_status_filter(client) -> None:
     client.post("/play/path_grade3_math_add20/ack")
     prog = _ids(client.get("/roads?status=in_progress").text)
     assert prog == ["path_grade3_math_add20"]
-    rec = _ids(client.get("/roads").text)
+    rec = _ids(client.get("/roads?subject=math").text)
     assert rec[0] == "path_grade3_math_add20"  # started road first in recommended order
-    html = client.get("/roads?sort=duration").text
+    html = client.get("/roads?sort=duration&status=open").text
     mins = [int(m) for m in re.findall(r'class="tv-sub tv-foot">(\d+) ', html[html.find('id="rs-results"'):])]
     assert mins == sorted(mins)
+
+
+def test_browse_rows_and_see_all(client) -> None:
+    client.post("/play/path_grade3_math_add20/start")
+    client.post("/play/path_grade3_math_add20/ack")
+    html = client.get("/roads").text
+    rows = re.findall(r'data-row="([^"]+)"', html)
+    assert rows[0] == "continue" and "subject-math" in rows and "subject-english" in rows and "short" in rows
+    assert "rs-grid" not in html and 'data-shelf' in html
+    assert 'href="/roads?subject=math"' in html and 'href="/roads?status=in_progress"' in html
+    see = client.get("/roads?subject=math").text
+    assert "rs-grid" in see and 'data-row=' not in see and "ניקוי סינון" in see
+    assert all("math" in i for i in _ids(see))
