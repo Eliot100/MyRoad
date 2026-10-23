@@ -377,5 +377,14 @@
   "node_type_celebrate": "Well done",
   "node_type_piano_keys": "Play",
   "node_type_rhythm": "Rhythm",
-  "node_type_speak": "Say it"
+  "node_type_speak": "Say it",
+  "side_title": "My roads",
+  "side_open": "Open the road list",
+  "side_close": "Close the road list",
+  "side_search": "Search roads",
+  "side_filter": "Filter",
+  "side_all_groups": "All groups",
+  "side_empty": "No roads match this filter",
+  "road_continue": "Continue from the next step",
+  "view_track": "View the track"
 }

@@ -1,0 +1,42 @@
+{#- Road picker side panel (sidebar option 4): subject tabs + group filter + road list, settings
+    only in the user chip at the bottom. Plain links and a GET form, so it works without JS; on
+    phones sidebar.js turns it into a drawer (aria-expanded, focus trap, Esc, inert background). -#}
+{%- set sb = sidebar -%}
+<nav class="side" id="roads" aria-labelledby="roads-title">
+  <div class="side-top">
+    <h2 class="side-title" id="roads-title">{{ t('side_title') }}</h2>
+    <a class="ibtn" href="/add-path" title="{{ t('add_path') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="visually-hidden">{{ t('add_path') }}</span></a>
+    <button type="button" class="ibtn side-close" data-side-close hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="visually-hidden">{{ t('side_close') }}</span></button>
+  </div>
+  <div class="side-search" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+    <input type="search" id="side-q" aria-label="{{ t('side_search') }}" placeholder="{{ t('side_search') }}" autocomplete="off" />
+  </div>
+  <div class="qtabs" role="navigation" aria-label="{{ t('subjects') }}">
+    {% for s in sb.subjects %}<a href="{{ s.href }}"{% if s.active %} aria-current="true"{% endif %}>{{ s.label }}</a>{% endfor %}
+  </div>
+  <form class="side-group" method="get" action="{{ sb.action }}">
+    {% for k, v in sb.keep.items() %}<input type="hidden" name="{{ k }}" value="{{ v }}" />{% endfor %}
+    <label class="visually-hidden" for="side-group">{{ t('groups') }}</label>
+    <select id="side-group" name="group">
+      {% for g in sb.groups %}<option value="{{ g.id }}"{% if g.id == sb.active_group %} selected{% endif %}>{{ g.label }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="secondary side-go">{{ t('side_filter') }}</button>
+  </form>
+  <ul class="side-list" role="list">
+    {% for r in sb.rows %}
+    <li><a class="road{% if r.status %} st-{{ r.status }}{% endif %}" href="/play/{{ r.pathId }}?view=map{{ sb.link_suffix }}" data-path-id="{{ r.pathId }}"{% if r.active %} aria-current="page"{% endif %}>
+      <span class="mono" aria-hidden="true">{{ r.initial }}</span>
+      <span class="rname"><b dir="auto"{{ r.titleLang|content_lang(locale) }}>{{ r.title }}</b><span class="rtag">{{ r.subjectLabel }}</span></span>
+      <span class="rprev">{% if r.status == 'in_progress' %}<span class="acc">{{ t('continue_step', n=r.step, total=r.total) }}</span> · {{ r.pct }}%{% elif r.status == 'practice' %}<span class="acc">{{ t('needs_practice') }}</span> · {{ r.pct }}%{% elif r.status == 'completed' %}<span class="ok">{{ t('completed') }}</span>{% else %}{% if r.minutes %}{{ r.minutes }} {{ t('mins') }} · {% endif %}{{ r.total }} {{ t('steps_count') }}{% endif %}</span>
+    </a></li>
+    {% else %}
+    <li class="side-empty">{{ t('side_empty') }}</li>
+    {% endfor %}
+    <li class="side-none" hidden>{{ t('side_empty') }}</li>
+  </ul>
+  <div class="side-foot">
+    {% set uname = (learner.displayName if learner and learner.displayName else t('settings')) %}
+    <a class="user" href="/settings"><span class="mono" aria-hidden="true">{{ uname.strip()[:1] }}</span><span class="uname">{{ uname }}</span><small>{{ t('settings') }}</small></a>
+  </div>
+</nav>

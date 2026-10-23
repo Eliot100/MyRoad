@@ -21,7 +21,7 @@
   "resume": "המשך מאיפה שעצרתם",
   "completed": "הושלם",
   "in_progress": "בתהליך",
-  "path_map": "מפת הדרך",
+  "path_map": "הנתיב",
   "path_map_lede": "כל משבצת היא נושא — בתוכה כמה שלבי למידה. בחרו נושא או התחילו מההתחלה.",
   "start": "התחל",
   "start_path": "התחל את הדרך",
@@ -377,5 +377,14 @@
   "node_type_celebrate": "כל הכבוד",
   "node_type_piano_keys": "מנגנים",
   "node_type_rhythm": "קצב",
-  "node_type_speak": "אומרים"
+  "node_type_speak": "אומרים",
+  "side_title": "הדרכים שלי",
+  "side_open": "פתיחת רשימת הדרכים",
+  "side_close": "סגירת רשימת הדרכים",
+  "side_search": "חיפוש דרך",
+  "side_filter": "סינון",
+  "side_all_groups": "כל הקבוצות",
+  "side_empty": "אין דרכים בסינון הזה",
+  "road_continue": "המשך מהשלב הבא",
+  "view_track": "צפייה בנתיב"
 }

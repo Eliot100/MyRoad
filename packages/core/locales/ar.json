@@ -377,5 +377,14 @@
   "node_type_celebrate": "أحسنت",
   "node_type_piano_keys": "عزف",
   "node_type_rhythm": "إيقاع",
-  "node_type_speak": "انطق"
+  "node_type_speak": "انطق",
+  "side_title": "طرقي",
+  "side_open": "فتح قائمة الطرق",
+  "side_close": "إغلاق قائمة الطرق",
+  "side_search": "البحث عن طريق",
+  "side_filter": "تصفية",
+  "side_all_groups": "كل المجموعات",
+  "side_empty": "لا توجد طرق في هذه التصفية",
+  "road_continue": "المتابعة من الخطوة التالية",
+  "view_track": "عرض المسلك"
 }

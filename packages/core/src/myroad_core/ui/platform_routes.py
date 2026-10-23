@@ -189,6 +189,87 @@ def register_platform_routes(
         ctx.update(extra)
         return ctx
 
+    def _sidebar_ctx(request: Request, *, active_path: str | None = None, group_default: str | None = None) -> dict[str, Any]:
+        """Road picker side panel (view glue only): existing catalog cards, progress rows and
+        the same group/subject URL filters the home page already uses."""
+        locale = _locale(request)
+        qp = request.query_params
+        subject = qp.get("subject") or "all"
+        if subject != "all" and subject not in SUBJECTS:
+            subject = "all"
+        group = qp.get("group") or group_default or "all"
+        if group != "all" and group not in GROUPS:
+            group = "all"
+        learner = _learner(request)
+        progress_map: dict[str, Any] = {}
+        if learner:
+            try:
+                for row in store.list_user_progress(learner["userId"]):
+                    progress_map[row["pathId"]] = row
+            except Exception:
+                progress_map = {}
+        cards = group_catalog(list_catalog_cards(store, locale=locale), group_id=group, subject=subject)["cards"]
+        order = {"in_progress": 0, "practice": 1, None: 2, "completed": 3}
+        rows: list[dict[str, Any]] = []
+        for c in cards:
+            chrome = localize_path_chrome(
+                locale=locale, titles=c.get("titles"), blurbs=c.get("blurbs"), source_locale=c.get("explainLocale"),
+            )
+            prog = progress_map.get(c["pathId"]) or {}
+            status = None
+            if prog.get("completedAt"):
+                status = "completed"
+            elif prog.get("startedAt") or prog.get("masteredCount", 0) > 0 or prog.get("nodeIndex", 0) > 0:
+                status = "in_progress"
+            if prog.get("needsPractice"):
+                status = "practice"
+            total = int(c.get("nodeCount") or 0)
+            done = int(prog.get("masteredCount") or 0)
+            title = chrome["title"] or c.get("title") or c["pathId"]
+            rows.append({
+                "pathId": c["pathId"],
+                "title": title,
+                "titleLang": chrome["titleLang"],
+                "initial": (title.strip()[:1] or "·"),
+                "subjectLabel": subject_label(c.get("subject") or "general", locale),
+                "status": status,
+                "pct": int(round(100 * done / total)) if total else 0,
+                "step": min(int(prog.get("nodeIndex") or 0) + 1, total) if total else 0,
+                "total": total,
+                "minutes": c.get("estimatedMinutes"),
+                "active": c["pathId"] == active_path,
+            })
+        rows.sort(key=lambda r: order.get(r["status"], 2))
+
+        def _href(**change: str) -> str:
+            params = {k: v for k, v in qp.items() if k in ("group", "subject", "tab", "view")}
+            params.update(change)
+            return request.url.path + "?" + "&".join(f"{k}={quote(str(v), safe='')}" for k, v in params.items())
+
+        subjects = [{"id": "all", "label": t(locale, "all"), "href": _href(subject="all"), "active": subject == "all"}]
+        present = {c.get("subject") for c in list_catalog_cards(store, locale=locale)}
+        for sid in SUBJECTS:
+            if sid in present:
+                subjects.append({"id": sid, "label": subject_label(sid, locale), "href": _href(subject=sid), "active": subject == sid})
+        groups = [{"id": "all", "label": t(locale, "side_all_groups")}]
+        for gid, g in GROUPS.items():
+            g_titles = dict(g.get("titles") or {})
+            for code in ("he", "en", "ar"):
+                if g.get(f"title_{code}"):
+                    g_titles.setdefault(code, g.get(f"title_{code}"))
+            groups.append({"id": gid, "label": pick(g_titles, locale, default=g.get("title_he") or gid)})
+        keep = {k: v for k, v in qp.items() if k in ("subject", "tab", "view")}
+        return {
+            "rows": rows,
+            "subjects": subjects,
+            "groups": groups,
+            "active_group": group,
+            "active_subject": subject,
+            "action": request.url.path,
+            "keep": keep,
+            "link_suffix": f"&subject={quote(subject)}&group={quote(group)}",
+        }
+
     @app.middleware("http")
     async def _auth_gate(request: Request, call_next):
         path = request.url.path
@@ -1241,6 +1322,7 @@ def register_platform_routes(
                 groups=groups_ui,
                 subjects=subjects_ui,
                 series_home=series_home,
+                sidebar=_sidebar_ctx(request, group_default=group or "all"),
             ),
         )
         return response
@@ -1399,6 +1481,7 @@ def register_platform_routes(
                 read_only=read_only,
                 open_index=open_index,
                 linear_rows=str(path_id).startswith("path_english_bagrut5_"),
+                sidebar=_sidebar_ctx(request, active_path=path_id),
             )
             response = templates.TemplateResponse(request, "map.html", ctx)
             response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")

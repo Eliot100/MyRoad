@@ -12,17 +12,24 @@
       {% if linear_rows|default(false) %}<a class="back" href="/series/english-bagrut5">{{ t('back_series') }}</a>{% endif %}
       <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
     </div>
-    <a class="settings-link" href="/settings">{% if learner and learner.displayName %}{{ learner.displayName }}{% else %}{{ t('settings') }}{% endif %}</a>
+    {% if sidebar is defined and sidebar %}<a class="ibtn menu-btn" href="#roads" aria-controls="roads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="visually-hidden">{{ t('side_open') }}</span></a>{% endif %}
   </header>
   <main id="main" tabindex="-1">
 
-  <section class="card path-head">
+  <section class="card path-head road-detail">
+    <p class="kicker">{{ meta.subjectLabel or subject_label_fn(meta.subject) }}</p>
     <h1><span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}</h1>
     <p class="lede" dir="auto"{{ meta.blurbLang|content_lang(locale) }}>{{ meta.blurb }}</p>
     {% if not read_only %}
     <div class="progress-wrap" aria-label="progress">
       <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
       <span class="progress-label">{{ progress }}% · {{ mastered|length }}/{{ total }}</span>
+    </div>
+    <div class="row road-actions">
+      <form method="post" action="/play/{{ doc.pathId }}/start">
+        <button type="submit" class="primary big">{{ t('road_continue') if can_resume else t('start_path') }}</button>
+      </form>
+      <a class="secondary big link-btn" href="#track">{{ t('view_track') }}</a>
     </div>
     {% endif %}
   </section>
@@ -41,7 +48,7 @@
   {% set use_linear = linear_rows|default(false) %}
   {% set gap = open_index|default(0) %}
   <section class="card map-card">
-    <h2>{{ t('path_map') }}</h2>
+    <h2 id="track" tabindex="-1">{{ t('path_map') }}</h2>
     {% if use_linear %}
     <p class="lede">{{ t('linear_map_lede') }}</p>
     <div class="linear-rows" data-map="linear">
