@@ -33,7 +33,7 @@ def test_locale_keys_in_all_three() -> None:
     for code, (settings, h, light, dark) in LABELS.items():
         j = json.loads((_CORE / "locales" / f"{code}.json").read_text(encoding="utf-8"))
         assert j["settings"] == settings and j["theme_h"] == h
-        assert j["theme_light"] == light and j["theme_dark"] == dark and j["theme_legend"] and j["theme_note"]
+        assert j["theme_light"] == light and j["theme_dark"] == dark and j["theme_legend"]
 
 
 @pytest.mark.parametrize("locale", list(LABELS))

@@ -66,12 +66,12 @@
         </div>
       </section>
       <div class="tv-more-cols">
+        {% if ui_preview %}
         <section>
-          <h2>{{ t('tv_can_h') }}{% if ui_preview %} <span class="sample-tag">{{ t('tv_sample') }}</span>{% endif %}</h2>
-          {% if ui_preview %}
+          <h2>{{ t('tv_can_h') }} <span class="sample-tag">{{ t('tv_sample') }}</span></h2>
           <ul class="tv-can">{% for tp in topics %}<li>{{ t('tv_can_item') }} <bdi{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</bdi></li>{% endfor %}</ul>
-          {% else %}<p class="tv-sub">{{ t('tv_can_none') }}</p>{% endif %}
         </section>
+        {% endif %}
         <section>
           <h2>{{ t('tv_prereq_h') }}</h2>
           {% if prereqs %}<ul class="tv-can">{% for p in prereqs %}<li><a href="/road/{{ p.pathId }}">{{ p.title }}</a></li>{% endfor %}</ul>

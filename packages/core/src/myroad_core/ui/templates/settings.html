@@ -110,7 +110,6 @@
           {% for v in ['light', 'dark'] %}
           <label class="opt"><input type="radio" name="theme" value="{{ v }}" /> {{ t('theme_' ~ v) }}</label>
           {% endfor %}
-          <p class="lede tiny">{{ t('theme_note') }}</p>
         </fieldset>
         <p class="flash ok" role="status" aria-live="polite" id="theme-saved"></p>
       </form>

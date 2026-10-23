@@ -413,7 +413,6 @@
   "tv_lvl3": "no hints",
   "tv_can_h": "By the end you can",
   "tv_can_item": "meet the goal of",
-  "tv_can_none": "Learning goals are not defined in the content yet.",
   "tv_prereq_h": "Before this road",
   "tv_time_h": "Time and structure",
   "tv_time_road": "Whole road",
@@ -467,6 +466,5 @@
   "theme_h": "Theme",
   "theme_legend": "Screen colors",
   "theme_light": "Light",
-  "theme_dark": "Dark",
-  "theme_note": "Saved on this device only. With no choice, MyRoad follows your system setting."
+  "theme_dark": "Dark"
 }
