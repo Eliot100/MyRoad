@@ -1,17 +1,16 @@
 # סטטוס MyRoad
 
-עודכן: 22.10.2026 09:17 (שעון ישראל). נוצר אוטומטית מ-GitHub (Eliot100/MyRoad, Eliot100/MyRoad-content, Stand-up #34), לא לערוך ידנית.
+עודכן: 23.10.2026 09:14 (שעון ישראל). נוצר אוטומטית מ-GitHub (Eliot100/MyRoad, Eliot100/MyRoad-content, Stand-up #34), לא לערוך ידנית.
 
-נעשה: 30 · בעבודה: 1 · חסום/מחכה לאליוט: 9 · להמשך: 13
+נעשה: 29 · בעבודה: 1 · חסום/מחכה לאליוט: 9 · להמשך: 14
 
 ## נעשה (14 ימים אחרונים)
 
 **backend**
 - 21.10 [PR MyRoad#66](https://github.com/Eliot100/MyRoad/pull/66) No state change on GET; default ports in Origin check; TLS proxy docs (#53) (סוגר [#53](https://github.com/Eliot100/MyRoad/issues/53))
-- 08.10 [PR MyRoad#62](https://github.com/Eliot100/MyRoad/pull/62) Login limits: 8-digit codes, per-email/per-IP send+verify limits, trusted devices (#49, #… (סוגר [#49](https://github.com/Eliot100/MyRoad/issues/49), [#50](https://github.com/Eliot100/MyRoad/issues/50))
-- 08.10 [PR MyRoad#48](https://github.com/Eliot100/MyRoad/pull/48) Publish gate in store.publish, AgentTools.publish and POST /tools/publish (#42, stacked o… (סוגר [#42](https://github.com/Eliot100/MyRoad/issues/42))
 
 **frank**
+- 22.10 [PR MyRoad#127](https://github.com/Eliot100/MyRoad/pull/127) docs: refresh STATUS.md 2026-10-22
 - 21.10 [PR MyRoad#123](https://github.com/Eliot100/MyRoad/pull/123) docs: refresh STATUS.md 2026-10-21
 - 21.10 [PR MyRoad#122](https://github.com/Eliot100/MyRoad/pull/122) Add shared myroad-work skill for bots (סוגר [#121](https://github.com/Eliot100/MyRoad/issues/121))
 - 20.10 [PR MyRoad#84](https://github.com/Eliot100/MyRoad/pull/84) Update work plan: Oct 20 focus (סוגר [#83](https://github.com/Eliot100/MyRoad/issues/83))
@@ -67,6 +66,9 @@ PRs פתוחים, ומשימות עם משויך שאין להן PR.
 
 ## משימות להמשך
 משימות פתוחות בלי PR ובלי משויך.
+
+**content**
+- [content#10](https://github.com/Eliot100/MyRoad-content/issues/10) Stage 0: map English pilot path wording to glossary 09 (issue only)
 
 **dev**
 - [MyRoad#61](https://github.com/Eliot100/MyRoad/issues/61) CI: axe-core + Playwright accessibility check
