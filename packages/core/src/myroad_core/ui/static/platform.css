@@ -1214,3 +1214,66 @@ html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important
 /* Empty and offline states (home tabs, step player). */
 .grid > .empty-state { grid-column: 1 / -1; }
 .empty-state { display: grid; justify-items: start; gap: var(--space-3); padding: var(--space-3) 0; }
+
+/* Road picker side panel (_sidebar.html). Logical properties only, so LTR mirrors RTL.
+   DOM order is main first, panel second; the grid puts the panel at the inline start. */
+body.platform:has(> .app-shell) { max-width: none; padding: 0; margin: 0; }
+.app-shell { display: grid; grid-template-columns: 20rem minmax(0, 1fr); grid-template-areas: "side main"; min-height: 100vh; }
+.app-main { grid-area: main; min-width: 0; inline-size: 100%; max-width: 1040px; margin-inline: auto; padding: 1.5rem 1.5rem 4rem; }
+.side { grid-area: side; position: sticky; top: 0; block-size: 100vh; display: flex; flex-direction: column; border-inline-end: 1px solid var(--line); background: var(--bg); min-width: 0; }
+.side-top { display: flex; align-items: center; gap: .5rem; padding: 1rem 1rem .5rem; }
+.side-title { margin: 0; margin-inline-end: auto; font-size: var(--text-md); }
+.ibtn { display: inline-grid; place-items: center; inline-size: 44px; block-size: 44px; min-block-size: 44px; padding: 0; border-radius: 50%; background: transparent; border: 1px solid var(--line); color: var(--ink); text-decoration: none; flex: none; }
+.ibtn:hover { border-color: var(--line-strong); }
+.ibtn svg, .side-search svg { inline-size: 20px; block-size: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.ibtn[hidden], .side-search[hidden], .side-close[hidden] { display: none; }
+.menu-btn { display: none; }
+.side-search { margin: .25rem 1rem .5rem; position: relative; }
+.side-search input { inline-size: 100%; font: inherit; font-size: .95rem; min-block-size: 44px; padding: .55rem .9rem; padding-inline-start: 2.4rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); }
+.side-search svg { position: absolute; inset-inline-start: .8rem; inset-block-start: 50%; translate: 0 -50%; inline-size: 16px; block-size: 16px; color: var(--muted); }
+.qtabs { display: flex; gap: .15rem; overflow-x: auto; padding: 0 1rem; border-block-end: 1px solid var(--line); scrollbar-width: none; }
+.qtabs a { padding: .6rem .55rem; font-size: .9rem; color: var(--muted); text-decoration: none; white-space: nowrap; border-block-end: 2px solid transparent; margin-block-end: -1px; min-block-size: 44px; display: inline-flex; align-items: center; }
+.qtabs a[aria-current="true"] { color: var(--accent); border-block-end-color: var(--accent); font-weight: 650; }
+.side-group { display: flex; gap: .5rem; margin: .75rem 1rem .25rem; }
+.side-group select { flex: 1; min-width: 0; font: inherit; font-size: .92rem; min-block-size: 44px; padding: .4rem .7rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); }
+.side-go { min-block-size: 44px; padding-block: .3rem; }
+.js .side-go { display: none; }
+.side-list { flex: 1; overflow-y: auto; list-style: none; margin: 0; padding: .25rem .5rem 1rem; }
+.side-empty, .side-none { color: var(--muted); font-size: .9rem; padding: .75rem .6rem; }
+.road { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: .1rem .7rem; align-items: center; padding: .6rem; border-radius: 12px; color: var(--ink); text-decoration: none; position: relative; border: 1px solid transparent; }
+.road:hover { background: var(--surface-2); }
+.road[aria-current="page"] { background: var(--surface-3); border-color: var(--line); }
+.road[aria-current="page"]::before { content: ""; position: absolute; inset-block: .6rem; inset-inline-start: -.5rem; inline-size: 3px; border-radius: 3px; background: var(--accent); }
+.road .mono, .user .mono { grid-row: span 2; inline-size: 40px; block-size: 40px; border-radius: 50%; border: 1px solid var(--line-strong); display: grid; place-items: center; font-weight: 700; font-size: .95rem; color: var(--ink-2); }
+.road.st-completed .mono { border-color: var(--ok); color: var(--ok); }
+.road.st-in_progress .mono, .road.st-practice .mono { border-color: var(--accent); color: var(--accent); }
+.rname { display: flex; gap: .5rem; align-items: baseline; min-width: 0; }
+.rname b { font-weight: 650; font-size: .98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rtag { font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 0 .35rem; white-space: nowrap; flex: none; }
+.rprev { font-size: .85rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rprev .acc { color: var(--accent); font-weight: 600; }
+.rprev .ok { color: var(--ok-ink, var(--ok)); font-weight: 600; }
+.side-foot { border-block-start: 1px solid var(--line); padding: .75rem 1rem; }
+.user { display: flex; align-items: center; gap: .65rem; padding: .45rem .6rem; border: 1px solid var(--line); border-radius: var(--btn-radius); text-decoration: none; color: var(--ink); min-block-size: var(--btn-h); }
+.user:hover { border-color: var(--line-strong); }
+.user .mono { grid-row: auto; inline-size: 34px; block-size: 34px; font-size: .85rem; }
+.user .uname { font-weight: 650; }
+.user small { color: var(--muted); margin-inline-start: auto; }
+.road-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-block-start: 1rem; }
+.road-actions form { margin: 0; }
+.side-scrim { display: none; }
+@media (max-width: 760px) {
+  .app-shell { grid-template-columns: 1fr; grid-template-areas: "main" "side"; }
+  .app-main { padding: 1rem 1rem 3rem; }
+  .menu-btn { display: inline-grid; }
+  .shell-top { align-items: center; }
+  /* Without JS the panel is a plain list after the page; ☰ links to it. */
+  .side { position: static; block-size: auto; border-inline-end: 0; border-block-start: 1px solid var(--line); }
+  .js .side { position: fixed; inset-block: 0; inset-inline-start: 0; inline-size: min(86vw, 22rem); block-size: 100dvh; z-index: 30; border-block-start: 0; border-inline-end: 1px solid var(--line); box-shadow: 0 0 2rem rgba(0, 0, 0, .18); translate: -105% 0; visibility: hidden; transition: translate .2s ease, visibility 0s linear .2s; }
+  html.js[dir="rtl"] .side { translate: 105% 0; }
+  html.js .side-open .side { translate: 0 0; visibility: visible; transition: translate .2s ease; }
+  .js .side-open .side-scrim { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(8, 12, 12, .45); }
+  .js .side-open .side-scrim[hidden] { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { .js .side, .js .side-open .side { transition: none; } }
+html[data-motion="reduce"] .side { transition: none !important; }

@@ -12,6 +12,17 @@
 {% block head_extra %}{% endblock %}
 </head>
 <body{% block body_attrs %}{% endblock %}>
+{%- if sidebar is defined and sidebar %}
+<div class="app-shell">
+<div class="app-main" id="app-main">
 {% block body %}{% endblock %}
+</div>
+{% include "_sidebar.html" %}
+<div class="side-scrim" data-side-close hidden></div>
+</div>
+<script src="/static/sidebar.js" defer></script>
+{%- else %}
+{{ self.body() }}
+{%- endif %}
 </body>
 </html>

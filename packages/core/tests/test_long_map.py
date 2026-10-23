@@ -149,7 +149,8 @@ def test_read_only_map_has_no_current_marker(app) -> None:
     c = _client(app)
     html = c.get(f"/play/{LOCKED}?view=map").text
     assert "lock-banner" in html and "station-list" in html
-    assert 'aria-current' not in html and 'id="here"' not in html and "jump-here" not in html
+    main = html.split('<nav class="side"')[0]  # the road picker marks the open road, not a station
+    assert 'aria-current' not in main and 'id="here"' not in html and "jump-here" not in html
 
 
 def test_short_map_marks_the_current_station_too(app) -> None:
