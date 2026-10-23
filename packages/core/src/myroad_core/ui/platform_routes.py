@@ -53,6 +53,7 @@ from myroad_core.ui.i18n import (
 )
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.bidi import bidi_isolate
+from myroad_core.ui.dates import days_ago, short_date
 
 ACTOR_LEARNER = "user_learner_poc"
 # Opaque id of the pending email-code challenge (not the code itself).
@@ -533,6 +534,50 @@ def register_platform_routes(
         if sess.get("attempt_saved") and sess.get("last_attempt"):
             return sess["last_attempt"]
         return _attempt_numbers(sess, doc, locale)
+
+    def _road_metrics(
+        request: Request,
+        sess: dict[str, Any],
+        topics: list[dict[str, Any]],
+        blocks: list[dict[str, Any]],
+        mastered: set[str],
+    ) -> dict[str, Any]:
+        """Per-road metrics screen (view glue only): read learner_progress / learner_attempts
+        plus this play session. Nothing is written; no goal model exists, so none is shown."""
+        n = len(blocks)
+        idx = int(sess.get("index", 0) or 0)
+        current_bid = blocks[idx]["blockId"] if 0 <= idx < n else None
+        for tp in topics:
+            done = sum(1 for bid in tp["blockIds"] if bid in mastered)
+            tp["doneCount"] = done
+            tp["pct"] = int(round(100 * done / tp["stepCount"])) if tp["stepCount"] else 0
+            tp["current"] = current_bid is not None and current_bid in tp["blockIds"]
+        learner = _learner(request)
+        prog: dict[str, Any] = {}
+        last: dict[str, Any] = {}
+        if learner:
+            try:
+                prog = store.get_progress(learner["userId"], sess["pathId"]) or {}
+                last = store.latest_attempt(learner["userId"], sess["pathId"]) or {}
+            except Exception:  # metrics must never break the screen
+                prog, last = {}, {}
+        correct = int(sess.get("correct_taps") or prog.get("correctTaps") or 0)
+        wrong = int(sess.get("incorrect_taps") or prog.get("incorrectTaps") or 0)
+        answered = correct + wrong
+        return {
+            "done": len(mastered),
+            "total": n,
+            "pct": int(round(100 * len(mastered) / n)) if n else 0,
+            "currentStep": min(idx + 1, n) if n else 0,
+            "correct": correct,
+            "wrong": wrong,
+            "accuracy": int(round(100 * correct / answered)) if answered else None,
+            "startedAt": prog.get("startedAt") or sess.get("started_at"),
+            "lastActivity": prog.get("updatedAt"),
+            "completedAt": prog.get("completedAt"),
+            "needsPractice": bool(prog.get("needsPractice")),
+            "lastRun": last or None,
+        }
 
     def _maybe_done(sess: dict[str, Any], n: int) -> bool:
         return n > 0 and len(sess.get("mastered") or set()) >= n
@@ -1332,6 +1377,8 @@ def register_platform_routes(
     templates.env.filters["bdi"] = bidi_isolate
     # `` lang="xx"`` on content text shown in a language other than the UI locale (see i18n.py).
     templates.env.filters["content_lang"] = content_lang
+    templates.env.filters["short_date"] = short_date
+    templates.env.filters["days_ago"] = days_ago
 
     @app.get("/series/english-bagrut5", response_class=HTMLResponse)
     def english_bagrut_series(request: Request) -> HTMLResponse:
@@ -1434,6 +1481,7 @@ def register_platform_routes(
             # Read-only (#53): the attempt is recorded by the POST that finished the path
             # (answer / ack) or by POST /play/{id}/finish, never by this GET.
             attempt = _attempt_for_view(sess, doc, locale)
+            mastered = sess.get("mastered") or set()
             ctx = _shell_ctx(
                 request,
                 doc=doc,
@@ -1442,6 +1490,9 @@ def register_platform_routes(
                 total=n,
                 topics=topics,
                 unlocked_next=_unlocked_next(request, path_id),
+                road_metrics=_road_metrics(request, sess, topics, blocks, mastered),
+                finished=_maybe_done(sess, n),
+                sidebar=_sidebar_ctx(request, active_path=path_id),
             )
             response = templates.TemplateResponse(request, "stats.html", ctx)
             response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
