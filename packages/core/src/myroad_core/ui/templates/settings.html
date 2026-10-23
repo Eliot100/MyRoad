@@ -67,7 +67,6 @@
     </form>
     <section class="settings-a11y" aria-labelledby="settings-a11y">
       <h2 id="settings-a11y">{{ t('a11y_settings_h') }}</h2>
-      <p class="lede tiny">{{ t('a11y_settings_text') }} <a href="/accessibility">{{ t('a11y_link') }}</a></p>
       <form class="reading-prefs" id="reading-prefs" hidden onsubmit="return false">
         <fieldset>
           <legend>{{ t('text_size') }}</legend>
@@ -106,6 +105,6 @@
     <p class="lede tiny"><a href="/">{{ t('back_home') }}</a></p>
   </main>
   <footer>
-    <small>{{ product }} · {% include "_a11y_link.html" %}</small>
+    <small>{{ t('footer_platform', product=product) }}</small>
   </footer>
 {% endblock %}

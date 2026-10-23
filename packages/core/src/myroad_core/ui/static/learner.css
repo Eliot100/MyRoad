@@ -158,4 +158,3 @@ button.primary { background: var(--accent); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
-footer .a11y-link { display: inline-block; min-height: 24px; padding-block: .2rem; }

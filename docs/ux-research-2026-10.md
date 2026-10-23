@@ -48,7 +48,7 @@ Learner we design for: an adult Hebrew speaker going back to bagrut English or m
 
 ### 8. Settings
 - **What leaders do:** Brilliant's settings cover notifications (streak reminder emails can be turned off), dark theme and narration ([Flownato](https://www.flownato.com/flows/brilliant/onboarding)). NN/g says visual customization belongs in settings, not onboarding ([NN/g](https://www.nngroup.com/articles/mobile-app-onboarding/)).
-- **MyRoad today:** `settings.html` has name/email change, language select and a text section linking to `/accessibility`. There are no learning preferences, reminders, text size or motion controls.
+- **MyRoad today:** `settings.html` has name/email change, language select and a reading-preferences section. There are no learning preferences, reminders, text size or motion controls.
 - **Gap:** There's nowhere to set a goal, a reminder, or reading comfort (text size, reduced motion, auto-read aloud).
 
 ### 9. Accessibility (WCAG 2.2 AA, IS 5568)
@@ -189,4 +189,4 @@ Seen through search results and abstracts only (the full pages timed out or are 
 - Sammallahti et al., meta-analysis of math anxiety interventions: https://doi.org/10.5964/jnc.8401
 - Ryan et al. 2025, math anxiety among mature students: https://www.ingentaconnect.com/content/tandf/tmes/2025/00000056/00000001/art00003
 
-IS 5568 and the accessibility statement guide: see the prior brief, `/workspace/briefs/ux-ui-research-2026.md` §6.
+IS 5568: see the prior brief, `/workspace/briefs/ux-ui-research-2026.md` §6.
