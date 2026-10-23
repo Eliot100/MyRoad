@@ -1104,9 +1104,10 @@ button.linear-tile { cursor: pointer; }
 
 .settings-a11y h2 { font-size: 1rem; margin: 1.25rem 0 .25rem; }
 
-/* Dark theme: follows the OS (no in-app theme setting exists yet). Only token values change. */
+/* Dark theme: follows the OS unless the learner picked one in Settings (data-theme on <html>,
+   set by prefs.js before paint). Only token values change. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0a0c0c;
     --card: #0f1312;
     --ink: #eef2f1;
@@ -1137,8 +1138,43 @@ button.linear-tile { cursor: pointer; }
     --tint-agent: #241d38;
     --tint-agent-line: #4c3d7a;
     --agent-ink: #c4b5fd;
+    color-scheme: dark;
   }
 }
+:root[data-theme="dark"] {
+  --bg: #0a0c0c;
+  --card: #0f1312;
+  --ink: #eef2f1;
+  --muted: #9eaaa8;
+  --accent: #5fd4c4;
+  --line: #252c2b;
+  --ok: #5ad192;
+  --warn: #f0a35c;
+  --shadow: none;
+  --surface: #0f1312;
+  --surface-2: #141918;
+  --surface-3: #1a201f;
+  --track: #252c2b;
+  --ink-2: #d3dbd9;
+  --on-accent: #03211e;
+  --btn-secondary: #eef2f1;
+  --disabled: #5a554c;
+  --inverse: #ece7de;
+  --line-strong: #5d6967;
+  --tint-info: #0f2422;
+  --tint-info-strong: #163a36;
+  --tint-ok: #11281d;
+  --tint-ok-line: #1f5138;
+  --ok-ink: #86efac;
+  --tint-warn: #2e2210;
+  --tint-warn-line: #6b4a14;
+  --warn-ink: #fcd34d;
+  --tint-agent: #241d38;
+  --tint-agent-line: #4c3d7a;
+  --agent-ink: #c4b5fd;
+  color-scheme: dark;
+}
+:root[data-theme="light"] { color-scheme: light; }
 
 /* Reading comfort (UX M7, issue 104): set on <html> by prefs.js before paint. rem-based sizes scale. */
 html[data-text-size="125"] { font-size: 125%; }
@@ -1439,3 +1475,9 @@ html[data-motion="reduce"] .side { transition: none !important; }
   .rs-shelf > li { inline-size: 82%; flex-basis: 82%; }
   .rs-arrow { display: none; }
 }
+
+/* sidebar user chip: name + gear settings button */
+.user-row { display: flex; align-items: center; gap: .5rem; }
+.user-row .user { flex: 1; min-inline-size: 0; }
+.user-row .uname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ibtn[aria-current="page"] { border-color: var(--accent); color: var(--accent); }

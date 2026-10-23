@@ -463,5 +463,10 @@
   "rs_row_count": "{n} דרכים",
   "rs_see_all": "הצגת הכול",
   "rs_prev": "גלילה אחורה ב{row}",
-  "rs_next": "גלילה קדימה ב{row}"
+  "rs_next": "גלילה קדימה ב{row}",
+  "theme_h": "ערכת תצוגה",
+  "theme_legend": "צבעי המסך",
+  "theme_light": "בהיר",
+  "theme_dark": "כהה",
+  "theme_note": "נשמר במכשיר הזה בלבד. בלי בחירה, MyRoad עוקב אחרי הגדרת המערכת."
 }

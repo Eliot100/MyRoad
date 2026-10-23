@@ -463,5 +463,10 @@
   "rs_row_count": "{n} roads",
   "rs_see_all": "See all",
   "rs_prev": "Scroll back in {row}",
-  "rs_next": "Scroll forward in {row}"
+  "rs_next": "Scroll forward in {row}",
+  "theme_h": "Theme",
+  "theme_legend": "Screen colors",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "theme_note": "Saved on this device only. With no choice, MyRoad follows your system setting."
 }
