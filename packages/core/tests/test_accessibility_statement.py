@@ -150,7 +150,9 @@ def test_bad_email_or_phone_gets_no_link() -> None:
 # --- reachable from every page -----------------------------------------------------------
 
 def test_every_full_page_template_links_the_statement() -> None:
-    pages = [p for p in (_UI / "templates").glob("*.html") if "<!DOCTYPE html>" in p.read_text(encoding="utf-8")]
+    # Full pages either carry their own <!DOCTYPE> or extend the shared shell (_base.html).
+    pages = [p for p in (_UI / "templates").glob("*.html") if p.name != "_base.html" and (
+        "<!DOCTYPE html>" in (t := p.read_text(encoding="utf-8")) or '{% extends "_base.html" %}' in t)]
     assert {p.name for p in pages} >= {"home.html", "map.html", "play.html", "stats.html", "settings.html",
                                        "login.html", "add_path.html", "learner.html", "accessibility.html"}
     for p in pages:

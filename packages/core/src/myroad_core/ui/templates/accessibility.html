@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="{{ html_lang }}" dir="{{ html_dir }}">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — {{ t('a11y_title') }}</title>
-  <script src="/static/prefs.js"></script>
-  <link rel="stylesheet" href="/static/platform.css" />
-</head>
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ t('a11y_title') }}{% endblock %}
+{% block body_attrs %} class="platform a11y-page"{% endblock %}
+{% block body %}
 {#- Accessibility statement (#60). Facts live in locales (a11y_*), the list in a11y_statement.py;
     real-world details (coordinator, phone, email, dates) come from MYROAD_A11Y_* env vars and
     show as a marked placeholder until set. Public: no sign-in needed. -#}
@@ -16,7 +11,6 @@
   {%- else -%}<mark class="a11y-placeholder" data-placeholder="{{ f.env }}">[{{ t('a11y_placeholder') }}: <bdi dir="ltr">{{ f.env }}</bdi>]</mark>
   {%- endif -%}
 {%- endmacro %}
-<body class="platform a11y-page">
   <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
@@ -79,5 +73,4 @@
   <footer>
     <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>
-</body>
-</html>
+{% endblock %}

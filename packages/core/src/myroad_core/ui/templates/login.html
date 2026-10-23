@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="{{ html_lang }}" dir="{{ html_dir }}">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — {{ t('login_title') }}</title>
-  <script src="/static/prefs.js"></script>
-  <link rel="stylesheet" href="/static/platform.css" />
-</head>
-<body class="platform auth-screen">
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ t('login_title') }}{% endblock %}
+{% block body_attrs %} class="platform auth-screen"{% endblock %}
+{% block body %}
   <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <main id="main" tabindex="-1" class="auth-card card">
     <div class="auth-top">
@@ -74,5 +68,4 @@
   <footer>
     <small>{{ product }} · {% include "_a11y_link.html" %}</small>
   </footer>
-</body>
-</html>
+{% endblock %}

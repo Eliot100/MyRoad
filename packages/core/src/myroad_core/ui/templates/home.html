@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="{{ html_lang }}" dir="{{ html_dir }}">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — {{ t('catalog') }}</title>
-  <script src="/static/prefs.js"></script>
-  <link rel="stylesheet" href="/static/platform.css" />
-</head>
-<body class="platform">
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ t('catalog') }}{% endblock %}
+{% block body_attrs %} class="platform"{% endblock %}
+{% block body %}
   <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
@@ -31,7 +25,7 @@
   {% if continue_card %}
   <section class="continue-card card">
     <p class="kicker">{{ t('continue_kicker') }}</p>
-    <h2>{{ continue_card.emoji }} <span dir="auto"{{ continue_card.titleLang|content_lang(locale) }}>{{ continue_card.title }}</span></h2>
+    <h2><span dir="auto"{{ continue_card.titleLang|content_lang(locale) }}>{{ continue_card.title }}</span></h2>
     {% if continue_card.continueTotal %}
     <p class="continue-where" data-step="{{ continue_card.continueStep }}">
       {{ t('continue_step', n=continue_card.continueStep, total=continue_card.continueTotal) }}{% if continue_card.continueTopic %} · <span class="continue-topic" dir="auto"{{ continue_card.continueTopicLang|content_lang(locale) }}>{{ continue_card.continueTopic }}</span>{% endif %}
@@ -98,7 +92,7 @@
       <div class="chips">
         <a class="chip {% if active_subject == 'all' %}active{% endif %}" href="/?group={{ active_group }}&subject=all&tab={{ active_tab }}&view={{ active_view }}">{{ t('all') }}</a>
         {% for sid, s in subjects.items() %}
-        <a class="chip {% if active_subject == sid %}active{% endif %}" href="/?group={{ active_group }}&subject={{ sid }}&tab={{ active_tab }}&view={{ active_view }}" style="--chip-accent: {{ s.color }}">{{ s.emoji }} {{ s.label or s.he }}</a>
+        <a class="chip {% if active_subject == sid %}active{% endif %}" href="/?group={{ active_group }}&subject={{ sid }}&tab={{ active_tab }}&view={{ active_view }}" style="--chip-accent: {{ s.color }}">{{ s.label or s.he }}</a>
         {% endfor %}
       </div>
     </div>
@@ -118,17 +112,16 @@
       {% if tg.subjects %}
         {% for block in tg.subjects %}
         <div class="subject-block">
-          <h3 class="subject-heading" style="--subject: {{ block.color }}">{{ block.emoji }} {{ block.label }}</h3>
+          <h3 class="subject-heading" style="--subject: {{ block.color }}">{{ block.label }}</h3>
           <div class="grid">
             {% for c in block.cards %}
             <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}" data-ui-locale="{{ locale }}">
-              <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
               <div class="path-body">
                 <div class="path-meta">
                   <span class="subject-pill">{{ c.subjectLabel }}</span>
                   {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
                   {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
-                  {% if c.lockedBy %}<span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}
+                  {% if c.lockedBy %}<span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}
                 </div>
                 <h3 dir="auto"{{ c.titleLang|content_lang(locale) }}>{{ c.title }}</h3>
                 <p dir="auto"{{ c.blurbLang|content_lang(locale) }}>{{ c.blurb }}</p>
@@ -157,7 +150,6 @@
   <section class="grid" aria-label="{{ t('catalog') }}">
     {% for c in catalog.cards %}
     <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}" data-ui-locale="{{ locale }}">
-      <div class="path-emoji" aria-hidden="true">{{ c.emoji }}</div>
       <div class="path-body">
         <div class="path-meta">
           <span class="subject-pill">{{ c.subjectLabel }}</span>
@@ -165,7 +157,7 @@
           {% if c.nodeCount %}<span class="mins">{{ c.nodeCount }} {{ t('nodes') }}</span>{% endif %}
           {% if c.agentBuilt %}<span class="status-pill agent">{{ t('agent_badge') }}</span>{% endif %}
           {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
-          {% if c.lockedBy %}<span class="status-pill locked">🔒 {{ t('locked_badge') }}</span>{% endif %}
+          {% if c.lockedBy %}<span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}
         </div>
         <h3 dir="auto"{{ c.titleLang|content_lang(locale) }}>{{ c.title }}</h3>
         <p dir="auto"{{ c.blurbLang|content_lang(locale) }}>{{ c.blurb }}</p>
@@ -193,5 +185,4 @@
   <footer>
     <small>{{ product }} · {{ t('footer_catalog') }} · {% include "_a11y_link.html" %}</small>
   </footer>
-</body>
-</html>
+{% endblock %}

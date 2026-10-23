@@ -13,7 +13,7 @@
     {% if type_label != type_key %}<span class="type-pill" data-node-type="{{ ntype }}">{{ type_label }}</span>{% endif %}
     {% if is_review %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
     <h2 id="step-title" tabindex="-1" dir="auto"{{ sl.title|content_lang(locale) }}>{% if display is defined and display.title %}{{ display.title|bdi }}{% else %}{{ block.title|bdi }}{% endif %}</h2>
-    <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">🔊 {{ t('speak') }}</button>
+    <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">{{ t('speak') }}</button>
   </div>
   <p class="body-text" id="speak-source" dir="auto"{{ sl.body|content_lang(locale) }} data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}">
     {% if display is defined %}{{ display.body|bdi }}{% elif locale == 'en' and kids.body_en %}{{ kids.body_en|bdi }}{% else %}{{ (kids.body_he or block.learningObjective)|bdi }}{% endif %}
@@ -23,9 +23,9 @@
     <span class="review-mix-label">{{ t('review_mixes') }}</span>
     <ul class="review-topics">
       {% for tid in kids.review_topic_ids %}
-      {% set ns2 = namespace(title=tid, emoji='', lang='') %}
-      {% for tp in topics %}{% if tp.id == tid %}{% set ns2.title = tp.title %}{% set ns2.emoji = tp.emoji %}{% set ns2.lang = tp.titleLang %}{% endif %}{% endfor %}
-      <li class="review-topic-chip" data-topic-id="{{ tid }}" dir="auto"{{ ns2.lang|content_lang(locale) }}>{{ ns2.emoji }} {{ ns2.title }}</li>
+      {% set ns2 = namespace(title=tid, lang='') %}
+      {% for tp in topics %}{% if tp.id == tid %}{% set ns2.title = tp.title %}{% set ns2.lang = tp.titleLang %}{% endif %}{% endfor %}
+      <li class="review-topic-chip" data-topic-id="{{ tid }}" dir="auto"{{ ns2.lang|content_lang(locale) }}>{{ ns2.title }}</li>
       {% endfor %}
     </ul>
   </div>
@@ -106,7 +106,7 @@
   {% endif %}
   {% elif ntype == 'speak' %}
   <div class="speak-tools">
-    <button type="button" class="icon-btn" id="btn-record" {% if not kids.record %}hidden{% endif %}>🎤 {{ t('record') }}</button>
+    <button type="button" class="icon-btn" id="btn-record" {% if not kids.record %}hidden{% endif %}>{{ t('record') }}</button>
     <p class="muted tiny" id="record-status">{{ t('record_hint') }}</p>
   </div>
   <form method="post" action="/play/{{ doc.pathId }}/ack">

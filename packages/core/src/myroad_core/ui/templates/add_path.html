@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="{{ html_lang }}" dir="{{ html_dir }}">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ product }} — {{ t('add_path') }}</title>
-  <script src="/static/prefs.js"></script>
-  <link rel="stylesheet" href="/static/platform.css" />
-</head>
-<body class="platform builder" data-step="{{ step }}">
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ t('add_path') }}{% endblock %}
+{% block body_attrs %} class="platform builder" data-step="{{ step }}"{% endblock %}
+{% block body %}
   <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
@@ -396,5 +390,4 @@
   <footer>
     <small>{{ product }} · {{ t('builder_footer') }} · {% include "_a11y_link.html" %}</small>
   </footer>
-</body>
-</html>
+{% endblock %}
