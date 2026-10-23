@@ -180,7 +180,7 @@ def test_catalog_home_lists_grade3(platform_client: TestClient) -> None:
 def test_locale_switch_english_shell(platform_client: TestClient) -> None:
     r = platform_client.post("/locale", data={"locale": "en", "next": "/"}, follow_redirects=True)
     assert r.status_code == 200
-    assert "Learning platform" in r.text or "Learning paths" in r.text
+    assert "Learning platform" in r.text or "Learning roads" in r.text
     assert "Catalog" in r.text
 
 
