@@ -62,7 +62,7 @@ def test_settings_link_only_in_user_chip(client: TestClient, url: str) -> None:
     html = client.get(url).text
     links = re.findall(r'<a [^>]*href="/settings"[^>]*>', html)
     if 'id="roads"' in html:
-        assert links == ['<a class="user" href="/settings">']
+        assert links == ['<a class="ibtn" href="/settings" title="Settings">'] or links == ['<a class="ibtn" href="/settings" title="הגדרות">']
         assert html.index('class="side-foot"') < html.index('href="/settings"')
     else:
         assert links == []

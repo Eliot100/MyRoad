@@ -5,9 +5,6 @@
   <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
   <header class="top shell-top">
     <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
-    <nav class="shell-links" aria-label="{{ product }}">
-      <a class="text-link" href="/add-path">{{ t('add_path') }}</a>
-    </nav>
     {% if sidebar is defined and sidebar %}<a class="ibtn menu-btn" href="#roads" aria-controls="roads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="visually-hidden">{{ t('side_open') }}</span></a>{% endif %}
   </header>
   <main id="main" tabindex="-1">
@@ -22,167 +19,69 @@
   </section>
   {% endif %}
 
-  {% if continue_card %}
-  <section class="continue-card card">
-    <p class="kicker">{{ t('continue_kicker') }}</p>
-    <h2><span dir="auto"{{ continue_card.titleLang|content_lang(locale) }}>{{ continue_card.title }}</span></h2>
-    {% if continue_card.continueTotal %}
-    <p class="continue-where" data-step="{{ continue_card.continueStep }}">
-      {{ t('continue_step', n=continue_card.continueStep, total=continue_card.continueTotal) }}{% if continue_card.continueTopic %} · <span class="continue-topic" dir="auto"{{ continue_card.continueTopicLang|content_lang(locale) }}>{{ continue_card.continueTopic }}</span>{% endif %}
-    </p>
-    {% else %}
-    <p class="lede" dir="auto"{{ continue_card.blurbLang|content_lang(locale) }}>{{ continue_card.blurb }}</p>
-    {% endif %}
-    <div class="progress-wrap" aria-label="progress">
-      <div class="progress-bar"><div class="progress-fill" style="width: {{ continue_card.continuePct }}%"></div></div>
-      <span class="progress-label">{{ continue_card.continuePct }}%</span>
-    </div>
-    <div class="row road-actions">
-      <a class="primary big continue-btn" href="{{ continue_card.continueHref or ('/play/' ~ continue_card.pathId) }}">{{ t('road_continue') }}</a>
-      <a class="secondary big link-btn" href="/play/{{ continue_card.pathId }}?view=map">{{ t('view_track') }}</a>
-    </div>
-  </section>
-  {% endif %}
+  {% macro ago_text(ts) -%}
+    {%- set ago = ts|days_ago -%}
+    {%- if ago is none -%}{%- elif ago == 0 -%}{{ t('metrics_today') }}{%- elif ago == 1 -%}{{ t('metrics_yesterday') }}{%- else -%}{{ t('metrics_days_ago', n=ago) }}{%- endif -%}
+  {%- endmacro %}
+  <h1 class="visually-hidden">{{ t('tv_home_h') }}</h1>
 
-  <section class="hero card">
-    <h1>{{ t('hero_title') }}</h1>
-    <p class="lede">{{ t('hero_lede') }}</p>
-    <p class="lede tiny">{{ t('home_tabs_lede') }}</p>
-  </section>
-
-  <div class="home-layout">
-  <aside class="home-nav card" aria-label="home navigation">
-    <div class="view-toggle" role="group" aria-label="view mode">
-      <a class="chip {% if active_view == 'status' %}active{% endif %}"
-         href="/?group={{ active_group }}&subject={{ active_subject }}&tab={{ active_tab }}&view=status">{{ t('view_by_status') }}</a>
-      <a class="chip {% if active_view == 'time' %}active{% endif %}"
-         href="/?group={{ active_group }}&subject={{ active_subject }}&tab=catalog&view=time">{{ t('view_by_time') }}</a>
-    </div>
-
-    {% if active_view == 'status' %}
-    <div class="home-tabs {% if html_dir == 'rtl' %}tabs-rtl{% else %}tabs-ltr{% endif %}" role="tablist">
-      {% for tid in tab_order %}
-      {% set label = t('tab_' + tid) if tid != 'practice' else t('tab_practice') %}
-      {% if tid == 'in_progress' %}{% set label = t('tab_in_progress') %}
-      {% elif tid == 'completed' %}{% set label = t('tab_completed') %}
-      {% elif tid == 'practice' %}{% set label = t('tab_practice') %}
-      {% else %}{% set label = t('tab_catalog') %}{% endif %}
-      <a role="tab"
-         class="home-tab {% if active_tab == tid %}active{% endif %}"
-         href="/?group={{ active_group }}&subject={{ active_subject }}&tab={{ tid }}&view=status"
-         aria-selected="{{ 'true' if active_tab == tid else 'false' }}">
-        <span class="tab-label">{{ label }}</span>
-        <span class="tab-count">{{ tab_counts.get(tid, 0) }}</span>
-      </a>
-      {% endfor %}
-    </div>
-    {% endif %}
-  </aside>
-
-  <div class="home-catalog">
-  <section class="filters card">
-    <div class="filter-row">
-      <span class="filter-label">{{ t('groups') }}</span>
-      <div class="chips">
-        <a class="chip {% if active_group == 'all' %}active{% endif %}" href="/?group=all&subject={{ active_subject }}&tab={{ active_tab }}&view={{ active_view }}">{{ t('all') }}</a>
-        {% for gid, g in groups.items() %}
-        <a class="chip {% if active_group == gid %}active{% endif %}" href="/?group={{ gid }}&subject={{ active_subject }}&tab={{ active_tab }}&view={{ active_view }}">{{ g.title_display or g.title_he }}</a>
-        {% endfor %}
-      </div>
-    </div>
-    <div class="filter-row">
-      <span class="filter-label">{{ t('subjects') }}</span>
-      <div class="chips">
-        <a class="chip {% if active_subject == 'all' %}active{% endif %}" href="/?group={{ active_group }}&subject=all&tab={{ active_tab }}&view={{ active_view }}">{{ t('all') }}</a>
-        {% for sid, s in subjects.items() %}
-        <a class="chip {% if active_subject == sid %}active{% endif %}" href="/?group={{ active_group }}&subject={{ sid }}&tab={{ active_tab }}&view={{ active_view }}" style="--chip-accent: {{ s.color }}">{{ s.label or s.he }}</a>
-        {% endfor %}
-      </div>
-    </div>
-  </section>
-
-  {% if catalog.group %}
-  <section class="group-banner card {% if active_group == 'grade3' %}tone-demo{% endif %}">
-    <h2>{{ catalog.group.title_display or catalog.group.title_he }}</h2>
-    <p>{{ catalog.group.blurb_display or catalog.group.blurb_he }}</p>
-  </section>
-  {% endif %}
-
-  {% if active_view == 'time' %}
-    {% for tg in time_groups %}
-    <section class="time-group card" aria-label="{{ tg.label }}">
-      <h2 class="time-heading">{{ tg.label }} <span class="tab-count">{{ tg.count }}</span></h2>
-      {% if tg.subjects %}
-        {% for block in tg.subjects %}
-        <div class="subject-block">
-          <h3 class="subject-heading" style="--subject: {{ block.color }}">{{ block.label }}</h3>
-          <div class="grid">
-            {% for c in block.cards %}
-            <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}" data-ui-locale="{{ locale }}">
-              <div class="path-body">
-                <div class="path-meta">
-                  <span class="subject-pill">{{ c.subjectLabel }}</span>
-                  {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
-                  {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
-                  {% if c.lockedBy %}<span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}
-                </div>
-                <h3 dir="auto"{{ c.titleLang|content_lang(locale) }}>{{ c.title }}</h3>
-                <p dir="auto"{{ c.blurbLang|content_lang(locale) }}>{{ c.blurb }}</p>
-                {% if c.lockedBy %}<p class="lock-needs tiny" data-locked-by="{{ c.lockedBy|map(attribute='pathId')|join(',') }}">{{ t('locked_finish_first') }} {% for p in c.lockedBy %}<bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
-                {% if c.progressStatus == 'completed' %}
-                <span class="status-pill done">{{ t('completed') }}</span>
-                {% elif c.progressStatus == 'in_progress' %}
-                <span class="status-pill prog">{{ t('in_progress') }}</span>
-                {% endif %}
-                {% if c.needsPractice %}<span class="status-pill practice">{{ t('needs_practice') }}</span>{% endif %}
-              </div>
-            </a>
-            {% endfor %}
+  {% if started_tiles %}
+  <section class="tv-row" aria-labelledby="tv-started-h">
+    <div class="tv-row-h"><h2 id="tv-started-h">{{ t('tv_started_h') }}</h2><span>{{ t('tv_started_count', n=started_tiles|length) }}</span>{% if ui_preview %}<span class="sample-tag">{{ t('tv_sample') }}</span>{% endif %}</div>
+    <ul class="tv-shelf" tabindex="0" aria-labelledby="tv-started-h">
+      {% for c in started_tiles %}
+      <li>
+        <article class="tv-tile tv-started" aria-labelledby="tvs-{{ loop.index }}">
+          <span class="tv-sub">{{ c.subjectLabel }}{% if c.estimatedMinutes %} · {{ c.estimatedMinutes }} {{ t('mins') }}{% endif %}</span>
+          <h3 class="tv-name" id="tvs-{{ loop.index }}"><a href="{{ c.statsHref }}" dir="auto"{{ c.titleLang|content_lang(locale) }}>{{ c.title }}</a></h3>
+          {% if c.stages %}
+          <span class="tv-sub">{{ t('tv_stage_of', n=c.stageNo, total=c.stages|length) }}{% if c.current %} · <bdi{{ c.current.titleLang|content_lang(locale) }}>{{ c.current.title }}</bdi>{% endif %}</span>
+          <div class="tv-stg" aria-hidden="true" style="--n: {{ c.stages|length }}">
+            {% for st in c.stages %}<span class="st-{{ st.state }}" style="--p: {{ st.pct }}%"></span>{% endfor %}
           </div>
-        </div>
-        {% endfor %}
-      {% else %}
-        <div class="empty-state">
-          <p class="empty">{{ t('empty_tab') }}</p>
-          {% if active_tab != 'catalog' %}<a class="secondary link-btn" href="/?group={{ active_group }}&subject={{ active_subject }}&tab=catalog&view=status">{{ t('empty_browse_catalog') }}</a>{% endif %}
-        </div>
-      {% endif %}
-    </section>
-    {% endfor %}
-  {% else %}
-  <section class="grid" aria-label="{{ t('catalog') }}">
-    {% for c in catalog.cards %}
-    <a class="path-card {% if c.kidsDemo %}tone-demo{% endif %}" href="/play/{{ c.pathId }}" style="--subject: {{ c.subjectColor }}" data-path-id="{{ c.pathId }}" data-ui-locale="{{ locale }}">
-      <div class="path-body">
-        <div class="path-meta">
-          <span class="subject-pill">{{ c.subjectLabel }}</span>
-          {% if c.estimatedMinutes %}<span class="mins">{{ c.estimatedMinutes }} {{ t('mins') }}</span>{% endif %}
-          {% if c.nodeCount %}<span class="mins">{{ c.nodeCount }} {{ t('nodes') }}</span>{% endif %}
-          {% if c.agentBuilt %}<span class="status-pill agent">{{ t('agent_badge') }}</span>{% endif %}
-          {% if c.demo %}<span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}
-          {% if c.lockedBy %}<span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}
-        </div>
-        <h3 dir="auto"{{ c.titleLang|content_lang(locale) }}>{{ c.title }}</h3>
-        <p dir="auto"{{ c.blurbLang|content_lang(locale) }}>{{ c.blurb }}</p>
-        {% if c.lockedBy %}<p class="lock-needs tiny" data-locked-by="{{ c.lockedBy|map(attribute='pathId')|join(',') }}">{{ t('locked_finish_first') }} {% for p in c.lockedBy %}<bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
-        {% if c.progressStatus == 'completed' %}
-        <span class="status-pill done">{{ t('completed') }}</span>
-        {% elif c.progressStatus == 'in_progress' %}
-        <span class="status-pill prog">{{ t('in_progress') }}</span>
-        {% endif %}
-        {% if c.needsPractice %}<span class="status-pill practice">{{ t('needs_practice') }}</span>{% endif %}
-      </div>
-    </a>
-    {% else %}
-    <div class="empty-state">
-      <p class="empty">{{ t('empty_tab') if active_tab != 'catalog' else t('empty_catalog') }}</p>
-      {% if active_tab != 'catalog' %}<a class="secondary link-btn" href="/?group={{ active_group }}&subject={{ active_subject }}&tab=catalog&view=status">{{ t('empty_browse_catalog') }}</a>{% endif %}
-    </div>
-    {% endfor %}
+          <div class="tv-stgl" aria-hidden="true" style="--n: {{ c.stages|length }}">
+            {% for st in c.stages %}<span class="st-{{ st.state }}"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>{% endfor %}
+          </div>
+          <p class="visually-hidden">{% for st in c.stages %}{{ st.title }}: {{ t('tv_state_' ~ st.state) }} {{ st.done }}/{{ st.total }}. {% endfor %}</p>
+          {% else %}
+          <span class="tv-sub">{{ t('tv_cell_of', n=c.cell, total=c.total) }}</span>
+          <span class="tv-bar" aria-hidden="true"><i style="inline-size: {{ c.pct }}%"></i></span>
+          {% endif %}
+          {% if c.skills %}
+          <hr>
+          <ul class="tv-skills" aria-label="{{ t('tv_skills_h') }}">
+            {% for sk in c.skills %}
+            <li><span>{{ sk.name }}{% if sk.suggested %} <span class="sug">{{ t('tv_suggested') }}</span>{% endif %}</span><span class="lv">{{ t('tv_level', n=sk.level) }}</span><span class="tv-bar" aria-hidden="true"><i style="inline-size: {{ sk.pct }}%"></i></span><span class="fr">{{ sk.amount }}/{{ sk.target }}</span></li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if c.unlock %}
+          <hr>
+          <p class="tv-unlock"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10V8a5 5 0 0 1 10 0v2h1v11H6V10zm2 0h6V8a3 3 0 0 0-6 0z"/></svg><span>{{ t('tv_unlock', n=c.unlock.stageNo) }} <b{{ c.unlock.stage.titleLang|content_lang(locale) }}>{{ c.unlock.stage.title }}</b> {{ t('tv_unlock_cond', level=c.unlock.level, skill=c.unlock.skill, need=c.unlock.need) }}</span></p>
+          {% endif %}
+          <div class="tv-nums">
+            <span><b>{{ c.pct }}%</b><small>{{ t('metrics_progress') }}</small></span>
+            <span><b>{% if c.accuracy is not none %}{{ c.accuracy }}%{% else %}—{% endif %}</b><small>{{ t('metrics_accuracy') }}</small></span>
+            <span><b>{{ ago_text(c.lastActivity) or '—' }}</b><small>{{ t('metrics_last_activity') }}</small></span>
+          </div>
+          {% if c.preview %}<p class="tv-goal">{{ t('tv_goal') }} <span>{{ t('tv_goal_sample') }}</span></p>{% endif %}
+        </article>
+      </li>
+      {% endfor %}
+    </ul>
   </section>
   {% endif %}
-  </div>
-  </div>
+
+  {% if rec_tiles %}
+  <section class="tv-row" aria-labelledby="tv-rec-h">
+    <div class="tv-row-h"><h2 id="tv-rec-h">{{ t('tv_rec_h') }}</h2><span>{{ t('tv_rec_sub') }}</span></div>
+    <ul class="tv-shelf" tabindex="0" aria-labelledby="tv-rec-h">
+      {% for c in rec_tiles %}
+      <li>{% include "_rec_tile.html" %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
 
   </main>
   <footer>

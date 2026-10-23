@@ -5,6 +5,7 @@
 <nav class="side" id="roads" aria-labelledby="roads-title">
   <div class="side-top">
     <h2 class="side-title" id="roads-title">{{ t('side_title') }}</h2>
+    <a class="ibtn" href="/roads" title="{{ t('side_search') }}"{% if sb.active_search %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg><span class="visually-hidden">{{ t('side_search') }}</span></a>
     <a class="ibtn" href="/add-path" title="{{ t('add_path') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="visually-hidden">{{ t('add_path') }}</span></a>
     <button type="button" class="ibtn side-close" data-side-close hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="visually-hidden">{{ t('side_close') }}</span></button>
   </div>
@@ -37,6 +38,9 @@
   </ul>
   <div class="side-foot">
     {% set uname = (learner.displayName if learner and learner.displayName else t('settings')) %}
-    <a class="user" href="/settings"><span class="mono" aria-hidden="true">{{ uname.strip()[:1] }}</span><span class="uname">{{ uname }}</span><small>{{ t('settings') }}</small></a>
+    <div class="user-row">
+      <div class="user"><span class="mono" aria-hidden="true">{{ uname.strip()[:1] }}</span><span class="uname">{{ uname }}</span></div>
+      <a class="ibtn" href="/settings" title="{{ t('settings') }}"{% if sb.active_settings %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span class="visually-hidden">{{ t('settings') }}</span></a>
+    </div>
   </div>
 </nav>

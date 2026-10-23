@@ -1,0 +1,89 @@
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ t('rs_title') }}{% endblock %}
+{% block body_attrs %} class="platform"{% endblock %}
+{% block body %}
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
+  <header class="top shell-top">
+    <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    {% if sidebar is defined and sidebar %}<a class="ibtn menu-btn" href="#roads" aria-controls="roads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="visually-hidden">{{ t('side_open') }}</span></a>{% endif %}
+  </header>
+  <main id="main" tabindex="-1" class="rs-main">
+  <h1 class="rs-h">{{ t('rs_title') }}</h1>
+  <form class="rs-form" method="get" action="/roads" role="search" data-rs-form>
+    <div class="rs-bar">
+      <label class="visually-hidden" for="rs-q">{{ t('rs_q_label') }}</label>
+      <div class="rs-q">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+        <input id="rs-q" name="q" type="search" value="{{ q }}" maxlength="80" placeholder="{{ t('rs_q_ph') }}" autocomplete="off" />
+      </div>
+      <label class="rs-sort"><span>{{ t('rs_sort') }}</span>
+        <select name="sort">
+          {% for v in ('recommended', 'name', 'duration') %}<option value="{{ v }}"{% if sort == v %} selected{% endif %}>{{ t('rs_sort_' ~ v) }}</option>{% endfor %}
+        </select>
+      </label>
+    </div>
+    <details class="rs-filters" open data-rs-filters>
+      <summary>{{ t('rs_filters') }}{% if active_n %} <span class="rs-badge">{{ active_n }}</span>{% endif %}</summary>
+      <div class="rs-facets" id="rs-facets">
+        {% for f in facets if f.chips %}
+        <fieldset class="rs-facet">
+          <legend>{{ f.label }}</legend>
+          <div class="rs-chips">
+            {% for ch in f.chips %}
+            <label class="rs-chip"><input type="checkbox" name="{{ f.name }}" value="{{ ch.value }}"{% if ch.on %} checked{% endif %} /><span>{{ ch.label }}</span> <span class="rs-n" data-n="{{ f.name }}-{{ ch.value }}">{{ ch.count }}</span></label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        {% endfor %}
+      </div>
+      <div class="row rs-actions">
+        <button type="submit" class="primary">{{ t('rs_apply') }}</button>
+      </div>
+    </details>
+  </form>
+
+  <section id="rs-results" class="rs-results" aria-labelledby="{{ 'rs-res-h' if active else 'rs-h' }}">
+    {% if active %}
+    <div class="rs-res-head">
+      <h2 id="rs-res-h">{{ t('rs_results_h') }}</h2>
+      <p id="rs-count" class="rs-count" role="status">{{ t('rs_count', n=results|length, total=total) }}</p>
+      <a class="secondary link-btn rs-clear" href="/roads{% if sort != 'recommended' %}?sort={{ sort }}{% endif %}">{{ t('rs_clear') }}</a>
+    </div>
+    {% if results %}
+    <div class="rs-grid">
+      {% for c in results %}{% include "_road_card.html" %}{% endfor %}
+    </div>
+    {% else %}
+    <div class="rs-empty">
+      <h3>{{ t('rs_empty_h') }}</h3>
+      <p>{{ t('rs_empty_p') }}</p>
+      <a class="secondary link-btn" href="/roads">{{ t('rs_clear') }}</a>
+    </div>
+    {% endif %}
+    {% else %}
+    <p id="rs-count" class="visually-hidden" role="status">{{ t('rs_count', n=results|length, total=total) }}</p>
+    {% for r in rows %}
+    <section class="tv-row rs-row" aria-labelledby="rsr-{{ r.key }}" data-row="{{ r.key }}">
+      <div class="tv-row-h rs-row-h">
+        <h2 id="rsr-{{ r.key }}">{{ r.title }}</h2><span>{{ t('rs_row_count', n=r.tiles|length) }}</span>
+        <div class="rs-row-tools">
+          <button type="button" class="ibtn rs-arrow" data-dir="prev" hidden aria-controls="rss-{{ r.key }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg><span class="visually-hidden">{{ t('rs_prev', row=r.title) }}</span></button>
+          <button type="button" class="ibtn rs-arrow" data-dir="next" hidden aria-controls="rss-{{ r.key }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span class="visually-hidden">{{ t('rs_next', row=r.title) }}</span></button>
+          <a class="text-link rs-seeall" href="{{ r.href }}{% if sort != 'recommended' %}&sort={{ sort }}{% endif %}">{{ t('rs_see_all') }}<span class="visually-hidden"> · {{ r.title }}</span></a>
+        </div>
+      </div>
+      <ul class="tv-shelf rs-shelf" id="rss-{{ r.key }}" role="list" tabindex="0" aria-label="{{ r.title }}" data-shelf>
+        {% for c in r.tiles %}<li>{% include "_road_card.html" %}</li>{% endfor %}
+      </ul>
+    </section>
+    {% else %}
+    <div class="rs-empty"><h2>{{ t('rs_empty_h') }}</h2><p>{{ t('empty_catalog') }}</p></div>
+    {% endfor %}
+    {% endif %}
+  </section>
+  </main>
+  <footer>
+    <small>{{ t('footer_platform', product=product) }}</small>
+  </footer>
+  <script src="/static/roads.js" defer></script>
+{% endblock %}
