@@ -54,6 +54,7 @@ from myroad_core.ui.i18n import (
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.bidi import bidi_isolate
 from myroad_core.ui.dates import days_ago, short_date
+from myroad_core.ui.tv_home import apply_preview_lock, mock_skills, mock_unlock, preview_enabled, stage_states
 
 ACTOR_LEARNER = "user_learner_poc"
 # Opaque id of the pending email-code challenge (not the code itself).
@@ -1131,6 +1132,201 @@ def register_platform_routes(
         resp.set_cookie(COOKIE_LOCALE, loc, httponly=False, samesite="lax", max_age=86400 * 400)
         return resp
 
+
+    def _road_doc(path_id: str, version_id: str | None) -> dict[str, Any]:
+        try:
+            if version_id:
+                return store.get_version(path_id, version_id).model_dump(mode="json", by_alias=True)
+        except Exception:
+            pass
+        return {}
+
+    def _started_tile(request: Request, c: dict[str, Any], locale: str, preview: bool) -> dict[str, Any]:
+        """Row A tile: real progress per שלב; skills / unlock / goal only as preview sample."""
+        learner = _learner(request)
+        doc = _road_doc(c["pathId"], c.get("versionId"))
+        blocks = doc.get("blocks") or []
+        topics = _topics_for_ui(doc, blocks, locale) if doc else []
+        prog: dict[str, Any] = {}
+        if learner:
+            try:
+                prog = store.get_progress(learner["userId"], c["pathId"]) or {}
+            except Exception:
+                prog = {}
+        mastered = set(prog.get("mastered") or set())
+        idx = int(prog.get("nodeIndex") or 0)
+        n = len(blocks) or int(c.get("nodeCount") or 0)
+        stages = stage_states(topics, mastered, idx, blocks)
+        current = next((s for s in stages if s["state"] == "current"), None)
+        correct = int(prog.get("correctTaps") or 0)
+        wrong = int(prog.get("incorrectTaps") or 0)
+        pct = int(round(100 * len(mastered) / n)) if n else 0
+        tile = {
+            **c,
+            "stages": stages,
+            "stageNo": (stages.index(current) + 1) if current else 0,
+            "current": current,
+            "done": len(mastered),
+            "total": n,
+            "cell": min(idx + 1, n) if n else 0,
+            "pct": pct,
+            "accuracy": int(round(100 * correct / (correct + wrong))) if (correct + wrong) else None,
+            "lastActivity": prog.get("updatedAt") or c.get("userProgress", {}).get("updatedAt"),
+            "statsHref": f"/play/{c['pathId']}?view=stats",
+            "skills": [],
+            "unlock": None,
+            "preview": preview,
+        }
+        if preview:
+            apply_preview_lock(stages)
+            tile["skills"] = mock_skills(c["pathId"], c.get("subject") or "", pct)
+            tile["unlock"] = mock_unlock(stages, tile["skills"])
+        return tile
+
+    def _rec_items(cards: list[dict[str, Any]], started: list[dict[str, Any]], locale: str,
+                   exclude: str | None = None, limit: int = 8) -> list[dict[str, Any]]:
+        """Row B: roads not started and not locked. Same-subject roads first, with the reason."""
+        by_subject: dict[str, dict[str, Any]] = {}
+        for s in started:
+            by_subject.setdefault(s.get("subject") or "", s)
+        done_by_subject: dict[str, dict[str, Any]] = {}
+        for c in cards:
+            if c.get("progressStatus") == "completed":
+                done_by_subject.setdefault(c.get("subject") or "", c)
+        out = []
+        for c in cards:
+            if c["pathId"] == exclude or c.get("progressStatus") or c.get("lockedBy"):
+                continue
+            subj = c.get("subject") or ""
+            if subj in by_subject:
+                reason, rank = t(locale, "tv_reason_started", title=by_subject[subj]["title"]), 0
+            elif subj in done_by_subject:
+                reason, rank = t(locale, "tv_reason_done", title=done_by_subject[subj]["title"]), 1
+            else:
+                reason, rank = t(locale, "tv_reason_new", subject=c.get("subjectLabel") or ""), 2
+            out.append({**c, "reason": reason, "rank": rank})
+        out.sort(key=lambda c: c["rank"])
+        return out[:limit]
+
+    # --- /roads: search all roads (view glue only; route needs Backend sign-off before a real PR) ---
+    _DUR_BUCKETS = (("short", 0, 10), ("medium", 11, 30), ("long", 31, 10**6))
+
+    def _dur_bucket(m: Any) -> str | None:
+        try:
+            m = int(m)
+        except (TypeError, ValueError):
+            return None
+        for key, lo, hi in _DUR_BUCKETS:
+            if lo <= m <= hi:
+                return key
+        return None
+
+    @app.get("/roads", response_class=HTMLResponse)
+    def roads_search(request: Request) -> HTMLResponse:
+        locale = _locale(request)
+        qp = request.query_params
+        q = (qp.get("q") or "").strip()[:80]
+        f_subject = [v for v in qp.getlist("subject") if v in SUBJECTS]
+        f_group = [v for v in qp.getlist("group") if v in GROUPS]
+        f_status = [v for v in qp.getlist("status") if v in ("open", "in_progress", "completed", "locked")]
+        f_dur = [v for v in qp.getlist("dur") if v in {k for k, _a, _b in _DUR_BUCKETS}]
+        sort = qp.get("sort") if qp.get("sort") in ("recommended", "name", "duration") else "recommended"
+
+        cards = list_catalog_cards(store, locale=locale)
+        learner = _learner(request)
+        progress_map: dict[str, Any] = {}
+        if learner:
+            for row in store.list_user_progress(learner["userId"]):
+                progress_map[row["pathId"]] = row
+        for c in cards:
+            chrome = localize_path_chrome(locale=locale, titles=c.get("titles"), blurbs=c.get("blurbs"),
+                                          source_locale=c.get("explainLocale"))
+            c.update(title=chrome["title"] or c.get("title") or c["pathId"], blurb=chrome["blurb"],
+                     titleLang=chrome["titleLang"], blurbLang=chrome["blurbLang"])
+            prog = progress_map.get(c["pathId"]) or {}
+            st = None
+            if prog.get("completedAt"):
+                st = "completed"
+            elif prog.get("startedAt") or prog.get("masteredCount", 0) > 0 or prog.get("nodeIndex", 0) > 0:
+                st = "in_progress"
+            c["progressStatus"] = st
+            total = int(c.get("nodeCount") or 0)
+            c["pct"] = int(round(100 * int(prog.get("masteredCount") or 0) / total)) if (total and st) else None
+            c["updatedTs"] = _parse_iso(prog.get("updatedAt")) or _parse_iso(prog.get("startedAt")) or 0
+        prereqs, prereq_titles = _prereq_index(locale)
+        completed = {c["pathId"] for c in cards if c.get("progressStatus") == "completed"}
+        progress = _placement_progress(learner["userId"] if learner else None)
+        for c in cards:
+            c["lockedBy"] = _with_series_lock(
+                c["pathId"], _locked_by(c["pathId"], prereqs, prereq_titles, completed), progress, completed, prereq_titles)
+            c["state"] = c["progressStatus"] or ("locked" if c["lockedBy"] else "open")
+            c["dur"] = _dur_bucket(c.get("estimatedMinutes"))
+            c["groups"] = [g for g in (c.get("groupIds") or []) if g in GROUPS]
+
+        def hay(c: dict[str, Any]) -> str:
+            parts = [c.get("title") or "", c.get("blurb") or "", c.get("subjectLabel") or ""]
+            for d in (c.get("titles") or {}, c.get("blurbs") or {}):
+                if isinstance(d, dict):
+                    parts += [str(v) for v in d.values()]
+            return " ".join(parts).casefold()
+
+        def match(c: dict[str, Any], skip: str = "") -> bool:
+            if q and not all(w in hay(c) for w in q.casefold().split()):
+                return False
+            if skip != "subject" and f_subject and c.get("subject") not in f_subject:
+                return False
+            if skip != "group" and f_group and not set(c["groups"]) & set(f_group):
+                return False
+            if skip != "status" and f_status and c["state"] not in f_status:
+                return False
+            if skip != "dur" and f_dur and c["dur"] not in f_dur:
+                return False
+            return True
+
+        def facet(name: str, values: list[tuple[str, str]], key) -> list[dict[str, Any]]:
+            pool = [c for c in cards if match(c, skip=name)]
+            sel = {"subject": f_subject, "group": f_group, "status": f_status, "dur": f_dur}[name]
+            out = []
+            for v, label in values:
+                n = sum(1 for c in pool if key(c, v))
+                if n or v in sel:
+                    out.append({"value": v, "label": label, "count": n, "on": v in sel})
+            return out
+
+        subj_ids = sorted({c.get("subject") for c in cards if c.get("subject") in SUBJECTS}, key=list(SUBJECTS).index)
+        group_ids = [g for g in GROUPS if any(g in c["groups"] for c in cards)]
+        facets = [
+            {"name": "subject", "label": t(locale, "rs_f_subject"),
+             "chips": facet("subject", [(s_, SUBJECTS[s_].get(locale) or SUBJECTS[s_]["he"]) for s_ in subj_ids],
+                            lambda c, v: c.get("subject") == v)},
+            {"name": "group", "label": t(locale, "rs_f_group"),
+             "chips": facet("group", [(g, GROUPS[g]["titles"].get(locale) or GROUPS[g]["titles"]["he"]) for g in group_ids],
+                            lambda c, v: v in c["groups"])},
+            {"name": "status", "label": t(locale, "rs_f_status"),
+             "chips": facet("status", [(v, t(locale, "rs_st_" + v)) for v in ("open", "in_progress", "completed", "locked")],
+                            lambda c, v: c["state"] == v)},
+            {"name": "dur", "label": t(locale, "rs_f_dur"),
+             "chips": facet("dur", [(k, t(locale, "rs_dur_" + k)) for k, _a, _b in _DUR_BUCKETS],
+                            lambda c, v: c["dur"] == v)},
+        ]
+        results = [c for c in cards if match(c)]
+        started_subjects = {c.get("subject") for c in cards if c["state"] == "in_progress"}
+        rank = {"in_progress": 0, "open": 1, "completed": 3, "locked": 4}
+        if sort == "name":
+            results.sort(key=lambda c: (c.get("title") or "").casefold())
+        elif sort == "duration":
+            results.sort(key=lambda c: (int(c.get("estimatedMinutes") or 10**6), (c.get("title") or "").casefold()))
+        else:
+            results.sort(key=lambda c: (rank[c["state"]], 0 if c.get("subject") in started_subjects else 1,
+                                        -(c["updatedTs"] or 0)))
+        active = bool(q or f_subject or f_group or f_status or f_dur)
+        active_n = len(f_subject) + len(f_group) + len(f_status) + len(f_dur)
+        return templates.TemplateResponse(request, "roads.html", {
+            **_shell_ctx(request), "q": q, "facets": facets, "results": results, "total": len(cards),
+            "sort": sort, "active": active, "active_n": active_n,
+            "sidebar": {**_sidebar_ctx(request), "active_search": True},
+        })
+
     @app.get("/", response_class=HTMLResponse)
     def platform_home(
         request: Request,
@@ -1244,7 +1440,7 @@ def register_platform_routes(
             active_tab = tab
         else:
             # First visit with no progress → catalog; otherwise land on in-progress
-            active_tab = "in_progress" if progress_map else "catalog"
+            active_tab = "catalog"
         if active_view == "status":
             if active_tab == "in_progress":
                 filtered_cards = [c for c in filtered_cards if c.get("progressStatus") == "in_progress"]
@@ -1350,6 +1546,14 @@ def register_platform_routes(
         else:
             tab_order = ["catalog", "in_progress", "completed", "practice"]
 
+        preview = preview_enabled()
+        started_cards = sorted(
+            [c for c in catalog["cards"] if c.get("progressStatus") == "in_progress"],
+            key=lambda c: c.get("updatedTs") or 0, reverse=True,
+        )
+        started_tiles = [_started_tile(request, c, locale, preview) for c in started_cards]
+        rec_tiles = _rec_items(list(catalog["cards"]), started_cards, locale)
+
         response = templates.TemplateResponse(
             request,
             "home.html",
@@ -1367,6 +1571,9 @@ def register_platform_routes(
                 groups=groups_ui,
                 subjects=subjects_ui,
                 series_home=series_home,
+                started_tiles=started_tiles,
+                rec_tiles=rec_tiles,
+                ui_preview=preview,
                 sidebar=_sidebar_ctx(request, group_default=group or "all"),
             ),
         )
@@ -1379,6 +1586,66 @@ def register_platform_routes(
     templates.env.filters["content_lang"] = content_lang
     templates.env.filters["short_date"] = short_date
     templates.env.filters["days_ago"] = days_ago
+
+
+    @app.get("/road/{path_id}", response_class=HTMLResponse)
+    def road_detail(request: Request, path_id: str) -> HTMLResponse:
+        """Recommendation detail: goal, שלבים, first משבצת, more detail, similar roads."""
+        locale = _locale(request)
+        cards = list_catalog_cards(store, locale=locale)
+        learner = _learner(request)
+        progress_map: dict[str, Any] = {}
+        if learner:
+            for row in store.list_user_progress(learner["userId"]):
+                progress_map[row["pathId"]] = row
+        prereqs, prereq_titles = _prereq_index(locale)
+        completed = {pid for pid, r in progress_map.items() if r.get("completedAt")}
+        for c in cards:
+            chrome = localize_path_chrome(locale=locale, titles=c.get("titles"), blurbs=c.get("blurbs"),
+                                          source_locale=c.get("explainLocale"))
+            c.update(title=chrome["title"], blurb=chrome["blurb"], titleLang=chrome["titleLang"], blurbLang=chrome["blurbLang"])
+            r = progress_map.get(c["pathId"])
+            c["progressStatus"] = ("completed" if r.get("completedAt") else "in_progress") if r else None
+            c["lockedBy"] = _locked_by(c["pathId"], prereqs, prereq_titles, completed)
+        card = next((c for c in cards if c["pathId"] == path_id), None)
+        if card is None:
+            return RedirectResponse("/", status_code=303)
+        doc = _road_doc(path_id, card.get("versionId"))
+        blocks = doc.get("blocks") or []
+        topics = _topics_for_ui(doc, blocks, locale) if doc else []
+        first = None
+        for tp in topics:
+            if tp["steps"]:
+                first = {**tp["steps"][0], "stage": tp["title"], "stageLang": tp.get("titleLang", "")}
+                break
+        if first is None and blocks:
+            first = {"title": blocks[0].get("title"), "titleLang": _explain_locale(doc), "type": None, "stage": "", "stageLang": ""}
+        started = [c for c in cards if c.get("progressStatus") == "in_progress"]
+        same = [c for c in cards if c.get("subject") == card.get("subject")]
+        similar = _rec_items(same, started, locale, exclude=path_id, limit=6)
+        if len(similar) < 3:
+            similar += [x for x in _rec_items(cards, started, locale, exclude=path_id, limit=8)
+                        if x["pathId"] not in {s["pathId"] for s in similar}][: 3 - len(similar)]
+        reason = next((x["reason"] for x in _rec_items(cards, started, locale, limit=50) if x["pathId"] == path_id), "")
+        prereq_list = [{"pathId": p, "title": prereq_titles.get(p, p)} for p in prereqs.get(path_id, [])]
+        preview = preview_enabled()
+        return templates.TemplateResponse(
+            request,
+            "road.html",
+            _shell_ctx(
+                request,
+                card=card,
+                reason=reason,
+                topics=topics,
+                first=first,
+                total=len(blocks) or int(card.get("nodeCount") or 0),
+                prereqs=prereq_list,
+                locked_by=card.get("lockedBy") or [],
+                similar=similar,
+                ui_preview=preview,
+                sidebar=_sidebar_ctx(request, active_path=path_id),
+            ),
+        )
 
     @app.get("/series/english-bagrut5", response_class=HTMLResponse)
     def english_bagrut_series(request: Request) -> HTMLResponse:
@@ -1491,6 +1758,8 @@ def register_platform_routes(
                 topics=topics,
                 unlocked_next=_unlocked_next(request, path_id),
                 road_metrics=_road_metrics(request, sess, topics, blocks, mastered),
+                ui_preview=preview_enabled(),
+                preview_skills=mock_skills(path_id, meta.get("subject") or "", int(round(100 * len(mastered) / n)) if n else 0) if preview_enabled() else [],
                 finished=_maybe_done(sess, n),
                 sidebar=_sidebar_ctx(request, active_path=path_id),
             )

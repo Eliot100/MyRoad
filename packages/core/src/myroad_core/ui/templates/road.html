@@ -1,0 +1,104 @@
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ card.title }}{% endblock %}
+{% block body_attrs %} class="platform"{% endblock %}
+{% block body %}
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
+  <header class="top shell-top">
+    <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    {% if sidebar is defined and sidebar %}<a class="ibtn menu-btn" href="#roads" aria-controls="roads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="visually-hidden">{{ t('side_open') }}</span></a>{% endif %}
+  </header>
+  <main id="main" tabindex="-1">
+  {% set started = card.progressStatus == 'in_progress' %}
+  {% set start_href = '/play/' ~ card.pathId ~ '?view=learn' %}
+  <section class="tv-hero" aria-labelledby="road-h">
+    <p class="tv-kicker">{% if reason %}{{ reason }} · {% endif %}{{ card.subjectLabel }}{% if card.estimatedMinutes %} · {{ card.estimatedMinutes }} {{ t('mins') }}{% endif %}</p>
+    <h1 id="road-h" dir="auto"{{ card.blurbLang|content_lang(locale) }}>{{ card.blurb or card.title }}</h1>
+    <p class="tv-meta">{{ t('tv_road_label') }} <b dir="auto"{{ card.titleLang|content_lang(locale) }}>{{ card.title }}</b> · {{ t('tv_cells_in_stages', n=total, k=topics|length) }}</p>
+    {% if locked_by %}
+    <p class="tv-unlock"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10V8a5 5 0 0 1 10 0v2h1v11H6V10zm2 0h6V8a3 3 0 0 0-6 0z"/></svg><span>{{ t('locked_finish_first') }} {% for p in locked_by %}<bdi>{{ p.title }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}</span></p>
+    {% endif %}
+    <div class="row road-actions">
+      <a class="primary big link-btn" href="{{ start_href }}">{{ t('road_continue') if started else t('tv_start') }}</a>
+      <a class="secondary big link-btn" href="/play/{{ card.pathId }}?view=map">{{ t('view_track') }}</a>
+    </div>
+  </section>
+
+  {% if topics %}
+  <section class="tv-row" aria-labelledby="road-stages-h">
+    <div class="tv-row-h"><h2 id="road-stages-h">{{ t('tv_stages_h') }}</h2><span>{{ t('tv_stages_sub') }}</span></div>
+    <ul class="tv-shelf tv-stage-cards" tabindex="0" aria-labelledby="road-stages-h">
+      {% for tp in topics %}
+      <li><b{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</b><span>{{ t('tv_cells', n=tp.stepCount) }}{% if loop.first %} · {{ t('tv_start_here') }}{% endif %}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if first %}
+  <section class="tv-row" aria-labelledby="road-first-h">
+    <div class="tv-row-h"><h2 id="road-first-h">{{ t('tv_first_h') }}</h2>{% if first.stage %}<span{{ first.stageLang|content_lang(locale) }}>{{ first.stage }}</span>{% endif %}</div>
+    <div class="tv-first">
+      <b dir="auto"{{ first.titleLang|content_lang(locale) }}>{{ first.title }}</b>
+      {% set tl = t('tv_type_' ~ (first.type or '')) %}{% if first.type and not tl.startswith('tv_type_') %}<p class="tv-sub">{{ tl }}</p>{% endif %}
+      <a class="primary link-btn" href="{{ start_href }}">{{ t('road_continue') if started else t('tv_start_first') }}</a>
+    </div>
+  </section>
+  {% endif %}
+
+  <details class="tv-more">
+    <summary>
+      <span class="tv-more-h">{{ t('tv_more_h') }}</span>
+      <span class="tv-more-s">{{ t('tv_more_summary', k=topics|length, n=total, m=card.estimatedMinutes or '—') }} · {% if prereqs %}{{ t('tv_prereq_some', n=prereqs|length) }}{% else %}{{ t('tv_prereq_none') }}{% endif %}</span>
+    </summary>
+    <div class="tv-more-body">
+      <section>
+        <h2>{{ t('tv_more_stages_h') }}{% if ui_preview %} <span class="sample-tag">{{ t('tv_sample') }}</span>{% endif %}</h2>
+        <div class="tv-ugrid">
+          {% for tp in topics %}
+          <article class="tv-ucard" aria-labelledby="tvu-{{ loop.index }}">
+            <header><h3 id="tvu-{{ loop.index }}"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</h3><span class="tv-sub">{{ t('tv_cells', n=tp.stepCount) }}</span></header>
+            {% if ui_preview %}<ul class="tv-lvls" aria-label="{{ t('tv_levels') }}"><li>{{ t('tv_level', n=1) }} · {{ t('tv_lvl1') }}</li><li>{{ t('tv_level', n=2) }} · {{ t('tv_lvl2') }}</li><li>{{ t('tv_level', n=3) }} · {{ t('tv_lvl3') }}</li></ul>{% endif %}
+            <ol>
+              {% for st in tp.steps %}<li><span dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>{% set tl = t('tv_type_' ~ (st.type or '')) %}{% if st.type and not tl.startswith('tv_type_') %} <span class="tv-sub">· {{ tl }}</span>{% endif %}</li>{% endfor %}
+            </ol>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+      <div class="tv-more-cols">
+        <section>
+          <h2>{{ t('tv_can_h') }}{% if ui_preview %} <span class="sample-tag">{{ t('tv_sample') }}</span>{% endif %}</h2>
+          {% if ui_preview %}
+          <ul class="tv-can">{% for tp in topics %}<li>{{ t('tv_can_item') }} <bdi{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</bdi></li>{% endfor %}</ul>
+          {% else %}<p class="tv-sub">{{ t('tv_can_none') }}</p>{% endif %}
+        </section>
+        <section>
+          <h2>{{ t('tv_prereq_h') }}</h2>
+          {% if prereqs %}<ul class="tv-can">{% for p in prereqs %}<li><a href="/road/{{ p.pathId }}">{{ p.title }}</a></li>{% endfor %}</ul>
+          {% else %}<p class="tv-sub">{{ t('tv_prereq_none') }}</p>{% endif %}
+        </section>
+        <section>
+          <h2>{{ t('tv_time_h') }}</h2>
+          <dl class="tv-dl">
+            <div><dt>{{ t('tv_time_road') }}</dt><dd>{{ card.estimatedMinutes or '—' }} {{ t('mins') }}</dd></div>
+            <div><dt>{{ t('tv_time_stages') }}</dt><dd>{{ topics|length }}</dd></div>
+            <div><dt>{{ t('tv_time_cells') }}</dt><dd>{{ total }}</dd></div>
+          </dl>
+        </section>
+      </div>
+    </div>
+  </details>
+
+  {% if similar %}
+  <section class="tv-row" aria-labelledby="road-sim-h">
+    <div class="tv-row-h"><h2 id="road-sim-h">{{ t('tv_similar_h') }}</h2><span>{{ t('tv_similar_sub') }}</span></div>
+    <ul class="tv-shelf" tabindex="0" aria-labelledby="road-sim-h">
+      {% for c in similar %}<li>{% include "_rec_tile.html" %}</li>{% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+  </main>
+  <footer>
+    <small>{{ product }} · {% include "_a11y_link.html" %}</small>
+  </footer>
+{% endblock %}

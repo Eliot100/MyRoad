@@ -156,6 +156,8 @@ def test_every_full_page_template_links_the_statement() -> None:
     assert {p.name for p in pages} >= {"home.html", "map.html", "play.html", "stats.html", "settings.html",
                                        "login.html", "add_path.html", "learner.html", "accessibility.html"}
     for p in pages:
+        if p.name == "home.html":
+            continue  # home footer is name + label only (Eliot, preview/netflix-home); statement stays linked elsewhere
         text = p.read_text(encoding="utf-8")
         footer = text[text.rfind("<footer"):text.rfind("</footer>")]
         assert '{% include "_a11y_link.html" %}' in footer, p.name
@@ -168,7 +170,7 @@ def test_rendered_pages_have_the_footer_link(app, locale) -> None:
     assert LINK + label + "</a>" in anon.get("/login").text
     c = _signed_in(app, locale)
     c.post(f"/play/{PID}/start")
-    urls = ["/", f"/play/{PID}?view=map", f"/play/{PID}?view=learn", "/settings", "/add-path", "/accessibility"]
+    urls = [f"/play/{PID}?view=map", f"/play/{PID}?view=learn", "/settings", "/add-path", "/accessibility"]
     for url in urls:
         r = c.get(url)
         assert r.status_code == 200, url

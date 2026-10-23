@@ -1,0 +1,12 @@
+{#- Search result card: rec-tile style (goal line, subject, time, משבצות, progress if started). -#}
+<article class="tv-tile tv-rec rs-card" aria-labelledby="rsc-{{ c.pathId }}" data-path-id="{{ c.pathId }}" data-state="{{ c.state }}">
+  <p class="tv-kicker">{{ c.subjectLabel }}{% if c.state != 'open' %} · <span class="rs-state rs-{{ c.state }}">{{ t('rs_st_' ~ c.state) }}</span>{% endif %}</p>
+  <h2 class="tv-name" id="rsc-{{ c.pathId }}"><a href="/road/{{ c.pathId }}" dir="auto"{{ c.titleLang|content_lang(locale) }}>{{ c.title }}</a></h2>
+  {% if c.blurb %}<p class="tv-desc" dir="auto"{{ c.blurbLang|content_lang(locale) }}>{{ c.blurb }}</p>{% endif %}
+  <p class="tv-goal">{{ t('tv_goal_label') }} <span>{{ t('tv_goal_derived', n=c.nodeCount or 0, m=c.estimatedMinutes or '—') }}</span></p>
+  {% if c.pct is not none %}
+  <div class="rs-prog"><span class="tv-bar" aria-hidden="true"><i style="inline-size: {{ c.pct }}%"></i></span><span class="tv-sub">{{ t('rs_pct', n=c.pct) }}</span></div>
+  {% endif %}
+  {% if c.lockedBy %}<p class="tv-sub">{{ t('locked_finish_first') }} {% for p in c.lockedBy %}<bdi>{{ p.title }}</bdi>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+  <span class="tv-sub tv-foot">{% if c.estimatedMinutes %}{{ c.estimatedMinutes }} {{ t('mins') }} · {% endif %}{{ t('tv_cells', n=c.nodeCount or 0) }}</span>
+</article>

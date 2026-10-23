@@ -49,31 +49,16 @@ def _layout_slice(html: str) -> str:
     return html[start:end]
 
 
-def test_status_panel_is_start_column_for_each_manifest_dir(platform_client: TestClient) -> None:
+def test_home_rows_render_for_each_manifest_dir(platform_client: TestClient) -> None:
+    """Netflix home: no duplicate filter card / tabs; rows render in every locale dir."""
     manifest = json.loads(_MANIFEST.read_text(encoding="utf-8"))
     for entry in manifest["locales"]:
         code = entry["code"]
-        direction = entry["dir"]
-        page = platform_client.post(
-            "/locale",
-            data={"locale": code, "next": "/?tab=catalog&view=status"},
-            follow_redirects=True,
-        )
+        page = platform_client.post("/locale", data={"locale": code, "next": "/"}, follow_redirects=True)
         assert page.status_code == 200
-        assert f'dir="{direction}"' in page.text
-        assert f'lang="{code}"' in page.text
-        layout = _layout_slice(page.text)
-        nav = layout.find('class="home-nav')
-        catalog = layout.find('class="home-catalog"')
-        filters = layout.find('class="filters')
-        assert 0 <= nav < catalog < filters, (code, nav, catalog, filters)
-        assert "view=status" in layout and "view=time" in layout
-        assert "tab=in_progress" in layout
-        assert "tab=completed" in layout
-        assert "tab=practice" in layout
-        # Group/subject filters stay in the catalog column.
-        assert "group=all" in layout[filters:]
-        assert "subject=all" in layout[filters:]
+        assert f'dir="{entry["dir"]}"' in page.text and f'lang="{code}"' in page.text
+        assert 'class="filters' not in page.text and 'class="home-nav' not in page.text
+        assert "tv-rec" in page.text
 
 
 def test_platform_css_sidebar_uses_inline_start_not_physical_side() -> None:

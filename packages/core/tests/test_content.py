@@ -180,8 +180,7 @@ def test_catalog_home_lists_grade3(platform_client: TestClient) -> None:
 def test_locale_switch_english_shell(platform_client: TestClient) -> None:
     r = platform_client.post("/locale", data={"locale": "en", "next": "/"}, follow_redirects=True)
     assert r.status_code == 200
-    assert "Learning platform" in r.text or "Learning roads" in r.text
-    assert "Catalog" in r.text
+    assert "Recommended" in r.text
 
 
 def test_identity_login_and_whoami(platform_client: TestClient) -> None:
@@ -325,9 +324,7 @@ def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
     # Before any play — default tab is catalog (full list)
     home = platform_client.get("/")
     assert home.status_code == 200
-    assert "דרכים שעשינו" in home.text or "Paths we started" in home.text
-    assert "דרכים שסיימנו" in home.text or "Paths we finished" in home.text
-    assert "דרכים לתרגול" in home.text or "Paths to practice" in home.text
+    assert "מומלצות" in home.text or "Recommended" in home.text
     assert "חיבור עד 20" in home.text
 
     # Start a path → appears under in_progress after reload
@@ -364,11 +361,10 @@ def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
     practice = platform_client.get("/?tab=practice")
     assert practice.status_code == 200
 
-    # Time view groups by subject
-    by_time = platform_client.get("/?view=time")
-    assert by_time.status_code == 200
-    assert "לאחרונה" in by_time.text or "Recently" in by_time.text
-    assert "מתמטיקה" in by_time.text or "Math" in by_time.text
+    # Row A lists the started road (time view was replaced by the netflix home rows)
+    home2 = platform_client.get("/")
+    assert "דרכים שהתחלת" in home2.text
+    assert 'href="/play/path_grade3_math_add20?view=stats"' in home2.text
 
 
 def test_english_play_shows_content_token_and_he_explanation(platform_client: TestClient) -> None:

@@ -274,7 +274,7 @@ def test_catalog_home_ar_shows_arabic_path_titles(platform_client: TestClient) -
     assert "אור וצל" not in r.text
     assert "חיות באנגלית" not in r.text
     assert "Addition up to 20" not in r.text
-    assert 'data-ui-locale="ar"' in r.text
+    assert 'lang="ar"' in r.text
 
 
 def test_catalog_home_he_keeps_hebrew_native_titles(platform_client: TestClient) -> None:

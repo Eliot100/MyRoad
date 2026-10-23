@@ -5,6 +5,7 @@
 <nav class="side" id="roads" aria-labelledby="roads-title">
   <div class="side-top">
     <h2 class="side-title" id="roads-title">{{ t('side_title') }}</h2>
+    <a class="ibtn" href="/roads" title="{{ t('side_search') }}"{% if sb.active_search %} aria-current="page"{% endif %}><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg><span class="visually-hidden">{{ t('side_search') }}</span></a>
     <a class="ibtn" href="/add-path" title="{{ t('add_path') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="visually-hidden">{{ t('add_path') }}</span></a>
     <button type="button" class="ibtn side-close" data-side-close hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="visually-hidden">{{ t('side_close') }}</span></button>
   </div>
