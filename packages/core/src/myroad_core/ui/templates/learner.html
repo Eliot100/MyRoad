@@ -199,7 +199,7 @@
   </section>
 
   <footer>
-    <small>{{ product }} · packages/core learner UI · AgentTools wired · {% include "_a11y_link.html" %}</small>
+    <small>{% if t is defined %}{{ t('footer_platform', product=product) }}{% else %}פלטפורמת למידה · {{ product }}{% endif %}</small>
   </footer>
 
   <script>

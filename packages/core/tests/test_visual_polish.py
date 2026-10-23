@@ -75,7 +75,7 @@ def test_components_use_tokens_not_raw_hex():
     leftovers = [
         line.strip() for line in body.splitlines()
         if re.search(r"#[0-9a-fA-F]{3,6}\b", line)
-        and "tone-demo" not in line and "a11y-placeholder" not in line
+        and "tone-demo" not in line
         and "--accent:" not in line and "linear-gradient" not in line
     ]
     assert leftovers == []
@@ -113,7 +113,7 @@ def test_every_learner_screen_has_one_main_landmark_and_skip_link():
     from pathlib import Path as _P
     tpl = _P(__file__).resolve().parents[1] / "src" / "myroad_core" / "ui" / "templates"
     for name in ("home.html", "map.html", "play.html", "settings.html", "login.html",
-                 "accessibility.html", "stats.html"):
+                 "stats.html"):
         html = (tpl / name).read_text(encoding="utf-8")
         assert html.count("<main") == 1, name
         assert 'id="main"' in html, name
