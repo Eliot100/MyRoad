@@ -179,7 +179,7 @@
   {% if current_station and not read_only %}<a class="float-here" href="#here" hidden>{{ t('map_back_to_station') }}</a>{% endif %}
   </main>
   <footer>
-    <small><a href="/">{{ t('footer_play') }}</a> · {{ product }} · {% include "_a11y_link.html" %}</small>
+    <small>{{ t('footer_platform', product=product) }}</small>
   </footer>
   {#- Scrolls the current station (#here) into view on load; the map works the same without it. -#}
   <script src="/static/platform.js" defer></script>
