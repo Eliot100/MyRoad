@@ -184,8 +184,8 @@ def test_route_existing_step_offers_adult_math_paths(app_client) -> None:
     assert [c["pathId"] for c in ctx["existing"]][:2] == [ZERO, BAGRUT]
     assert ctx["existing"][0]["match"]["reason_text"] == matches[0]["reason_text"]
     assert f'href="/play/{ZERO}"' in page.text and f'href="/play/{BAGRUT}"' in page.text
-    assert "Existing paths that fit your goal (2)" in ctx["flash_ok"]
-    assert "Existing paths that fit your goal" in page.text
+    assert "Existing roads that fit your goal (2)" in ctx["flash_ok"]
+    assert "Existing roads that fit your goal" in page.text
     # "Build anyway": the outline step still works and may name a match as prerequisite.
     assert client.post("/add-path/outline", follow_redirects=False).headers["location"] == "/add-path/outline"
     assert client.get("/add-path/outline").status_code == 200

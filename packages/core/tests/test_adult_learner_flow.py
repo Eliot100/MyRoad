@@ -129,7 +129,7 @@ def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
     assert html.count('<li class="station ') == N_TOPICS
     assert "topic-diagram" not in html  # the big one-box-per-topic diagram is for short paths
     assert html.count("<details") == N_TOPICS and html.count("<details open") == 1
-    assert "Station 1 of 22" in html and "0 of 22 stations done" in html
+    assert "Tile 1 of 22" in html and "0 of 22 tiles done" in html
     assert html.count('class="mini-bar"') == N_TOPICS
 
     # Finish the first station (learn + practice), then the map shows it done and opens the next.
@@ -141,7 +141,7 @@ def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
     assert 'class="station done' in first and "2/2 steps" in first and 'aria-valuenow="100"' in first
     second = html[html.find('data-topic-id="t01"') - 60:html.find('data-topic-id="t02"')]
     assert "station current" in second and "<details open" in second and "0/2 steps" in second
-    assert "Station 2 of 22" in html and "1 of 22 stations done" in html
+    assert "Tile 2 of 22" in html and "1 of 22 tiles done" in html
     # Steps inside a station are listed with their state.
     assert first.count('class="step-row done') == 2
 
@@ -168,7 +168,7 @@ def test_review_step_has_badge_and_lists_mixed_topics(adult_app) -> None:
     chips = re.findall(r'class="review-topic-chip" data-topic-id="([^"]+)"[^>]*>\s*([^<]*)<', card)
     assert [cid for cid, _ in chips] == ["t03", "t04"]
     assert "Topic 3" in chips[0][1] and "Topic 4" in chips[1][1]
-    assert "Station 6 of 22" in page.text
+    assert "Tile 6 of 22" in page.text
 
     plain = _step_card(c.get(f"/play/{LONG}?topic=t01").text)
     assert 'data-step-kind="understanding"' in plain
@@ -204,7 +204,7 @@ def test_locked_path_names_the_prerequisite_on_home_and_map(adult_app) -> None:
 
     page = c.get(f"/play/{NEXT}")
     assert page.status_code == 200
-    assert "lock-banner" in page.text and "This path is still locked" in page.text
+    assert "lock-banner" in page.text and "This road is still locked" in page.text
     assert f'<a class="lock-link" href="/play/{LONG}"><bdi>Long adult math</bdi></a>' in page.text
     # Still openable, read-only: links instead of start forms.
     assert f'href="/play/{NEXT}?topic=a1"' in page.text and "Look inside (read-only)" in page.text
@@ -230,7 +230,7 @@ def test_locked_path_opens_read_only_and_never_writes_progress(adult_app) -> Non
     for url, data in ((f"/play/{NEXT}/answer", {"choice": "a"}), (f"/play/{NEXT}/ack", {})):
         resp = c.post(url, data=data)
         assert resp.status_code == 200
-        assert "finish the earlier path first" in resp.text
+        assert "finish the earlier road first" in resp.text
     assert store.get_progress(uid, NEXT) is None
     assert all(r["pathId"] != NEXT for r in store.list_user_progress(uid))
 

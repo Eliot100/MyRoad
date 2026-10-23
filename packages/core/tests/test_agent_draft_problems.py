@@ -265,7 +265,7 @@ def test_route_passes_draft_problems_at_each_step(app_client) -> None:
     outline = client.get("/add-path/outline")
     probs = outline.context["draft_problems"]
     assert [p["code"] for p in probs] == ["no_nodes"]
-    assert probs[0]["message"] == "The path has no steps yet."
+    assert probs[0]["message"] == "The road has no steps yet."
 
     client.post("/add-path/outline/approve", data={})
     assert [p["code"] for p in client.get("/add-path/build").context["draft_problems"]] == ["no_nodes"]

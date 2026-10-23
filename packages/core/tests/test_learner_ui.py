@@ -45,7 +45,7 @@ def test_health_and_home(client: TestClient) -> None:
     assert r.status_code == 200
     assert "MyRoad" in r.text
     assert "משוואות ריבועיות" in r.text
-    assert "פרסם מסלול" in r.text
+    assert "פרסם דרך" in r.text
     assert 'id="publish-btn"' in r.text
     assert 'id="publish-btn" disabled' not in r.text
     assert "human_confirm" not in r.text

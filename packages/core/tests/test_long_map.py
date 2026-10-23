@@ -118,7 +118,7 @@ def test_current_station_is_the_jump_target_with_aria_current(app, locale) -> No
     assert 'aria-current' not in _station(html, "s13") and 'aria-current' not in _station(html, "s15")
     # A jump link that works without JS, with an accessible name in the UI language.
     jump = re.search(r'<a class="station-pill current jump-here" href="#here">(.*?)</a>', html).group(1)
-    expected = {"he": "מעבר לתחנה הנוכחית", "en": "go to your current station", "ar": "الانتقال إلى محطتك الحالية"}
+    expected = {"he": "מעבר למשבצת הנוכחית", "en": "go to your current tile", "ar": "الانتقال إلى مربعك الحالي"}
     assert f'<span class="visually-hidden"> · {expected[locale]}</span>' in jump
     assert f'dir="{"ltr" if locale == "en" else "rtl"}"' in html[:200]
 

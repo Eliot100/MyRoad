@@ -462,7 +462,7 @@ def test_demo_mode_end_to_end_over_http(app_client) -> None:
     assert "1 of 4 topics built" in step.text
     done = client.post("/add-path/build/all", follow_redirects=True)
     assert str(done.url).endswith("/add-path/review")
-    assert "The path is complete" in done.text
+    assert "The road is complete" in done.text
     assert "Let the agent publish" in done.text
     assert "Demo" in done.text
 
@@ -535,7 +535,7 @@ def test_build_failure_shows_retry_over_http(app_client) -> None:
     page = client.post("/add-path/build/topic/1", follow_redirects=True)
     assert "3 of 3 topics built" in page.text
     review = client.get("/add-path/review")
-    assert "The path is complete" in review.text
+    assert "The road is complete" in review.text
 
 
 def test_gateway_mode_over_http_uses_byok_gateway_without_provider_key(
@@ -582,7 +582,7 @@ def test_gateway_mode_over_http_uses_byok_gateway_without_provider_key(
     client.post("/add-path/outline")
     client.post("/add-path/outline/approve", data={})
     review = client.post("/add-path/build/all", follow_redirects=True)
-    assert "The path is complete" in review.text
+    assert "The road is complete" in review.text
     assert len(seen) == 4  # one outline call + one call per topic
     for req in seen:
         headers = {k.lower(): v for k, v in req.header_items()}
