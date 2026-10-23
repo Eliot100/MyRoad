@@ -122,8 +122,6 @@ def test_he_only_path_falls_back_to_hebrew_marked_lang_he(app, locale) -> None:
     for text in ("שברים למבוגרים", "מסלול בעברית בלבד."):
         tag = _attrs(home, text)
         assert 'dir="auto"' in tag and 'lang="he"' in tag, (text, tag)
-    lock = _attrs(home, "שברים למבוגרים</bdi>") if "שברים למבוגרים</bdi>" in home else ""
-    assert lock.startswith("<bdi") and 'lang="he"' in lock
 
     c.post(f"/play/{HE_ONLY}/start")
     page = c.get(f"/play/{HE_ONLY}?view=map").text

@@ -135,6 +135,27 @@
     <p class="rm-empty">{{ t('metrics_goals_soon') }}</p>
   </aside>
     </div>
+  {% if preview_skills %}
+  <section class="card tv-skills-card" aria-labelledby="rm-skills-h">
+    <h2 id="rm-skills-h">{{ t('tv_skills_h') }} <span class="sample-tag">{{ t('tv_sample') }}</span></h2>
+    <p class="tv-sub">{{ t('tv_skills_lede') }}</p>
+    <table class="tv-skt">
+      <caption class="visually-hidden">{{ t('tv_skills_h') }}</caption>
+      <thead><tr><th scope="col">{{ t('tv_col_skill') }}</th><th scope="col">{{ t('tv_col_level') }}</th><th scope="col">{{ t('tv_col_thresholds') }}</th><th scope="col">{{ t('tv_col_next') }}</th><th scope="col">{{ t('tv_col_status') }}</th></tr></thead>
+      <tbody>
+      {% for sk in preview_skills %}
+      <tr>
+        <th scope="row">{{ sk.name }}{% if sk.suggested %} <span class="sug">{{ t('tv_suggested') }}</span>{% endif %}</th>
+        <td>{{ t('tv_level', n=sk.level) }}</td>
+        <td><div class="tv-meter" aria-hidden="true"><span class="tv-bar"><i style="inline-size: {{ sk.maxPct }}%"></i></span>{% for th in sk.thresholds %}<span class="tk" style="inset-inline-start: {{ (100 * th / sk.max)|round(1) }}%"></span><span class="tl" style="inset-inline-start: {{ (100 * th / sk.max)|round(1) }}%">{{ th }}</span>{% endfor %}</div><span class="visually-hidden">{{ sk.thresholds|join(' / ') }}</span></td>
+        <td><b>{{ sk.amount }}/{{ sk.target }}</b> <span class="tv-sub">{{ sk.unit }}</span></td>
+        <td class="sk-{{ sk.status }}">{{ t('tv_status_' ~ sk.status, n=sk.nextLevel) }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
   </section>
   </main>
   <footer>

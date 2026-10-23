@@ -102,6 +102,33 @@
       })();
       </script>
     </section>
+    <section class="settings-theme" aria-labelledby="settings-theme">
+      <h2 id="settings-theme">{{ t('theme_h') }}</h2>
+      <form class="reading-prefs" id="theme-prefs" hidden onsubmit="return false">
+        <fieldset>
+          <legend>{{ t('theme_legend') }}</legend>
+          {% for v in ['light', 'dark'] %}
+          <label class="opt"><input type="radio" name="theme" value="{{ v }}" /> {{ t('theme_' ~ v) }}</label>
+          {% endfor %}
+        </fieldset>
+        <p class="flash ok" role="status" aria-live="polite" id="theme-saved"></p>
+      </form>
+      <script>
+      (function () {
+        var f = document.getElementById("theme-prefs"), d = document.documentElement, msg = document.getElementById("theme-saved");
+        if (!f) return;
+        f.hidden = false;
+        var cur = window.myroadTheme ? window.myroadTheme() : "light";
+        f.querySelectorAll('input[name="theme"]').forEach(function (r) { r.checked = r.value === cur; });
+        f.addEventListener("change", function (e) {
+          if (e.target.name !== "theme") return;
+          try { localStorage.setItem("myroad.theme", e.target.value); } catch (err) {}
+          d.setAttribute("data-theme", e.target.value);
+          msg.textContent = {{ t('settings_saved')|tojson }};
+        });
+      })();
+      </script>
+    </section>
     <p class="lede tiny"><a href="/">{{ t('back_home') }}</a></p>
   </main>
   <footer>

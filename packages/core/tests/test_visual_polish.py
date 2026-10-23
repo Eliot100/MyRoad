@@ -72,6 +72,7 @@ def test_components_use_tokens_not_raw_hex():
     body = CSS.split("* { box-sizing: border-box; }", 1)[1]
     # Theme-only blocks (dark mode) and the demo tone may set raw values.
     body = re.sub(r"@media \(prefers-color-scheme: dark\)\s*\{.*?\n\}\n", "", body, flags=re.S)
+    body = re.sub(r':root\[data-theme="dark"\]\s*\{.*?\n\}\n', "", body, flags=re.S)
     leftovers = [
         line.strip() for line in body.splitlines()
         if re.search(r"#[0-9a-fA-F]{3,6}\b", line)
@@ -82,7 +83,7 @@ def test_components_use_tokens_not_raw_hex():
 
 
 def _dark_root() -> str:
-    m = re.search(r"@media \(prefers-color-scheme: dark\)\s*\{\s*:root\s*\{([^}]*)\}", CSS)
+    m = re.search(r'@media \(prefers-color-scheme: dark\)\s*\{\s*:root(?::not\(\[data-theme="light"\]\))?\s*\{([^}]*)\}', CSS)
     assert m, "dark theme block missing"
     return m.group(1)
 

@@ -195,12 +195,9 @@ def test_review_badge_is_localized_and_rtl(adult_app, locale: str, word: str) ->
 def test_locked_path_names_the_prerequisite_on_home_and_map(adult_app) -> None:
     app, _store = adult_app
     c = _client(app)
-    home = c.get("/?group=adult&tab=catalog&view=status").text
-    card = home[home.find(f'data-path-id="{NEXT}"'):]
-    card = card[:card.find("</a>")]
-    assert ">Locked<" in card and "🔒" not in card and f'data-locked-by="{LONG}"' in card and "Long adult math" in card
-    unlocked = home[home.find(f'data-path-id="{LONG}"'):]
-    assert "status-pill locked" not in unlocked[:unlocked.find("</a>")]
+    home = c.get("/").text
+    # Netflix home has no catalog grid; locked roads are not recommended.
+    assert f'href="/road/{NEXT}"' not in home
 
     page = c.get(f"/play/{NEXT}")
     assert page.status_code == 200
@@ -286,12 +283,11 @@ def test_home_shows_adult_group_and_continue_resumes_last_step(adult_app) -> Non
     # A new browser session for the same learner: home lands on the adult group.
     fresh = _client(app)
     home = fresh.get("/").text
-    assert re.search(r'class="chip active" href="/\?group=adult&', home)
-    assert "Adults starting from zero" in home
-    assert "continue-card" in home
-    assert 'data-step="4"' in home and "Step 4 of" in home and "Topic 1" in home
-    href = re.search(r'class="primary big continue-btn" href="([^"]+)"', home).group(1)
-    assert href == f"/play/{LONG}?view=learn"
+    # Row A "roads you started" (netflix home): a tile for the started road, opening its stats.
+    assert "tv-started" in home and "Roads you started" in home
+    assert f'href="/play/{LONG}?view=stats"' in home
+    assert "continue-card" not in home  # replaced by Row A
+    href = f"/play/{LONG}?view=learn"
 
     resumed = fresh.get(href)
     card = _step_card(resumed.text)
@@ -299,8 +295,6 @@ def test_home_shows_adult_group_and_continue_resumes_last_step(adult_app) -> Non
     assert 'data-node-type="practice"' in card and "תרגול 1" in re.sub(r"</?bdi[^>]*>", "", card)
     assert "Step 4 of" in resumed.text
 
-    # An explicit group choice still wins.
-    assert re.search(r'class="chip active" href="/\?group=grade3&', fresh.get("/?group=grade3").text)
 
 
 def test_home_without_progress_keeps_default_group(adult_app) -> None:
@@ -309,7 +303,7 @@ def test_home_without_progress_keeps_default_group(adult_app) -> None:
     home = c.get("/").text
     assert "continue-card" not in home
     # No grade3 paths in this catalog: falls back to all groups, adult cards visible.
-    assert f'data-path-id="{LONG}"' in home and f'data-path-id="{NEXT}"' in home
+    assert f'href="/road/{LONG}"' in home
 
 
 # --- strings + CSS ---

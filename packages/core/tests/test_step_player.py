@@ -442,12 +442,10 @@ def test_offline_answer_keeps_learner_on_the_step_with_a_message(app) -> None:
     assert 'addEventListener("htmx:sendError", sendError)' in js
 
 
-def test_empty_home_tab_offers_a_way_to_the_catalog() -> None:
-    html = (_UI / "templates" / "home.html").read_text(encoding="utf-8")
-    assert "t('empty_browse_catalog')" in html and "tab=catalog" in html
+def test_offline_message_is_localised() -> None:
     for code in ("he", "en", "ar"):
         j = json.loads((_CORE / "locales" / f"{code}.json").read_text(encoding="utf-8"))
-        assert j["empty_browse_catalog"].strip() and j["offline_answer_not_sent"].strip()
+        assert j["offline_answer_not_sent"].strip()
 
 
 @pytest.mark.parametrize("locale, label", [("he", "תרגול"), ("en", "Practice"), ("ar", "تمرين")])

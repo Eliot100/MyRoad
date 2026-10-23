@@ -6,6 +6,15 @@
   try { size = localStorage.getItem("myroad.textSize"); motion = localStorage.getItem("myroad.motion"); } catch (e) {}
   if (size === "125" || size === "150") d.setAttribute("data-text-size", size);
   if (motion === "reduce" || motion === "full") d.setAttribute("data-motion", motion);
+  /* Theme (light/dark): unset = follow the system (prefers-color-scheme). */
+  var theme = null;
+  try { theme = localStorage.getItem("myroad.theme"); } catch (e) {}
+  if (theme === "light" || theme === "dark") d.setAttribute("data-theme", theme);
+  window.myroadTheme = function () {
+    var th = d.getAttribute("data-theme");
+    if (th) return th;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  };
   window.myroadReduceMotion = function () {
     var m = d.getAttribute("data-motion");
     if (m) return m === "reduce";
