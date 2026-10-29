@@ -11,6 +11,11 @@
   {% endif %}
   <div class="progress-wrap" aria-label="progress">
     <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
+    {%- if sns.station %}
+    {%- set cell_ids = sns.station.blockIds %}
+    <span class="progress-label">{{ t('progress_label', n=cell_ids.index(block.blockId) + 1, total=cell_ids|length, done=cell_ids|select('in', mastered)|list|length) }}</span>
+    {%- else %}
     <span class="progress-label">{{ t('progress_label', n=index + 1, total=total, done=mastered|length) }}</span>
+    {%- endif %}
   </div>
 </div>

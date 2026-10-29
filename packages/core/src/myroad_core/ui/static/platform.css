@@ -1,6 +1,10 @@
 /* MyRoad platform shell — age-agnostic. "Ink & teal": near-black ink, one teal accent, hairline
    borders, no shadows, no filled pills, no decorative emoji. */
 :root {
+  /* Road world map: its own night surface in both themes. */
+  --world-bg: #0a0e0d;
+  --world-ink: #e9efed;
+  --world-muted: #b4bfbc;
   --bg: #ffffff;
   --card: #ffffff;
   --ink: #0b0f0e;
@@ -1481,3 +1485,25 @@ html[data-motion="reduce"] .side { transition: none !important; }
 .user-row .user { flex: 1; min-inline-size: 0; }
 .user-row .uname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ibtn[aria-current="page"] { border-color: var(--accent); color: var(--accent); }
+
+/* Road world map (נתיב, approved option B). A deliberate dark "night" surface in both themes:
+   the glow, gold end and teal roads read only on dark, so the panel keeps its own colors. */
+.world-map { margin-block: var(--space-3) var(--space-4, 1.5rem); padding: 1rem .5rem 1.25rem; border-radius: 24px; background: var(--world-bg); color: var(--world-ink); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); overflow: hidden; }
+.world-map[hidden] { display: none; }
+.world-canvas { inline-size: 100%; }
+.world-canvas svg { display: block; margin-inline: auto; max-inline-size: 100%; height: auto; font-family: inherit; }
+.world-canvas .wm-tile { cursor: pointer; outline: none; }
+.world-canvas .wm-tile:focus-visible > g { filter: drop-shadow(0 0 4px var(--world-ink)); }
+.world-canvas .wm-tile:hover > g { opacity: .9; }
+.world-legend { display: flex; flex-wrap: wrap; gap: .6rem 1.1rem; justify-content: center; margin-top: 1rem; font-size: .8rem; color: var(--world-muted); }
+.world-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.world-sample { margin: 0 0 .5rem; text-align: center; font-size: .78rem; color: var(--world-muted); }
+.world-list { margin-block: var(--space-3); }
+.world-list > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+.map-view .map-actions button, .map-view .map-actions .link-btn { min-height: 52px; border-radius: 14px; }
+@media (max-width: 480px) {
+  /* The sticky Start/Continue bar owns the bottom edge: keep room so it never covers the end of the card or the footer. */
+  .map-view .map-card { scroll-margin-block-end: 6.5rem; }
+  .map-view main { padding-block-end: 6.5rem; }
+  html:has(body.map-view) { scroll-padding-block-end: 6.5rem; }
+}
