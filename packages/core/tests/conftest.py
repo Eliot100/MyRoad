@@ -1,6 +1,17 @@
 from __future__ import annotations
 
+import os
+import tempfile
 from pathlib import Path
+
+# Importing the UI app seeds a SQLite DB at import time. Give every test process
+# its own DB so parallel runs never share one. xdist workers inherit the
+# controller's env, so a worker always overrides it with its own path.
+_worker = os.environ.get("PYTEST_XDIST_WORKER")
+if _worker or not os.environ.get("MYROAD_DB"):
+    os.environ["MYROAD_DB"] = str(
+        Path(tempfile.mkdtemp(prefix=f"myroad-{_worker or 'main'}-")) / "test.db"
+    )
 
 import pytest
 
