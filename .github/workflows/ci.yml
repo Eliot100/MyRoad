@@ -59,7 +59,7 @@ jobs:
       - name: Run core unit tests (persistence + agent tools + UI + secrets)
         env:
           CONTENT_DIR: ${{ github.workspace }}/packages/core/content
-        run: pytest -q
+        run: pytest -q -n auto
 
   docker-image:
     runs-on: ubuntu-latest
