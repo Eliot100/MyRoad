@@ -50,6 +50,34 @@
   {% set gap = open_index|default(0) %}
   <section class="card map-card">
     <h2 id="track" tabindex="-1">{{ t('path_map') }}</h2>
+    {#- World map (approved option B): each שלב is a ring of משבצות, the בדיקה tile sits at the top.
+        Drawn by worldmap.js from this JSON; the list below stays as the no-JS and screen reader view. -#}
+    {% set wm = namespace(stages=[]) %}
+    {% for tp in topics %}
+      {% set first_ix = tp.steps[0].index if tp.steps else 0 %}
+      {% set tiles = [] %}
+      {% for st in tp.steps %}
+        {% set ahead = use_linear and (not read_only) and (gap < total) and (st.index > gap) %}
+        {% set _ = tiles.append({"id": st.blockId, "title": st.title, "review": st.kind == 'review', "check": loop.last and tp.steps|length > 1,
+             "state": "done" if st.done else ("cur" if (st.current and not read_only) else ("lock" if ahead else "open")), "ix": st.index}) %}
+      {% endfor %}
+      {% set sstate = "done" if tp.complete else ("cur" if (tp.current and not read_only) else ("lock" if (use_linear and not read_only and gap < total and first_ix > gap) else "open")) %}
+      {% set _ = wm.stages.append({"id": tp.id, "title": tp.title, "state": sstate, "done": tp.doneCount, "total": tp.stepCount, "tiles": tiles}) %}
+    {% endfor %}
+    {% set preview = ui_preview_on() %}
+    <div class="world-map" id="world-map" data-path="{{ doc.pathId }}" data-read-only="{{ 1 if read_only else 0 }}" data-preview="{{ 1 if preview else 0 }}"
+         data-stages="{{ wm.stages|tojson|forceescape }}"
+         data-i18n="{{ {"here": t('world_here'), "stage": t('world_stage_n', n='{n}'), "cells": t('world_cells', done='{done}', total='{total}'), "end": t('world_end'), "check": t('world_check'), "review": t('world_review'), "done": t('linear_done'), "open": t('linear_open'), "lock": t('linear_ahead'), "label": t('world_map_label'), "level": t('world_level', n='{n}')}|tojson|forceescape }}"
+         data-title="{{ meta.title }}" hidden>
+      {% if preview %}<p class="world-sample">{{ t('world_sample') }}</p>{% endif %}
+      <div class="world-canvas"></div>
+      <div class="world-legend" aria-hidden="true"></div>
+    </div>
+    {% if not read_only %}
+    <form method="post" action="/play/{{ doc.pathId }}/start" id="world-go" hidden><input type="hidden" name="node" value="" /></form>
+    {% endif %}
+    <details class="world-list" open>
+    <summary>{{ t('world_list') }}</summary>
     {% if use_linear %}
     <p class="lede">{{ t('linear_map_lede') }}</p>
     <div class="linear-rows" data-map="linear">
@@ -153,6 +181,7 @@
       {% endfor %}
     </div>
     {% endif %}
+    </details>
 
     <div class="row map-actions">
       {% if read_only %}
@@ -183,4 +212,5 @@
   </footer>
   {#- Scrolls the current station (#here) into view on load; the map works the same without it. -#}
   <script src="/static/platform.js" defer></script>
+  <script src="/static/worldmap.js" defer></script>
 {% endblock %}

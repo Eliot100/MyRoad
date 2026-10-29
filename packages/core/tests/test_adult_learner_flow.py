@@ -128,8 +128,9 @@ def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
     assert 'class="station-list" data-stations="22"' in html
     assert html.count('<li class="station ') == N_TOPICS
     assert "topic-diagram" not in html  # the big one-box-per-topic diagram is for short paths
-    assert html.count("<details") == N_TOPICS and html.count("<details open") == 1
-    assert "Tile 1 of 22" in html and "0 of 22 tiles done" in html
+    assert html.count("<details") == N_TOPICS + 1 and html.count("<details open") == 1
+    assert '<details class="world-list" open>' in html  # the no-JS list under the world map
+    assert "Stage 1 of 22" in html and "0 of 22 stages done" in html
     assert html.count('class="mini-bar"') == N_TOPICS
 
     # Finish the first station (learn + practice), then the map shows it done and opens the next.
@@ -141,7 +142,7 @@ def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
     assert 'class="station done' in first and "2/2 steps" in first and 'aria-valuenow="100"' in first
     second = html[html.find('data-topic-id="t01"') - 60:html.find('data-topic-id="t02"')]
     assert "station current" in second and "<details open" in second and "0/2 steps" in second
-    assert "Tile 2 of 22" in html and "1 of 22 tiles done" in html
+    assert "Stage 2 of 22" in html and "1 of 22 stages done" in html
     # Steps inside a station are listed with their state.
     assert first.count('class="step-row done') == 2
 
@@ -168,7 +169,7 @@ def test_review_step_has_badge_and_lists_mixed_topics(adult_app) -> None:
     chips = re.findall(r'class="review-topic-chip" data-topic-id="([^"]+)"[^>]*>\s*([^<]*)<', card)
     assert [cid for cid, _ in chips] == ["t03", "t04"]
     assert "Topic 3" in chips[0][1] and "Topic 4" in chips[1][1]
-    assert "Tile 6 of 22" in page.text
+    assert "Stage 6 of 22" in page.text
 
     plain = _step_card(c.get(f"/play/{LONG}?topic=t01").text)
     assert 'data-step-kind="understanding"' in plain
@@ -293,7 +294,7 @@ def test_home_shows_adult_group_and_continue_resumes_last_step(adult_app) -> Non
     card = _step_card(resumed.text)
     # Step text is bidi-isolated (#56): the "1" sits in its own <bdi>.
     assert 'data-node-type="practice"' in card and "תרגול 1" in re.sub(r"</?bdi[^>]*>", "", card)
-    assert "Step 4 of" in resumed.text
+    assert "Stage " in resumed.text and "Tile " in resumed.text
 
 
 

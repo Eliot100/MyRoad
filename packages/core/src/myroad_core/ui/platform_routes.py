@@ -1594,6 +1594,8 @@ def register_platform_routes(
     templates.env.filters["content_lang"] = content_lang
     templates.env.filters["short_date"] = short_date
     templates.env.filters["days_ago"] = days_ago
+    # View-only: the road world map shows sample review levels only in UI preview.
+    templates.env.globals["ui_preview_on"] = preview_enabled
 
 
     @app.get("/road/{path_id}", response_class=HTMLResponse)
