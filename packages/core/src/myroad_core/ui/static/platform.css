@@ -1,10 +1,51 @@
 /* MyRoad platform shell — age-agnostic. "Ink & teal": near-black ink, one teal accent, hairline
    borders, no shadows, no filled pills, no decorative emoji. */
 :root {
-  /* Road world map: its own night surface in both themes. */
-  --world-bg: #0a0e0d;
-  --world-ink: #e9efed;
-  --world-muted: #b4bfbc;
+  /* Road world map: every --world-* token has a light value here and a dark value in the dark blocks. */
+  --world-bg: linear-gradient(180deg, #fbfcfc 0%, #f2f6f5 100%);
+  --world-edge: rgba(15, 40, 36, .08);
+  --world-ink: #0b0f0e;
+  --world-muted: #4a5553;
+  --world-contour: rgba(15, 118, 110, .05);
+  --world-plate-a: #ffffff;
+  --world-plate-b: #f6f9f8;
+  --world-plate-cur-a: #f2fbf9;
+  --world-plate-cur-b: #e3f3f0;
+  --world-plate-line: rgba(15, 40, 36, .09);
+  --world-ring-track: #e1e8e6;
+  --world-ring-full: #0f766e;
+  --world-teal: #14a093;
+  --world-road-off: #e3e9e7;
+  --world-road-dash: #b9c5c2;
+  --world-stage: #0f766e;
+  --world-stage-lock: #5b6866;
+  --world-title: #0b0f0e;
+  --world-title-lock: #4a5553;
+  --world-meta: #4a5553;
+  --world-tile-done-a: #1aa596;
+  --world-tile-done-b: #0f766e;
+  --world-tile-done-lip: #0a4f49;
+  --world-tile-done-glyph: #ffffff;
+  --world-tile-open-a: #ffffff;
+  --world-tile-open-b: #eef5f3;
+  --world-tile-open-lip: #cddbd8;
+  --world-tile-open-glyph: #0f766e;
+  --world-tile-lock-a: #eef1f0;
+  --world-tile-lock-b: #e4e9e7;
+  --world-tile-lock-lip: #cfd6d4;
+  --world-tile-lock-glyph: #7d8987;
+  --world-level-on: #0f766e;
+  --world-level-decay: #a87d0a;
+  --world-level-off: #d9e0de;
+  --world-check-ring: #c9a227;
+  --world-here-ring: #0f766e;
+  --world-here-line: #0f766e;
+  --world-here-pill: #0f766e;
+  --world-here-ink: #ffffff;
+  --world-gold-a: #f4d470;
+  --world-gold-b: #b8860b;
+  --world-gold-glyph: #ffffff;
+  --world-end-ink: #7a5a06;
   --bg: #ffffff;
   --card: #ffffff;
   --ink: #0b0f0e;
@@ -1142,6 +1183,50 @@ button.linear-tile { cursor: pointer; }
     --tint-agent: #241d38;
     --tint-agent-line: #4c3d7a;
     --agent-ink: #c4b5fd;
+    --world-bg: #0a0e0d;
+    --world-edge: rgba(255, 255, 255, .06);
+    --world-ink: #e9efed;
+    --world-muted: #b4bfbc;
+    --world-contour: rgba(255, 255, 255, .035);
+    --world-plate-a: #1b2523;
+    --world-plate-b: #0f1514;
+    --world-plate-cur-a: #173a36;
+    --world-plate-cur-b: #0f1a18;
+    --world-plate-line: rgba(255, 255, 255, .06);
+    --world-ring-track: #25302e;
+    --world-ring-full: #0f766e;
+    --world-teal: #14a093;
+    --world-road-off: #1f2a28;
+    --world-road-dash: #334240;
+    --world-stage: #5fd3c4;
+    --world-stage-lock: #8b9895;
+    --world-title: #ffffff;
+    --world-title-lock: #a3aeab;
+    --world-meta: #a3aeab;
+    --world-tile-done-a: #1aa596;
+    --world-tile-done-b: #0f766e;
+    --world-tile-done-lip: #0a4f49;
+    --world-tile-done-glyph: #ffffff;
+    --world-tile-open-a: #13302d;
+    --world-tile-open-b: #0f2624;
+    --world-tile-open-lip: #0a1a18;
+    --world-tile-open-glyph: #5fd3c4;
+    --world-tile-lock-a: #2a3432;
+    --world-tile-lock-b: #222b29;
+    --world-tile-lock-lip: #1a2220;
+    --world-tile-lock-glyph: #56625f;
+    --world-level-on: #5fd3c4;
+    --world-level-decay: #c9a227;
+    --world-level-off: #2a3432;
+    --world-check-ring: #f0c75e;
+    --world-here-ring: #5fd3c4;
+    --world-here-line: #ffffff;
+    --world-here-pill: #ffffff;
+    --world-here-ink: #0f766e;
+    --world-gold-a: #f6d77a;
+    --world-gold-b: #b8860b;
+    --world-gold-glyph: #ffffff;
+    --world-end-ink: #f6d77a;
     color-scheme: dark;
   }
 }
@@ -1176,6 +1261,50 @@ button.linear-tile { cursor: pointer; }
   --tint-agent: #241d38;
   --tint-agent-line: #4c3d7a;
   --agent-ink: #c4b5fd;
+  --world-bg: #0a0e0d;
+  --world-edge: rgba(255, 255, 255, .06);
+  --world-ink: #e9efed;
+  --world-muted: #b4bfbc;
+  --world-contour: rgba(255, 255, 255, .035);
+  --world-plate-a: #1b2523;
+  --world-plate-b: #0f1514;
+  --world-plate-cur-a: #173a36;
+  --world-plate-cur-b: #0f1a18;
+  --world-plate-line: rgba(255, 255, 255, .06);
+  --world-ring-track: #25302e;
+  --world-ring-full: #0f766e;
+  --world-teal: #14a093;
+  --world-road-off: #1f2a28;
+  --world-road-dash: #334240;
+  --world-stage: #5fd3c4;
+  --world-stage-lock: #8b9895;
+  --world-title: #ffffff;
+  --world-title-lock: #a3aeab;
+  --world-meta: #a3aeab;
+  --world-tile-done-a: #1aa596;
+  --world-tile-done-b: #0f766e;
+  --world-tile-done-lip: #0a4f49;
+  --world-tile-done-glyph: #ffffff;
+  --world-tile-open-a: #13302d;
+  --world-tile-open-b: #0f2624;
+  --world-tile-open-lip: #0a1a18;
+  --world-tile-open-glyph: #5fd3c4;
+  --world-tile-lock-a: #2a3432;
+  --world-tile-lock-b: #222b29;
+  --world-tile-lock-lip: #1a2220;
+  --world-tile-lock-glyph: #56625f;
+  --world-level-on: #5fd3c4;
+  --world-level-decay: #c9a227;
+  --world-level-off: #2a3432;
+  --world-check-ring: #f0c75e;
+  --world-here-ring: #5fd3c4;
+  --world-here-line: #ffffff;
+  --world-here-pill: #ffffff;
+  --world-here-ink: #0f766e;
+  --world-gold-a: #f6d77a;
+  --world-gold-b: #b8860b;
+  --world-gold-glyph: #ffffff;
+  --world-end-ink: #f6d77a;
   color-scheme: dark;
 }
 :root[data-theme="light"] { color-scheme: light; }
@@ -1486,9 +1615,9 @@ html[data-motion="reduce"] .side { transition: none !important; }
 .user-row .uname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ibtn[aria-current="page"] { border-color: var(--accent); color: var(--accent); }
 
-/* Road world map (נתיב, approved option B). A deliberate dark "night" surface in both themes:
-   the glow, gold end and teal roads read only on dark, so the panel keeps its own colors. */
-.world-map { margin-block: var(--space-3) var(--space-4, 1.5rem); padding: 1rem .5rem 1.25rem; border-radius: 24px; background: var(--world-bg); color: var(--world-ink); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); overflow: hidden; }
+/* Road world map (נתיב, approved option B). Follows the theme: a soft light surface in light,
+   a night surface in dark. All colors are --world-* tokens. */
+.world-map { margin-block: var(--space-3) var(--space-4, 1.5rem); padding: 1rem .5rem 1.25rem; border-radius: 24px; background: var(--world-bg); color: var(--world-ink); box-shadow: inset 0 0 0 1px var(--world-edge); overflow: hidden; }
 .world-map[hidden] { display: none; }
 .world-canvas { inline-size: 100%; }
 .world-canvas svg { display: block; margin-inline: auto; max-inline-size: 100%; height: auto; font-family: inherit; }

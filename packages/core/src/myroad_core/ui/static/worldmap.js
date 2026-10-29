@@ -21,8 +21,13 @@
   function clip(s, n) { s = String(s); return s.length > n ? s.slice(0, n - 1) + "…" : s; }
   function sampleLevel(t) { return t.state === "done" ? 1 + ((t.ix * 3) % 5) : 0; }
 
-  var C = { done: ["#1aa596", "#0f766e", "#0a4f49", "#ffffff"], cur: ["#1aa596", "#0f766e", "#0a4f49", "#ffffff"],
-            open: ["#13302d", "#0f2624", "#0a1a18", "#5fd3c4"], lock: ["#2a3432", "#222b29", "#1a2220", "#56625f"] };
+  /* Every color is a --world-* token from platform.css, read at draw time, so the map follows the
+     light or dark theme. A theme switch redraws it. */
+  var tk = {};
+  function v(n) { return tk[n] || (tk[n] = getComputedStyle(host).getPropertyValue("--world-" + n).trim() || "currentColor"); }
+  function pal(st) { return ["a", "b", "lip", "glyph"].map(function (k) { return v("tile-" + st + "-" + k); }); }
+  var C = {};
+  function palettes() { tk = {}; C = { done: pal("done"), cur: pal("done"), open: pal("open"), lock: pal("lock") }; }
   var gid = 0;
 
   function glyph(t, c, s) {
@@ -32,11 +37,11 @@
     return '<circle r="' + 4.5 * s + '" fill="' + c + '"/>';
   }
   function levelArc(r, lv, decay) {
-    var o = "", on = decay ? "#c9a227" : "#5fd3c4";
+    var o = "", on = decay ? v("level-decay") : v("level-on");
     for (var k = 0; k < 5; k++) {
       var a0 = (-90 + k * 72 + 5) * Math.PI / 180, a1 = a0 + 62 * Math.PI / 180;
       o += '<path d="M' + (r * Math.cos(a0)).toFixed(2) + "," + (r * Math.sin(a0)).toFixed(2) + "A" + r + "," + r + " 0 0,1 " + (r * Math.cos(a1)).toFixed(2) + "," + (r * Math.sin(a1)).toFixed(2) +
-        '" stroke="' + (k < lv ? on : "#2a3432") + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+        '" stroke="' + (k < lv ? on : v("level-off")) + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
     }
     return o;
   }
@@ -46,10 +51,10 @@
     if (t.check) {
       var s = r * 1.5, sh = '<rect x="' + (-s / 2) + '" y="' + (-s / 2) + '" width="' + s + '" height="' + s + '" rx="' + s * 0.22 + '" transform="rotate(45)"';
       o += '<g transform="translate(0,' + lip + ')">' + sh + ' fill="' + P[2] + '"/></g>' + sh + ' fill="url(#' + id + ')"/>';
-      if (t.state === "done") o += sh + ' fill="none" stroke="#f0c75e" stroke-width="2"/>';
+      if (t.state === "done") o += sh + ' fill="none" stroke="' + v("check-ring") + '" stroke-width="2"/>';
     } else {
       o += '<circle cy="' + lip + '" r="' + r + '" fill="' + P[2] + '"/><circle r="' + r + '" fill="url(#' + id + ')"/>';
-      if (t.state === "open") o += '<circle r="' + (r - 1) + '" fill="none" stroke="#14a093" stroke-width="2"/>';
+      if (t.state === "open") o += '<circle r="' + (r - 1) + '" fill="none" stroke="' + v("teal") + '" stroke-width="2"/>';
     }
     o += glyph(t, P[3], size / 30);
     if (preview && t.review) { var lv = sampleLevel(t); o += levelArc(r + 4, lv, t.state === "done" && t.ix % 4 === 1); }
@@ -68,39 +73,39 @@
       return { x: x, y: r * ch + ch / 2 };
     });
     var o = '<svg xmlns="' + NS + '" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + " " + H + '" role="group" aria-label="' + esc(L.label) + '">' +
-      '<defs><radialGradient id="wm-pl" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#1b2523"/><stop offset="1" stop-color="#0f1514"/></radialGradient>' +
-      '<radialGradient id="wm-plc" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#173a36"/><stop offset="1" stop-color="#0f1a18"/></radialGradient>' +
+      '<defs><radialGradient id="wm-pl" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="' + v("plate-a") + '"/><stop offset="1" stop-color="' + v("plate-b") + '"/></radialGradient>' +
+      '<radialGradient id="wm-plc" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="' + v("plate-cur-a") + '"/><stop offset="1" stop-color="' + v("plate-cur-b") + '"/></radialGradient>' +
       '<filter id="wm-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
-      '<linearGradient id="wm-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6d77a"/><stop offset="1" stop-color="#b8860b"/></linearGradient></defs>';
+      '<linearGradient id="wm-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + v("gold-a") + '"/><stop offset="1" stop-color="' + v("gold-b") + '"/></linearGradient></defs>';
     var seed = 11, rnd = function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
     o += '<g aria-hidden="true">';
-    for (var k = 0; k < 6; k++) { var ex = rnd() * W, ey = rnd() * H; for (var j = 1; j < 6; j++) o += '<ellipse cx="' + ex.toFixed(0) + '" cy="' + ey.toFixed(0) + '" rx="' + j * 48 + '" ry="' + j * 30 + '" fill="none" stroke="#fff" stroke-opacity=".035"/>'; }
+    for (var k = 0; k < 6; k++) { var ex = rnd() * W, ey = rnd() * H; for (var j = 1; j < 6; j++) o += '<ellipse cx="' + ex.toFixed(0) + '" cy="' + ey.toFixed(0) + '" rx="' + j * 48 + '" ry="' + j * 30 + '" fill="none" stroke="' + v("contour") + '"/>'; }
     for (var i = 0; i < n - 1; i++) {
       var a = pos[i], b = pos[i + 1], lit = stages[i].state === "done" && stages[i + 1].state !== "lock", my = (a.y + b.y) / 2;
       var d = Math.abs(a.y - b.y) < 1 ? "M" + a.x + "," + a.y + "L" + b.x + "," + b.y : "M" + a.x + "," + a.y + "C" + a.x + "," + my + " " + b.x + "," + my + " " + b.x + "," + b.y;
       /* No SVG filter on roads: a straight road has a zero-width box and a filter would hide it. */
-      if (lit) o += '<path d="' + d + '" stroke="#14a093" stroke-opacity=".22" stroke-width="16" fill="none" stroke-linecap="round"/>';
-      o += '<path d="' + d + '" stroke="' + (lit ? "#14a093" : "#1f2a28") + '" stroke-width="' + (lit ? 6 : 5) + '" fill="none" stroke-linecap="round"/>';
-      if (!lit) o += '<path d="' + d + '" stroke="#334240" stroke-width="2" stroke-dasharray="2 10" fill="none" stroke-linecap="round"/>';
+      if (lit) o += '<path d="' + d + '" stroke="' + v("teal") + '" stroke-opacity=".22" stroke-width="16" fill="none" stroke-linecap="round"/>';
+      o += '<path d="' + d + '" stroke="' + (lit ? v("teal") : v("road-off")) + '" stroke-width="' + (lit ? 6 : 5) + '" fill="none" stroke-linecap="round"/>';
+      if (!lit) o += '<path d="' + d + '" stroke="' + v("road-dash") + '" stroke-width="2" stroke-dasharray="2 10" fill="none" stroke-linecap="round"/>';
     }
     o += "</g>";
     var marker = "";
     stages.forEach(function (s, i) {
       var p = pos[i], cur = s.state === "cur", lock = s.state === "lock";
       o += '<g transform="translate(' + p.x.toFixed(1) + "," + p.y + ')"><g aria-hidden="true">';
-      o += '<circle r="' + (R + 34) + '" fill="url(#' + (cur ? "wm-plc" : "wm-pl") + ')" stroke="' + (cur ? "#14a093" : "#ffffff") + '" stroke-opacity="' + (cur ? 0.6 : 0.06) + '" stroke-width="' + (cur ? 2 : 1) + '"/>';
-      if (cur) o += '<circle r="' + (R + 46) + '" fill="none" stroke="#14a093" stroke-opacity=".18" stroke-width="10"/>';
-      o += '<circle r="' + R + '" fill="none" stroke="#25302e" stroke-width="3"/>';
+      o += '<circle r="' + (R + 34) + '" fill="url(#' + (cur ? "wm-plc" : "wm-pl") + ')" stroke="' + (cur ? v("teal") : v("plate-line")) + '" stroke-opacity="' + (cur ? 0.6 : 1) + '" stroke-width="' + (cur ? 2 : 1) + '"/>';
+      if (cur) o += '<circle r="' + (R + 46) + '" fill="none" stroke="' + v("teal") + '" stroke-opacity=".18" stroke-width="10"/>';
+      o += '<circle r="' + R + '" fill="none" stroke="' + v("ring-track") + '" stroke-width="3"/>';
       var tn = s.tiles.length, dn = s.tiles.filter(function (t) { return t.state === "done"; }).length;
       if (dn && tn) {
         var fr = dn / tn, an = fr * 2 * Math.PI;
-        o += fr >= 1 ? '<circle r="' + R + '" fill="none" stroke="#0f766e" stroke-width="3"/>' :
-          '<path d="M0,' + (-R) + "A" + R + "," + R + " 0 " + (an > Math.PI ? 1 : 0) + ",1 " + (R * Math.sin(an)).toFixed(1) + "," + (-R * Math.cos(an)).toFixed(1) + '" stroke="#14a093" stroke-width="3" fill="none"/>';
+        o += fr >= 1 ? '<circle r="' + R + '" fill="none" stroke="' + v("ring-full") + '" stroke-width="3"/>' :
+          '<path d="M0,' + (-R) + "A" + R + "," + R + " 0 " + (an > Math.PI ? 1 : 0) + ",1 " + (R * Math.sin(an)).toFixed(1) + "," + (-R * Math.cos(an)).toFixed(1) + '" stroke="' + v("teal") + '" stroke-width="3" fill="none"/>';
       }
-      o += '<text y="-16" text-anchor="middle" font-size="12" font-weight="600" fill="' + (lock ? "#8b9895" : "#5fd3c4") + '">' + esc(fill(L.stage, { n: i + 1 })) + "</text>";
+      o += '<text y="-16" text-anchor="middle" font-size="12" font-weight="600" fill="' + (lock ? v("stage-lock") : v("stage")) + '">' + esc(fill(L.stage, { n: i + 1 })) + "</text>";
       var title = clip(s.title, wide ? 20 : 18);
-      o += '<text y="10" text-anchor="middle" font-size="' + (title.length > 14 ? 14 : 17) + '" font-weight="700" fill="' + (lock ? "#a3aeab" : "#ffffff") + '">' + esc(title) + "</text>";
-      o += '<text y="34" text-anchor="middle" font-size="12" fill="#a3aeab">' + esc(fill(L.cells, { done: s.done, total: s.total })) + "</text>";
+      o += '<text y="10" text-anchor="middle" font-size="' + (title.length > 14 ? 14 : 17) + '" font-weight="700" fill="' + (lock ? v("title-lock") : v("title")) + '">' + esc(title) + "</text>";
+      o += '<text y="34" text-anchor="middle" font-size="12" fill="' + v("meta") + '">' + esc(fill(L.cells, { done: s.done, total: s.total })) + "</text>";
       o += "</g>";
       s.tiles.forEach(function (t, k) {
         var ang = (k + 1) / tn * 2 * Math.PI, x = R * Math.sin(ang), y = -R * Math.cos(ang);
@@ -119,19 +124,22 @@
           /* The marker sits outside the ring, along the tile's own direction, so it never covers the stage name. */
           var ux = Math.sin(ang), uy = -Math.cos(ang), off = sz / 2 + 30, bw = Math.max(76, L.here.length * 8 + 24);
           var mx = p.x + x + ux * off, myy = p.y + y + uy * off;
-          marker = '<g class="wm-here" aria-hidden="true"><circle cx="' + (p.x + x).toFixed(1) + '" cy="' + (p.y + y).toFixed(1) + '" r="' + (sz / 2 + 8) + '" fill="none" stroke="#5fd3c4" stroke-width="2" opacity=".85"/>' +
-            '<line x1="' + (p.x + x + ux * (sz / 2 + 8)).toFixed(1) + '" y1="' + (p.y + y + uy * (sz / 2 + 8)).toFixed(1) + '" x2="' + (mx - ux * 12).toFixed(1) + '" y2="' + (myy - uy * 12).toFixed(1) + '" stroke="#ffffff" stroke-width="2"/>' +
-            '<g transform="translate(' + mx.toFixed(1) + "," + myy.toFixed(1) + ')"><rect x="' + (-bw / 2) + '" y="-15" width="' + bw + '" height="30" rx="15" fill="#ffffff"/>' +
-            '<text y="5" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">' + esc(L.here) + "</text></g></g>";
+          /* Keep the label pill inside the frame at every width (RTL and LTR). */
+          mx = Math.max(bw / 2 + 8, Math.min(W - bw / 2 - 8, mx));
+          myy = Math.max(23, Math.min(H - 23, myy));
+          marker = '<g class="wm-here" aria-hidden="true"><circle cx="' + (p.x + x).toFixed(1) + '" cy="' + (p.y + y).toFixed(1) + '" r="' + (sz / 2 + 8) + '" fill="none" stroke="' + v("here-ring") + '" stroke-width="2" opacity=".85"/>' +
+            '<line x1="' + (p.x + x + ux * (sz / 2 + 8)).toFixed(1) + '" y1="' + (p.y + y + uy * (sz / 2 + 8)).toFixed(1) + '" x2="' + (mx - ux * 12).toFixed(1) + '" y2="' + (myy - uy * 12).toFixed(1) + '" stroke="' + v("here-line") + '" stroke-width="2"/>' +
+            '<g transform="translate(' + mx.toFixed(1) + "," + myy.toFixed(1) + ')"><rect x="' + (-bw / 2) + '" y="-15" width="' + bw + '" height="30" rx="15" fill="' + v("here-pill") + '"/>' +
+            '<text y="5" text-anchor="middle" font-size="13" font-weight="700" fill="' + v("here-ink") + '">' + esc(L.here) + "</text></g></g>";
         }
       });
       o += "</g>";
     });
     var last = pos[n - 1], sx = wide ? last.x : W / 2, sy = last.y + ch / 2 + 50;
-    o += '<g aria-hidden="true"><path d="M' + last.x + "," + (last.y + R + 34) + "L" + sx + "," + (sy - 40) + '" stroke="#1f2a28" stroke-width="5"/>' +
-      '<g transform="translate(' + sx + "," + sy + ')" filter="url(#wm-glow)"><path d="M0,-40 L35,-20 35,20 0,40 -35,20 -35,-20Z" fill="url(#wm-gold)"/><path d="M-16,12 L-4,-10 3,2 8,-5 18,12Z" fill="#fff" opacity=".9"/></g>' +
-      '<text x="' + sx + '" y="' + (sy + 66) + '" text-anchor="middle" font-size="16" font-weight="700" fill="#f6d77a">' + esc(L.end) + "</text>" +
-      '<text x="' + sx + '" y="' + (sy + 86) + '" text-anchor="middle" font-size="12" fill="#a3aeab">' + esc(clip(host.dataset.title || "", 34)) + "</text></g>";
+    o += '<g aria-hidden="true"><path d="M' + last.x + "," + (last.y + R + 34) + "L" + sx + "," + (sy - 40) + '" stroke="' + v("road-off") + '" stroke-width="5"/>' +
+      '<g transform="translate(' + sx + "," + sy + ')" filter="url(#wm-glow)"><path d="M0,-40 L35,-20 35,20 0,40 -35,20 -35,-20Z" fill="url(#wm-gold)"/><path d="M-16,12 L-4,-10 3,2 8,-5 18,12Z" fill="' + v("gold-glyph") + '" opacity=".9"/></g>' +
+      '<text x="' + sx + '" y="' + (sy + 66) + '" text-anchor="middle" font-size="16" font-weight="700" fill="' + v("end-ink") + '">' + esc(L.end) + "</text>" +
+      '<text x="' + sx + '" y="' + (sy + 86) + '" text-anchor="middle" font-size="12" fill="' + v("meta") + '">' + esc(clip(host.dataset.title || "", 34)) + "</text></g>";
     canvas.innerHTML = o + marker + "</svg>";
   }
 
@@ -157,8 +165,11 @@
   if (fh) fh.remove();
   host.hidden = false;
   if (list) list.open = false;
-  legend();
-  draw();
+  function paint() { palettes(); legend(); draw(); }
+  paint();
+  if (window.MutationObserver) new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq && mq.addEventListener) mq.addEventListener("change", paint);
   var tm;
   window.addEventListener("resize", function () { clearTimeout(tm); tm = setTimeout(draw, 120); });
   var here = canvas.querySelector(".wm-here");
