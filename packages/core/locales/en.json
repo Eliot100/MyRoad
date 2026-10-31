@@ -476,5 +476,20 @@
   "world_list": "Tile list",
   "world_map_label": "Track: stages and tiles",
   "world_sample": "Sample data: review levels",
-  "world_level": "Level {n} of 5"
+  "world_level": "Level {n} of 5",
+  "placement_result_kicker": "Placement",
+  "placement_result_h": "Placement complete",
+  "placement_result_lede": "We found your gap. Your road continues from there.",
+  "placement_gap_label": "Your gap",
+  "placement_gap_note": "Roads before the gap stay open for review.",
+  "placement_road_level": "Level {n}",
+  "placement_road_minutes": "{n} min",
+  "placement_start": "Start",
+  "placement_other_roads": "Other roads",
+  "placement_none": "No next road yet. You can pick from the other roads.",
+  "placement_line_aria": "Where the gap sits in the chain",
+  "placement_stop": "Road {n}",
+  "placement_stop_gap": "Road {n}, your gap",
+  "placement_sample_note": "Level and minutes are sample data until the server returns them.",
+  "placement_line_caption": "Road {n} of {total}"
 }

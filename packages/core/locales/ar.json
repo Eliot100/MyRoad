@@ -476,5 +476,20 @@
   "world_list": "قائمة المربعات",
   "world_map_label": "المسار: مراحل ومربعات",
   "world_sample": "بيانات نموذجية: مستويات المراجعة",
-  "world_level": "مستوى {n} من 5"
+  "world_level": "مستوى {n} من 5",
+  "placement_result_kicker": "اختبار تحديد المستوى",
+  "placement_result_h": "اكتمل اختبار تحديد المستوى",
+  "placement_result_lede": "وجدنا الفجوة لديك. طريقك يستمر من هناك.",
+  "placement_gap_label": "الفجوة لديك",
+  "placement_gap_note": "الطرق التي قبل الفجوة تبقى مفتوحة للمراجعة.",
+  "placement_road_level": "المستوى {n}",
+  "placement_road_minutes": "{n} دقيقة",
+  "placement_start": "ابدأ",
+  "placement_other_roads": "طرق أخرى",
+  "placement_none": "لا يوجد طريق تالٍ بعد. يمكنك الاختيار من الطرق الأخرى.",
+  "placement_line_aria": "موقع الفجوة في السلسلة",
+  "placement_stop": "الطريق {n}",
+  "placement_stop_gap": "الطريق {n}، الفجوة لديك",
+  "placement_sample_note": "المستوى والدقائق بيانات تجريبية حتى يعيدها الخادم.",
+  "placement_line_caption": "الطريق {n} من {total}"
 }

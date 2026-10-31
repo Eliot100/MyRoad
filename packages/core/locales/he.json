@@ -476,5 +476,20 @@
   "world_list": "רשימת המשבצות",
   "world_map_label": "נתיב: שלבים ומשבצות",
   "world_sample": "נתוני דוגמה: רמות החזרה",
-  "world_level": "רמה {n} מתוך 5"
+  "world_level": "רמה {n} מתוך 5",
+  "placement_result_kicker": "מבדק",
+  "placement_result_h": "המבדק הושלם",
+  "placement_result_lede": "מצאנו את הפער שלך. משם הדרך שלך ממשיכה.",
+  "placement_gap_label": "הפער שלך",
+  "placement_gap_note": "הדרכים שלפני הפער נשארות פתוחות לחזרה.",
+  "placement_road_level": "רמה {n}",
+  "placement_road_minutes": "{n} דקות",
+  "placement_start": "התחל",
+  "placement_other_roads": "דרכים אחרות",
+  "placement_none": "עוד לא נמצאה דרך להמשך. אפשר לבחור מהדרכים האחרות.",
+  "placement_line_aria": "מקום הפער בשרשרת",
+  "placement_stop": "דרך {n}",
+  "placement_stop_gap": "דרך {n}, הפער שלך",
+  "placement_sample_note": "רמה ודקות הן נתוני דוגמה עד שהשרת יחזיר אותם.",
+  "placement_line_caption": "דרך {n} מתוך {total}"
 }
