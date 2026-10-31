@@ -1890,11 +1890,20 @@ def register_platform_routes(
             swap_focus=swap_focus if hx else None,
             status_oob=hx,
         )
+        if answer is None and block and not locked_by and sess.get("userId"):
+            _step_event(sess, block, "step_view")
         template = "_step_swap.html" if hx else "play.html"
         response = templates.TemplateResponse(request, template, ctx)
         response.headers["Vary"] = "HX-Request"
         response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return response
+
+    def _step_event(sess: dict[str, Any], block: dict[str, Any], kind: str, ok: bool | None = None) -> None:
+        """Per-step measurement (#25); never breaks the player."""
+        try:
+            store.record_step_event(sess["userId"], sess["pathId"], block["blockId"], kind, ok=ok)
+        except Exception:  # pragma: no cover - measurement is best-effort
+            pass
 
     def _block_index(blocks: list[dict], node_id: str) -> int | None:
         for i, block in enumerate(blocks):
@@ -1991,6 +2000,8 @@ def register_platform_routes(
         blocks = doc.get("blocks") or []
         block = blocks[sess["index"]] if blocks else None
         if block:
+            if block["blockId"] not in sess["mastered"]:
+                _step_event(sess, block, "mastery", ok=True)
             sess["mastered"].add(block["blockId"])
             sess["last_result"] = None
             kids = _kids_payload(block)
@@ -2078,6 +2089,9 @@ def register_platform_routes(
             "ok": ok,
             "text": (kids.get("feedback_ok") or "✓") if ok else (kids.get("feedback_try") or t(locale, "gate_practice")),
         }
+        _step_event(sess, block, "answer", ok=ok)
+        if ok and block["blockId"] not in sess["mastered"]:
+            _step_event(sess, block, "mastery", ok=True)
         if ok:
             sess["mastered"].add(block["blockId"])
             sess["last_result"] = {"ok": True, "text": kids.get("feedback_ok") or "✓"}
