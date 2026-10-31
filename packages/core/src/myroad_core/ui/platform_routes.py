@@ -12,6 +12,7 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.content.variants import select_variants
 from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
 from myroad_core.auth.captcha import captcha_site_key, captcha_verifier_from_env
 from myroad_core.auth.email_change import EMAIL_CHANGE_COOKIE
@@ -365,7 +366,7 @@ def register_platform_routes(
         )
         if not resp.ok or not resp.data:
             raise RuntimeError(f"failed to load path: {resp.errors}")
-        return resp.data["document"]
+        return select_variants(resp.data["document"], store.get_step_settings(sess.get("userId")))
 
     def _card_meta(doc: dict[str, Any], locale: str) -> dict[str, Any]:
         subject = doc.get("subject") or "general"
@@ -1125,10 +1126,11 @@ def register_platform_routes(
         return resp
 
 
-    def _road_doc(path_id: str, version_id: str | None) -> dict[str, Any]:
+    def _road_doc(path_id: str, version_id: str | None, user_id: str | None = None) -> dict[str, Any]:
         try:
             if version_id:
-                return store.get_version(path_id, version_id).model_dump(mode="json", by_alias=True)
+                doc = store.get_version(path_id, version_id).model_dump(mode="json", by_alias=True)
+                return select_variants(doc, store.get_step_settings(user_id))
         except Exception:
             pass
         return {}
@@ -1136,7 +1138,7 @@ def register_platform_routes(
     def _started_tile(request: Request, c: dict[str, Any], locale: str, preview: bool) -> dict[str, Any]:
         """Row A tile: real progress per שלב; skills / unlock / goal only as preview sample."""
         learner = _learner(request)
-        doc = _road_doc(c["pathId"], c.get("versionId"))
+        doc = _road_doc(c["pathId"], c.get("versionId"), (learner or {}).get("userId"))
         blocks = doc.get("blocks") or []
         topics = _topics_for_ui(doc, blocks, locale) if doc else []
         prog: dict[str, Any] = {}
@@ -1418,7 +1420,9 @@ def register_platform_routes(
             top["continueTotal"] = total_nodes
             top["continueTopic"] = ""
             try:
-                cdoc = store.get_version(top["pathId"], top["versionId"]).model_dump(mode="json", by_alias=True)
+                cdoc = select_variants(
+                    store.get_version(top["pathId"], top["versionId"]).model_dump(mode="json", by_alias=True)
+                )
                 cblocks = cdoc.get("blocks") or []
                 if 0 <= step_index < len(cblocks):
                     bid = cblocks[step_index]["blockId"]
@@ -1620,7 +1624,7 @@ def register_platform_routes(
         card = next((c for c in cards if c["pathId"] == path_id), None)
         if card is None:
             return RedirectResponse("/", status_code=303)
-        doc = _road_doc(path_id, card.get("versionId"))
+        doc = _road_doc(path_id, card.get("versionId"), (learner or {}).get("userId"))
         blocks = doc.get("blocks") or []
         topics = _topics_for_ui(doc, blocks, locale) if doc else []
         first = None

@@ -98,3 +98,28 @@ def test_unknown_learner_is_401(app):
 def test_get_before_any_result_is_404(app):
     c = _client(app)
     assert c.get(URL).status_code == 404
+
+
+def test_placement_routes_to_arabic_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Decision 0003: placementId + placement_route route the learner to the Arabic path."""
+    content = tmp_path / "content" / "adult"
+    content.mkdir(parents=True)
+    ar_place, ar_zero = "path_arabic_bagrut5_00_placement", "path_arabic_bagrut5_01_script"
+    zero = _mini(ar_zero, "ערבית מאפס", [])
+    zero["subject"] = "arabic"
+    zero["placement_route"] = {"from_placement": ar_place, "band_min": 1, "band_max": 3}
+    for doc in (_mini(ar_place, "מבדק ערבית", []), zero):
+        (content / f"{doc['id']}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "p.db"))
+    try:
+        c = _client(create_learner_app(store=store, seed=False, seed_content=True))
+        body = c.post(URL, json={**_answers(wrong=5), "placementId": ar_place}, headers=H).json()
+        assert body["band"] == 1 and body["recommended_road_id"] == ar_zero and body["placement_id"] == ar_place
+        assert c.get(URL, params={"placementId": ar_place}).json() == body
+        high = c.post(URL, json={**_answers(wrong=0), "placementId": ar_place}, headers=H).json()
+        assert high["band"] == 5 and high["recommended_road_id"] is None
+        s = c.post("/api/settings/steps", json={"audio": False}, headers=H).json()
+        assert s == {"audio": False, "writing": False}
+    finally:
+        store.close()
