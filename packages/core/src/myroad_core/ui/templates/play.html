@@ -17,6 +17,9 @@
 
   <section class="card path-head">
     <h1><span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if read_only %} <span class="status-pill locked">{{ t('read_only_badge') }}</span>{% endif %}</h1>
+    {% if request.query_params.get('from') == 'placement' %}
+    <aside class="placement-hint" id="placement-hint" role="status"><p>{{ t('placement_hint') }}</p><a class="text-link" href="/play/{{ doc.pathId }}?view=learn">{{ t('placement_hint_close') }}</a></aside>
+    {% endif %}
     {% include "_play_status.html" %}
   </section>
 
