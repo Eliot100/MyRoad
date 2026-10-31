@@ -131,3 +131,41 @@ def test_home_links_the_chain_when_the_roads_are_in_the_catalog(bagrut_app) -> N
     home = client.get("/?group=adult").text
     assert 'href="/series/english-bagrut5"' in home
     assert "שרשרת האנגלית" in home
+
+
+def _finish_placement(client) -> str:
+    client.post(f"/play/{PLACE}/start", data={"reset": "1"})
+    last, missed = "", False
+    for _ in range(8):
+        html = client.get(f"/play/{PLACE}?view=learn").text
+        if 'data-node-type="practice"' in html:
+            if not missed:  # one mistake puts the band on road 03
+                client.post(f"/play/{PLACE}/answer", data={"choice": "b"})
+                missed = True
+            last = client.post(f"/play/{PLACE}/answer", data={"choice": "a"}, follow_redirects=True).text
+        else:
+            last = client.post(f"/play/{PLACE}/ack", follow_redirects=True).text
+        if "pr-h" in last:
+            return last
+    return last
+
+
+def test_placement_result_shows_one_road_and_start_opens_its_first_step(bagrut_app) -> None:
+    app, _store = bagrut_app
+    client = _client(app)
+    result = _finish_placement(client)
+    assert 'id="pr-h"' in result and "המבדק הושלם" in result
+    assert "הפער שלך" in result
+    assert f'href="/play/{TIME}?view=learn"' in result  # one mistake: band 3
+    assert 'href="/roads?subject=english"' in result
+    assert "סיכום הדרך" not in result  # not the generic road summary
+    assert "נתוני דוגמה" not in result  # preview off: no sample data
+    step = client.get(f"/play/{TIME}?view=learn").text
+    assert 'class="card step-card' in step and 'data-node-type="learn"' in step and "lock-banner" not in step
+
+
+def test_placement_result_labels_sample_data_in_preview(bagrut_app, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("MYROAD_UI_PREVIEW", "1")
+    app, _store = bagrut_app
+    result = _finish_placement(_client(app))
+    assert "נתוני דוגמה" in result and "דקות" in result
