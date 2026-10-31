@@ -25,6 +25,7 @@ from myroad_core.seed import find_repo_freeze_dir, seed_golden_quadratic
 from myroad_core.store import PathStore
 from myroad_core.tools import AgentTools
 from myroad_core.ui.learner_actions import register_learner_actions
+from myroad_core.ui.placement_api import register_placement_api
 from myroad_core.ui.platform_routes import register_platform_routes
 
 UI_DIR = Path(__file__).resolve().parent
@@ -262,6 +263,7 @@ def create_learner_app(
         tools=tools,
         _corr=_corr,
     )
+    register_placement_api(app, store=path_store)
 
     return app
 
