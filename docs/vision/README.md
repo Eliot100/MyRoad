@@ -16,7 +16,7 @@
 |------|------|-------|
 | [01-vision.md](01-vision.md) | המוצר, למי הוא מיועד, מה נחשב הצלחה, מה מחוץ ל-POC | PM |
 | [02-product-spec.md](02-product-spec.md) | תפקידים, מצבים, דרך (path), גרף שלבים, ערוצים, עטיפה אישית, מדידה, i18n ו-RTL, התחברות והגדרות | PM, UX |
-| [03-agent-and-publish.md](03-agent-and-publish.md) | זרימת הסוכן, מדיניות הפרסום (כרגע רק אליוט מפרסם, D15), כלל ה-Gateway, חוזה כלים מתוקן בקצרה | PM, Path Builder, MLOps |
+| [03-agent-and-publish.md](03-agent-and-publish.md) | זרימת הסוכן, מדיניות הפרסום (הפרסום הוא בשם אליוט: אליוט או סוכן שפועל בשמו רשאים לפרסם; לא חוסמים פרסום של סוכן, D15), כלל ה-Gateway, חוזה כלים מתוקן בקצרה | PM, Path Builder, MLOps |
 | [04-architecture-and-roadmap.md](04-architecture-and-roadmap.md) | מה יש ב-main היום (מאומת מול הריפו), הרחבות סכמה מתוכננות, טבלת בעלות צוותים, אבני דרך הבאות | PM, Dev |
 | [05-decisions-log.md](05-decisions-log.md) | יומן החלטות מתוארך, כולל החלטות שהוחלפו | PM |
 | [06-content-format.md](06-content-format.md) | פורמט ה-JSON של דרך, גרסה 2: קהלים, סוג שלב, חזרה מעורבת, דרישות קדם, ציון מאוחד | PM |

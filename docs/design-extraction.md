@@ -1,6 +1,6 @@
-> **היסטורי, הוחלף.** המסמך משקף את דרישות v0 מ-2026-09-30. מה שבתוקף: החלטות שלב 0 מ-2026-10-31 (D12–D21 ב-`docs/vision/05-decisions-log.md`), `docs/product/` ומילון 09. היום רק אליוט מפרסם דרכים; תפקיד לומד בלבד ב-v1. מונחים לפי 09 (מקצוע, סדרה, דרך, שלב, משבצת).
+> **היסטורי, הוחלף.** המסמך משקף את דרישות v0 מ-2026-09-30. מה שבתוקף: החלטות שלב 0 מ-2026-10-31 (D12–D21 ב-`docs/vision/05-decisions-log.md`), `docs/product/` ומילון 09. הפרסום הוא בשם אליוט: אליוט או סוכן שפועל בשמו רשאים לפרסם; לא חוסמים פרסום של סוכן; תפקיד לומד בלבד ב-v1. מונחים לפי 09 (מקצוע, סדרה, דרך, שלב, משבצת).
 >
-> **Historical, superseded.** Current rules: stage 0 decisions of 2026-10-31 (D12–D21), `docs/product/`, glossary 09. Only Eliot publishes for now; v1 is learner-only; Arabic is in v1; out of v1: A/B, teacher chat, video, story wrapper. Lines marked [superseded] below are history.
+> **Historical, superseded.** Current rules: stage 0 decisions of 2026-10-31 (D12–D21), `docs/product/`, glossary 09. Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish; v1 is learner-only; Arabic is in v1; out of v1: A/B, teacher chat, video, story wrapper. Lines marked [superseded] below are history.
 
 # Grok chat extraction — AI Learning Platform: AI Tutors & Adaptive Paths
 
@@ -21,12 +21,12 @@ Note: The chat visibly names four generated DOCX documents and describes their c
 - Permissions must be explicit; a person or agent may act only within the actor's permissions.
 
 ### Core loop / POC definition
-- New topic/request -> gather or confirm sources -> generate a draft path -> learn through it -> rate the experience -> give feedback -> agent edits/revises -> Eliot reviews and publishes (D15) -> repeat.
+- New topic/request -> gather or confirm sources -> generate a draft path -> learn through it -> rate the experience -> give feedback -> agent edits/revises -> Eliot or an agent on his behalf publishes (D15) -> repeat.
 - The POC should demonstrate generality across subjects, ages and prior-knowledge levels, not only a fixed exam slice. A broad capability test (e.g. a long high-school mathematics course) is a capability demonstration, not a requirement to ship a full content library.
 - The first build should be agent-first at the platform boundary: every meaningful human action should be representable as an authenticated API/tool call and recorded as an event.
 
 ### Product principles / constraints
-- Draft and published versions are distinct; publishing is done by Eliot only for now (D15) and must preserve what the publisher saw.
+- Draft and published versions are distinct; publishing is on Eliot's behalf, by Eliot or an agent for him (D15), and must preserve what the publisher saw.
 - Maintain provenance and credit when a path is copied, extended or revised.
 - Keep UI shell language separate from learning-content language; design for Hebrew, English and Arabic even if the first content slice is narrower.
 - Design for future learner metrics and teacher views without making a full school/parent/regulatory product in v0.
@@ -58,7 +58,7 @@ Note: The chat visibly names four generated DOCX documents and describes their c
 ### Agent/tool contract
 - Expose operations for creating a draft, reading path/version/context, adding or editing blocks and edges, proposing a route, recording feedback, generating a revised draft, running validation, and requesting publication.
 - Every tool call needs authenticated actor/agent identity, role/permission check, input/output schema, idempotency or correlation ID, audit event and provenance.
-- Agent may draft, suggest, revise and navigate and request publish; only Eliot publishes (D15).
+- Agent may draft, suggest, revise and navigate and publish on Eliot's behalf (D15); no blocking of agent publish.
 - An external-agent key/integration is separate from the account; agent actions inherit the user's authorization and must retain source/credit information.
 - Tool/API results should include path/version IDs, validation warnings, changed objects and a diff/lineage reference.
 
@@ -70,7 +70,7 @@ Note: The chat visibly names four generated DOCX documents and describes their c
 ### Authorization / sharing
 - Published paths can be discovered/used by others; editing and creating require permission.
 - Group creator defines membership and metric visibility. Learners can see their own metrics when a path is private; teachers can see selected group metrics.
-- Publishing records the publisher (Eliot, D15) and the evidence/context available at publish time.
+- Publishing records the publisher (Eliot or the agent acting for him, D15) and the evidence/context available at publish time.
 
 ## 3. 03-mimush-uvdinot.docx — מימוש ובדיקות (Implementation and Testing)
 
@@ -88,7 +88,7 @@ Note: The chat visibly names four generated DOCX documents and describes their c
 - Verify each block has objective, type, prerequisite relation and completion/mastery rule.
 - Learner progress advances only on valid evidence; adaptive routing can branch or remediate.
 - Feedback creates a new draft/version and a clear diff; published version remains immutable.
-- Only Eliot publishes (D15); the audit trail identifies the publisher and sources.
+- Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish (D15); the audit trail identifies the publisher and sources.
 - Metrics/events appear for learner and permitted teacher views.
 - Switch UI locale without moving the top-level layout or translating the stable product identifier; content language remains independent.
 - Verify permissions for learner, author, teacher/coordinator and agent; test denial of unauthorized tool calls.

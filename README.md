@@ -21,7 +21,7 @@ Python + Pydantic + SQLite store, **AgentTools** facade (callable without HTTP),
 |------------|-------|
 | `PathStore` | create/save/get/revise/requestPublish/publish + events |
 | `AgentTools` | Contract ops: createDraft, getPath/getVersion, addBlock, editBlock, addEdge, reviseDraft, validatePath, recordFeedback, requestPublish, publish |
-| `publish` | Policy: only Eliot publishes paths for now (decisions log D15, 2026-10-31); code does not enforce it yet. Published versions stay immutable |
+| `publish` | Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish (D15); published versions stay immutable |
 | Learner UI | Seeds golden quadratic path; one block at a time; practice/assessment forms; **one-click** feedback→`reviseDraft` + brief version diff; signed-in publish (no human checkbox) |
 | Golden loop | `scripts/golden_loop.py` — seed/createDraft → learn → feedback → revise → requestPublish → agent publish |
 | Audit | Every tool call emits an event via PathStore |
@@ -62,7 +62,7 @@ The platform loads it via `CONTENT_DIR`, a checkout/submodule at
 paths in the same subject, a JSON outline (validated with Pydantic, editable),
 one model call per topic (each topic saved to the draft as soon as it fills),
 then review and publish. Drafts are saved in the PathStore with an agentId; the
-agent drafts; only Eliot publishes for now (policy D15), and feedback creates a new draft version. The
+user or the agent may publish, and feedback creates a new draft version. The
 model is Grok through Cloudflare AI Gateway BYOK. The xAI key stays in
 Cloudflare Secrets Store. MyRoad does not accept or send a provider API key.
 Server environment names: `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_GATEWAY_ID`, and
@@ -190,4 +190,4 @@ On push/PR to `main`:
 
 ## License / note
 
-Freeze artifacts + persistence + agent-tool facade + thin learner UI + golden loop demo. Policy: only Eliot publishes (D15); a published version stays immutable.
+Freeze artifacts + persistence + agent-tool facade + thin learner UI + golden loop demo. An agent may publish; a published version stays immutable.

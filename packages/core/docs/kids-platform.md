@@ -20,7 +20,7 @@ Optional `topics[]` (`id`, `title_he`/`title_en`/`title_ar`, `node_ids[]`) group
 steps into map stations. If omitted, topics are inferred.
 Loader: `seed_content_paths()` → PathStore. These demo samples are pre-published.
 
-Future paths use the same JSON format. Only Eliot publishes paths for now (D15);
+Future paths use the same JSON format. An agent may publish a draft;
 only these demo seeds are pre-published by design.
 
 ## Locale consistency (explanations vs content tokens)
