@@ -1,6 +1,6 @@
 > **היסטורי, הוחלף.** המסמך משקף את דרישות v0 מ-2026-09-30. מה שבתוקף: החלטות שלב 0 מ-2026-10-31 (D12–D21 ב-`docs/vision/05-decisions-log.md`), `docs/product/` ומילון 09. הפרסום הוא בשם אליוט: אליוט או סוכן שפועל בשמו רשאים לפרסם; לא חוסמים פרסום של סוכן; תפקיד לומד בלבד ב-v1. מונחים לפי 09 (מקצוע, סדרה, דרך, שלב, משבצת).
 >
-> **Historical, superseded.** Current rules: stage 0 decisions of 2026-10-31 (D12–D21), `docs/product/`, glossary 09. Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish; v1 is learner-only; Arabic is in v1; out of v1: A/B, teacher chat, video, story wrapper. Lines marked [superseded] below are history.
+> **Historical, superseded.** Current rules: stage 0 decisions of 2026-10-31 (D12–D22), `docs/product/`, glossary 09. Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish; v1 is learner-only; Arabic 5-unit bagrut is in the POC alongside English (D22); out of v1: A/B, teacher chat, video, story wrapper. Lines marked [superseded] below are history.
 
 # Grok chat extraction — AI Learning Platform: AI Tutors & Adaptive Paths
 
@@ -129,7 +129,7 @@ Note: The chat visibly names four generated DOCX documents and describes their c
 - Choose one small golden scenario plus a cross-subject/level breadth test.
 
 ### What to postpone
-- Automatic A/B optimization on learners, rich inter-role communications, a spectacular graph visualization, personalized story/character systems, simultaneous full Hebrew/Arabic/English teaching, and “zero-to-full-exam” coverage. [superseded: D12 sets from-zero to 5-unit bagrut and psychometric 800; D17 keeps Arabic in v1, phased after English, math, psychometric (D20)]
+- Automatic A/B optimization on learners, rich inter-role communications, a spectacular graph visualization, personalized story/character systems, simultaneous full Hebrew/Arabic/English teaching, and “zero-to-full-exam” coverage. [superseded: D12 sets from-zero to 5-unit bagrut and psychometric 800; D22 puts Arabic 5-unit bagrut in the POC alongside English, then math, then psychometric]
 - Keep the first UI simple: lists/maps are sufficient; learning evidence and version history matter more than presentation.
 
 ### Pre-code artifact

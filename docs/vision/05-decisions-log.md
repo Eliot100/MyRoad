@@ -1,5 +1,5 @@
 > **EN summary:** Dated log of MyRoad product decisions, newest rules first in effect, with superseded decisions kept and marked.
-> Notable: stage 0 approved 2026-10-31 (D12–D21). D15: Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish (D6 stays in effect).
+> Notable: stage 0 approved 2026-10-31 (D12–D22). D22: Arabic 5-unit bagrut in POC alongside English; then math, then psychometric. D15: Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish (D6 stays in effect).
 
 # 05 — יומן החלטות
 
@@ -29,8 +29,9 @@
 | D17 | 2026-10-31 | **מחוץ ל-v1:** A/B, צ'אט מורה, וידאו, עטיפת סיפור. ערבית בתוך v1 | אליוט; סוגר את S5 ואת שאלה פתוחה 8 (ערבית) |
 | D18 | 2026-10-31 | **הצלחה:** לכל יעד מדדים ברורים שיחד נותנים תמונה מלאה, לא מפספסים צורך למידה, ומראים באיזה תחום ובאילו משבצות לתרגל לתועלת מרבית | אליוט |
 | D19 | 2026-10-31 | **וריאנטים:** כל שלב מציע וריאנטים לכל האוכלוסייה (שמע או בלי, כתיבה או בלי), חוץ משלבים מתקדמים מאוד שנדרשים לבחינה הסופית | אליוט |
-| D20 | 2026-10-31 | **סדר ורטיקלים:** אנגלית, מתמטיקה, פסיכומטרי, ערבית | אליוט |
+| D20 | 2026-10-31 | **הוחלפה ב-D22.** **סדר ורטיקלים:** אנגלית, מתמטיקה, פסיכומטרי, ערבית | אליוט |
 | D21 | 2026-10-31 | **אישורים:** PRs and technical choices do not go to Eliot for approval; standing rule is auto-merge once checks are green. Only product decisions go to Eliot, as a decision-brief via frank. | אליוט |
+| D22 | 2026-10-31 | **בגרות ערבית ב-POC:** ה-POC כולל דרך בגרות ערבית 5 יחידות מאפס (מדוברת וספרותית, לפי תוכנית הלימודים בישראל). אליוט הוא הלומד הראשון. עדיפות גבוהה לצד אנגלית. סדר חדש: אנגלית וערבית במקביל, אחר כך מתמטיקה, אחר כך פסיכומטרי. מחליף את D20 | אליוט |
 
 ## החלטות וניסוחים שהוחלפו
 
