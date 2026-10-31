@@ -477,6 +477,6 @@
   "world_map_label": "Track: stages and tiles",
   "world_sample": "Sample data: review levels",
   "world_level": "Level {n} of 5",
-  "placement_hint": "The placement test found your gap. Keep going from here; the map is always one tap away.",
+  "placement_hint": "We found your gap. Keep going from here, step by step. The full path is always up top.",
   "placement_hint_close": "Dismiss"
 }
