@@ -12,6 +12,7 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.content.variants import select_variants
 from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
 from myroad_core.auth.captcha import captcha_site_key, captcha_verifier_from_env
 from myroad_core.auth.email_change import EMAIL_CHANGE_COOKIE
@@ -365,7 +366,7 @@ def register_platform_routes(
         )
         if not resp.ok or not resp.data:
             raise RuntimeError(f"failed to load path: {resp.errors}")
-        return resp.data["document"]
+        return select_variants(resp.data["document"], store.get_step_settings(sess.get("userId")))
 
     def _card_meta(doc: dict[str, Any], locale: str) -> dict[str, Any]:
         subject = doc.get("subject") or "general"
@@ -1125,10 +1126,11 @@ def register_platform_routes(
         return resp
 
 
-    def _road_doc(path_id: str, version_id: str | None) -> dict[str, Any]:
+    def _road_doc(path_id: str, version_id: str | None, user_id: str | None = None) -> dict[str, Any]:
         try:
             if version_id:
-                return store.get_version(path_id, version_id).model_dump(mode="json", by_alias=True)
+                doc = store.get_version(path_id, version_id).model_dump(mode="json", by_alias=True)
+                return select_variants(doc, store.get_step_settings(user_id))
         except Exception:
             pass
         return {}
@@ -1136,7 +1138,7 @@ def register_platform_routes(
     def _started_tile(request: Request, c: dict[str, Any], locale: str, preview: bool) -> dict[str, Any]:
         """Row A tile: real progress per שלב; skills / unlock / goal only as preview sample."""
         learner = _learner(request)
-        doc = _road_doc(c["pathId"], c.get("versionId"))
+        doc = _road_doc(c["pathId"], c.get("versionId"), (learner or {}).get("userId"))
         blocks = doc.get("blocks") or []
         topics = _topics_for_ui(doc, blocks, locale) if doc else []
         prog: dict[str, Any] = {}
@@ -1418,7 +1420,9 @@ def register_platform_routes(
             top["continueTotal"] = total_nodes
             top["continueTopic"] = ""
             try:
-                cdoc = store.get_version(top["pathId"], top["versionId"]).model_dump(mode="json", by_alias=True)
+                cdoc = select_variants(
+                    store.get_version(top["pathId"], top["versionId"]).model_dump(mode="json", by_alias=True)
+                )
                 cblocks = cdoc.get("blocks") or []
                 if 0 <= step_index < len(cblocks):
                     bid = cblocks[step_index]["blockId"]
@@ -1620,7 +1624,7 @@ def register_platform_routes(
         card = next((c for c in cards if c["pathId"] == path_id), None)
         if card is None:
             return RedirectResponse("/", status_code=303)
-        doc = _road_doc(path_id, card.get("versionId"))
+        doc = _road_doc(path_id, card.get("versionId"), (learner or {}).get("userId"))
         blocks = doc.get("blocks") or []
         topics = _topics_for_ui(doc, blocks, locale) if doc else []
         first = None
@@ -1890,11 +1894,20 @@ def register_platform_routes(
             swap_focus=swap_focus if hx else None,
             status_oob=hx,
         )
+        if answer is None and block and not locked_by and sess.get("userId"):
+            _step_event(sess, block, "step_view")
         template = "_step_swap.html" if hx else "play.html"
         response = templates.TemplateResponse(request, template, ctx)
         response.headers["Vary"] = "HX-Request"
         response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return response
+
+    def _step_event(sess: dict[str, Any], block: dict[str, Any], kind: str, ok: bool | None = None) -> None:
+        """Per-step measurement (#25); never breaks the player."""
+        try:
+            store.record_step_event(sess["userId"], sess["pathId"], block["blockId"], kind, ok=ok)
+        except Exception:  # pragma: no cover - measurement is best-effort
+            pass
 
     def _block_index(blocks: list[dict], node_id: str) -> int | None:
         for i, block in enumerate(blocks):
@@ -1991,6 +2004,8 @@ def register_platform_routes(
         blocks = doc.get("blocks") or []
         block = blocks[sess["index"]] if blocks else None
         if block:
+            if block["blockId"] not in sess["mastered"]:
+                _step_event(sess, block, "mastery", ok=True)
             sess["mastered"].add(block["blockId"])
             sess["last_result"] = None
             kids = _kids_payload(block)
@@ -2078,6 +2093,9 @@ def register_platform_routes(
             "ok": ok,
             "text": (kids.get("feedback_ok") or "✓") if ok else (kids.get("feedback_try") or t(locale, "gate_practice")),
         }
+        _step_event(sess, block, "answer", ok=ok)
+        if ok and block["blockId"] not in sess["mastered"]:
+            _step_event(sess, block, "mastery", ok=True)
         if ok:
             sess["mastered"].add(block["blockId"])
             sess["last_result"] = {"ok": True, "text": kids.get("feedback_ok") or "✓"}

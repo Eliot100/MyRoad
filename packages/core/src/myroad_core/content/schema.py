@@ -44,7 +44,7 @@ INTERACTIVE_NODE_TYPES: tuple[str, ...] = ("practice", "check", "piano_keys", "r
 StepKind = Literal["understanding", "review"]
 STEP_KINDS: tuple[str, ...] = get_args(StepKind)
 
-SubjectId = Literal["math", "english", "physics", "piano", "hebrew", "general"]
+SubjectId = Literal["math", "english", "physics", "piano", "hebrew", "arabic", "general"]
 
 SUBJECTS: dict[str, dict[str, str]] = {
     "math": {"he": "מתמטיקה", "en": "Math", "ar": "رياضيات", "color": "#5b8def", "emoji": "🔢"},
@@ -52,6 +52,7 @@ SUBJECTS: dict[str, dict[str, str]] = {
     "physics": {"he": "פיזיקה", "en": "Physics", "ar": "فيزياء", "color": "#9b7bde", "emoji": "🔬"},
     "piano": {"he": "פסנתר", "en": "Piano", "ar": "بيانو", "color": "#e08a4d", "emoji": "🎹"},
     "hebrew": {"he": "עברית", "en": "Hebrew", "ar": "عبرية", "color": "#d9577a", "emoji": "📖"},
+    "arabic": {"he": "ערבית", "en": "Arabic", "ar": "العربية", "color": "#2f9e8f", "emoji": "🌙"},
     "general": {"he": "כללי", "en": "General", "ar": "عام", "color": "#6b7280", "emoji": "📚"},
 }
 
@@ -145,6 +146,15 @@ class ContentChoice(BaseModel):
     label_he: str | None = None
 
 
+class VariantWhen(BaseModel):
+    """Learner settings a variant step is for. None = any value (see docs/decisions/0003)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    audio: bool | None = None
+    writing: bool | None = None
+
+
 class ContentNode(BaseModel):
     """One step in a learning path (learn / practice / check / …).
 
@@ -179,6 +189,16 @@ class ContentNode(BaseModel):
     # (interleaving), listed in review_topic_ids; they must be topics that come earlier in the path.
     kind: StepKind | None = None
     review_topic_ids: list[str] | None = None
+    # Optional: this step is a variant of the base step with this id (same path). The app shows
+    # one step per base: the variant whose variant_when matches the learner settings, else the base.
+    variant_of: str | None = None
+    variant_when: VariantWhen | None = None
+
+    @model_validator(mode="after")
+    def _variant_needs_when(self) -> ContentNode:
+        if (self.variant_of is None) != (self.variant_when is None):
+            raise ValueError(f"node '{self.title}': variant_of and variant_when go together")
+        return self
 
     @model_validator(mode="after")
     def _review_needs_kind(self) -> ContentNode:
@@ -269,6 +289,26 @@ class ScoreLink(BaseModel):
         return self
 
 
+class PlacementRoute(BaseModel):
+    """Which placement test routes to this path, and for which band range (inclusive).
+
+    Routing picks the path whose route has from_placement == the placement path id and
+    band_min <= band <= band_max (see content/variants.py route_by_band).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    from_placement: str
+    band_min: int = Field(default=1, ge=0)
+    band_max: int = Field(default=8, ge=0)
+
+    @model_validator(mode="after")
+    def _range(self) -> PlacementRoute:
+        if self.band_min > self.band_max:
+            raise ValueError("placement_route: band_min must be <= band_max")
+        return self
+
+
 class ContentPath(BaseModel):
     """Sample path document stored as JSON under content/.
 
@@ -303,6 +343,8 @@ class ContentPath(BaseModel):
     prerequisite_path_ids: list[str] = Field(default_factory=list)
     # Optional link to a unified score shared by several paths.
     score: ScoreLink | None = None
+    # Optional: placement routing (a placement result band routes the learner here).
+    placement_route: PlacementRoute | None = None
     topics: list[ContentTopic] | None = None
     nodes: list[ContentNode] = Field(min_length=1)
 
@@ -402,6 +444,17 @@ class ContentPath(BaseModel):
                 missing = [x for x in topic.node_ids if x not in node_id_set]
                 if missing:
                     raise ValueError(f"topic '{topic.id}' references unknown node_ids: {missing}")
+
+        # Variants: variant_of must name another step in this path that is itself a base step.
+        by_id = {n.id: n for n in self.nodes}
+        for node in self.nodes:
+            if node.variant_of is None:
+                continue
+            base = by_id.get(node.variant_of)
+            if base is None:
+                raise ValueError(f"node '{node.id}': variant_of '{node.variant_of}' is not a step in this path")
+            if base.id == node.id or base.variant_of is not None:
+                raise ValueError(f"node '{node.id}': variant_of must point to a base step (no chains or cycles)")
 
         # Review steps may only point to topics that come before the topic holding the step.
         review_nodes = [n for n in self.nodes if n.review_topic_ids]

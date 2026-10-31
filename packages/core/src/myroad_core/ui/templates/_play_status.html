@@ -9,6 +9,15 @@
   {% else %}
   <p class="lede" dir="auto"{{ meta.blurbLang|content_lang(locale) }}>{{ meta.blurb }}</p>
   {% endif %}
+  {% if topics|length > 1 %}
+  {#- Road rail: one dot per שלב, filled when done, the current one marked. Calm, no scores. -#}
+  <ol class="road-rail" aria-label="{{ t('path_map') }}">
+    {% for tp in topics %}
+    {% set tdone = tp.blockIds|select('in', mastered)|list|length %}
+    <li class="{% if sns.station and tp.id == sns.station.id %}is-here{% elif tp.blockIds and tdone >= tp.blockIds|length %}is-done{% endif %}"{% if sns.station and tp.id == sns.station.id %} aria-current="step"{% endif %}><span class="visually-hidden">{{ t('station_of', n=loop.index, total=topics|length) }}{% if sns.station and tp.id == sns.station.id %} · {{ t('station_current') }}{% endif %}</span></li>
+    {% endfor %}
+  </ol>
+  {% endif %}
   <div class="progress-wrap" aria-label="progress">
     <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
     {%- if sns.station %}

@@ -19,12 +19,14 @@ from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from myroad_core.content.variants import select_variants
 from myroad_core.auth.origin import same_origin_ok
 from myroad_core.content.loader import default_content_dir, seed_content_paths
 from myroad_core.seed import find_repo_freeze_dir, seed_golden_quadratic
 from myroad_core.store import PathStore
 from myroad_core.tools import AgentTools
 from myroad_core.ui.learner_actions import register_learner_actions
+from myroad_core.ui.placement_api import register_placement_api
 from myroad_core.ui.platform_routes import register_platform_routes
 
 UI_DIR = Path(__file__).resolve().parent
@@ -134,7 +136,7 @@ def create_learner_app(
         )
         if not resp.ok or not resp.data:
             raise RuntimeError(f"failed to load path: {resp.errors}")
-        return resp.data["document"]
+        return select_variants(resp.data["document"])
 
     def _render(
         request: Request,
@@ -262,6 +264,7 @@ def create_learner_app(
         tools=tools,
         _corr=_corr,
     )
+    register_placement_api(app, store=path_store)
 
     return app
 

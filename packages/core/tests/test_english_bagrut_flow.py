@@ -131,3 +131,45 @@ def test_home_links_the_chain_when_the_roads_are_in_the_catalog(bagrut_app) -> N
     home = client.get("/?group=adult").text
     assert 'href="/series/english-bagrut5"' in home
     assert "שרשרת האנגלית" in home
+
+
+def _finish_placement(client) -> str:
+    client.post(f"/play/{PLACE}/start", data={"reset": "1"})
+    last, missed = "", False
+    for _ in range(8):
+        html = client.get(f"/play/{PLACE}?view=learn").text
+        if 'data-node-type="practice"' in html:
+            if not missed:  # one mistake puts the band on road 03
+                client.post(f"/play/{PLACE}/answer", data={"choice": "b"})
+                missed = True
+            last = client.post(f"/play/{PLACE}/answer", data={"choice": "a"}, follow_redirects=True).text
+        else:
+            last = client.post(f"/play/{PLACE}/ack", follow_redirects=True).text
+        if 'http-equiv="refresh"' in last:
+            return last
+    return last
+
+
+def test_finishing_placement_flows_into_the_next_cell(bagrut_app) -> None:
+    app, _store = bagrut_app
+    client = _client(app)
+    done = _finish_placement(client)
+    nxt = f"/play/{TIME}?view=learn&amp;from=placement"  # one mistake: band 3
+    assert f'<meta http-equiv="refresh" content="0;url={nxt}"' in done
+    assert "המבדק הושלם" not in done and "סיכום הדרך" not in done  # no result screen
+    step = client.get(f"/play/{TIME}?view=learn&from=placement").text
+    assert 'class="card step-card' in step and "lock-banner" not in step  # straight into a משבצת
+    assert 'id="placement-hint"' in step and f'href="/play/{TIME}?view=map#here"' in step  # map stays optional
+    assert 'id="placement-hint"' not in client.get(f"/play/{TIME}?view=learn").text  # dismissed
+
+
+def test_finishing_a_cell_continues_into_the_next_cell(bagrut_app) -> None:
+    app, _store = bagrut_app
+    client = _client(app)
+    _finish_placement(client)  # opens road 03
+    client.post(f"/play/{TIME}/start", data={"reset": "1"})
+    first = client.get(f"/play/{TIME}?view=learn").text
+    after = client.post(f"/play/{TIME}/ack", follow_redirects=True).text
+    assert 'class="card step-card' in after and "סיכום הדרך" not in after
+    assert 'data-node-type="learn"' in first and 'data-node-type="practice"' in after  # the next משבצת
+    assert 'class="road-rail"' in after and 'class="is-here" aria-current="step"' in after  # visible progress

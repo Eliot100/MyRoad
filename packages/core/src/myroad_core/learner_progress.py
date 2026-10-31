@@ -19,8 +19,6 @@ CREATE TABLE IF NOT EXISTS learners (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS idx_learners_email
-  ON learners(email) WHERE email IS NOT NULL AND email != '';
 CREATE TABLE IF NOT EXISTS learner_progress (
   user_id TEXT NOT NULL,
   path_id TEXT NOT NULL,
@@ -50,6 +48,17 @@ CREATE TABLE IF NOT EXISTS learner_attempts (
   mastery_pct REAL NOT NULL DEFAULT 0,
   message TEXT
 );
+CREATE TABLE IF NOT EXISTS learner_events (
+  event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  path_id TEXT NOT NULL,
+  block_id TEXT NOT NULL,
+  event_type TEXT NOT NULL,
+  ok INTEGER,
+  duration_ms INTEGER,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_events_user_path ON learner_events(user_id, path_id, block_id);
 CREATE INDEX IF NOT EXISTS idx_progress_user ON learner_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_user ON learner_attempts(user_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_path ON learner_attempts(path_id);
@@ -63,7 +72,15 @@ _LEARNER_EXTRA_COLUMNS = (
     ("first_name", "TEXT"),
     ("last_name", "TEXT"),
     ("email", "TEXT"),
+    # Step variant settings (docs/decisions/0003-step-variants.md): audio on, writing off by default.
+    ("audio_on", "INTEGER NOT NULL DEFAULT 1"),
+    ("writing_on", "INTEGER NOT NULL DEFAULT 0"),
 )
+
+
+STEP_EVENT_TYPES = ("step_view", "answer", "mastery")
+# Server-side cap on time attributed to one answer (idle tabs must not inflate totals).
+MAX_STEP_DURATION_MS = 30 * 60 * 1000
 
 
 class LearnerProgressMixin:
@@ -267,6 +284,25 @@ class LearnerProgressMixin:
             last_name=last,
             email=email_n,
         )
+
+    def get_step_settings(self, user_id: str | None) -> dict[str, bool]:
+        """Learner settings that pick a step variant. Unknown learner -> defaults."""
+        row = None
+        if user_id:
+            row = self._conn.execute(
+                "SELECT audio_on, writing_on FROM learners WHERE user_id = ?", (user_id,)
+            ).fetchone()
+        if not row:
+            return {"audio": True, "writing": False}
+        return {"audio": bool(row[0]), "writing": bool(row[1])}
+
+    def set_step_settings(self, user_id: str, *, audio: bool | None = None, writing: bool | None = None) -> dict[str, bool]:
+        if audio is not None:
+            self._conn.execute("UPDATE learners SET audio_on = ? WHERE user_id = ?", (int(bool(audio)), user_id))
+        if writing is not None:
+            self._conn.execute("UPDATE learners SET writing_on = ? WHERE user_id = ?", (int(bool(writing)), user_id))
+        self._conn.commit()
+        return self.get_step_settings(user_id)
 
     def ensure_learner(self, user_id: str | None, display_name: str | None = None) -> dict[str, Any]:
         """Return an existing learner. Does not create anonymous users."""
@@ -513,3 +549,93 @@ class LearnerProgressMixin:
             "masteryPct": row["mastery_pct"],
             "message": row["message"],
         }
+
+    # --- per-step measurement (#25): append-only learner_events ---------------------------
+
+    def record_step_event(
+        self,
+        user_id: str,
+        path_id: str,
+        block_id: str,
+        event_type: str,
+        *,
+        ok: bool | None = None,
+    ) -> dict[str, Any]:
+        """Append one step event. Duration is measured on the server clock only.
+
+        For ``answer``/``mastery`` the duration is the time since this learner's previous
+        event on the same step, clamped to [0, MAX_STEP_DURATION_MS].
+        """
+        if event_type not in STEP_EVENT_TYPES:
+            raise ValueError(f"unknown step event: {event_type}")
+        from datetime import datetime
+
+        now = _iso_now()
+        duration_ms: int | None = None
+        if event_type != "step_view":
+            prev = self._conn.execute(
+                "SELECT created_at FROM learner_events WHERE user_id = ? AND path_id = ? "
+                "AND block_id = ? ORDER BY event_id DESC LIMIT 1",
+                (user_id, path_id, block_id),
+            ).fetchone()
+            if prev:
+                try:
+                    delta = datetime.fromisoformat(now) - datetime.fromisoformat(prev[0])
+                    duration_ms = int(delta.total_seconds() * 1000)
+                except ValueError:
+                    duration_ms = 0
+                duration_ms = max(0, min(duration_ms, MAX_STEP_DURATION_MS))
+        self._conn.execute(
+            "INSERT INTO learner_events (user_id, path_id, block_id, event_type, ok, duration_ms, created_at) "
+            "VALUES (?,?,?,?,?,?,?)",
+            (user_id, path_id, block_id, event_type, None if ok is None else int(bool(ok)), duration_ms, now),
+        )
+        self._conn.commit()
+        return {
+            "userId": user_id,
+            "pathId": path_id,
+            "blockId": block_id,
+            "eventType": event_type,
+            "ok": ok,
+            "durationMs": duration_ms,
+            "createdAt": now,
+        }
+
+    def step_aggregates(self, user_id: str, path_id: str | None = None) -> list[dict[str, Any]]:
+        """Per-step aggregates for a learner: views, attempts, total time, last result, mastery."""
+        sql = """
+            SELECT path_id, block_id,
+              SUM(event_type = 'step_view') AS views,
+              SUM(event_type = 'answer') AS attempts,
+              COALESCE(SUM(duration_ms), 0) AS total_ms,
+              MAX(event_type = 'mastery') AS mastered,
+              MIN(created_at) AS first_at,
+              MAX(created_at) AS last_at,
+              (SELECT e2.ok FROM learner_events e2
+                 WHERE e2.user_id = e.user_id AND e2.path_id = e.path_id
+                   AND e2.block_id = e.block_id AND e2.event_type = 'answer'
+                 ORDER BY e2.event_id DESC LIMIT 1) AS last_ok
+            FROM learner_events e
+            WHERE user_id = ?
+        """
+        args: list[Any] = [user_id]
+        if path_id is not None:
+            sql += " AND path_id = ?"
+            args.append(path_id)
+        sql += " GROUP BY path_id, block_id ORDER BY path_id, MIN(event_id)"
+        out = []
+        for r in self._conn.execute(sql, args).fetchall():
+            out.append(
+                {
+                    "pathId": r["path_id"],
+                    "blockId": r["block_id"],
+                    "views": int(r["views"] or 0),
+                    "attempts": int(r["attempts"] or 0),
+                    "totalMs": int(r["total_ms"] or 0),
+                    "lastResult": None if r["last_ok"] is None else bool(r["last_ok"]),
+                    "mastered": bool(r["mastered"]),
+                    "firstAt": r["first_at"],
+                    "lastAt": r["last_at"],
+                }
+            )
+        return out

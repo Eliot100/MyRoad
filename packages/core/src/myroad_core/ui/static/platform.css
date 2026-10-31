@@ -1636,3 +1636,13 @@ html[data-motion="reduce"] .side { transition: none !important; }
   .map-view main { padding-block-end: 6.5rem; }
   html:has(body.map-view) { scroll-padding-block-end: 6.5rem; }
 }
+
+/* Flow (lessons 2026-10-31): no result screens. A quiet road rail in the player, and a dismissible hint after placement. */
+.road-rail { list-style: none; margin: 0 0 var(--space-2); padding: 0; display: flex; gap: 6px; align-items: center; }
+.road-rail li { flex: 1 1 0; block-size: 4px; border-radius: 2px; background: var(--track); }
+.road-rail li.is-done { background: var(--line-strong); }
+.road-rail li.is-here { background: var(--accent); block-size: 6px; }
+@media (prefers-reduced-motion: no-preference) { .road-rail li { transition: background-color 200ms ease-out; } }
+.placement-hint { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-block-end: var(--space-3); padding: var(--space-2) var(--space-4); border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink-2); font-size: var(--text-sm); line-height: 1.6; }
+.placement-hint p { margin: 0; }
+.placement-hint .text-link { min-block-size: 44px; display: inline-flex; align-items: center; white-space: nowrap; }
