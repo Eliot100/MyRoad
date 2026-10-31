@@ -16,7 +16,9 @@ Baseline on `main` today: FastAPI + Jinja + htmx 2, SQLite `PathStore`, schema v
 Already shipped by UI on 2026-10-21 (UI audit §1, PRs #89–#116): semantic colour/spacing/type tokens, dark theme following the system, one main landmark + skip link per screen, language switch on login, map Start/Continue in reach on phones, announced pending state when answering, text size 100/125/150% and reduce-motion toggle (client-side only), end-of-path screen led by "what you learned / next up" (UX M5), floating "back to my station" (UX S1), "explanations are in Hebrew" notice for ar/en (UX S3), empty-tab and offline-answer states, localised step-type pill. axe-core reports 0 violations on every screen in he/en/ar, light and dark, at 375 and 1280 px; no sideways scroll at 375 px, also at 150% text.
 
 **Out of scope:** Cloudflare, agent/AI gateway and model-backed builder, security hardening (paused per the 20.10 work plan).
-**Publish rule:** an agent may publish. There is no human-only gate (decisions log; `publish_gate.py` checks format only).
+**Phasing (D22, 2026-10-31):** English and Arabic (5-unit bagrut from zero, spoken and literary) first, in parallel; then math; then psychometric.
+
+**Publish rule:** Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish (D15). There is no human-only gate (decisions log; `publish_gate.py` checks format only).
 
 ## 2. Reuse first
 

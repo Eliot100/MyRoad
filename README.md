@@ -21,7 +21,7 @@ Python + Pydantic + SQLite store, **AgentTools** facade (callable without HTTP),
 |------------|-------|
 | `PathStore` | create/save/get/revise/requestPublish/publish + events |
 | `AgentTools` | Contract ops: createDraft, getPath/getVersion, addBlock, editBlock, addEdge, reviseDraft, validatePath, recordFeedback, requestPublish, publish |
-| `publish` | An agent may publish; published versions stay immutable |
+| `publish` | Publishing is on Eliot's behalf: Eliot or an agent acting for him may publish; no blocking of agent publish (D15); published versions stay immutable |
 | Learner UI | Seeds golden quadratic path; one block at a time; practice/assessment forms; **one-click** feedback→`reviseDraft` + brief version diff; signed-in publish (no human checkbox) |
 | Golden loop | `scripts/golden_loop.py` — seed/createDraft → learn → feedback → revise → requestPublish → agent publish |
 | Audit | Every tool call emits an event via PathStore |
