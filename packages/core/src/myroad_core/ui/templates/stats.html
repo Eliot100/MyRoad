@@ -1,5 +1,10 @@
 {% extends "_base.html" %}
-{% block title %}{{ product }} — {{ t('placement_result_h') if finished and doc.pathId == 'path_english_bagrut5_00_placement' else t('stats_title') }}{% endblock %}
+{#- Placement finished: no result screen (lessons 2026-10-31). Flow straight into the first
+    משבצת of the road the server recommends from the band (unlocked_next[0]). -#}
+{% set placement_done = finished and doc.pathId == 'path_english_bagrut5_00_placement' %}
+{% set road_href = ('/play/' ~ unlocked_next[0].pathId ~ '?view=learn&from=placement') if placement_done and unlocked_next else '/series/english-bagrut5' %}
+{% block title %}{{ product }} — {{ meta.title if placement_done else t('stats_title') }}{% endblock %}
+{% block head_extra %}{% if placement_done %}<meta http-equiv="refresh" content="0;url={{ road_href }}" />{% endif %}{% endblock %}
 {% block body_attrs %} class="platform play stats-view {% if meta.kidsDemo %}tone-demo{% endif %}"{% endblock %}
 {% block body %}
   <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
@@ -11,8 +16,8 @@
     {% if sidebar is defined and sidebar %}<a class="ibtn menu-btn" href="#roads" aria-controls="roads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="visually-hidden">{{ t('side_open') }}</span></a>{% endif %}
   </header>
   <main id="main" tabindex="-1">
-  {% if finished and doc.pathId == 'path_english_bagrut5_00_placement' %}
-  {% include "_placement_result.html" %}
+  {% if placement_done %}
+  <p class="lede"><a class="primary big link-btn" href="{{ road_href }}">{{ t('next_step') }}</a></p>
   {% else %}
   {% set rm = road_metrics or {} %}
   <section class="road-metrics">

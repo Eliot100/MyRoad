@@ -145,27 +145,31 @@ def _finish_placement(client) -> str:
             last = client.post(f"/play/{PLACE}/answer", data={"choice": "a"}, follow_redirects=True).text
         else:
             last = client.post(f"/play/{PLACE}/ack", follow_redirects=True).text
-        if "pr-h" in last:
+        if 'http-equiv="refresh"' in last:
             return last
     return last
 
 
-def test_placement_result_shows_one_road_and_start_opens_its_first_step(bagrut_app) -> None:
+def test_finishing_placement_flows_into_the_next_cell(bagrut_app) -> None:
     app, _store = bagrut_app
     client = _client(app)
-    result = _finish_placement(client)
-    assert 'id="pr-h"' in result and "המבדק הושלם" in result
-    assert "הפער שלך" in result
-    assert f'href="/play/{TIME}?view=learn"' in result  # one mistake: band 3
-    assert 'href="/roads?subject=english"' in result
-    assert "סיכום הדרך" not in result  # not the generic road summary
-    assert "נתוני דוגמה" not in result  # preview off: no sample data
-    step = client.get(f"/play/{TIME}?view=learn").text
-    assert 'class="card step-card' in step and 'data-node-type="learn"' in step and "lock-banner" not in step
+    done = _finish_placement(client)
+    nxt = f"/play/{TIME}?view=learn&amp;from=placement"  # one mistake: band 3
+    assert f'<meta http-equiv="refresh" content="0;url={nxt}"' in done
+    assert "המבדק הושלם" not in done and "סיכום הדרך" not in done  # no result screen
+    step = client.get(f"/play/{TIME}?view=learn&from=placement").text
+    assert 'class="card step-card' in step and "lock-banner" not in step  # straight into a משבצת
+    assert 'id="placement-hint"' in step and f'href="/play/{TIME}?view=map#here"' in step  # map stays optional
+    assert 'id="placement-hint"' not in client.get(f"/play/{TIME}?view=learn").text  # dismissed
 
 
-def test_placement_result_labels_sample_data_in_preview(bagrut_app, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("MYROAD_UI_PREVIEW", "1")
+def test_finishing_a_cell_continues_into_the_next_cell(bagrut_app) -> None:
     app, _store = bagrut_app
-    result = _finish_placement(_client(app))
-    assert "נתוני דוגמה" in result and "דקות" in result
+    client = _client(app)
+    _finish_placement(client)  # opens road 03
+    client.post(f"/play/{TIME}/start", data={"reset": "1"})
+    first = client.get(f"/play/{TIME}?view=learn").text
+    after = client.post(f"/play/{TIME}/ack", follow_redirects=True).text
+    assert 'class="card step-card' in after and "סיכום הדרך" not in after
+    assert 'data-node-type="learn"' in first and 'data-node-type="practice"' in after  # the next משבצת
+    assert 'class="road-rail"' in after and 'class="is-here" aria-current="step"' in after  # visible progress
