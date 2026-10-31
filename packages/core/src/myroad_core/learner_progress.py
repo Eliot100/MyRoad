@@ -72,6 +72,9 @@ _LEARNER_EXTRA_COLUMNS = (
     ("first_name", "TEXT"),
     ("last_name", "TEXT"),
     ("email", "TEXT"),
+    # Step variant settings (docs/decisions/0003-step-variants.md): audio on, writing off by default.
+    ("audio_on", "INTEGER NOT NULL DEFAULT 1"),
+    ("writing_on", "INTEGER NOT NULL DEFAULT 0"),
 )
 
 
@@ -281,6 +284,25 @@ class LearnerProgressMixin:
             last_name=last,
             email=email_n,
         )
+
+    def get_step_settings(self, user_id: str | None) -> dict[str, bool]:
+        """Learner settings that pick a step variant. Unknown learner -> defaults."""
+        row = None
+        if user_id:
+            row = self._conn.execute(
+                "SELECT audio_on, writing_on FROM learners WHERE user_id = ?", (user_id,)
+            ).fetchone()
+        if not row:
+            return {"audio": True, "writing": False}
+        return {"audio": bool(row[0]), "writing": bool(row[1])}
+
+    def set_step_settings(self, user_id: str, *, audio: bool | None = None, writing: bool | None = None) -> dict[str, bool]:
+        if audio is not None:
+            self._conn.execute("UPDATE learners SET audio_on = ? WHERE user_id = ?", (int(bool(audio)), user_id))
+        if writing is not None:
+            self._conn.execute("UPDATE learners SET writing_on = ? WHERE user_id = ?", (int(bool(writing)), user_id))
+        self._conn.commit()
+        return self.get_step_settings(user_id)
 
     def ensure_learner(self, user_id: str | None, display_name: str | None = None) -> dict[str, Any]:
         """Return an existing learner. Does not create anonymous users."""

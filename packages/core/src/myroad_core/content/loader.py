@@ -104,6 +104,9 @@ def _node_to_block(node: ContentNode, index: int) -> Block:
     kids = node.model_dump(mode="json", exclude_none=True)
     kids["id"] = nid
     content: dict[str, Any] = {"kids": kids, "nodeType": node.type, "nodeId": nid}
+    if node.variant_of:
+        content["variantOf"] = node.variant_of
+        content["variantWhen"] = node.variant_when.model_dump() if node.variant_when else {}
     if node.choices:
         content["verifiedCore"] = {
             "items": [
@@ -213,6 +216,7 @@ def content_to_path_version(path: ContentPath, *, version_id: str | None = None)
         blurbs=dict(path.blurbs or {}),
         topics=topics,
         nodeToBlock=node_to_block,
+        placementRoute=path.placement_route.model_dump() if path.placement_route else None,
         contentSource="MyRoad-content",
         kidsDemo=path.grade == 3,
         explainLocale=explain,

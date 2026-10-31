@@ -29,6 +29,7 @@ from pydantic import BaseModel, Field
 from myroad_core.auth.sessions import SESSION_COOKIE
 from myroad_core.content.english_bagrut import SERIES, placement_band
 from myroad_core.content.loader import list_catalog_cards
+from myroad_core.content.variants import route_by_band
 from myroad_core.store_schema import _iso_now
 
 PLACEMENT_ID = SERIES[0][0]
@@ -42,6 +43,14 @@ class PlacementAnswer(BaseModel):
 
 class PlacementResultBody(BaseModel):
     answers: list[PlacementAnswer] = Field(min_length=1, max_length=200)
+    # Optional (docs/decisions/0003): another placement path, e.g. the Arabic one. Routing then
+    # uses each path's placement_route instead of the English series.
+    placementId: str | None = Field(default=None, min_length=1, max_length=200)
+
+
+class StepSettingsBody(BaseModel):
+    audio: bool | None = None
+    writing: bool | None = None
 
 
 def _error(status: int, code: str) -> JSONResponse:
@@ -55,8 +64,29 @@ def register_placement_api(app, *, store) -> None:
             return None
         return uid
 
-    def _result(progress: dict[str, Any]) -> dict[str, Any]:
+    def _routed(placement_id: str, band: int) -> str | None:
+        docs = []
+        for c in list_catalog_cards(store):
+            try:
+                docs.append(store.get_version(c["pathId"], c["versionId"]).model_dump(mode="json", by_alias=True))
+            except Exception:
+                continue
+        return route_by_band(docs, placement_id, band)
+
+    def _result(progress: dict[str, Any], placement_id: str = PLACEMENT_ID) -> dict[str, Any]:
         band = placement_band(progress)
+        if placement_id != PLACEMENT_ID:
+            road = _routed(placement_id, band) if band else None
+            return {
+                "band": band,
+                "gap": road,
+                "recommended_road_id": road,
+                "placement_id": placement_id,
+                "first_step_id": None,
+                "correct": int(progress.get("correctTaps") or 0),
+                "incorrect": int(progress.get("incorrectTaps") or 0),
+                "completedAt": progress.get("completedAt"),
+            }
         gap = SERIES[band][0]
         card = next((c for c in list_catalog_cards(store) if c["pathId"] == gap), None)
         first_step = None
@@ -68,6 +98,7 @@ def register_placement_api(app, *, store) -> None:
             "band": band,
             "gap": gap,
             "recommended_road_id": gap if card else None,
+            "placement_id": placement_id,
             "first_step_id": first_step,
             "correct": int(progress.get("correctTaps") or 0),
             "incorrect": int(progress.get("incorrectTaps") or 0),
@@ -83,10 +114,11 @@ def register_placement_api(app, *, store) -> None:
             return _error(401, "unknown_learner")
         correct = sum(1 for a in body.answers if a.correct)
         incorrect = len(body.answers) - correct
-        existing = store.get_progress(uid, PLACEMENT_ID) or {}
+        pid = body.placementId or PLACEMENT_ID
+        existing = store.get_progress(uid, pid) or {}
         progress = store.save_progress(
             uid,
-            PLACEMENT_ID,
+            pid,
             version_id=existing.get("versionId"),
             node_index=int(existing.get("nodeIndex") or 0),
             mastered=existing.get("mastered") or set(),
@@ -95,15 +127,33 @@ def register_placement_api(app, *, store) -> None:
             completed_at=_iso_now(),
             needs_practice=False,
         )
-        return JSONResponse(_result(progress))
+        return JSONResponse(_result(progress, pid))
 
     @app.get("/api/placement/result")
-    def get_placement_result(request: Request) -> JSONResponse:
+    def get_placement_result(request: Request, placementId: str | None = None) -> JSONResponse:
         uid = _user_id(request)
         if not uid:
             return _error(401, "unknown_learner")
-        progress = store.get_progress(uid, PLACEMENT_ID)
+        pid = placementId or PLACEMENT_ID
+        progress = store.get_progress(uid, pid)
         if not progress or not progress.get("completedAt"):
             return _error(404, "no_placement_result")
-        return JSONResponse(_result(progress))
+        return JSONResponse(_result(progress, pid))
+
+    @app.get("/api/settings/steps")
+    def get_step_settings(request: Request) -> JSONResponse:
+        uid = _user_id(request)
+        if not uid:
+            return _error(401, "unknown_learner")
+        return JSONResponse(store.get_step_settings(uid))
+
+    @app.post("/api/settings/steps")
+    def post_step_settings(request: Request, body: StepSettingsBody) -> JSONResponse:
+        """Learner step settings (audio on/off, writing on/off) that pick step variants."""
+        if request.headers.get(CSRF_HEADER) != "1":
+            return _error(403, "csrf_header_missing")
+        uid = _user_id(request)
+        if not uid:
+            return _error(401, "unknown_learner")
+        return JSONResponse(store.set_step_settings(uid, audio=body.audio, writing=body.writing))
 
