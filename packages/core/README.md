@@ -4,7 +4,7 @@ SQLite-backed path/version/status storage, audit event log, a thin
 `AgentTools` facade aligned with `freeze/v0/03-agent-tool-contract.md`,
 and a minimal learner UI (`myroad_core.ui`).
 
-An agent may publish. A published version stays immutable.
+Policy: only Eliot publishes paths for now (decisions log D15). A published version stays immutable.
 
 ## Setup
 

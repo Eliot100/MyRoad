@@ -1,7 +1,7 @@
 # MyRoad POC — Agent / Tool Contract (freeze v0.1)
 
 **Product ID (stable, English):** `MyRoad`  
-**Scope:** draft → learn → feedback → revise → publish. Agent may draft/suggest/revise/navigate and **may publish**.  
+**Scope:** draft → learn → feedback → revise → publish. Agent may draft/suggest/revise/navigate and request publish. **Policy since 2026-10-31 (D15): only Eliot publishes.**  
 **Every call requires:** authenticated `actorId` + optional `agentId`, RBAC check, `correlationId`, audit event, provenance retention.
 
 ## Shared envelopes

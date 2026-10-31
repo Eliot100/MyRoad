@@ -16,7 +16,7 @@ Baseline on `main` today: FastAPI + Jinja + htmx 2, SQLite `PathStore`, schema v
 Already shipped by UI on 2026-10-21 (UI audit §1, PRs #89–#116): semantic colour/spacing/type tokens, dark theme following the system, one main landmark + skip link per screen, language switch on login, map Start/Continue in reach on phones, announced pending state when answering, text size 100/125/150% and reduce-motion toggle (client-side only), end-of-path screen led by "what you learned / next up" (UX M5), floating "back to my station" (UX S1), "explanations are in Hebrew" notice for ar/en (UX S3), empty-tab and offline-answer states, localised step-type pill. axe-core reports 0 violations on every screen in he/en/ar, light and dark, at 375 and 1280 px; no sideways scroll at 375 px, also at 150% text.
 
 **Out of scope:** Cloudflare, agent/AI gateway and model-backed builder, security hardening (paused per the 20.10 work plan).
-**Publish rule:** an agent may publish. There is no human-only gate (decisions log; `publish_gate.py` checks format only).
+**Publish rule:** only Eliot publishes paths for now (D15, 2026-10-31; supersedes agent-may-publish) (decisions log; `publish_gate.py` checks format only).
 
 ## 2. Reuse first
 
@@ -133,7 +133,7 @@ Design defaults:
 7. Visual regression in CI blocking or advisory? **Default: advisory in M1–M4, blocking from M5.**
 8. Use the React path-viewer in v1? **Default: no; stay Jinja + htmx, keep it optional.**
 9. Which Grok paths gate v1? **Default: the two adult pilots (English from zero, Math 4 units).**
-10. Who publishes paths? **Any agent or user may publish (no human-only gate), format check only.**
+10. Who publishes paths? **Only Eliot, for now (D15, 2026-10-31).**
 
 Open items raised by the UX research and UI audit:
 - **O1. Backend is paused (2026-10-20).** M2, M3 and M4 need server work: store onboarding answers, pass per-choice explanation, per-day activity record, warm-up picker, mastery level rules, server-stored reading comfort, reminder emails. **Default: file each as a `bot:backend` issue marked blocked; UI builds templates against fixtures meanwhile. Eliot decides when Backend resumes.**

@@ -1,4 +1,4 @@
-> **EN summary:** Agent flow (goal, existing path first, outline, batch fill, save, publish, feedback to a new version) and the publish policy: an agent may publish; there is no human-only gate.
+> **EN summary:** Agent flow (goal, existing path first, outline, batch fill, save, publish, feedback to a new version) and the publish policy: only Eliot publishes paths for now (D15, 2026-10-31); the 2026-10-04 agent-publish policy below is superseded.
 > The model is reached only through Cloudflare AI Gateway BYOK; the provider key never sits in the repo or in chat. Includes a short corrected tool contract.
 
 # 03 — הסוכן ומדיניות הפרסום
@@ -30,7 +30,9 @@
 
 ## 2. מדיניות פרסום
 
-**החלטה (2026-10-04): סוכן רשאי לפרסם. אין שער פרסום "לבני אדם בלבד".**
+**בתוקף (2026-10-31, D15): רק אליוט מפרסם דרכים כרגע.** סוכן רשאי לבנות טיוטה ולבקש פרסום (`requestPublish`), לא לפרסם. סעיף 1 למטה הוחלף; סעיפים 2–5 בתוקף.
+
+~~החלטה (2026-10-04): סוכן רשאי לפרסם.~~ הוחלפה ב-D15.
 
 1. כל משתמש מחובר, וכל סוכן שפועל בשמו, רשאי לפרסם גרסה בסטטוס `draft` או `in_review`.
 2. כל פרסום נרשם: אירוע `path.publish` עם `actorId`, `agentId` (כשיש) ו-`publisherId`.
@@ -40,7 +42,7 @@
 
 ההחלטה הזו מחליפה את נעילת "פרסום אנושי בלבד" מ-2026-10-02 (ראו 05). כל ניסוח של "never auto-publish", "human only" או "publish requires a human" במסמכים ישנים — מבוטל.
 
-**ב-main היום (מאומת):** `PathStore.publish` מאפשר לסוכן לפרסם; `AgentTools.publish` מתעלם מהדגל הישן `human_publisher`; הבדיקה `test_agent_can_publish` ולולאת הזהב (`agentMayPublish: true`) מאשרות זאת. אין יותר תיבת סימון "אישור אנושי" בממשק.
+**פער מול הקוד:** הקוד ב-main עדיין לא אוכף את D15. `PathStore.publish` מאפשר לסוכן לפרסם; `AgentTools.publish` מתעלם מהדגל הישן `human_publisher`; הבדיקה `test_agent_can_publish` ולולאת הזהב (`agentMayPublish: true`) מאשרות זאת. אין יותר תיבת סימון "אישור אנושי" בממשק.
 
 **פתוח:**
 - `AgentTools.publish` ו-`/tools/publish` לא מריצים `validatePath` לפני פרסום. רק הבונה (`/add-path`) אוכף את כלל השלמות. האם פרסום דרך API צריך להיכשל על שגיאות ולידציה קשות?
@@ -75,7 +77,7 @@
 | `reviseDraft` | גרסת טיוטה חדשה עם lineage ו-diff | author, coordinator, סוכן | כן |
 | `validatePath` | בדיקות מבנה ומדיניות | author, approver, סוכן | כן |
 | `requestPublish` | `draft` → `in_review`. לא מפרסם בעצמו | author, coordinator, סוכן | כן |
-| **`publish`** | **מפרסם. סוכן רשאי.** רושם `publisherId`; הגרסה נעשית קבועה | author, approver, coordinator, **סוכן** | כן |
+| **`publish`** | **מפרסם. רק אליוט (D15).** רושם `publisherId`; הגרסה נעשית קבועה | author, approver, coordinator, **סוכן** | כן |
 | `listSourcesForApproval` / `approveSources` | מקורות לאישור | approver, coordinator; סוכן מציע בלבד (כמו ב-main) | לא |
 | `recordAttempt` | ראיות לומד מול גרסה | learner (עצמו) | לא (הנגן שומר ניסיונות בנפרד) |
 
