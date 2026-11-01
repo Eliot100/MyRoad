@@ -478,5 +478,11 @@
   "world_sample": "بيانات نموذجية: مستويات المراجعة",
   "world_level": "مستوى {n} من 5",
   "placement_hint": "وجدنا الفجوة لديك. تابع من هنا، مرحلة بعد مرحلة. المسار الكامل متاح دائمًا في الأعلى.",
-  "placement_hint_close": "إغلاق"
+  "placement_hint_close": "إغلاق",
+  "letter_forms_title": "أشكال الحرف حسب موقعه",
+  "letter_form_isolated": "منفصل",
+  "letter_form_initial": "في البداية",
+  "letter_form_medial": "في الوسط",
+  "letter_form_final": "في النهاية",
+  "letter_forms_nojoin": "لا يتّصل بالحرف التالي"
 }

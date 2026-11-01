@@ -1,3 +1,14 @@
+/* Arabic script (issue 170): self-hosted Noto Naskh Arabic (OFL, fontsource 5.3.0), loaded only
+   when a page has Arabic letters (unicode-range). U+200D is in range so letter-form steps
+   shape with the same face. */
+@font-face {
+  font-family: "MyRoad Naskh";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 700;
+  src: url("/static/fonts/noto-naskh-arabic-wght.woff2") format("woff2-variations"), url("/static/fonts/noto-naskh-arabic-wght.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
 /* MyRoad platform shell — age-agnostic. "Ink & teal": near-black ink, one teal accent, hairline
    borders, no shadows, no filled pills, no decorative emoji. */
 :root {
@@ -98,7 +109,7 @@
   /* One button system (Ink & teal, issue shell): every primary/secondary is this size. */
   --btn-h: 52px;
   --btn-radius: 14px;
-  font-family: "Segoe UI", "Avenir Next", "Rubik", "Heebo", system-ui, sans-serif;
+  font-family: "MyRoad Naskh", "Segoe UI", "Avenir Next", "Rubik", "Heebo", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
 body.platform {
@@ -566,8 +577,6 @@ body.platform:has(.home-layout) { max-width: 1120px; }
 .content-token-label {
   font-size: .75rem;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .04em;
 }
 .content-token-text {
   font-size: 1.25rem;
@@ -1646,3 +1655,56 @@ html[data-motion="reduce"] .side { transition: none !important; }
 .placement-hint { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-block-end: var(--space-3); padding: var(--space-2) var(--space-4); border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink-2); font-size: var(--text-sm); line-height: 1.6; }
 .placement-hint p { margin: 0; }
 .placement-hint .text-link { min-block-size: 44px; display: inline-flex; align-items: center; white-space: nowrap; }
+
+/* Arabic script (issue 170). Naskh needs room above and below for harakat; joins must never
+   break, so no letter-spacing or case transforms anywhere Arabic shows. */
+:lang(ar) { letter-spacing: 0 !important; text-transform: none !important; font-feature-settings: normal; }
+body.platform:lang(ar) { line-height: 1.8; }
+body.platform :where(h1, h2, h3):lang(ar) { line-height: 1.5; }
+.content-token:lang(ar) { align-items: center; }
+.content-token-text:lang(ar), .content-token:lang(ar) .content-token-text {
+  font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2rem);
+  font-weight: 500;
+  line-height: 2;
+  padding-block: .15em;
+  overflow: visible;
+}
+.choice-label:lang(ar), :lang(ar) > .choice-label { line-height: 1.9; }
+[lang="ar"] .choice-label, .choice-label[lang="ar"] { font-size: 1.2rem; }
+
+.letter-forms {
+  margin: .75rem 0 1rem;
+  padding: var(--space-3, .75rem) var(--space-4, 1rem);
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.letter-forms > .content-token-label { margin: 0 0 .5rem; font-weight: 600; font-size: var(--text-sm, .875rem); }
+.lf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.lf-row {
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+  align-items: center;
+  gap: .25rem .75rem;
+  padding-block: .5rem;
+  border-block-start: 1px solid var(--line);
+}
+.lf-row:first-child { border-block-start: 0; }
+.lf-letter {
+  font-family: "MyRoad Naskh", serif;
+  font-size: 2.4rem;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--ink);
+  border-radius: 12px;
+  background: var(--tint-ok);
+}
+.lf-forms { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .25rem; margin: 0; }
+.lf-cell { display: flex; flex-direction: column-reverse; align-items: center; min-inline-size: 0; }
+.lf-cell dt { font-size: .8rem; color: var(--muted); line-height: 1.4; white-space: nowrap; }
+.lf-cell dd { margin: 0; font-family: "MyRoad Naskh", serif; font-size: 1.7rem; line-height: 1.9; color: var(--ok-ink); overflow: visible; }
+.lf-note { grid-column: 2; margin: 0; font-size: .8rem; color: var(--muted); }
+@media (min-width: 720px) {
+  .lf-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.5rem; }
+  .lf-row:nth-child(2) { border-block-start: 0; }
+}

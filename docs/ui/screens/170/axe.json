@@ -1,0 +1,116 @@
+{
+ "he-word-375-light": {
+  "violations": [],
+  "console_errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "he-word-375-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "he-word-1280-light": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "he-word-1280-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "he-letters-375-light": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "he-letters-375-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "he-letters-1280-light": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "he-letters-1280-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-word-375-light": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-word-375-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-word-1280-light": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-word-1280-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-letters-375-light": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-letters-375-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-letters-1280-light": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ },
+ "ar-letters-1280-dark": {
+  "violations": [],
+  "console_errors": [],
+  "fonts": [
+   "MyRoad Naskh"
+  ]
+ }
+}

@@ -31,10 +31,31 @@
   </div>
   {% endif %}
   {% if display is defined and display.body_content %}
-  <div class="content-token" lang="{{ content_locale or 'en' }}" dir="ltr">
+  {% set cl = content_locale or 'en' %}
+  {% set lf = display.body_content|letter_forms if cl == 'ar' else None %}
+  {% if lf %}
+  <section class="letter-forms" aria-labelledby="lf-h">
+    <h3 class="content-token-label" id="lf-h">{{ t('letter_forms_title') }}</h3>
+    <ul class="lf-list" role="list">
+      {% for f in lf %}
+      <li class="lf-row">
+        <bdi class="lf-letter" lang="ar" dir="rtl">{{ f.isolated }}</bdi>
+        <dl class="lf-forms">
+          {% for key in ['isolated', 'initial', 'medial', 'final'] %}
+          <div class="lf-cell"><dt>{{ t('letter_form_' ~ key) }}</dt><dd lang="ar" dir="rtl">{{ f[key] }}</dd></div>
+          {% endfor %}
+        </dl>
+        {% if not f.dual %}<p class="lf-note">{{ t('letter_forms_nojoin') }}</p>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% else %}
+  <div class="content-token" lang="{{ cl }}" dir="{{ 'rtl' if cl in ('ar', 'he') else 'ltr' }}">
     <span class="content-token-label">{{ t('content_token') }}</span>
-    <strong class="content-token-text">{{ display.body_content }}</strong>
+    <strong class="content-token-text"><bdi>{{ display.body_content }}</bdi></strong>
   </div>
+  {% endif %}
   {% elif kids.body_content %}
   <div class="content-token" lang="en" dir="ltr">
     <span class="content-token-label">{{ t('content_token') }}</span>
