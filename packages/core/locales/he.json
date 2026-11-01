@@ -484,5 +484,7 @@
   "letter_form_initial": "בהתחלה",
   "letter_form_medial": "באמצע",
   "letter_form_final": "בסוף",
-  "letter_forms_nojoin": "לא מתחברת לאות שאחריה"
+  "letter_forms_nojoin": "לא מתחברת לאות שאחריה",
+  "speak_no_voice": "אין במכשיר קול שמתאים לשפה של השלב הזה, ולכן ההקראה לא תישמע. אפשר להמשיך בנתיב ולקרוא את הטקסט.",
+  "speak_unsupported": "הדפדפן הזה לא תומך בהקראה. אפשר להמשיך בנתיב ולקרוא את הטקסט."
 }
