@@ -63,6 +63,33 @@
   </div>
   {% endif %}
 
+  {% if ntype in ['practice', 'check'] and kids.choices and not read_only %}
+  {#- Scratchpad (#183): the learner's own working. Kept in localStorage per user + road + step
+      (platform.js); never posted, never graded. Closed by default. -#}
+  {%- set sp_key = 'myroad.scratch.' ~ ((learner.userId if learner else '') or 'anon') ~ '.' ~ doc.pathId ~ '.' ~ (block.blockId or kids.id or index) %}
+  <div class="scratch-area">
+    {% if kids.worked_method %}
+    <details class="worked-method">
+      <summary>{{ t('worked_method_title') }}</summary>
+      <p class="worked-method-text" dir="auto" lang="{{ explain_locale or 'he' }}">{{ kids.worked_method|bdi }}</p>
+    </details>
+    {% endif %}
+    <details class="scratchpad" data-scratch-key="{{ sp_key }}">
+      <summary>{{ t('scratch_title') }}</summary>
+      <div class="scratch-body">
+        <p class="tiny muted scratch-hint" id="scratch-hint">{{ t('scratch_hint') }}</p>
+        <label class="scratch-label" for="scratch-text">{{ t('scratch_text_label') }}</label>
+        <textarea id="scratch-text" class="scratch-text" dir="auto" rows="4" spellcheck="false" autocomplete="off" aria-describedby="scratch-hint" data-scratch-text></textarea>
+        <div class="scratch-draw">
+          <span class="scratch-label" id="scratch-draw-label">{{ t('scratch_draw_label') }}</span>
+          <canvas class="scratch-canvas" role="img" aria-labelledby="scratch-draw-label" data-scratch-canvas></canvas>
+          <button type="button" class="secondary scratch-clear" data-scratch-clear>{{ t('scratch_clear') }}</button>
+        </div>
+      </div>
+    </details>
+  </div>
+  {% endif %}
+
   {% if read_only %}
   {% if kids.choices %}
   <ul class="choices read-only-choices" aria-label="{{ t('read_only_badge') }}">

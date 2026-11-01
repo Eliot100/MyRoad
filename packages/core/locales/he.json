@@ -484,5 +484,11 @@
   "letter_form_initial": "בהתחלה",
   "letter_form_medial": "באמצע",
   "letter_form_final": "בסוף",
-  "letter_forms_nojoin": "לא מתחברת לאות שאחריה"
+  "letter_forms_nojoin": "לא מתחברת לאות שאחריה",
+  "scratch_title": "דף עבודה",
+  "scratch_hint": "רק בשבילך. נשמר במכשיר הזה בלבד, לא נשלח ולא נבדק.",
+  "scratch_text_label": "כתיבה חופשית",
+  "scratch_draw_label": "ציור באצבע או בעכבר",
+  "scratch_clear": "ניקוי הציור",
+  "worked_method_title": "איך פותרים"
 }

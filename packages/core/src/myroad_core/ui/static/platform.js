@@ -248,3 +248,91 @@
   document.addEventListener("htmx:sendError", sendError);
   document.addEventListener("htmx:responseError", fallbackPost);
 })();
+
+// Scratchpad (#183): the learner's own working on a practice step. Stored only in this
+// browser's localStorage, keyed by user + road + step, so it survives Next / Previous and
+// reloads. Never posted and never graded. Strokes are kept as points and redrawn with the
+// current theme's ink colour, so a drawing stays readable after switching light / dark.
+(function () {
+  var MAX_POINTS = 4000;
+  function load(key) {
+    try { return JSON.parse(localStorage.getItem(key) || "null") || {}; } catch (e) { return {}; }
+  }
+  function save(key, st) {
+    try {
+      if (!st.t && !(st.s && st.s.length) && !st.o) localStorage.removeItem(key);
+      else localStorage.setItem(key, JSON.stringify(st));
+    } catch (e) { /* storage full or blocked: the pad still works for this view */ }
+  }
+  function init(pad) {
+    if (pad.hasAttribute("data-scratch-ready")) return;
+    pad.setAttribute("data-scratch-ready", "");
+    var key = pad.getAttribute("data-scratch-key");
+    var st = load(key);
+    st.s = st.s || [];
+    var text = pad.querySelector("[data-scratch-text]");
+    var canvas = pad.querySelector("[data-scratch-canvas]");
+    var clear = pad.querySelector("[data-scratch-clear]");
+    if (st.o) pad.open = true;
+    if (text) {
+      text.value = st.t || "";
+      text.addEventListener("input", function () { st.t = text.value; save(key, st); });
+    }
+    pad.addEventListener("toggle", function () { st.o = pad.open ? 1 : 0; save(key, st); if (pad.open) draw(); });
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    function count() { var n = 0; for (var i = 0; i < st.s.length; i++) n += st.s[i].length; return n; }
+    function draw() {
+      var r = canvas.getBoundingClientRect();
+      if (!r.width) return;
+      var dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(r.width * dpr);
+      canvas.height = Math.round(r.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, r.width, r.height);
+      ctx.strokeStyle = getComputedStyle(canvas).color;
+      ctx.lineWidth = 2.25; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      for (var i = 0; i < st.s.length; i++) {
+        var line = st.s[i];
+        ctx.beginPath();
+        for (var j = 0; j < line.length; j++) {
+          var x = line[j][0] * r.width, y = line[j][1] * r.height;
+          if (j) ctx.lineTo(x, y); else { ctx.moveTo(x, y); ctx.lineTo(x + 0.01, y); }
+        }
+        ctx.stroke();
+      }
+    }
+    var cur = null;
+    function pt(e) {
+      var r = canvas.getBoundingClientRect();
+      return [Math.round(((e.clientX - r.left) / r.width) * 1000) / 1000, Math.round(((e.clientY - r.top) / r.height) * 1000) / 1000];
+    }
+    canvas.addEventListener("pointerdown", function (e) {
+      if (count() >= MAX_POINTS) return;
+      canvas.setPointerCapture(e.pointerId);
+      cur = [pt(e)]; st.s.push(cur); draw();
+    });
+    canvas.addEventListener("pointermove", function (e) {
+      if (!cur || count() >= MAX_POINTS) return;
+      cur.push(pt(e)); draw();
+    });
+    function end() { if (cur) { cur = null; save(key, st); } }
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+    if (clear) clear.addEventListener("click", function () { st.s = []; save(key, st); draw(); });
+    window.addEventListener("resize", draw);
+    if (window.matchMedia) {
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      if (mq.addEventListener) mq.addEventListener("change", draw);
+    }
+    new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    draw();
+  }
+  function scan(root) {
+    var pads = (root || document).querySelectorAll("details.scratchpad[data-scratch-key]");
+    for (var i = 0; i < pads.length; i++) init(pads[i]);
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { scan(); });
+  else scan();
+  document.addEventListener("htmx:afterSettle", function () { scan(); });
+})();

@@ -484,5 +484,11 @@
   "letter_form_initial": "في البداية",
   "letter_form_medial": "في الوسط",
   "letter_form_final": "في النهاية",
-  "letter_forms_nojoin": "لا يتّصل بالحرف التالي"
+  "letter_forms_nojoin": "لا يتّصل بالحرف التالي",
+  "scratch_title": "ورقة عمل",
+  "scratch_hint": "لك وحدك. تُحفظ على هذا الجهاز فقط، لا تُرسل ولا تُصحَّح.",
+  "scratch_text_label": "كتابة حرة",
+  "scratch_draw_label": "الرسم بالإصبع أو بالفأرة",
+  "scratch_clear": "مسح الرسم",
+  "worked_method_title": "طريقة الحل"
 }
