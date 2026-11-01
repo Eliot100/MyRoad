@@ -57,21 +57,57 @@ def _error(status: int, code: str) -> JSONResponse:
     return JSONResponse({"error": code}, status_code=status)
 
 
-def placement_routes(store) -> list[dict[str, Any]]:
-    """Published path docs that declare a placement_route (decision 0003)."""
+# Series page per subject. A fallback never leaves the placement's subject.
+SUBJECT_SERIES_PAGE: dict[str, str] = {"english": "/series/english-bagrut5"}
+
+
+def _published_docs(store) -> list[dict[str, Any]]:
     docs = []
     for c in list_catalog_cards(store):
         try:
-            d = store.get_version(c["pathId"], c["versionId"]).model_dump(mode="json", by_alias=True)
+            docs.append(store.get_version(c["pathId"], c["versionId"]).model_dump(mode="json", by_alias=True))
         except Exception:
             continue
-        if d.get("placementRoute"):
-            docs.append(d)
     return docs
+
+
+def placement_routes(store) -> list[dict[str, Any]]:
+    """Published path docs that declare a placement_route (decision 0003)."""
+    return [d for d in _published_docs(store) if d.get("placementRoute")]
 
 
 def routed_road_id(store, placement_id: str, band: int) -> str | None:
     return route_by_band(placement_routes(store), placement_id, band) if band else None
+
+
+def placement_target(store, placement_id: str, band: int) -> dict[str, Any]:
+    """Road for a finished placement: ``{road, routing_gap, fallback_url}``.
+
+    A matching placement_route wins (``routing_gap`` false). English with no match keeps the
+    #152/#174 behaviour (no road, English series page). Any other placement with no match is a
+    routing gap: the highest published road of the placement's subject whose band_min <= band,
+    else the lowest such road (by path id); with no road at all, the subject's series page or "/".
+    """
+    docs = _published_docs(store)
+    routes = [d for d in docs if d.get("placementRoute")]
+    road = route_by_band(routes, placement_id, band) if band else None
+    if road or placement_id == PLACEMENT_ID:
+        return {"road": road, "routing_gap": False, "fallback_url": SUBJECT_SERIES_PAGE["english"]}
+    placement = next((d for d in docs if d.get("pathId") == placement_id), None)
+    subject = (placement or {}).get("subject")
+    roads = sorted(
+        (d for d in docs if subject and d.get("subject") == subject and d.get("pathId") != placement_id),
+        key=lambda d: d["pathId"],
+    )
+    fitting = [d for d in roads if int((d.get("placementRoute") or {}).get("band_min", 10**6)) <= band]
+    pick = max(fitting, key=lambda d: (int(d["placementRoute"]["band_min"]), d["pathId"])) if fitting else (
+        roads[0] if roads else None
+    )
+    return {
+        "road": pick["pathId"] if pick else None,
+        "routing_gap": True,
+        "fallback_url": SUBJECT_SERIES_PAGE.get(subject or "", "/"),
+    }
 
 
 def register_placement_api(app, *, store) -> None:
@@ -83,8 +119,8 @@ def register_placement_api(app, *, store) -> None:
 
     def _result(progress: dict[str, Any], placement_id: str = PLACEMENT_ID) -> dict[str, Any]:
         band = placement_band(progress)
-        # One lookup for every placement: the published path whose placement_route covers the band.
-        road = routed_road_id(store, placement_id, band)
+        target = placement_target(store, placement_id, band)
+        road = target["road"]
         first_step = None
         card = next((c for c in list_catalog_cards(store) if c["pathId"] == road), None) if road else None
         if card:
@@ -96,6 +132,8 @@ def register_placement_api(app, *, store) -> None:
             # English: the series chain road at the band (what the series page marks as the gap).
             "gap": SERIES[band][0] if placement_id == PLACEMENT_ID else road,
             "recommended_road_id": road,
+            # True when no placement_route matched and the in-subject fallback picked the road.
+            "routing_gap": target["routing_gap"],
             "placement_id": placement_id,
             "first_step_id": first_step,
             "correct": int(progress.get("correctTaps") or 0),
@@ -125,7 +163,10 @@ def register_placement_api(app, *, store) -> None:
             completed_at=_iso_now(),
             needs_practice=False,
         )
-        return JSONResponse(_result(progress, pid))
+        result = _result(progress, pid)
+        if result["routing_gap"]:
+            store.record_placement_gap(uid, pid, result["band"])
+        return JSONResponse(result)
 
     @app.get("/api/placement/result")
     def get_placement_result(request: Request, placementId: str | None = None) -> JSONResponse:

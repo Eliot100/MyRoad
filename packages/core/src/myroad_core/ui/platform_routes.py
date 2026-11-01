@@ -12,9 +12,9 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
-from myroad_core.content.variants import route_by_band, select_variants
+from myroad_core.content.variants import select_variants
 from myroad_core.content.english_bagrut import placement_band as english_placement_band
-from myroad_core.ui.placement_api import placement_routes
+from myroad_core.ui.placement_api import placement_routes, placement_target
 from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
 from myroad_core.auth.captcha import captcha_site_key, captcha_verifier_from_env
 from myroad_core.auth.email_change import EMAIL_CHANGE_COOKIE
@@ -701,19 +701,23 @@ def register_platform_routes(
         """Where a finished placement sends the learner, or None if path_id is not a placement.
 
         Every placement (English and Arabic, decision 0003): the published path whose
-        placement_route covers the band. No recommendation: the English series page.
+        placement_route covers the band, else the in-subject fallback (placement_target).
         """
-        fallback = "/series/english-bagrut5"
         routes = placement_routes(store)
-        is_placement = path_id == ENGLISH_SERIES[0][0] or any(
+        # A placement: the English one, any path id ending in "_placement", or one a route names.
+        is_placement = path_id == ENGLISH_SERIES[0][0] or path_id.endswith("_placement") or any(
             (d.get("placementRoute") or {}).get("from_placement") == path_id for d in routes
         )
         if not is_placement:
             return None
         learner = _learner(request)
         progress = store.get_progress(learner["userId"], path_id) if learner else None
-        road = route_by_band(routes, path_id, english_placement_band(progress))
-        return f"/play/{road}?view=learn&from=placement" if road else fallback
+        band = english_placement_band(progress)
+        target = placement_target(store, path_id, band)
+        if target["routing_gap"] and learner:
+            store.record_placement_gap(learner["userId"], path_id, band)
+        road = target["road"]
+        return f"/play/{road}?view=learn&from=placement" if road else target["fallback_url"]
 
     def _read_only_redirect(request: Request, sess: dict[str, Any], path_id: str) -> RedirectResponse:
         sess["view"] = "learn"

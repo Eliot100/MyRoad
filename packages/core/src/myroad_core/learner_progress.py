@@ -601,6 +601,15 @@ class LearnerProgressMixin:
             "createdAt": now,
         }
 
+    def record_placement_gap(self, user_id: str, placement_id: str, band: int) -> None:
+        """A finished placement had no matching placement_route (routing gap). block_id = "band:<n>"."""
+        self._conn.execute(
+            "INSERT INTO learner_events (user_id, path_id, block_id, event_type, ok, duration_ms, created_at) "
+            "VALUES (?,?,?,?,?,?,?)",
+            (user_id, placement_id, f"band:{int(band)}", "placement_gap", None, None, _iso_now()),
+        )
+        self._conn.commit()
+
     def step_aggregates(self, user_id: str, path_id: str | None = None) -> list[dict[str, Any]]:
         """Per-step aggregates for a learner: views, attempts, total time, last result, mastery."""
         sql = """
@@ -616,7 +625,7 @@ class LearnerProgressMixin:
                    AND e2.block_id = e.block_id AND e2.event_type = 'answer'
                  ORDER BY e2.event_id DESC LIMIT 1) AS last_ok
             FROM learner_events e
-            WHERE user_id = ?
+            WHERE user_id = ? AND event_type != 'placement_gap'
         """
         args: list[Any] = [user_id]
         if path_id is not None:
