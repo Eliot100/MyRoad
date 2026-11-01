@@ -57,6 +57,7 @@
   "feedback_correct": "Correct.",
   "feedback_not_yet": "Not yet.",
   "feedback_pick_again": "Pick another answer.",
+  "step_hint_title": "Hint",
   "next_step": "Next step",
   "nodes": "steps",
   "topic_progress": "done in topic",
