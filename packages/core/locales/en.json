@@ -490,5 +490,7 @@
   "scratch_text_label": "Free writing",
   "scratch_draw_label": "Draw with finger or mouse",
   "scratch_clear": "Clear drawing",
-  "worked_method_title": "How to solve it"
+  "worked_method_title": "How to solve it",
+  "speak_no_voice": "This device has no voice for this language, so read aloud is silent. You can read the text and keep going.",
+  "speak_unsupported": "This browser does not support read aloud. You can read the text and keep going."
 }

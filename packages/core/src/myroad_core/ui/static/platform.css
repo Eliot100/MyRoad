@@ -1751,3 +1751,17 @@ body.platform :where(h1, h2, h3):lang(ar) { line-height: 1.5; }
 }
 .play .step-card .scratch-clear { margin-block-start: .5rem; min-block-size: 44px; }
 @media (prefers-reduced-motion: reduce) { .scratch-area summary::after { transition: none; } }
+
+/* Read aloud note: calm, theme aware, shown only when no voice or audio can play. */
+.speak-note {
+  margin: .5rem 0 0;
+  padding: .6rem .85rem;
+  border-inline-start: 3px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-size: .92rem;
+  line-height: 1.6;
+  text-align: start;
+}
+.speak-note[hidden] { display: none; }

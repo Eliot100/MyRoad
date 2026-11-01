@@ -15,9 +15,10 @@
     <h2 id="step-title" tabindex="-1" dir="auto"{{ sl.title|content_lang(locale) }}>{% if display is defined and display.title %}{{ display.title|bdi }}{% else %}{{ block.title|bdi }}{% endif %}</h2>
     <button type="button" class="icon-btn" id="btn-speak" title="{{ t('speak') }}" aria-label="{{ t('speak') }}">{{ t('speak') }}</button>
   </div>
-  <p class="body-text" id="speak-source" dir="auto"{{ sl.body|content_lang(locale) }} data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}">
+  <p class="body-text" id="speak-source" dir="auto"{{ sl.body|content_lang(locale) }} data-speak="{{ display.speak if display is defined else (kids.speak_text or kids.body_en or kids.body_he or block.title) }}"{% set speak_audio = (display.audio_url if display is defined and display.audio_url else '') or kids.audio_url or '' %}{% if speak_audio %} data-speak-audio="{{ speak_audio }}"{% endif %}>
     {% if display is defined %}{{ display.body|bdi }}{% elif locale == 'en' and kids.body_en %}{{ kids.body_en|bdi }}{% else %}{{ (kids.body_he or block.learningObjective)|bdi }}{% endif %}
   </p>
+  <p class="speak-note" id="speak-note" role="status" aria-live="polite" hidden data-msg-novoice="{{ t('speak_no_voice') }}" data-msg-unsupported="{{ t('speak_unsupported') }}"></p>
   {% if is_review and kids.review_topic_ids %}
   <div class="review-mix">
     <span class="review-mix-label">{{ t('review_mixes') }}</span>

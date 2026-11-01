@@ -144,6 +144,8 @@ class ContentChoice(BaseModel):
     emoji: str | None = None
     label_en: str | None = None
     label_he: str | None = None
+    # Optional: explanation shown after the learner picks this choice.
+    feedback: str | None = None
 
 
 class VariantWhen(BaseModel):
@@ -179,6 +181,8 @@ class ContentNode(BaseModel):
     choices: list[ContentChoice] | None = None
     correct: str | list[str] | None = None
     media_hint: str | None = None
+    # Optional: hint the learner can open before answering.
+    hint: str | None = None
     keys: list[str] | None = None
     target_sequence: list[str] | None = None
     pattern: list[int] | None = None
