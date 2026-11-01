@@ -14,6 +14,7 @@ pytest.importorskip("jinja2")
 from fastapi.testclient import TestClient
 from auth_helpers import login_with_code
 
+from myroad_core.content.english_bagrut import series_index
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
 
@@ -43,7 +44,7 @@ def _mini(pid: str, title: str, prereq: list[str]) -> dict:
             "choices": [{"id": "a", "label": "am"}, {"id": "b", "label": "is"}, {"id": "c", "label": "are"}],
             "correct": "a", "feedback_ok": "נכון.", "feedback_try": "עוד ניסיון.",
         })
-    return {
+    doc = {
         "id": pid, "subject": "english", "group_ids": ["adult"], "emoji": "א",
         "explain_locale": "he", "content_locale": "en", "estimated_minutes": 20,
         "prerequisite_path_ids": prereq,
@@ -51,6 +52,10 @@ def _mini(pid: str, title: str, prereq: list[str]) -> dict:
         "blurbs": {"he": "בדיקה של השרשרת.", "en": "Series test."},
         "topics": topics, "nodes": nodes,
     }
+    index = series_index(pid)
+    if index:  # mirrors MyRoad-content #20: each English road declares its band
+        doc["placement_route"] = {"from_placement": PLACE, "band_min": index, "band_max": index}
+    return doc
 
 
 @pytest.fixture

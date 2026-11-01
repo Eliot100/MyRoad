@@ -12,8 +12,8 @@
     200: the last stored result (same shape). 404 ``no_placement_result``.
 
 ``band`` is the English series index from ``placement_band`` (1, 3 or 5) and
-``gap`` is the series road id at that index. ``recommended_road_id`` is the gap
-road when it is published in the catalog, else null (still 200). The result is
+``gap`` is the series road id at that index. ``recommended_road_id`` is the published
+road whose ``placement_route`` (content) covers the band, else null (still 200). The result is
 stored on the learner's placement progress row (existing ``PathStore`` SQLite
 table), so the series map and locks read the same result.
 """
@@ -83,29 +83,19 @@ def register_placement_api(app, *, store) -> None:
 
     def _result(progress: dict[str, Any], placement_id: str = PLACEMENT_ID) -> dict[str, Any]:
         band = placement_band(progress)
-        if placement_id != PLACEMENT_ID:
-            road = routed_road_id(store, placement_id, band)
-            return {
-                "band": band,
-                "gap": road,
-                "recommended_road_id": road,
-                "placement_id": placement_id,
-                "first_step_id": None,
-                "correct": int(progress.get("correctTaps") or 0),
-                "incorrect": int(progress.get("incorrectTaps") or 0),
-                "completedAt": progress.get("completedAt"),
-            }
-        gap = SERIES[band][0]
-        card = next((c for c in list_catalog_cards(store) if c["pathId"] == gap), None)
+        # One lookup for every placement: the published path whose placement_route covers the band.
+        road = routed_road_id(store, placement_id, band)
         first_step = None
+        card = next((c for c in list_catalog_cards(store) if c["pathId"] == road), None) if road else None
         if card:
-            doc = store.get_version(gap, card["versionId"]).model_dump(mode="json", by_alias=True)
+            doc = store.get_version(road, card["versionId"]).model_dump(mode="json", by_alias=True)
             blocks = doc.get("blocks") or []
             first_step = blocks[0].get("blockId") if blocks else None
         return {
             "band": band,
-            "gap": gap,
-            "recommended_road_id": gap if card else None,
+            # English: the series chain road at the band (what the series page marks as the gap).
+            "gap": SERIES[band][0] if placement_id == PLACEMENT_ID else road,
+            "recommended_road_id": road,
             "placement_id": placement_id,
             "first_step_id": first_step,
             "correct": int(progress.get("correctTaps") or 0),

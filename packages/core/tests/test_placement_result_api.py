@@ -123,3 +123,23 @@ def test_placement_routes_to_arabic_path(tmp_path: Path, monkeypatch: pytest.Mon
         assert s == {"audio": False, "writing": False}
     finally:
         store.close()
+
+
+def test_english_routing_reads_placement_route(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Content decides the road: moving road 03's placement_route to band 1 moves the result."""
+    content = tmp_path / "content" / "adult"
+    content.mkdir(parents=True)
+    time_road = _mini("path_english_bagrut5_03_time", "זמן וסיפור", [PLACE])
+    time_road["placement_route"] = {"from_placement": PLACE, "band_min": 1, "band_max": 1}
+    zero = _mini(ZERO, "מאפס", [PLACE])
+    zero.pop("placement_route")
+    for doc in (_mini(PLACE, "מבדק רמה", []), zero, time_road):
+        (content / f"{doc['id']}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "p.db"))
+    try:
+        c = _client(create_learner_app(store=store, seed=False, seed_content=True))
+        body = c.post(URL, json=_answers(wrong=5), headers=H).json()
+        assert body["band"] == 1 and body["recommended_road_id"] == "path_english_bagrut5_03_time"
+    finally:
+        store.close()

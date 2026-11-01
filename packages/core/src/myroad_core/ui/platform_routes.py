@@ -700,15 +700,15 @@ def register_platform_routes(
     def _placement_finish_target(request: Request, path_id: str) -> str | None:
         """Where a finished placement sends the learner, or None if path_id is not a placement.
 
-        English (#154/#168): unlocked_next[0]. Other placements (decision 0003, e.g. Arabic):
-        the path whose placement_route covers the band. No recommendation: the English series page.
+        Every placement (English and Arabic, decision 0003): the published path whose
+        placement_route covers the band. No recommendation: the English series page.
         """
         fallback = "/series/english-bagrut5"
-        if path_id == ENGLISH_SERIES[0][0]:
-            nxt = _unlocked_next(request, path_id)
-            return f"/play/{nxt[0]['pathId']}?view=learn&from=placement" if nxt else fallback
         routes = placement_routes(store)
-        if not any((d.get("placementRoute") or {}).get("from_placement") == path_id for d in routes):
+        is_placement = path_id == ENGLISH_SERIES[0][0] or any(
+            (d.get("placementRoute") or {}).get("from_placement") == path_id for d in routes
+        )
+        if not is_placement:
             return None
         learner = _learner(request)
         progress = store.get_progress(learner["userId"], path_id) if learner else None
