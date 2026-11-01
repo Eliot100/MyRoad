@@ -478,5 +478,11 @@
   "world_sample": "Sample data: review levels",
   "world_level": "Level {n} of 5",
   "placement_hint": "We found your gap. Keep going from here, step by step. The full path is always up top.",
-  "placement_hint_close": "Dismiss"
+  "placement_hint_close": "Dismiss",
+  "letter_forms_title": "Letter shapes by position",
+  "letter_form_isolated": "Alone",
+  "letter_form_initial": "Start",
+  "letter_form_medial": "Middle",
+  "letter_form_final": "End",
+  "letter_forms_nojoin": "Does not join the next letter"
 }

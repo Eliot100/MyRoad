@@ -44,3 +44,4 @@ Mockup rounds for the road screen:
 - v4 (path, worlds map, medals): Eliot did not love any; chose B, worlds map. Shipped in PR #144. PR #146 made it follow light/dark.
 - [2026-10-31] Added the merge and decision rule to Rules.
 - 2026-10-31: placement result screen (#156) removed; placement and each משבצת flow into the next משבצת, with a road rail in the player.
+- 2026-11-01: Arabic script (#170): self-hosted Noto Naskh, no letter-spacing/uppercase where Arabic shows, letter-forms table for alphabet steps.

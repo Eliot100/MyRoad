@@ -478,5 +478,11 @@
   "world_sample": "נתוני דוגמה: רמות החזרה",
   "world_level": "רמה {n} מתוך 5",
   "placement_hint": "מצאנו את הפער שלך. ממשיכים מכאן, שלב אחרי שלב. הנתיב המלא זמין תמיד למעלה.",
-  "placement_hint_close": "סגירה"
+  "placement_hint_close": "סגירה",
+  "letter_forms_title": "צורות האות לפי מקום במילה",
+  "letter_form_isolated": "לבד",
+  "letter_form_initial": "בהתחלה",
+  "letter_form_medial": "באמצע",
+  "letter_form_final": "בסוף",
+  "letter_forms_nojoin": "לא מתחברת לאות שאחריה"
 }

@@ -54,6 +54,7 @@ from myroad_core.ui.i18n import (
     t,
 )
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
+from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
 from myroad_core.ui.dates import days_ago, short_date
 from myroad_core.ui.tv_home import apply_preview_lock, mock_skills, mock_unlock, preview_enabled, stage_states
@@ -1614,6 +1615,8 @@ def register_platform_routes(
     # Step text (titles, bodies, choices, feedback) renders through this filter so math
     # and Latin runs stay readable inside Hebrew/Arabic sentences. See ui/bidi.py.
     templates.env.filters["bdi"] = bidi_isolate
+    # Alphabet steps: a run of single Arabic letters -> their four positional forms (#170).
+    templates.env.filters["letter_forms"] = letter_forms
     # `` lang="xx"`` on content text shown in a language other than the UI locale (see i18n.py).
     templates.env.filters["content_lang"] = content_lang
     templates.env.filters["short_date"] = short_date
