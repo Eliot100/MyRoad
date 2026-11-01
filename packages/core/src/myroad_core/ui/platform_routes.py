@@ -12,7 +12,9 @@ from fastapi import Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
-from myroad_core.content.variants import select_variants
+from myroad_core.content.variants import route_by_band, select_variants
+from myroad_core.content.english_bagrut import placement_band as english_placement_band
+from myroad_core.ui.placement_api import placement_routes
 from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
 from myroad_core.auth.captcha import captcha_site_key, captcha_verifier_from_env
 from myroad_core.auth.email_change import EMAIL_CHANGE_COOKIE
@@ -693,6 +695,24 @@ def register_platform_routes(
                 continue
             announced.append({"pathId": pid, "title": titles[pid]})
         return _with_title_langs(announced, _locale(request))
+
+    def _placement_finish_target(request: Request, path_id: str) -> str | None:
+        """Where a finished placement sends the learner, or None if path_id is not a placement.
+
+        English (#154/#168): unlocked_next[0]. Other placements (decision 0003, e.g. Arabic):
+        the path whose placement_route covers the band. No recommendation: the English series page.
+        """
+        fallback = "/series/english-bagrut5"
+        if path_id == ENGLISH_SERIES[0][0]:
+            nxt = _unlocked_next(request, path_id)
+            return f"/play/{nxt[0]['pathId']}?view=learn&from=placement" if nxt else fallback
+        routes = placement_routes(store)
+        if not any((d.get("placementRoute") or {}).get("from_placement") == path_id for d in routes):
+            return None
+        learner = _learner(request)
+        progress = store.get_progress(learner["userId"], path_id) if learner else None
+        road = route_by_band(routes, path_id, english_placement_band(progress))
+        return f"/play/{road}?view=learn&from=placement" if road else fallback
 
     def _read_only_redirect(request: Request, sess: dict[str, Any], path_id: str) -> RedirectResponse:
         sess["view"] = "learn"
@@ -1757,6 +1777,12 @@ def register_platform_routes(
         if _is_htmx(request) and sess.get("view") != "learn":
             # Only the learn view has a step card to swap; map and summary load as pages.
             return _hx_redirect(f"/play/{path_id}")
+
+        if sess.get("view") == "stats" and _maybe_done(sess, n):
+            # #169: a finished placement goes straight to the recommended road (303), no result screen.
+            target = _placement_finish_target(request, path_id)
+            if target:
+                return RedirectResponse(target, status_code=303)
 
         if sess.get("view") == "stats":
             # Read-only (#53): the attempt is recorded by the POST that finished the path
