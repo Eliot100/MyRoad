@@ -486,6 +486,12 @@
   "letter_form_medial": "Middle",
   "letter_form_final": "End",
   "letter_forms_nojoin": "Does not join the next letter",
+  "scratch_title": "Scratchpad",
+  "scratch_hint": "Just for you. Saved on this device only, never sent or checked.",
+  "scratch_text_label": "Free writing",
+  "scratch_draw_label": "Draw with finger or mouse",
+  "scratch_clear": "Clear drawing",
+  "worked_method_title": "How to solve it",
   "speak_no_voice": "This device has no voice for this language, so read aloud is silent. You can read the text and keep going.",
   "speak_unsupported": "This browser does not support read aloud. You can read the text and keep going."
 }

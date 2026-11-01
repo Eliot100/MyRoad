@@ -18,6 +18,7 @@ Generalized, testable lessons from Eliot's feedback. Add new entries dated, with
 - [2026-10-29] Never: labels clipped at the frame edge in RTL. Test: at 375 and 1280 widths, every label is fully visible inside the frame.
 - [2026-10-31] Rule: bot PRs merge with gh pr merge --auto --squash once checks are green, without per-PR approval. Technical choices, such as sample data until an API lands, are mine to make. Only product decisions go to Eliot, through frank. Why: standing rule since 2026-10-21, relayed by frank.
 - [2026-10-31] Rule: no interstitial done/result screens; keep the learner flowing into the next משבצת with visible progress; return to the road is optional. Test: finishing placement or a משבצת opens the next משבצת, the player shows a road rail with the current שלב, and the map link stays one tap away. Why: "אני לא רואה צורך במסך בו כתוב שהבדיקה הסתיימה, עם הUI/UX ברור אפשר פשוט לעבור חזרה לדרך ושהוא יבחר מה ללמוד ואיך" and "לא חובה לחזור לדרך, אם הלומד מבין מהר שווה שהוא ימשיך ללמוד מכמה משבצות ברצף ללא 'הוצאה יזומה' אלא עם המחשה וויזואלית של התקדמות".
+- [2026-11-01] Always: practice and check steps offer an optional place to work out the answer (scratchpad, closed by default, device only, never graded). Test: a practice step with choices has a closed scratchpad under the question. Why: on math step 2 (487 + 256) there was "no place to write out working" (relayed by frank).
 
 ## Preferences (taste)
 
@@ -45,5 +46,6 @@ Mockup rounds for the road screen:
 - [2026-10-31] Added the merge and decision rule to Rules.
 - 2026-10-31: placement result screen (#156) removed; placement and each משבצת flow into the next משבצת, with a road rail in the player.
 - 2026-11-01: Arabic script (#170): self-hosted Noto Naskh, no letter-spacing/uppercase where Arabic shows, letter-forms table for alphabet steps.
+- 2026-11-01: optional scratchpad on practice steps (#183), decision 0005.
 - 2026-11-01: read aloud (#181): Arabic text speaks as ar with a matching voice; with no voice or audio a calm aria-live note shows instead of silence.
 - 2026-11-01: step hint and per choice feedback (#187): hint is a closed 'רמז' disclosure before answering; choice feedback sits under the picked choice, calm neutral note. media_hint is an internal asset slug, never shown as text.
