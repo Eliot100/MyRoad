@@ -484,5 +484,7 @@
   "letter_form_initial": "Start",
   "letter_form_medial": "Middle",
   "letter_form_final": "End",
-  "letter_forms_nojoin": "Does not join the next letter"
+  "letter_forms_nojoin": "Does not join the next letter",
+  "speak_no_voice": "This device has no voice for this language, so read aloud is silent. You can read the text and keep going.",
+  "speak_unsupported": "This browser does not support read aloud. You can read the text and keep going."
 }

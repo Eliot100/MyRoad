@@ -1,22 +1,82 @@
 (function () {
-  function speak(text) {
-    if (!text || !window.speechSynthesis) {
-      var s = document.getElementById("record-status");
-      if (s) s.textContent = "הקראה לא נתמכת בדפדפן זה.";
-      return;
-    }
-    window.speechSynthesis.cancel();
-    var u = new SpeechSynthesisUtterance(text);
-    u.lang = /[a-zA-Z]/.test(text) && !/[\u0590-\u05FF]/.test(text) ? "en-US" : "he-IL";
-    window.speechSynthesis.speak(u);
+  // Read aloud (הקראה): content audio first, then a voice that matches the text's script,
+  // else a calm on-screen note instead of silence.
+  var AR_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  var HE_RE = /[\u0590-\u05FF]/;
+  function speakLang(text) {
+    if (AR_RE.test(text)) return "ar";
+    if (HE_RE.test(text)) return "he-IL";
+    return "en-US";
   }
+  function langPrefix(lang) { return String(lang || "").toLowerCase().split(/[-_]/)[0]; }
+  function pickVoice(voices, lang) {
+    var want = langPrefix(lang);
+    if (want === "he") want = /^(he|iw)$/;
+    for (var i = 0; i < (voices || []).length; i++) {
+      var p = langPrefix(voices[i].lang);
+      if (typeof want === "string" ? p === want : want.test(p)) return voices[i];
+    }
+    return null;
+  }
+  // getVoices() is often empty until voiceschanged fires; wait briefly, then use what we have.
+  function withVoices(cb) {
+    var synth = window.speechSynthesis;
+    var v = synth.getVoices();
+    if (v && v.length) { cb(v); return; }
+    var done = false;
+    function finish() {
+      if (done) return;
+      done = true;
+      if (synth.removeEventListener) synth.removeEventListener("voiceschanged", finish);
+      cb(synth.getVoices() || []);
+    }
+    if (synth.addEventListener) synth.addEventListener("voiceschanged", finish);
+    setTimeout(finish, 800);
+  }
+  function speakNote(key) {
+    var el = document.getElementById("speak-note");
+    if (!el) return;
+    var msg = el.getAttribute("data-msg-" + key) || "";
+    el.textContent = msg;
+    el.hidden = !msg;
+  }
+  function playAudio(url, onFail) {
+    try {
+      var a = new Audio(url);
+      var p = a.play();
+      if (p && p.catch) p.catch(function () { onFail(); });
+      a.onerror = function () { onFail(); };
+    } catch (err) { onFail(); }
+  }
+  function speakTts(text, lang) {
+    var synth = window.speechSynthesis;
+    if (!synth || typeof window.SpeechSynthesisUtterance !== "function") { speakNote("unsupported"); return; }
+    withVoices(function (voices) {
+      var voice = pickVoice(voices, lang);
+      if (!voice) { speakNote("novoice"); return; }
+      synth.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = lang;
+      u.voice = voice;
+      synth.speak(u);
+    });
+  }
+  function speak(text, audioUrl) {
+    speakNote("");
+    text = (text || "").trim();
+    var lang = speakLang(text);
+    if (audioUrl) { playAudio(audioUrl, function () { if (text) speakTts(text, lang); else speakNote("novoice"); }); return; }
+    if (!text) return;
+    speakTts(text, lang);
+  }
+  window.MyRoadSpeak = { lang: speakLang, pickVoice: pickVoice };
 
   // Delegated, so it keeps working after htmx swaps in a new step card.
   document.addEventListener("click", function (e) {
     var btn = e.target.closest && e.target.closest("#btn-speak");
     if (!btn) return;
     var source = document.getElementById("speak-source");
-    if (source) speak(source.getAttribute("data-speak") || source.textContent || "");
+    if (source) speak(source.getAttribute("data-speak") || source.textContent || "", source.getAttribute("data-speak-audio") || "");
   });
 
   // Widgets inside a step card bind once per element; init() runs on load and on every swap.

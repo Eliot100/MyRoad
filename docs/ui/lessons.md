@@ -45,3 +45,4 @@ Mockup rounds for the road screen:
 - [2026-10-31] Added the merge and decision rule to Rules.
 - 2026-10-31: placement result screen (#156) removed; placement and each משבצת flow into the next משבצת, with a road rail in the player.
 - 2026-11-01: Arabic script (#170): self-hosted Noto Naskh, no letter-spacing/uppercase where Arabic shows, letter-forms table for alphabet steps.
+- 2026-11-01: read aloud (#181): Arabic text speaks as ar with a matching voice; with no voice or audio a calm aria-live note shows instead of silence.
