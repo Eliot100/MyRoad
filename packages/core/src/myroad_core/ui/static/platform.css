@@ -1011,6 +1011,42 @@ a.continue-step.htmx-request { opacity: .7; cursor: progress; }
 .feedback-line { margin: 0; font-weight: 600; }
 .feedback-mark { font-weight: 700; margin-inline-end: .25rem; }
 .feedback-hint { margin: .25rem 0 0; font-weight: 400; }
+/* Step hint + per choice feedback: calm, token colours only, so both follow light / dark. */
+.step-hint {
+  margin-block: .25rem 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.step-hint summary {
+  display: flex; align-items: center; gap: .5rem;
+  min-block-size: 44px; padding-inline: 1rem; cursor: pointer;
+  font-weight: 500; color: var(--ink); list-style: none; border-radius: var(--radius);
+}
+.step-hint summary::-webkit-details-marker { display: none; }
+.step-hint summary::after {
+  content: ""; margin-inline-start: auto; inline-size: .5rem; block-size: .5rem;
+  border-inline-end: 2px solid var(--muted); border-block-end: 2px solid var(--muted);
+  transform: translateY(-2px) rotate(45deg); transition: transform 180ms ease-out;
+}
+.step-hint[open] > summary::after { transform: translateY(2px) rotate(-135deg); }
+[dir="rtl"] .step-hint summary::after { transform: translateY(-2px) rotate(-45deg); }
+[dir="rtl"] .step-hint[open] > summary::after { transform: translateY(2px) rotate(135deg); }
+.step-hint summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.step-hint-text { margin: 0; padding: 0 1rem 1rem; line-height: 1.65; white-space: pre-line; color: var(--ink); }
+/* Dense flow keeps the other choices on the picked one's row; the note then sits under that row. */
+.choices:has(.choice-feedback) { grid-auto-flow: row dense; }
+.choice-feedback {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: .65rem 1rem;
+  border-inline-start: 3px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--ink);
+  line-height: 1.6;
+}
+@media (prefers-reduced-motion: reduce) { .step-hint summary::after { transition: none; } }
 #step-title:focus { outline: none; }
 #step-title:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 a.continue-step { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }

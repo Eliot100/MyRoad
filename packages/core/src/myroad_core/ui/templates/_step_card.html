@@ -77,6 +77,13 @@
   {% endif %}
   <p class="tiny muted read-only-hint">{{ t('locked_read_only') }}</p>
   {% elif ntype in ['practice', 'check'] and kids.choices %}
+  {% if kids.hint and not answered %}
+  {#- Optional step hint: closed by default, the learner opens it before answering. Not graded. -#}
+  <details class="step-hint">
+    <summary>{{ t('step_hint_title') }}</summary>
+    <p class="step-hint-text" dir="auto" lang="{{ explain_locale or 'he' }}">{{ kids.hint|bdi }}</p>
+  </details>
+  {% endif %}
   {#- No JS: a plain form post (303 back to the player). With htmx: only this card is swapped. -#}
   <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices" data-step-form
         hx-post="/play/{{ doc.pathId }}/answer" hx-target="#step-card" hx-swap="outerHTML"
@@ -84,11 +91,15 @@
     {% for ch in kids.choices %}
     {% set picked = answer and answer.choice == ch.id %}
     <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile{% if picked and answer.ok %} is-correct{% elif picked %} is-wrong{% endif %}"
-      {%- if picked %} aria-describedby="step-feedback"{% endif %}{% if answered %} disabled{% endif %}>
+      {%- if picked %} aria-describedby="{% if ch.feedback %}choice-feedback {% endif %}step-feedback"{% endif %}{% if answered %} disabled{% endif %}>
       {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
       {% set chl = ch.label_en if (locale == 'en' and ch.label_en) else ch.label %}<span class="choice-label" dir="auto"{{ ('en' if (locale == 'en' and ch.label_en) else sl.choice)|content_lang(locale, chl) }}>{{ chl|bdi }}</span>
       {% if picked %}<span class="choice-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span>{% endif %}
     </button>
+    {%- if picked and ch.feedback %}
+    {#- Optional per choice explanation, under the picked choice only. -#}
+    <p id="choice-feedback" class="choice-feedback" dir="auto" lang="{{ explain_locale or 'he' }}" role="status" aria-live="polite">{{ ch.feedback|bdi }}</p>
+    {%- endif %}
     {% endfor %}
   </form>
   {% elif ntype == 'piano_keys' %}
