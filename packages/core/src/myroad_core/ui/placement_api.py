@@ -57,6 +57,23 @@ def _error(status: int, code: str) -> JSONResponse:
     return JSONResponse({"error": code}, status_code=status)
 
 
+def placement_routes(store) -> list[dict[str, Any]]:
+    """Published path docs that declare a placement_route (decision 0003)."""
+    docs = []
+    for c in list_catalog_cards(store):
+        try:
+            d = store.get_version(c["pathId"], c["versionId"]).model_dump(mode="json", by_alias=True)
+        except Exception:
+            continue
+        if d.get("placementRoute"):
+            docs.append(d)
+    return docs
+
+
+def routed_road_id(store, placement_id: str, band: int) -> str | None:
+    return route_by_band(placement_routes(store), placement_id, band) if band else None
+
+
 def register_placement_api(app, *, store) -> None:
     def _user_id(request: Request) -> str | None:
         uid = store.get_session_user(request.cookies.get(SESSION_COOKIE))
@@ -64,19 +81,10 @@ def register_placement_api(app, *, store) -> None:
             return None
         return uid
 
-    def _routed(placement_id: str, band: int) -> str | None:
-        docs = []
-        for c in list_catalog_cards(store):
-            try:
-                docs.append(store.get_version(c["pathId"], c["versionId"]).model_dump(mode="json", by_alias=True))
-            except Exception:
-                continue
-        return route_by_band(docs, placement_id, band)
-
     def _result(progress: dict[str, Any], placement_id: str = PLACEMENT_ID) -> dict[str, Any]:
         band = placement_band(progress)
         if placement_id != PLACEMENT_ID:
-            road = _routed(placement_id, band) if band else None
+            road = routed_road_id(store, placement_id, band)
             return {
                 "band": band,
                 "gap": road,

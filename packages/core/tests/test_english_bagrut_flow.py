@@ -133,34 +133,75 @@ def test_home_links_the_chain_when_the_roads_are_in_the_catalog(bagrut_app) -> N
     assert "שרשרת האנגלית" in home
 
 
-def _finish_placement(client) -> str:
-    client.post(f"/play/{PLACE}/start", data={"reset": "1"})
-    last, missed = "", False
-    for _ in range(8):
-        html = client.get(f"/play/{PLACE}?view=learn").text
+def _finish_placement(client, place: str = PLACE, mistake: bool = True) -> str:
+    """Play the placement to the end without following redirects; return the 303 Location (#169)."""
+    client.post(f"/play/{place}/start", data={"reset": "1"})
+    missed = not mistake
+    for _ in range(12):
+        html = client.get(f"/play/{place}?view=learn").text
         if 'data-node-type="practice"' in html:
             if not missed:  # one mistake puts the band on road 03
-                client.post(f"/play/{PLACE}/answer", data={"choice": "b"})
+                client.post(f"/play/{place}/answer", data={"choice": "b"})
                 missed = True
-            last = client.post(f"/play/{PLACE}/answer", data={"choice": "a"}, follow_redirects=True).text
+            r = client.post(f"/play/{place}/answer", data={"choice": "a"}, follow_redirects=False)
         else:
-            last = client.post(f"/play/{PLACE}/ack", follow_redirects=True).text
-        if 'http-equiv="refresh"' in last:
-            return last
-    return last
+            r = client.post(f"/play/{place}/ack", follow_redirects=False)
+        while r.status_code in (302, 303) and "from=placement" not in r.headers["location"] \
+                and not r.headers["location"].startswith("/series/"):
+            r = client.get(r.headers["location"], follow_redirects=False)
+        if r.status_code == 303:
+            return r.headers["location"]
+    return ""
 
 
 def test_finishing_placement_flows_into_the_next_cell(bagrut_app) -> None:
     app, _store = bagrut_app
     client = _client(app)
-    done = _finish_placement(client)
-    nxt = f"/play/{TIME}?view=learn&amp;from=placement"  # one mistake: band 3
-    assert f'<meta http-equiv="refresh" content="0;url={nxt}"' in done
-    assert "המבדק הושלם" not in done and "סיכום הדרך" not in done  # no result screen
-    step = client.get(f"/play/{TIME}?view=learn&from=placement").text
+    nxt = f"/play/{TIME}?view=learn&from=placement"  # one mistake: band 3
+    assert _finish_placement(client) == nxt  # 303, no result screen, no meta refresh
+    again = client.get(f"/play/{PLACE}", follow_redirects=False)
+    assert again.status_code == 303 and again.headers["location"] == nxt
+    step = client.get(nxt).text
     assert 'class="card step-card' in step and "lock-banner" not in step  # straight into a משבצת
     assert 'id="placement-hint"' in step and f'href="/play/{TIME}?view=map#here"' in step  # map stays optional
     assert 'id="placement-hint"' not in client.get(f"/play/{TIME}?view=learn").text  # dismissed
+
+
+def test_finishing_placement_without_recommendation_falls_back_to_series(tmp_path, monkeypatch) -> None:
+    content = tmp_path / "content" / "adult"
+    content.mkdir(parents=True)
+    (content / f"{PLACE}.json").write_text(json.dumps(_mini(PLACE, "מבדק רמה", []), ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "fb.db"))
+    try:
+        client = _client(create_learner_app(store=store, seed=False, seed_content=True))
+        assert _finish_placement(client) == "/series/english-bagrut5"
+    finally:
+        store.close()
+
+
+def test_finishing_arabic_placement_routes_to_road_01(tmp_path, monkeypatch) -> None:
+    ar_place, ar_zero = "path_arabic_bagrut5_00_placement", "path_arabic_bagrut5_01_script"
+    zero = _mini(ar_zero, "ערבית מאפס", [])
+    zero.update(subject="arabic", placement_route={"from_placement": ar_place, "band_min": 1, "band_max": 3})
+    content = tmp_path / "content" / "adult"
+    content.mkdir(parents=True)
+    for doc in (_mini(ar_place, "מבדק ערבית", []), zero):
+        (content / f"{doc['id']}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "ar.db"))
+    try:
+        app = create_learner_app(store=store, seed=False, seed_content=True)
+        assert _finish_placement(_client(app), ar_place) == f"/play/{ar_zero}?view=learn&from=placement"
+        # band 5 (no mistakes) is outside road 01's 1-3 route: fallback
+        c2 = TestClient(app)
+        login_with_code(c2, {"first_name": "A", "last_name": "B", "email": "ar5@example.com", "next": "/"})
+        assert _finish_placement(c2, ar_place, mistake=False) == "/series/english-bagrut5"
+        # a path that is not a placement still shows its summary
+        r = c2.get(f"/play/{ar_zero}", follow_redirects=False)
+        assert r.status_code == 200
+    finally:
+        store.close()
 
 
 def test_finishing_a_cell_continues_into_the_next_cell(bagrut_app) -> None:
