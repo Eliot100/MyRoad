@@ -151,8 +151,7 @@ def _finish_placement(client, place: str = PLACE, mistake: bool = True) -> str:
             r = client.post(f"/play/{place}/answer", data={"choice": "a"}, follow_redirects=False)
         else:
             r = client.post(f"/play/{place}/ack", follow_redirects=False)
-        while r.status_code in (302, 303) and "from=placement" not in r.headers["location"] \
-                and not r.headers["location"].startswith("/series/"):
+        while r.status_code in (302, 303) and r.headers["location"].startswith(f"/play/{place}"):
             r = client.get(r.headers["location"], follow_redirects=False)
         if r.status_code == 303:
             return r.headers["location"]
@@ -191,17 +190,19 @@ def test_finishing_arabic_placement_routes_to_road_01(tmp_path, monkeypatch) -> 
     zero.update(subject="arabic", placement_route={"from_placement": ar_place, "band_min": 1, "band_max": 3})
     content = tmp_path / "content" / "adult"
     content.mkdir(parents=True)
-    for doc in (_mini(ar_place, "מבדק ערבית", []), zero):
+    ar_doc = _mini(ar_place, "מבדק ערבית", [])
+    ar_doc["subject"] = "arabic"
+    for doc in (ar_doc, zero):
         (content / f"{doc['id']}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
     monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
     store = PathStore(str(tmp_path / "ar.db"))
     try:
         app = create_learner_app(store=store, seed=False, seed_content=True)
         assert _finish_placement(_client(app), ar_place) == f"/play/{ar_zero}?view=learn&from=placement"
-        # band 5 (no mistakes) is outside road 01's 1-3 route: fallback
+        # band 5 (no mistakes) is outside road 01's 1-3 route: in-subject fallback, never English
         c2 = TestClient(app)
         login_with_code(c2, {"first_name": "A", "last_name": "B", "email": "ar5@example.com", "next": "/"})
-        assert _finish_placement(c2, ar_place, mistake=False) == "/series/english-bagrut5"
+        assert _finish_placement(c2, ar_place, mistake=False) == f"/play/{ar_zero}?view=learn&from=placement"
         # a path that is not a placement still shows its summary
         r = c2.get(f"/play/{ar_zero}", follow_redirects=False)
         assert r.status_code == 200

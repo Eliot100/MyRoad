@@ -108,7 +108,9 @@ def test_placement_routes_to_arabic_path(tmp_path: Path, monkeypatch: pytest.Mon
     zero = _mini(ar_zero, "ערבית מאפס", [])
     zero["subject"] = "arabic"
     zero["placement_route"] = {"from_placement": ar_place, "band_min": 1, "band_max": 3}
-    for doc in (_mini(ar_place, "מבדק ערבית", []), zero):
+    ar_doc = _mini(ar_place, "מבדק ערבית", [])
+    ar_doc["subject"] = "arabic"
+    for doc in (ar_doc, zero):
         (content / f"{doc['id']}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
     monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
     store = PathStore(str(tmp_path / "p.db"))
@@ -118,7 +120,8 @@ def test_placement_routes_to_arabic_path(tmp_path: Path, monkeypatch: pytest.Mon
         assert body["band"] == 1 and body["recommended_road_id"] == ar_zero and body["placement_id"] == ar_place
         assert c.get(URL, params={"placementId": ar_place}).json() == body
         high = c.post(URL, json={**_answers(wrong=0), "placementId": ar_place}, headers=H).json()
-        assert high["band"] == 5 and high["recommended_road_id"] is None
+        assert high["band"] == 5 and high["recommended_road_id"] == ar_zero and high["routing_gap"] is True
+        assert body["routing_gap"] is False
         s = c.post("/api/settings/steps", json={"audio": False}, headers=H).json()
         assert s == {"audio": False, "writing": False}
     finally:
@@ -141,5 +144,84 @@ def test_english_routing_reads_placement_route(tmp_path: Path, monkeypatch: pyte
         c = _client(create_learner_app(store=store, seed=False, seed_content=True))
         body = c.post(URL, json=_answers(wrong=5), headers=H).json()
         assert body["band"] == 1 and body["recommended_road_id"] == "path_english_bagrut5_03_time"
+    finally:
+        store.close()
+
+
+def _write(tmp_path: Path, docs: list[dict]) -> None:
+    content = tmp_path / "content" / "adult"
+    content.mkdir(parents=True)
+    for doc in docs:
+        (content / f"{doc['id']}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
+
+
+def _subject_doc(pid: str, subject: str, route: dict | None = None) -> dict:
+    d = _mini(pid, pid, [])
+    d["subject"] = subject
+    if route:
+        d["placement_route"] = route
+    else:
+        d.pop("placement_route", None)
+    return d
+
+
+def test_gap_fallback_stays_in_subject_and_is_recorded(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Arabic band 5, no route covers it: highest Arabic road with band_min <= 5, never English."""
+    ar = "path_arabic_bagrut5_00_placement"
+    r = lambda lo, hi: {"from_placement": ar, "band_min": lo, "band_max": hi}  # noqa: E731
+    _write(tmp_path, [
+        _subject_doc(ar, "arabic"),
+        _subject_doc("path_arabic_bagrut5_01_script", "arabic", r(1, 3)),
+        _subject_doc("path_arabic_bagrut5_02_words", "arabic", r(4, 4)),
+        _subject_doc("path_arabic_bagrut5_03_late", "arabic", r(6, 8)),
+        _mini(PLACE, "מבדק רמה", []), _mini(ZERO, "מאפס", [PLACE]),
+    ])
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "p.db"))
+    try:
+        c = _client(create_learner_app(store=store, seed=False, seed_content=True))
+        body = c.post(URL, json={**_answers(wrong=0), "placementId": ar}, headers=H).json()
+        assert body["band"] == 5 and body["routing_gap"] is True
+        assert body["recommended_road_id"] == "path_arabic_bagrut5_02_words"
+        uid = store.get_learner_by_email("p152@example.com")["userId"]
+        rows = store._conn.execute(
+            "SELECT path_id, block_id FROM learner_events WHERE user_id = ? AND event_type = 'placement_gap'", (uid,)
+        ).fetchall()
+        assert [tuple(x) for x in rows] == [(ar, "band:5")]
+        assert store.step_aggregates(uid) == []  # gap rows are not steps
+        english = c.post(URL, json=_answers(wrong=0), headers=H).json()
+        assert english["routing_gap"] is False and english["recommended_road_id"] is None  # unchanged
+    finally:
+        store.close()
+
+
+def test_gap_with_no_roads_in_subject_goes_home_not_other_series(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    from test_english_bagrut_flow import _finish_placement
+
+    phys = "path_physics_bagrut_00_placement"
+    _write(tmp_path, [_subject_doc(phys, "physics"), _mini(PLACE, "מבדק רמה", []), _mini(ZERO, "מאפס", [PLACE])])
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "p.db"))
+    try:
+        c = _client(create_learner_app(store=store, seed=False, seed_content=True))
+        body = c.post(URL, json={**_answers(wrong=5), "placementId": phys}, headers=H).json()
+        assert body["recommended_road_id"] is None and body["routing_gap"] is True
+        assert _finish_placement(c, phys) == "/"
+    finally:
+        store.close()
+
+
+def test_gap_with_no_roads_uses_own_subject_series_page(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    from myroad_core.ui import placement_api
+
+    monkeypatch.setitem(placement_api.SUBJECT_SERIES_PAGE, "physics", "/series/physics")
+    phys = "path_physics_bagrut_00_placement"
+    _write(tmp_path, [_subject_doc(phys, "physics")])
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "p.db"))
+    try:
+        create_learner_app(store=store, seed=False, seed_content=True)
+        t = placement_api.placement_target(store, phys, 3)
+        assert t == {"road": None, "routing_gap": True, "fallback_url": "/series/physics"}
     finally:
         store.close()
