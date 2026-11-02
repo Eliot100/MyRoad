@@ -1852,3 +1852,60 @@ body.platform :where(h1, h2, h3):lang(ar) { line-height: 1.5; }
 .login-form .field-hint { margin: 0; font-size: var(--text-sm, .875rem); color: var(--muted, inherit); }
 .login-form .field-error { margin: 0; }
 .login-form[data-submitting="1"] button[type="submit"] { opacity: .7; cursor: progress; }
+
+/* Week strip, mastered skills, stage end, session end (issues 191, 193, 206; decision 0010).
+   Semantic tokens only, so light and dark both follow the active theme. */
+.week-strip { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-2); padding: var(--space-4); min-inline-size: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+@media (min-width: 760px) { .week-strip { grid-column: 1 / -1; } }
+.week-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
+.week-title { margin: 0; font-size: var(--text-md); font-weight: 600; color: var(--ink); }
+.week-count { margin: 0; color: var(--ink-2); font-weight: 500; }
+.week-count bdi, .session-stats bdi, .goal-skills summary bdi { font-variant-numeric: tabular-nums; }
+.week-days { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.week-day { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.week-mark { display: grid; place-items: center; inline-size: 32px; block-size: 32px; border-radius: 50%; border: 1.5px solid var(--line-strong); color: var(--on-accent); font-size: .9rem; font-weight: 700; }
+.week-day.is-active .week-mark { background: var(--accent); border-color: var(--accent); }
+.week-day.is-today .week-mark { box-shadow: 0 0 0 3px var(--tint-info-strong); }
+.week-name { font-size: var(--text-sm, .875rem); color: var(--muted); }
+.week-day.is-today .week-name { color: var(--ink); font-weight: 600; }
+.week-note { margin: 0; color: var(--muted); line-height: 1.5; }
+.week-goal-set summary, .goal-skills summary { cursor: pointer; color: var(--ink-2); font-weight: 500; min-block-size: 32px; display: flex; align-items: center; }
+.week-goal-form { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); margin-block-start: var(--space-2); }
+.week-goal-form fieldset { border: 0; margin: 0; padding: 0; }
+.week-goal-choices { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.week-goal-choice { display: inline-flex; align-items: center; gap: 6px; min-block-size: 44px; padding-inline: 12px; border: 1px solid var(--line-strong); border-radius: var(--btn-radius); color: var(--ink); cursor: pointer; }
+.week-goal-choice:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.week-goal-status { flex-basis: 100%; margin: 0; color: var(--muted); }
+.goal-skills { margin-block-start: var(--space-3); }
+.goal-skills-list { margin: var(--space-2) 0 0; padding-inline-start: 1.2em; color: var(--ink-2); line-height: 1.6; }
+.goal-skills-empty { margin: var(--space-3) 0 0; color: var(--muted); }
+
+.stage-end { display: flex; align-items: center; gap: var(--space-3); margin-block-start: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--tint-ok); }
+.stage-end-art { inline-size: 96px; block-size: 20px; flex: none; }
+[dir="rtl"] .stage-end-art { transform: scaleX(-1); }
+.stage-end-road { stroke: var(--ok); stroke-width: 2.5; stroke-linecap: round; fill: none; }
+.stage-end-dot { fill: var(--ok); }
+.stage-end-check { stroke: var(--surface-2); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.stage-end-title { margin: 0; color: var(--ok-ink); font-weight: 600; line-height: 1.5; }
+.stage-end-name { font-weight: 500; }
+@media (prefers-reduced-motion: no-preference) {
+  .stage-end-road { stroke-dasharray: 92; stroke-dashoffset: 92; animation: stage-road 520ms cubic-bezier(.2,.7,.2,1) 80ms forwards; }
+  .stage-end-dot { transform-origin: 108px 12px; transform: scale(0); animation: stage-dot 260ms ease-out 560ms forwards; }
+  .stage-end-check { stroke-dasharray: 14; stroke-dashoffset: 14; animation: stage-road 220ms ease-out 760ms forwards; }
+  .stage-end-title { opacity: 0; animation: stage-fade 240ms ease-out 300ms forwards; }
+  @keyframes stage-road { to { stroke-dashoffset: 0; } }
+  @keyframes stage-dot { to { transform: scale(1); } }
+  @keyframes stage-fade { to { opacity: 1; } }
+}
+
+.session-end { margin-block-start: var(--space-4); padding-block-start: var(--space-4); border-block-start: 1px solid var(--line); }
+.session-end-title { margin: 0 0 var(--space-3); font-size: var(--text-lg, 1.25rem); font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+.session-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-2); margin: 0; }
+.session-stats > div { border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-3); background: var(--surface-2); }
+.session-stats dt { font-size: var(--text-sm, .875rem); color: var(--muted); }
+.session-stats dd { margin: 4px 0 0; font-size: 1.35rem; font-weight: 600; color: var(--ink); }
+.session-cando-lead { margin: var(--space-3) 0 var(--space-1); color: var(--muted); }
+.session-cando { margin: 0; padding-inline-start: 1.2em; color: var(--ink); line-height: 1.6; }
+.session-actions, .stage-actions { gap: var(--space-2); flex-wrap: wrap; }
+.goal-skills summary, .week-goal-set summary { gap: .3em; }
+.session-stats dd.is-note { font-size: 1rem; font-weight: 500; line-height: 1.4; }

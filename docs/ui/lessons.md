@@ -7,17 +7,20 @@ Generalized, testable lessons from Eliot's feedback. Add new entries dated, with
 1. Every surface follows the active theme (light in light, dark in dark).
 2. The road screen shows the whole road on one screen, never filtered by stage.
 3. Premium, Apple level quality; never childish.
-4. No game mechanics (points, stars, streaks, badges) until Eliot decides otherwise.
+4. Progress feedback grounded in real learning (session summary, weekly days goal) is core. Still no points for clicks, no loss messages, no empty praise.
 
 ## Rules (always / never)
 
 - [2026-10-29] Always: every new surface follows the active theme, light in light mode and dark in dark mode. Never ship a fixed dark surface. Test: screenshot in both themes; no surface keeps a dark background in light mode. Why: "ציפיתי שתוסיף את זה כהה בעיצוב DARK ובהיר כשאנחנו בעיצוב בהיר".
 - [2026-10-29] Always: the road screen shows the whole road on one screen, with no filter by stage. Test: all stages are visible on the road screen without choosing a stage. Why: "שכל הדרך תהיה במסך ללא סינון לשלב ספציפי".
 - [2026-10-29] Never: childish visuals. Always: premium quality at Apple level. Test: no cartoon styling, toy colors or clip art; spacing, type and motion feel polished. Why: "זה עיצוב כאילו ילד עיצב".
-- [2026-10-29] Never: game mechanics (points, stars, streaks, badges) until Eliot decides otherwise. Eliot asked for more gamification of the road, but the decision on mechanics is still open, and doc 01 says no gamification. Test: no scores, stars, streak counters or badges in the UI. Why: "אני מעוניין ביותר gamification של הדרך", plus doc 01.
+- [2026-11-02] Rule: progress feedback grounded in real learning (session summary, weekly days goal) is core. Still no points for clicks, no loss messages, no empty praise. Test: the session end shows only real numbers from engagement; the week strip says "x מתוך y ימים" with no loss copy; no scores, points or praise words. Why: "לולאת סשן 10 דקות: סשן + יעד ימים שבועי סלחני מלא" and "רק התקדמות אמיתית". Replaces [2026-10-29] game mechanics rule.
 - [2026-10-29] Never: labels clipped at the frame edge in RTL. Test: at 375 and 1280 widths, every label is fully visible inside the frame.
 - [2026-10-31] Rule: bot PRs merge with gh pr merge --auto --squash once checks are green, without per-PR approval. Technical choices, such as sample data until an API lands, are mine to make. Only product decisions go to Eliot, through frank. Why: standing rule since 2026-10-21, relayed by frank.
 - [2026-10-31] Rule: no interstitial done/result screens; keep the learner flowing into the next משבצת with visible progress; return to the road is optional. Test: finishing placement or a משבצת opens the next משבצת, the player shows a road rail with the current שלב, and the map link stays one tap away. Why: "אני לא רואה צורך במסך בו כתוב שהבדיקה הסתיימה, עם הUI/UX ברור אפשר פשוט לעבור חזרה לדרך ושהוא יבחר מה ללמוד ואיך" and "לא חובה לחזור לדרך, אם הלומד מבין מהר שווה שהוא ימשיך ללמוד מכמה משבצות ברצף ללא 'הוצאה יזומה' אלא עם המחשה וויזואלית של התקדמות".
+- [2026-11-02] Rule: allowed on screen product words are דרך, שרשרת, נתיב, שלב, פער and now סשן. Why: Eliot approved "סשן" (item 6, 2.11).
+- [2026-11-02] Rule: the end of a שלב gets a short premium animation (line and check, under 1s, off with reduced motion), then the learner chooses what to continue with. The session end sits in the same step card with "סיימתי להיום" and "עוד אחד קצר", so the learner can pass straight through. Why: Eliot items 8 and 9, 2.11.
+- [2026-11-02] Rule: every UI PR to main shows before/after screenshots of each changed component (375/1280, light/dark) in a לפני / אחרי section. Why: "על כל PR של הUI למיין אני אראה את הלפני ואחרי בקומפוננטות שהשתנו".
 - [2026-11-01] Always: practice and check steps offer an optional place to work out the answer (scratchpad, closed by default, device only, never graded). Test: a practice step with choices has a closed scratchpad under the question. Why: on math step 2 (487 + 256) there was "no place to write out working" (relayed by frank).
 
 ## Preferences (taste)
@@ -35,6 +38,8 @@ Generalized, testable lessons from Eliot's feedback. Add new entries dated, with
 - [2026-10-29] Attach 4 screenshots: 375 and 1280 widths, each in light and dark. Why: "ציפיתי שתוסיף את זה כהה בעיצוב DARK ובהיר כשאנחנו בעיצוב בהיר".
 - [2026-10-29] Check RTL labels do not clip at the frame edge at 375 and 1280.
 
+- [2026-11-02] Before/after crops (locator.screenshot) of each changed component at 375/1280, light/dark, BEFORE from origin/main with the same seed and state, under docs/ui/screens/<issue>/before-after/, shown in a לפני / אחרי section of the PR body.
+
 ## Change log
 
 Mockup rounds for the road screen:
@@ -51,3 +56,4 @@ Mockup rounds for the road screen:
 - 2026-11-01: step hint and per choice feedback (#187): hint is a closed 'רמז' disclosure before answering; choice feedback sits under the picked choice, calm neutral note. media_hint is an internal asset slug, never shown as text.
 - 2026-11-02: path head goal meter + continue card (#193) and in flow step done line (#191 first AC), decision 0007. Progress copy uses only שלב/נתיב; no end screen, the learner stays on the step card with Next.
 - 2026-11-02: login code field (#59), decision 0009: one input with one-time-code autofill, LTR digits in RTL, paste normalized by JS, error tied via aria-describedby; auth surface PRs wait for Cyber security, no auto-merge.
+- 2026-11-02: session end + stage end in the step card (#191), forgiving weekly days goal strip and mastered skills on the goal meter (#193, #206), decision 0010. סשן added to the allowed words.

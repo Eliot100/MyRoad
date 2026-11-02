@@ -26,6 +26,16 @@
       {%- elif gm.start_stage >= gm.stages_total %}{{ t('eng_start_past') }}
       {%- else %}{{ t('eng_start_from', n='<bdi>%s</bdi>'|format(gm.start_stage))|safe }}{% endif -%}
     </p>
+    {#- Mastered skills (#206): real can_do lines, a calm count, no points or score. -#}
+    {%- set skills = mastered_skills(eng, topics, mastered) if mastered_skills is defined else [] %}
+    {%- if skills %}
+    <details class="goal-skills">
+      <summary>{{ t('eng_skills_count', n='<bdi>%s</bdi>'|format(skills|length))|safe }}</summary>
+      <ul class="goal-skills-list">{% for s in skills %}<li dir="auto">{{ s }}</li>{% endfor %}</ul>
+    </details>
+    {%- else %}
+    <p class="goal-skills-empty tiny">{{ t('eng_skills_none') }}</p>
+    {%- endif %}
   </section>
 
   <section class="continue-card" aria-labelledby="continue-title">
@@ -40,6 +50,8 @@
       <button type="submit" class="primary big continue-btn">{{ t('eng_continue') if eng.started else t('start_path') }}</button>
     </form>
   </section>
+  {%- set wk = week_view(eng.week, locale if locale is defined else 'he') if week_view is defined else none %}
+  {% include "_week_strip.html" %}
 </div>
 {%- else %}
 <form method="post" action="/play/{{ doc.pathId }}/start" class="eng-head-plain">

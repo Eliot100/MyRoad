@@ -396,3 +396,4 @@
   else scan();
   document.addEventListener("htmx:afterSettle", function () { scan(); });
 })();
+

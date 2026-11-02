@@ -1,0 +1,39 @@
+{#- Forgiving weekly days goal (#193). `wk` = week_view(eng.week, locale); never loss copy.
+    Days come in locale week order from #192; each day says active or not in text, not colour alone. -#}
+{%- if wk %}
+<section class="week-strip" aria-labelledby="week-title">
+  <div class="week-head">
+    <h2 class="week-title" id="week-title">{{ t('eng_week_title') }}</h2>
+    <p class="week-count">{{ t('eng_week_count', n='<bdi>%s</bdi>'|format(wk.active_count), goal='<bdi>%s</bdi>'|format(wk.goal))|safe }}</p>
+  </div>
+  <ol class="week-days">
+    {%- for d in wk.days %}
+    <li class="week-day{% if d.active %} is-active{% endif %}{% if d.today %} is-today{% endif %}"{% if d.today %} aria-current="date"{% endif %}>
+      <span class="week-mark" aria-hidden="true">{% if d.active %}✓{% endif %}</span>
+      <span class="week-name" aria-hidden="true">{{ d.short }}</span>
+      <span class="visually-hidden">{{ d.full }}: {{ t('eng_week_day_on') if d.active else t('eng_week_day_off') }}</span>
+    </li>
+    {%- endfor %}
+  </ol>
+  <p class="week-note tiny">
+    {%- if wk.met %}{{ t('eng_week_met') }}
+    {%- elif wk.today_active %}{{ t('eng_week_today_in') }}
+    {%- else %}{{ t('eng_week_open') }}{% endif -%}
+  </p>
+  <details class="week-goal-set" data-weekly-goal hidden>
+    <summary>{{ t('eng_week_goal_change') }}</summary>
+    <form class="week-goal-form">
+      <fieldset>
+        <legend class="tiny">{{ t('eng_week_goal_legend') }}</legend>
+        <div class="week-goal-choices">
+        {%- for g in wk.choices %}
+          <label class="week-goal-choice"><input type="radio" name="goal" value="{{ g }}"{% if g == wk.goal %} checked{% endif %} /> <span>{{ t('eng_week_goal_opt', n='<bdi>%s</bdi>'|format(g))|safe }}</span></label>
+        {%- endfor %}
+        </div>
+      </fieldset>
+      <button type="submit" class="secondary">{{ t('eng_week_goal_save') }}</button>
+      <p class="week-goal-status tiny" role="status" aria-live="polite" data-ok="{{ t('eng_week_goal_saved') }}" data-err="{{ t('eng_week_goal_error') }}"></p>
+    </form>
+  </details>
+</section>
+{%- endif %}

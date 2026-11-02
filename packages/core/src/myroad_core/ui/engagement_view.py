@@ -120,3 +120,101 @@ def can_do_line(engagement: Mapping[str, Any] | None, block_id: str | None, fall
         if st.get("id") == block_id and st.get("done") and st.get("title") in (sess.get("can_do") or []):
             return str(st["title"])
     return ""
+
+
+# --- Session end, stage end, week strip, mastered skills (#191, #193, #206) -----------------
+
+# Short and full weekday names by wd (0=Sunday .. 6=Saturday), the same index #192 sends.
+_WD_SHORT = {
+    "he": ["א", "ב", "ג", "ד", "ה", "ו", "ש"],
+    "ar": ["ح", "ن", "ث", "ر", "خ", "ج", "س"],
+    "en": ["S", "M", "T", "W", "T", "F", "S"],
+}
+_WD_FULL = {
+    "he": ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"],
+    "ar": ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
+    "en": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+}
+WEEKLY_GOAL_CHOICES = (2, 3, 5)  # POST /api/settings/weekly-goal accepts only these
+WEEKLY_GOAL_DEFAULT = 3
+
+
+def week_view(week: Mapping[str, Any] | None, locale: str = "he") -> dict[str, Any] | None:
+    """Display shape for the forgiving weekly days goal, or None when the server sent no week.
+
+    Days stay in the order the server sent (locale week order). Each day carries a short and a
+    full name so the strip never relies on colour alone."""
+    if not isinstance(week, Mapping) or not week.get("days"):
+        return None
+    loc = locale if locale in _WD_SHORT else "he"
+    days = []
+    for d in week.get("days") or []:
+        wd = int(d.get("wd") or 0) % 7
+        days.append({"short": _WD_SHORT[loc][wd], "full": _WD_FULL[loc][wd],
+                     "active": bool(d.get("active")), "today": bool(d.get("today"))})
+    active = int(week.get("active_count") if week.get("active_count") is not None else sum(d["active"] for d in days))
+    goal = int(week.get("goal") or WEEKLY_GOAL_DEFAULT)
+    today_active = any(d["active"] and d["today"] for d in days)
+    return {"days": days, "active_count": active, "goal": goal, "goal_set": bool(week.get("goal_set")),
+            "met": active >= goal, "today_active": today_active, "choices": WEEKLY_GOAL_CHOICES}
+
+
+def mastered_skills(engagement: Mapping[str, Any] | None, topics: Iterable[Mapping[str, Any]] | None,
+                    mastered: Iterable[str] | None) -> list[str]:
+    """Mastered skill lines for the goal meter (#206), newest first when the server knows.
+
+    #192 does not send a list yet: prefer goal_meter.mastered_can_do when it appears, else
+    derive from the page (mastered steps' can_do or title, later road steps first)."""
+    gm = (engagement or {}).get("goal_meter") or {}
+    server = gm.get("mastered_can_do")
+    if isinstance(server, list):
+        return [str(x) for x in server if x]
+    done = set(mastered or [])
+    out: list[str] = []
+    for tp in topics or []:
+        for s in tp.get("steps") or []:
+            if s.get("blockId") in done:
+                text = s.get("can_do") or s.get("title")
+                if text and text not in out:
+                    out.append(str(text))
+    return list(reversed(out))
+
+
+def stage_end(topics: Iterable[Mapping[str, Any]] | None, mastered: Iterable[str] | None,
+              block_id: str | None) -> dict[str, Any] | None:
+    """The שלב this step just closed (all its steps mastered), with what comes next; else None."""
+    if not block_id:
+        return None
+    done = set(mastered or [])
+    topics = list(topics or [])
+    for i, tp in enumerate(topics):
+        ids = list(tp.get("blockIds") or [s.get("blockId") for s in tp.get("steps") or []])
+        if block_id in ids:
+            if not ids or not set(ids) <= done:
+                return None
+            nxt = next((t for t in topics[i + 1:]
+                        if set(t.get("blockIds") or [s.get("blockId") for s in t.get("steps") or []]) - done), None)
+            return {"no": i + 1, "total": len(topics), "title": tp.get("title") or "",
+                    "title_lang": tp.get("titleLang") or "", "has_next": nxt is not None,
+                    "next_title": (nxt or {}).get("title") or ""}
+    return None
+
+
+def session_end(engagement: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    """Real numbers for the session end moment, only when the server says the session is complete.
+
+    The derived fallback never claims a finished session (it cannot know right first time)."""
+    if not isinstance(engagement, Mapping) or engagement.get("derived"):
+        return None
+    sess = engagement.get("session") or {}
+    if not sess.get("complete") or not sess.get("steps"):
+        return None
+    week = engagement.get("week") or {}
+    return {
+        "no": sess.get("no") or 1,
+        "done": int(sess.get("done_count") or 0),
+        "size": int(sess.get("size") or len(sess.get("steps") or [])),
+        "rft": int(sess.get("right_first_time") or 0),
+        "can_do": [str(x) for x in (sess.get("can_do") or [])[:2] if x],
+        "today_counted": any(d.get("today") and d.get("active") for d in week.get("days") or []),
+    }

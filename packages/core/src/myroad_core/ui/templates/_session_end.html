@@ -1,0 +1,45 @@
+{#- End of a שלב and end of a סשן (#191), inside the same step card: no separate screen.
+    `se` = session_end(eng), `st` = stage_end(topics, mastered, block id). Both may be none.
+    Real numbers only (from #192). No points, no loss copy, no praise words. -#}
+{%- if st %}
+<div class="stage-end" data-stage-end>
+  <svg class="stage-end-art" viewBox="0 0 120 24" aria-hidden="true" focusable="false">
+    <path class="stage-end-road" d="M4 12 H96" />
+    <circle class="stage-end-dot" cx="108" cy="12" r="9" />
+    <path class="stage-end-check" d="M103.5 12.4 l3.2 3.1 l5.8 -6.6" />
+  </svg>
+  <p class="stage-end-title">{{ t('eng_stage_done', n='<bdi>%s</bdi>'|format(st.no), total='<bdi>%s</bdi>'|format(st.total))|safe }} <span class="stage-end-name" dir="auto"{{ st.title_lang|content_lang(locale) }}>{{ st.title|bdi }}</span></p>
+</div>
+{%- endif %}
+{%- if se %}
+<section class="session-end" aria-labelledby="session-end-title">
+  <h3 class="session-end-title" id="session-end-title">{{ t('eng_session_done') }}</h3>
+  <dl class="session-stats">
+    <div><dt>{{ t('eng_stat_done') }}</dt><dd>{{ t('eng_stat_of', n='<bdi>%s</bdi>'|format(se.done), total='<bdi>%s</bdi>'|format(se.size))|safe }}</dd></div>
+    <div><dt>{{ t('eng_stat_rft') }}</dt><dd><bdi>{{ se.rft }}</bdi></dd></div>
+    {%- if se.today_counted %}<div><dt>{{ t('eng_stat_today') }}</dt><dd class="is-note"><span aria-hidden="true">✓</span> {{ t('eng_stat_today_yes') }}</dd></div>{% endif %}
+  </dl>
+  {%- if se.can_do %}
+  <p class="session-cando-lead tiny">{{ t('eng_now_you_can') }}</p>
+  <ul class="session-cando">{% for c in se.can_do %}<li dir="auto">{{ c|bdi }}</li>{% endfor %}</ul>
+  {%- endif %}
+</section>
+<div class="nav row step-continue session-actions">
+  {%- if continue_hx %}
+  <a class="primary big" href="/play/{{ doc.pathId }}?view=map">{{ t('eng_done_today') }}</a>
+  <a class="secondary big continue-step" href="{{ continue_url }}" data-next-session="/api/path/{{ doc.pathId }}/session/next" hx-get="{{ continue_url }}" hx-target="#step-card" hx-swap="outerHTML">{{ t('eng_one_more') }}</a>
+  {%- else %}
+  {#- The whole road is done: the finish link records the attempt (POST free stats view). -#}
+  <a class="primary big continue-step" href="{{ continue_url }}">{{ t('finish') }}</a>
+  {%- endif %}
+</div>
+{%- elif st %}
+<div class="nav row step-continue stage-actions">
+  {%- if st.has_next and continue_hx %}
+  <a class="primary big continue-step" href="{{ continue_url }}" hx-get="{{ continue_url }}" hx-target="#step-card" hx-swap="outerHTML">{{ t('eng_stage_next') }}</a>
+  {%- else %}
+  <a class="primary big continue-step" href="{{ continue_url }}">{{ t('finish') }}</a>
+  {%- endif %}
+  <a class="secondary big" href="/play/{{ doc.pathId }}?view=map">{{ t('eng_stage_choose') }}</a>
+</div>
+{%- endif %}
