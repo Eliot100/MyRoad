@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Any
+from zoneinfo import ZoneInfo
+
+# The app's local day (active days, sessions): learners are in Israel.
+LOCAL_TZ = ZoneInfo("Asia/Jerusalem")
 
 
 def _parse(value: Any) -> datetime | None:
@@ -33,3 +37,9 @@ def days_ago(value: Any, now: datetime | None = None) -> int | None:
         return None
     now = now or datetime.now(timezone.utc)
     return max(0, (now.date() - dt.astimezone(timezone.utc).date()).days)
+
+
+def local_date(value: Any, tz=LOCAL_TZ):
+    """Calendar date of a stored UTC timestamp in the app's local timezone (None if unparsable)."""
+    dt = _parse(value)
+    return dt.astimezone(tz).date() if dt else None
