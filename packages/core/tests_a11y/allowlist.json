@@ -1,0 +1,4 @@
+{
+  "_doc": "Known axe violations that do not fail the a11y job. Each entry: rule (axe rule id), selector (axe node target, space-joined), state (test state or *), reason, issue (link). Remove an entry when its issue is fixed. See docs/decisions/0008-a11y-ci.md.",
+  "allow": []
+}
