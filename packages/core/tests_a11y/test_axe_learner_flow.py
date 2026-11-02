@@ -1,0 +1,120 @@
+"""axe-core over the core learner flow, 375/1280 px x light/dark (issue #61, decision 0008).
+
+Each test brings the one shared page to a state, then scans it in 4 combos.
+Fails on any WCAG 2.0/2.1 A/AA violation not listed in allowlist.json.
+The tests run in file order and share one signed-in session.
+"""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+from axe_playwright_python.sync_playwright import Axe
+
+from conftest import login
+
+HERE = Path(__file__).resolve().parent
+TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]
+VIEWPORTS = [(375, 812), (1280, 900)]
+THEMES = ["light", "dark"]
+STEP_PATH = "/play/path_a11y_step_player"
+PLACEMENT = "/play/path_english_bagrut5_00_placement"
+
+_axe = Axe()
+ALLOW = json.loads((HERE / "allowlist.json").read_text(encoding="utf-8"))["allow"]
+FOUND: list[dict] = []  # every violation seen, written to a report for CI artifacts
+
+
+def _allowed(state: str, rule: str, target: str) -> bool:
+    return any(
+        a["rule"] == rule and a["selector"] == target and a.get("state") in (None, "*", state)
+        for a in ALLOW
+    )
+
+
+def scan(page, state: str) -> None:
+    """Scan the current page in every viewport x theme; fail on new violations."""
+    new: list[str] = []
+    for width, height in VIEWPORTS:
+        page.set_viewport_size({"width": width, "height": height})
+        for theme in THEMES:
+            page.emulate_media(color_scheme=theme, reduced_motion="reduce")
+            page.wait_for_timeout(50)
+            result = _axe.run(page, options={"runOnly": {"type": "tag", "values": TAGS}})
+            for v in result.response["violations"]:
+                for node in v["nodes"]:
+                    target = " ".join(map(str, node["target"]))
+                    FOUND.append({"state": state, "viewport": width, "theme": theme,
+                                  "rule": v["id"], "impact": v.get("impact"), "selector": target,
+                                  "summary": node.get("failureSummary", "")[:300]})
+                    if not _allowed(state, v["id"], target):
+                        new.append(f"[{state} {width}px {theme}] {v['id']} ({v.get('impact')}): {target}")
+    assert not new, "New axe violations (fix, or allowlist with an issue link):\n" + "\n".join(sorted(set(new)))
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _report():
+    yield
+    out = Path(__import__("os").environ.get("A11Y_REPORT", HERE / "a11y-report.json"))
+    out.write_text(json.dumps(FOUND, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def _submit(page, action: str) -> None:
+    page.locator(f"form[action='{action}'] [type=submit]").first.click()
+    page.wait_for_load_state()
+
+
+def test_login(page):
+    page.goto("/login")
+    scan(page, "login")
+
+
+def test_signed_in(page, server):
+    login(page, server[1])
+    assert "/login" not in page.url
+
+
+def test_placement(page):
+    page.goto(PLACEMENT)
+    _submit(page, f"{PLACEMENT}/start")
+    page.locator("#step-card").wait_for()
+    scan(page, "placement")
+
+
+def test_path_head(page):
+    page.goto(STEP_PATH)
+    page.locator(".path-head").first.wait_for()
+    scan(page, "path-head")
+
+
+def test_map_view(page):
+    page.goto(STEP_PATH + "?view=map")
+    scan(page, "map")
+
+
+def test_path_head_session_card(page):
+    """After starting, the head shows the engagement session card (.eng-head) when present."""
+    page.goto(STEP_PATH)
+    _submit(page, f"{STEP_PATH}/start")
+    page.goto(STEP_PATH)
+    scan(page, "path-head-session")
+
+
+def test_step_hint_open(page):
+    page.goto(STEP_PATH + "?view=learn")
+    page.locator("details.step-hint summary").click()
+    assert page.locator("details.step-hint[open]").count() == 1
+    scan(page, "step-hint")
+
+
+def test_step_wrong_choice_feedback(page):
+    page.locator("button.choice-tile[value=a]").click()
+    page.locator("#choice-feedback").wait_for()
+    scan(page, "step-feedback")
+
+
+def test_step_done(page):
+    page.locator("button.choice-tile[value=b]").click()
+    page.locator("details.step-hint").wait_for(state="detached")
+    scan(page, "step-done")
