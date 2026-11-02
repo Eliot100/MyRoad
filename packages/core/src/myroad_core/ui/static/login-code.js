@@ -6,7 +6,7 @@
   var input = document.querySelector("[data-code-input]");
   if (!input || !input.form) return;
   var form = input.form;
-  var max = parseInt(input.getAttribute("maxlength"), 10) || 8;
+  var max = 8; /* CODE_DIGITS; maxlength is 11 so no-JS paste can carry separators (decision 0009, option C) */
   var sent = false;
 
   function digits(s) {

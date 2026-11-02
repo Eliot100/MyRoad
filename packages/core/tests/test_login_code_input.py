@@ -56,8 +56,8 @@ def test_single_code_input_attributes(app, locale: str) -> None:
     _, html, _ = _verify_page(app, locale)
     assert html.count('name="code"') == 1, "exactly one code field"
     tag = _code_input(html)
-    for attr in ('autocomplete="one-time-code"', 'inputmode="numeric"', 'pattern="[0-9]{8}"',
-                 'maxlength="8"', 'dir="ltr"', "required", 'aria-describedby="code-hint"'):
+    for attr in ('autocomplete="one-time-code"', 'inputmode="numeric"', r'pattern="[0-9 \-]{8,11}"',
+                 'minlength="8"', 'maxlength="11"', 'dir="ltr"', "required", 'aria-describedby="code-hint"'):
         assert attr in tag, attr
     assert '<label for="code">' in html
     assert 'id="code-hint"' in html
@@ -91,6 +91,22 @@ def test_no_js_post_signs_in(app) -> None:
     c, _, code = _verify_page(app)
     r = c.post("/login/verify", data={"code": code, "next": "/"}, follow_redirects=False)
     assert r.status_code == 303 and not r.headers["location"].startswith("/login")
+
+
+@pytest.mark.parametrize("sep", [" ", "-"])
+def test_no_js_post_with_separator_signs_in(app, sep: str) -> None:
+    c, _, code = _verify_page(app)
+    r = c.post("/login/verify", data={"code": code[:4] + sep + code[4:], "next": "/"}, follow_redirects=False)
+    assert r.status_code == 303 and not r.headers["location"].startswith("/login")
+
+
+def test_pattern_accepts_separated_codes() -> None:
+    # Mirrors the HTML pattern (anchored by the browser) so the "spaces included" hint holds without JS.
+    pat = re.compile(r"[0-9 \-]{8,11}")
+    for ok in ("12345678", "1234 5678", "1234-5678", " 1234 5678 "[:11]):
+        assert pat.fullmatch(ok), ok
+    for bad in ("1234567", "1234a5678", "1234 5678 90"):
+        assert not pat.fullmatch(bad), bad
 
 
 # --- headless browser -------------------------------------------------------------------
@@ -186,6 +202,23 @@ def test_browser_no_js_submit(served) -> None:
         pg = br.new_context(java_script_enabled=False, viewport={"width": 375, "height": 812}).new_page()
         code = _to_verify(pg, base, codes)
         pg.fill("#code", code)
+        with pg.expect_navigation():
+            pg.click("button[type=submit].primary")
+        assert "/login" not in pg.url
+        br.close()
+
+
+@pytest.mark.parametrize("sep", [" ", "-"])
+def test_browser_no_js_paste_with_separator_signs_in(served, sep: str) -> None:
+    from playwright.sync_api import sync_playwright
+    base, codes = served
+    with sync_playwright() as p:
+        br = _browser(p)
+        pg = br.new_context(java_script_enabled=False, viewport={"width": 375, "height": 812}).new_page()
+        code = _to_verify(pg, base, codes)
+        pg.focus("#code")
+        pg.keyboard.insert_text(code[:4] + sep + code[4:])  # paste-like insert, honours maxlength
+        assert pg.input_value("#code") == code[:4] + sep + code[4:], "not truncated"
         with pg.expect_navigation():
             pg.click("button[type=submit].primary")
         assert "/login" not in pg.url
