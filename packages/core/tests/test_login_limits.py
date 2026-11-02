@@ -328,7 +328,7 @@ def test_verify_page_asks_for_eight_digits(ui) -> None:
     c, _ = ui
     request_login_code(c, {"email": "p@example.com", "first_name": "P", "last_name": "Q", "mode": "register"})
     page = c.get("/login/verify?email=p@example.com").text
-    assert 'pattern="[0-9]{8}"' in page and 'maxlength="8"' in page and "8-digit" in page
+    assert 'pattern="[0-9 \\-]{8,11}"' in page and 'minlength="8"' in page and 'maxlength="11"' in page and "8-digit" in page
 
 
 def test_http_send_over_cap_without_captcha_says_wait(ui) -> None:
