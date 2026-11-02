@@ -58,6 +58,15 @@ CREATE TABLE IF NOT EXISTS learner_events (
   duration_ms INTEGER,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS learner_sessions (
+  user_id TEXT NOT NULL,
+  path_id TEXT NOT NULL,
+  session_no INTEGER NOT NULL,
+  day TEXT NOT NULL,
+  step_ids TEXT NOT NULL DEFAULT '[]',
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, path_id, session_no)
+);
 CREATE INDEX IF NOT EXISTS idx_events_user_path ON learner_events(user_id, path_id, block_id);
 CREATE INDEX IF NOT EXISTS idx_progress_user ON learner_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_user ON learner_attempts(user_id);
@@ -75,7 +84,12 @@ _LEARNER_EXTRA_COLUMNS = (
     # Step variant settings (docs/decisions/0003-step-variants.md): audio on, writing off by default.
     ("audio_on", "INTEGER NOT NULL DEFAULT 1"),
     ("writing_on", "INTEGER NOT NULL DEFAULT 0"),
+    # Weekly days goal (docs/decisions/0004-session-model.md): NULL = not set (default 3 shown).
+    ("weekly_goal", "INTEGER"),
 )
+
+WEEKLY_GOALS = (2, 3, 5)
+DEFAULT_WEEKLY_GOAL = 3
 
 
 STEP_EVENT_TYPES = ("step_view", "answer", "mastery")
@@ -303,6 +317,60 @@ class LearnerProgressMixin:
             self._conn.execute("UPDATE learners SET writing_on = ? WHERE user_id = ?", (int(bool(writing)), user_id))
         self._conn.commit()
         return self.get_step_settings(user_id)
+
+    def get_weekly_goal(self, user_id: str | None) -> dict[str, Any]:
+        """Weekly active-days goal. Unknown learner or not set -> default 3, goal_set false."""
+        row = None
+        if user_id:
+            row = self._conn.execute("SELECT weekly_goal FROM learners WHERE user_id = ?", (user_id,)).fetchone()
+        if not row or row[0] is None:
+            return {"goal": DEFAULT_WEEKLY_GOAL, "goal_set": False}
+        return {"goal": int(row[0]), "goal_set": True}
+
+    def set_weekly_goal(self, user_id: str, goal: int) -> dict[str, Any]:
+        if int(goal) not in WEEKLY_GOALS:
+            raise ValueError(f"weekly goal must be one of {WEEKLY_GOALS}")
+        self._conn.execute("UPDATE learners SET weekly_goal = ? WHERE user_id = ?", (int(goal), user_id))
+        self._conn.commit()
+        return self.get_weekly_goal(user_id)
+
+    # --- sessions (#192): frozen step lists per (user, path, local day) ------------------
+
+    def latest_learner_session(self, user_id: str, path_id: str) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT session_no, day, step_ids FROM learner_sessions WHERE user_id = ? AND path_id = ? "
+            "ORDER BY session_no DESC LIMIT 1",
+            (user_id, path_id),
+        ).fetchone()
+        if not row:
+            return None
+        return {"no": int(row[0]), "day": row[1], "step_ids": list(json.loads(row[2] or "[]"))}
+
+    def add_learner_session(self, user_id: str, path_id: str, day: str, step_ids: list[str]) -> dict[str, Any]:
+        last = self.latest_learner_session(user_id, path_id)
+        no = (last["no"] if last else 0) + 1
+        self._conn.execute(
+            "INSERT INTO learner_sessions (user_id, path_id, session_no, day, step_ids, created_at) "
+            "VALUES (?,?,?,?,?,?)",
+            (user_id, path_id, no, day, json.dumps(list(step_ids)), _iso_now()),
+        )
+        self._conn.commit()
+        return {"no": no, "day": day, "step_ids": list(step_ids)}
+
+    def answer_events(self, user_id: str, path_id: str | None = None) -> list[dict[str, Any]]:
+        """Answer and mastery events in event order (for sessions and active days)."""
+        sql = ("SELECT path_id, block_id, event_type, ok, created_at FROM learner_events "
+               "WHERE user_id = ? AND event_type IN ('answer', 'mastery')")
+        args: list[Any] = [user_id]
+        if path_id is not None:
+            sql += " AND path_id = ?"
+            args.append(path_id)
+        sql += " ORDER BY event_id"
+        return [
+            {"pathId": r[0], "blockId": r[1], "eventType": r[2], "ok": None if r[3] is None else bool(r[3]),
+             "createdAt": r[4]}
+            for r in self._conn.execute(sql, args).fetchall()
+        ]
 
     def ensure_learner(self, user_id: str | None, display_name: str | None = None) -> dict[str, Any]:
         """Return an existing learner. Does not create anonymous users."""

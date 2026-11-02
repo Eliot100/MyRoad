@@ -1852,6 +1852,7 @@ def register_platform_routes(
                 read_only=read_only,
                 open_index=open_index,
                 linear_rows=str(path_id).startswith("path_english_bagrut5_"),
+                engagement=_engagement(sess, doc, locale),
                 sidebar=_sidebar_ctx(request, active_path=path_id),
             )
             response = templates.TemplateResponse(request, "map.html", ctx)
@@ -1930,6 +1931,7 @@ def register_platform_routes(
             continue_hx=bool(continue_url) and "view=learn" in (continue_url or ""),
             swap_focus=swap_focus if hx else None,
             status_oob=hx,
+            engagement=_engagement(sess, doc, locale),
         )
         if answer is None and block and not locked_by and sess.get("userId"):
             _step_event(sess, block, "step_view")
@@ -1938,6 +1940,15 @@ def register_platform_routes(
         response.headers["Vary"] = "HX-Request"
         response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return response
+
+    def _engagement(sess: dict[str, Any], doc: dict[str, Any], locale: str) -> dict[str, Any] | None:
+        """Session / week / goal meter (#192) for template context; None without a learner."""
+        uid = sess.get("userId")
+        if not uid:
+            return None
+        from myroad_core.engagement import engagement_for  # lazy: engagement imports ui.dates
+
+        return engagement_for(store, uid, doc, locale)
 
     def _step_event(sess: dict[str, Any], block: dict[str, Any], kind: str, ok: bool | None = None) -> None:
         """Per-step measurement (#25); never breaks the player."""
