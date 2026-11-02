@@ -1,0 +1,44 @@
+{#- Path head (#193): goal meter in שלבים + continue card for the current short נתיב.
+    `eng` comes from ctx['engagement'] (#192) or engagement_view's derived fallback.
+    Later slots (week strip, set end) attach below the card; nothing here assumes they exist. -#}
+{%- set eng = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
+{%- set gm = eng.goal_meter or {} %}
+{%- set ss = eng.session or {} %}
+{%- if gm.stages_total %}
+<div class="eng-head" data-derived="{{ 1 if eng.derived else 0 }}">
+  <section class="goal-meter" aria-labelledby="goal-meter-title">
+    <p class="goal-meter-title" id="goal-meter-title">
+      {%- if gm.target_label %}{{ t('eng_meter_goal', n='<bdi>%s</bdi>'|format(gm.stage), total='<bdi>%s</bdi>'|format(gm.stages_total), target='<bdi>%s</bdi>'|format(gm.target_label|e))|safe }}
+      {%- else %}{{ t('eng_meter', n='<bdi>%s</bdi>'|format(gm.stage), total='<bdi>%s</bdi>'|format(gm.stages_total))|safe }}{% endif -%}
+    </p>
+    <ol class="goal-track" aria-hidden="true">
+      {%- for i in range(1, gm.stages_total + 1) %}
+      <li class="{% if i < gm.stage %}is-done{% elif i == gm.stage %}is-here{% endif %}{% if gm.start_stage and i == gm.start_stage and gm.start_stage < gm.stages_total %} is-start{% endif %}"></li>
+      {%- endfor %}
+    </ol>
+    <p class="goal-meter-note tiny">
+      {%- if gm.start_stage is none %}{{ t('eng_start_none') }}
+      {%- elif gm.start_stage <= 0 %}{{ t('eng_start_before') }}
+      {%- elif gm.start_stage >= gm.stages_total %}{{ t('eng_start_past') }}
+      {%- else %}{{ t('eng_start_from', n='<bdi>%s</bdi>'|format(gm.start_stage))|safe }}{% endif -%}
+    </p>
+  </section>
+
+  <section class="continue-card" aria-labelledby="continue-title">
+    <h2 class="continue-title" id="continue-title">{{ t('eng_set_title') if eng.started else t('eng_set_first') }}</h2>
+    {%- if ss.steps %}
+    <ol class="set-dots" aria-label="{{ t('eng_set_progress', done=ss.done_count, total=ss.size) }}">
+      {%- for s in ss.steps %}<li class="{% if s.done %}is-done{% elif loop.index0 == ss.done_count %}is-next{% endif %}"></li>{% endfor %}
+    </ol>
+    <p class="set-count tiny">{{ t('eng_set_progress', done='<bdi>%s</bdi>'|format(ss.done_count), total='<bdi>%s</bdi>'|format(ss.size))|safe }}</p>
+    {%- endif %}
+    <form method="post" action="/play/{{ doc.pathId }}/start">
+      <button type="submit" class="primary big continue-btn">{{ t('eng_continue') if eng.started else t('start_path') }}</button>
+    </form>
+  </section>
+</div>
+{%- else %}
+<form method="post" action="/play/{{ doc.pathId }}/start" class="eng-head-plain">
+  <button type="submit" class="primary big continue-btn">{{ t('road_continue') if can_resume|default(false) else t('start_path') }}</button>
+</form>
+{%- endif %}

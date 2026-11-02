@@ -21,16 +21,10 @@
     <h1><span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}</h1>
     <p class="lede" dir="auto"{{ meta.blurbLang|content_lang(locale) }}>{{ meta.blurb }}</p>
     {% if not read_only %}
-    <div class="progress-wrap" aria-label="progress">
-      <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
-      <span class="progress-label">{{ progress }}% · {{ mastered|length }}/{{ total }}</span>
+    {% include "_path_head_engagement.html" %}
+    <div class="row road-actions eng-links">
+      <a class="text-link" href="#track">{{ t('view_track') }}</a>
       <a class="text-link rm-link" href="/play/{{ doc.pathId }}?view=stats">{{ t('metrics_link') }}</a>
-    </div>
-    <div class="row road-actions">
-      <form method="post" action="/play/{{ doc.pathId }}/start">
-        <button type="submit" class="primary big">{{ t('road_continue') if can_resume else t('start_path') }}</button>
-      </form>
-      <a class="secondary big link-btn" href="#track">{{ t('view_track') }}</a>
     </div>
     {% endif %}
   </section>

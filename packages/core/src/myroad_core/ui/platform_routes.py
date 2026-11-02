@@ -56,6 +56,7 @@ from myroad_core.ui.i18n import (
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
+from myroad_core.ui.engagement_view import can_do_line, engagement_view
 from myroad_core.ui.dates import days_ago, short_date
 from myroad_core.ui.tv_home import apply_preview_lock, mock_skills, mock_unlock, preview_enabled, stage_states
 
@@ -1627,6 +1628,9 @@ def register_platform_routes(
     templates.env.filters["days_ago"] = days_ago
     # View-only: the road world map shows sample review levels only in UI preview.
     templates.env.globals["ui_preview_on"] = preview_enabled
+    # Path head + step done moment (#193/#191): ctx['engagement'] from #192, else derived.
+    templates.env.globals["engagement_view"] = engagement_view
+    templates.env.globals["can_do_line"] = can_do_line
 
 
     @app.get("/road/{path_id}", response_class=HTMLResponse)
