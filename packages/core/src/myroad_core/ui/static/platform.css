@@ -1801,3 +1801,37 @@ body.platform :where(h1, h2, h3):lang(ar) { line-height: 1.5; }
   text-align: start;
 }
 .speak-note[hidden] { display: none; }
+
+/* Path head (issue 193): goal meter in שלבים + continue card. Tokens only, so light and dark both follow. */
+.eng-head { display: grid; gap: var(--space-3); margin-block-start: var(--space-4); }
+@media (min-width: 760px) { .eng-head { grid-template-columns: 1fr 1fr; align-items: stretch; } }
+.goal-meter, .continue-card { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-2); padding: var(--space-4); min-inline-size: 0; }
+.goal-meter-title { margin: 0 0 var(--space-3); font-size: var(--text-md); font-weight: 600; color: var(--ink); line-height: 1.5; }
+.goal-meter-title bdi, .set-count bdi, .goal-meter-note bdi { font-variant-numeric: tabular-nums; }
+.goal-track { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
+.goal-track li { flex: 1 1 0; block-size: 8px; border-radius: 4px; background: var(--track); position: relative; }
+.goal-track li.is-done { background: var(--accent); opacity: .55; }
+.goal-track li.is-here { background: var(--accent); }
+.goal-track li.is-start::after { content: ""; position: absolute; inset-inline-start: 0; inset-block-start: -5px; inline-size: 2px; block-size: 18px; border-radius: 1px; background: var(--ink-2); }
+.goal-meter-note { margin: var(--space-3) 0 0; color: var(--muted); line-height: 1.5; }
+.continue-card { display: flex; flex-direction: column; gap: var(--space-2); }
+.continue-title { margin: 0; font-size: var(--text-md); font-weight: 600; }
+.set-dots { list-style: none; margin: var(--space-1) 0 0; padding: 0; display: flex; gap: 8px; }
+.set-dots li { inline-size: 10px; block-size: 10px; border-radius: 50%; border: 1.5px solid var(--line-strong); background: transparent; }
+.set-dots li.is-done { background: var(--accent); border-color: var(--accent); }
+.set-dots li.is-next { border-color: var(--accent); box-shadow: 0 0 0 3px var(--tint-info-strong); }
+.set-count { margin: 0; color: var(--muted); }
+.continue-card form { margin-block-start: auto; padding-block-start: var(--space-2); }
+.continue-btn { inline-size: 100%; }
+.eng-links { gap: var(--space-4); margin-block-start: var(--space-3); }
+.eng-links .text-link { min-block-size: 44px; display: inline-flex; align-items: center; }
+.eng-head-plain { margin-block-start: var(--space-4); }
+
+/* Step done moment (issue 191): one calm line inside the feedback block; no motion when reduced. */
+.step-done-line { margin: var(--space-2) 0 0; padding-block-start: var(--space-2); border-block-start: 1px solid var(--tint-ok-line); color: var(--ok-ink); font-weight: 600; line-height: 1.5; }
+.step-done-mark { display: inline-block; margin-inline-end: .25em; }
+.step-done-what { font-weight: 500; }
+@media (prefers-reduced-motion: no-preference) {
+  .step-done-mark { animation: step-done-in 240ms ease-out both; }
+  @keyframes step-done-in { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+}

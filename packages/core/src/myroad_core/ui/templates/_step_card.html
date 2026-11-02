@@ -187,6 +187,12 @@
   <div id="step-feedback" class="step-feedback{% if answer %}{% if answer.ok %} ok{% else %} try{% endif %}{% endif %}" dir="auto" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
     {%- if answer -%}
     <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span> <span class="feedback-verdict visually-hidden">{% if answer.ok %}{{ t('feedback_correct') }}{% else %}{{ t('feedback_not_yet') }}{% endif %}</span> <span class="feedback-text" dir="auto"{% if fb_lang %} lang="{{ fb_lang }}"{% endif %}>{{ answer.text|bdi }}</span></p>
+    {%- if answer.ok and answered %}
+    {#- Step done moment (#191): one calm line inside the same live region, so it is read once. -#}
+    {%- set eng_s = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
+    {%- set cando = can_do_line(eng_s, block.blockId, (display.title if display is defined and display.title else block.title)) %}
+    {%- if cando %}<p class="step-done-line"><span class="step-done-mark" aria-hidden="true">✓</span> {{ t('eng_now_you_can') }} <span class="step-done-what" dir="auto"{{ sl.title|content_lang(locale) }}>{{ cando|bdi }}</span></p>{% endif %}
+    {%- endif %}
     {%- if not answer.ok %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}
     {%- endif -%}
   </div>

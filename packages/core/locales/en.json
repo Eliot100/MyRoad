@@ -493,5 +493,16 @@
   "scratch_clear": "Clear drawing",
   "worked_method_title": "How to solve it",
   "speak_no_voice": "This device has no voice for this language, so read aloud is silent. You can read the text and keep going.",
-  "speak_unsupported": "This browser does not support read aloud. You can read the text and keep going."
+  "speak_unsupported": "This browser does not support read aloud. You can read the text and keep going.",
+  "eng_meter_goal": "Stage {n} of {total}, goal: {target}",
+  "eng_meter": "Stage {n} of {total} on the road",
+  "eng_start_from": "Your starting point: stage {n}",
+  "eng_start_none": "No starting point yet. The road begins at the first stage.",
+  "eng_set_title": "Your short track",
+  "eng_set_first": "Your first short track",
+  "eng_set_progress": "{done} of {total} in this track",
+  "eng_continue": "Continue the track",
+  "eng_now_you_can": "Now you can:",
+  "eng_start_before": "Your starting point: before the first stage of this road",
+  "eng_start_past": "Your starting point: past the last stage of this road"
 }
