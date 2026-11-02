@@ -30,3 +30,4 @@ coverage/
 *.egg-info/
 .eggs/
 packages/core/.venv/
+packages/core/tests_a11y/a11y-report.json
