@@ -190,7 +190,7 @@
     {%- if answer.ok and answered %}
     {#- Step done moment (#191): one calm line inside the same live region, so it is read once. -#}
     {%- set eng_s = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
-    {%- set cando = can_do_line(eng_s, block.blockId, (display.title if display is defined and display.title else block.title)) %}
+    {%- set cando = can_do_line(eng_s, block.blockId, kids.can_do or (display.title if display is defined and display.title else block.title)) %}
     {%- if cando %}<p class="step-done-line"><span class="step-done-mark" aria-hidden="true">✓</span> {{ t('eng_now_you_can') }} <span class="step-done-what" dir="auto"{{ sl.title|content_lang(locale) }}>{{ cando|bdi }}</span></p>{% endif %}
     {%- endif %}
     {%- if not answer.ok %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}

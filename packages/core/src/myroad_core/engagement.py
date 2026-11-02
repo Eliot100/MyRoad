@@ -82,6 +82,8 @@ def session_for(store, user_id: str, doc: dict[str, Any], *, n: int = SESSION_SI
     path_id = doc.get("pathId") or doc.get("id")
     blocks = doc.get("blocks") or []
     title = {b["blockId"]: b.get("title") or "" for b in blocks}
+    can_do = {b["blockId"]: ((b.get("content") or {}).get("kids") or {}).get("can_do") or title[b["blockId"]]
+              for b in blocks}
     mastered, position = _progress_bits(store, user_id, path_id)
     state = _step_state(store.answer_events(user_id, path_id), mastered)
     done_ids = {bid for bid, s in state.items() if s["done"]}
@@ -106,7 +108,7 @@ def session_for(store, user_id: str, doc: dict[str, Any], *, n: int = SESSION_SI
         "done_count": len(done_steps),
         "right_first_time": sum(1 for st in steps if st["right_first_time"]),
         "complete": all(st["done"] for st in steps),
-        "can_do": [st["title"] for st in done_steps[:2]],
+        "can_do": [can_do.get(st["id"]) or st["title"] for st in done_steps[:2]],
     }
 
 
