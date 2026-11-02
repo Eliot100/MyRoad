@@ -4,16 +4,20 @@
 {%- set eng = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
 {%- set gm = eng.goal_meter or {} %}
 {%- set ss = eng.session or {} %}
+{#- #192: goal_meter.stage counts finished שלבים; the head names the one the learner is on. -#}
+{%- set g_done = [gm.stage or 0, gm.stages_total or 0]|min %}
+{%- set g_cur = [g_done + 1, gm.stages_total or 0]|min %}
+{%- set g_target = gm.target_label if gm.target_label and gm.target_label != (meta.title if meta is defined else none) else none %}
 {%- if gm.stages_total %}
 <div class="eng-head" data-derived="{{ 1 if eng.derived else 0 }}">
   <section class="goal-meter" aria-labelledby="goal-meter-title">
     <p class="goal-meter-title" id="goal-meter-title">
-      {%- if gm.target_label %}{{ t('eng_meter_goal', n='<bdi>%s</bdi>'|format(gm.stage), total='<bdi>%s</bdi>'|format(gm.stages_total), target='<bdi>%s</bdi>'|format(gm.target_label|e))|safe }}
-      {%- else %}{{ t('eng_meter', n='<bdi>%s</bdi>'|format(gm.stage), total='<bdi>%s</bdi>'|format(gm.stages_total))|safe }}{% endif -%}
+      {%- if g_target %}{{ t('eng_meter_goal', n='<bdi>%s</bdi>'|format(g_cur), total='<bdi>%s</bdi>'|format(gm.stages_total), target='<bdi>%s</bdi>'|format(g_target|e))|safe }}
+      {%- else %}{{ t('eng_meter', n='<bdi>%s</bdi>'|format(g_cur), total='<bdi>%s</bdi>'|format(gm.stages_total))|safe }}{% endif -%}
     </p>
     <ol class="goal-track" aria-hidden="true">
       {%- for i in range(1, gm.stages_total + 1) %}
-      <li class="{% if i < gm.stage %}is-done{% elif i == gm.stage %}is-here{% endif %}{% if gm.start_stage and i == gm.start_stage and gm.start_stage < gm.stages_total %} is-start{% endif %}"></li>
+      <li class="{% if i <= g_done %}is-done{% elif i == g_cur %}is-here{% endif %}{% if gm.start_stage and i == gm.start_stage and gm.start_stage < gm.stages_total %} is-start{% endif %}"></li>
       {%- endfor %}
     </ol>
     <p class="goal-meter-note tiny">

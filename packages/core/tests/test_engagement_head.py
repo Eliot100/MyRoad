@@ -106,12 +106,12 @@ def test_wrong_answer_has_no_step_done_line(client) -> None:
     assert "step-done-line" not in html
 
 
-def _render_head(engagement, locale: str = "he") -> str:
+def _render_head(engagement, locale: str = "he", meta=None) -> str:
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(_TPL)), autoescape=True)
     env.globals.update(engagement_view=engagement_view)
     from myroad_core.ui.i18n import t
     tpl = env.get_template("_path_head_engagement.html")
-    return tpl.render(engagement=engagement, topics=[], mastered=set(), doc={"pathId": "p"},
+    return tpl.render(engagement=engagement, topics=[], mastered=set(), doc={"pathId": "p"}, meta=meta or {"title": "x"},
                       t=lambda k, **kw: t(locale, k, **kw))
 
 
@@ -121,20 +121,27 @@ SERVER = {"session": {"no": 4, "steps": [{"id": f"s{i}", "title": f"T{i}", "done
           "gap_days": 4, "warmup_suggested": True}
 
 
+def test_target_equal_to_title_is_not_repeated() -> None:
+    d = json.loads(json.dumps(SERVER)); d["goal_meter"]["target_label"] = "חיבור"
+    env_html = _render_head(d, meta={"title": "חיבור"})
+    assert "היעד" not in env_html and "שלב <bdi>4</bdi> מתוך <bdi>9</bdi> בדרך" in env_html
+
+
 def test_server_engagement_dict_wins() -> None:
     html = _render_head(SERVER)
-    assert "שלב <bdi>3</bdi> מתוך <bdi>9</bdi>, היעד: <bdi>800</bdi>" in html
+    assert "שלב <bdi>4</bdi> מתוך <bdi>9</bdi>, היעד: <bdi>800</bdi>" in html
     assert "נקודת ההתחלה שלך: שלב <bdi>2</bdi>" in html
     track = html[html.index("goal-track"):html.index("</ol>")]
-    assert track.count("is-done") == 2 and track.count("is-here") == 1 and track.count("is-start") == 1
+    assert track.count("is-done") == 3 and track.count("is-here") == 1 and track.count("is-start") == 1
     assert "<bdi>2</bdi> מתוך <bdi>6</bdi>" in html and 'data-derived="0"' in html
 
 
 def test_server_empty_state() -> None:
     empty = json.loads(json.dumps(SERVER))
     empty["session"].update(no=1, done_count=0, steps=[{**s, "done": False} for s in empty["session"]["steps"]])
-    empty["goal_meter"].update(stage=1, start_stage=None, from_placement=False)
+    empty["goal_meter"].update(stage=0, start_stage=None, from_placement=False)
     html = _render_head(empty)
+    assert "שלב <bdi>1</bdi> מתוך <bdi>9</bdi>" in html
     assert "עוד אין נקודת התחלה" in html and "is-start" not in html and "התחל את הדרך" in html
 
 
