@@ -263,6 +263,7 @@
   "login_code_title": "Check your email",
   "login_code_lede": "If {email} can sign in, we sent a 8-digit code to it. A code works once and expires in 15 minutes.",
   "login_code_label": "8-digit code",
+  "login_code_hint": "You can paste the code from the email, spaces included.",
   "login_code_submit": "Verify and sign in",
   "login_code_restart": "Use a different email or send a new code",
   "err_code_required": "Enter the 8-digit code from the email.",

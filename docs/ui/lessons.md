@@ -50,3 +50,4 @@ Mockup rounds for the road screen:
 - 2026-11-01: read aloud (#181): Arabic text speaks as ar with a matching voice; with no voice or audio a calm aria-live note shows instead of silence.
 - 2026-11-01: step hint and per choice feedback (#187): hint is a closed 'רמז' disclosure before answering; choice feedback sits under the picked choice, calm neutral note. media_hint is an internal asset slug, never shown as text.
 - 2026-11-02: path head goal meter + continue card (#193) and in flow step done line (#191 first AC), decision 0007. Progress copy uses only שלב/נתיב; no end screen, the learner stays on the step card with Next.
+- 2026-11-02: login code field (#59), decision 0008: one input with one-time-code autofill, LTR digits in RTL, paste normalized by JS, error tied via aria-describedby; auth surface PRs wait for Cyber security, no auto-merge.

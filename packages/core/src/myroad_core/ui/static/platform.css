@@ -1835,3 +1835,20 @@ body.platform :where(h1, h2, h3):lang(ar) { line-height: 1.5; }
   .step-done-mark { animation: step-done-in 240ms ease-out both; }
   @keyframes step-done-in { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
 }
+
+/* Login code field (#59): one input, digits read left to right inside the RTL page. */
+.login-form input.code-input {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xl, 1.375rem);
+  letter-spacing: .32em;
+  padding-inline-start: calc(.9rem + .32em); /* balance the trailing letter-spacing */
+  min-height: 3.25rem;
+}
+.login-form input.code-input::placeholder { letter-spacing: normal; }
+.login-form input.code-input[aria-invalid="true"] { border-color: var(--warn); }
+.login-form .field-hint { margin: 0; font-size: var(--text-sm, .875rem); color: var(--muted, inherit); }
+.login-form .field-error { margin: 0; }
+.login-form[data-submitting="1"] button[type="submit"] { opacity: .7; cursor: progress; }

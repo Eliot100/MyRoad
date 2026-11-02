@@ -23,21 +23,33 @@
     <h1>{{ t('login_title') }}</h1>
     <p class="lede">{{ t('login_lede') }}</p>
     {% endif %}
-    {% if error %}
+    {% if error and mode != 'verify' %}
     <p class="flash warn">{{ error }}</p>
     {% endif %}
     {% if mode == 'verify' %}
-    <form method="post" action="/login/verify" class="login-form" autocomplete="off">
+    <form method="post" action="/login/verify" class="login-form" autocomplete="off" data-code-form>
       <input type="hidden" name="next" value="{{ next_url }}" />
       <input type="hidden" name="email" value="{{ current_email }}" />
       <label for="code">{{ t('login_code_label') }}</label>
-      <input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{8}" minlength="8" maxlength="8" required autocomplete="one-time-code" autofocus />
+      {# One field for the whole code (#59). Digits only, 8 = CODE_DIGITS on the server (#62 landed);
+         JS in login-code.js strips spaces and dashes on paste; without JS the
+         server already ignores them. #}
+      <input id="code" name="code" type="text" class="code-input" dir="ltr" lang="en"
+             inputmode="numeric" pattern="[0-9]{8}" minlength="8" maxlength="8"
+             required autocomplete="one-time-code" autocapitalize="off" spellcheck="false" autofocus
+             aria-describedby="code-hint{% if error %} code-error{% endif %}"{% if error %} aria-invalid="true"{% endif %}
+             data-code-input{% if not (captcha_needed and captcha_site_key) %} data-autosubmit{% endif %} />
+      <p id="code-hint" class="field-hint">{{ t('login_code_hint') }}</p>
+      {% if error %}
+      <p id="code-error" class="flash warn field-error" role="alert">{{ error }}</p>
+      {% endif %}
       {% if captcha_needed and captcha_site_key %}
       <div class="cf-turnstile" data-sitekey="{{ captcha_site_key }}"></div>
       <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
       {% endif %}
       <button type="submit" class="primary big">{{ t('login_code_submit') }}</button>
     </form>
+    <script src="/static/login-code.js" defer></script>
     <p class="lede tiny"><a href="/login?next={{ next_url|urlencode }}&email={{ current_email|urlencode }}">{{ t('login_code_restart') }}</a></p>
     {% else %}
     <form method="post" action="/login" class="login-form" autocomplete="on">
