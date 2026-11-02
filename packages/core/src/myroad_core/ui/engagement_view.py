@@ -108,13 +108,15 @@ def engagement_view(
 
 
 def can_do_line(engagement: Mapping[str, Any] | None, block_id: str | None, fallback: str | None) -> str:
-    """The 'now you can' text for a step: its session can_do entry, else the step title."""
+    """The 'now you can' text for THIS step: its own can_do (``fallback``: kids.can_do or title).
+
+    session.can_do is newest-first by completion time, not step order, so it cannot be indexed
+    by a step's position. We only use it when the step's own text is missing and the session
+    title for this step id is itself one of the can_do entries (derived path)."""
+    if fallback:
+        return str(fallback)
     sess = (engagement or {}).get("session") or {}
-    steps = sess.get("steps") or []
-    can = sess.get("can_do") or []
-    done_ids = [s.get("id") for s in steps if s.get("done")]
-    if block_id in done_ids:
-        i = done_ids.index(block_id)
-        if i < len(can) and can[i]:
-            return str(can[i])
-    return str(fallback or "")
+    for st in sess.get("steps") or []:
+        if st.get("id") == block_id and st.get("done") and st.get("title") in (sess.get("can_do") or []):
+            return str(st["title"])
+    return ""

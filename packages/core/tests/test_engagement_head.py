@@ -155,7 +155,7 @@ def test_derive_and_can_do() -> None:
               {"blockIds": ["c"], "steps": [{"blockId": "c", "title": "C"}]}]
     d = derive_engagement(topics, {"a", "b"}, size=2)
     assert d["goal_meter"]["stage"] == 2 and d["session"]["no"] == 2 and d["session"]["steps"][0]["id"] == "c"
-    assert can_do_line(SERVER, "s1", "fallback") == "B"
+    assert can_do_line(SERVER, "s1", "own") == "own"
     assert can_do_line(SERVER, "zz", "fallback") == "fallback"
 
 
@@ -180,3 +180,14 @@ def test_target_label_kinds(label: str) -> None:
     d = json.loads(json.dumps(SERVER)); d["goal_meter"]["target_label"] = label
     html = _render_head(d)
     assert "היעד: <bdi>" in html and jinja2.utils.markupsafe.escape(label) in html
+
+
+def test_step_done_line_is_each_steps_own_can_do() -> None:
+    """Regression: can_do is newest first, so indexing by step order showed another step's text."""
+    steps = [{"id": f"s{i}", "title": f"T{i}", "done": i < 3, "right_first_time": True} for i in range(4)]
+    own = {"s0": "Read a clock", "s1": "Add tens", "s2": "Tell time"}
+    eng = {**SERVER, "session": {**SERVER["session"], "steps": steps, "done_count": 3,
+                                 "can_do": [own["s2"], own["s1"]]}}  # newest first
+    for sid, text in own.items():
+        assert can_do_line(eng, sid, text) == text
+    assert can_do_line(eng, "s0", None) == ""
