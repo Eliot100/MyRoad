@@ -117,6 +117,12 @@ def login(page, log: Path, email: str = EMAIL) -> None:
             break
         time.sleep(0.1)
     assert code, "no login code in the dev mail console"
-    page.fill("input[name=code]", code)
-    page.locator("form:has(input[name=code]) [type=submit]").first.click()
+    field = page.locator("input[name=code]")
+    if field.get_attribute("data-autosubmit") is not None:
+        # login-code.js (#59) submits once by itself when the full code is in.
+        with page.expect_navigation():
+            page.fill("input[name=code]", code)
+    else:
+        page.fill("input[name=code]", code)
+        page.locator("form:has(input[name=code]) [type=submit]").first.click()
     page.wait_for_url(lambda url: "/login" not in url)
