@@ -192,6 +192,8 @@ class ContentNode(BaseModel):
     # Optional: a worked method for practice/check steps (plain text, explain locale), shown
     # collapsed next to the learner's scratchpad. Never graded.
     worked_method: str | None = None
+    # Optional: the short 'now you can' line shown when the step is done. Falls back to title.
+    can_do: str | None = None
     # Optional: what the step is for. "review" steps may mix several earlier topics
     # (interleaving), listed in review_topic_ids; they must be topics that come earlier in the path.
     kind: StepKind | None = None
