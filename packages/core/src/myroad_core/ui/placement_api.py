@@ -20,7 +20,7 @@ table), so the series map and locks read the same result.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -29,7 +29,8 @@ from pydantic import BaseModel, Field
 from myroad_core.auth.sessions import SESSION_COOKIE
 from myroad_core.content.english_bagrut import SERIES, placement_band
 from myroad_core.content.loader import list_catalog_cards
-from myroad_core.content.variants import route_by_band
+from myroad_core.content.variants import route_by_band, select_variants
+from myroad_core.ui.i18n import COOKIE_LOCALE, normalize_locale
 from myroad_core.store_schema import _iso_now
 
 PLACEMENT_ID = SERIES[0][0]
@@ -51,6 +52,10 @@ class PlacementResultBody(BaseModel):
 class StepSettingsBody(BaseModel):
     audio: bool | None = None
     writing: bool | None = None
+
+
+class WeeklyGoalBody(BaseModel):
+    goal: Literal[2, 3, 5]
 
 
 def _error(status: int, code: str) -> JSONResponse:
@@ -196,3 +201,56 @@ def register_placement_api(app, *, store) -> None:
             return _error(401, "unknown_learner")
         return JSONResponse(store.set_step_settings(uid, audio=body.audio, writing=body.writing))
 
+
+    # --- Engagement (#192, docs/decisions/0004-session-model.md) -------------------------
+
+    def _engagement_doc(uid: str, path_id: str) -> dict[str, Any] | None:
+        card = next((c for c in list_catalog_cards(store) if c["pathId"] == path_id), None)
+        if not card:
+            return None
+        doc = store.get_version(path_id, card["versionId"]).model_dump(mode="json", by_alias=True)
+        return select_variants(doc, store.get_step_settings(uid))
+
+    def _engagement_locale(request: Request, uid: str) -> str:
+        cookie = request.cookies.get(COOKIE_LOCALE)
+        return normalize_locale(cookie or (store.get_learner(uid) or {}).get("locale"))
+
+    def _engagement_response(request: Request, path_id: str, *, new: bool) -> JSONResponse:
+        if request.headers.get(CSRF_HEADER) != "1":
+            return _error(403, "csrf_header_missing")
+        uid = _user_id(request)
+        if not uid:
+            return _error(401, "unknown_learner")
+        doc = _engagement_doc(uid, path_id)
+        if doc is None:
+            return _error(404, "unknown_path")
+        from myroad_core.engagement import engagement_for  # lazy: engagement imports ui.dates
+
+        return JSONResponse(engagement_for(store, uid, doc, _engagement_locale(request, uid), new_session=new))
+
+    @app.get("/api/path/{path_id}/engagement")
+    def get_engagement(request: Request, path_id: str) -> JSONResponse:
+        return _engagement_response(request, path_id, new=False)
+
+    @app.post("/api/path/{path_id}/session/next")
+    def post_next_session(request: Request, path_id: str) -> JSONResponse:
+        return _engagement_response(request, path_id, new=True)
+
+    @app.get("/api/settings/weekly-goal")
+    def get_weekly_goal(request: Request) -> JSONResponse:
+        if request.headers.get(CSRF_HEADER) != "1":
+            return _error(403, "csrf_header_missing")
+        uid = _user_id(request)
+        if not uid:
+            return _error(401, "unknown_learner")
+        return JSONResponse(store.get_weekly_goal(uid))
+
+    @app.post("/api/settings/weekly-goal")
+    def post_weekly_goal(request: Request, body: WeeklyGoalBody) -> JSONResponse:
+        """Weekly active-days goal: 2, 3 or 5 (anything else is 422)."""
+        if request.headers.get(CSRF_HEADER) != "1":
+            return _error(403, "csrf_header_missing")
+        uid = _user_id(request)
+        if not uid:
+            return _error(401, "unknown_learner")
+        return JSONResponse(store.set_weekly_goal(uid, body.goal))
