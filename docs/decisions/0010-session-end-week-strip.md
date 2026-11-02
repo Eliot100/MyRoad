@@ -17,10 +17,10 @@ disclosure shown only with JS, since the API is JSON. Stage end animation: SVG r
 none under reduced motion. Session end shows only when the server dict says complete (never from the derived fallback).
 ## Verified
 - `pytest tests` -> all pass; new `tests/test_session_end_week.py` covers server dict, missing engagement, locales, copy.
-- `pytest tests_a11y` (new state week-strip) -> 10 passed locally with content checkout.
+- `pytest tests_a11y` (new states week-strip, stage-end, session-end) -> 12 passed locally with content checkout.
 - Screens: docs/ui/screens/191/ (+ before-after/).
 ## Known limits
 - Mastered skills list is derived from the page (mastered steps' can_do or title, later road steps first) until the API sends `goal_meter.mastered_can_do` (newest first). The view already prefers that field.
-- The a11y fixture path is one שלב with a celebrate step, so session end and stage end are covered by pytest, not axe.
+- axe covers stage-end and session-end through a second fixture, tests_a11y/path_a11y_session.json (two שלבים of one step).
 ## How to switch
 To B: render `_session_end.html` from a new GET route and point the last answer's continue link at it (Dev route; ~1h).
