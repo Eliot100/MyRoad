@@ -1964,11 +1964,20 @@ def register_platform_routes(
         return engagement_for(store, uid, doc, locale)
 
     def _step_event(sess: dict[str, Any], block: dict[str, Any], kind: str, ok: bool | None = None) -> None:
-        """Per-step measurement (#25); never breaks the player."""
+        """Per-step measurement (#25); never breaks the player. Answers also emit a #208 event."""
         try:
-            store.record_step_event(sess["userId"], sess["pathId"], block["blockId"], kind, ok=ok)
+            ev = store.record_step_event(sess["userId"], sess["pathId"], block["blockId"], kind, ok=ok)
         except Exception:  # pragma: no cover - measurement is best-effort
-            pass
+            return
+        if kind == "answer":
+            store.emit_server_event(
+                sess.get("userId"),
+                "placement_answer" if _is_placement(sess["pathId"]) else "answer",
+                path_id=sess["pathId"],
+                block_id=block["blockId"],
+                ok=bool(ok),
+                latency_ms=ev.get("durationMs"),
+            )
 
     def _block_index(blocks: list[dict], node_id: str) -> int | None:
         for i, block in enumerate(blocks):

@@ -26,11 +26,15 @@ from myroad_core.seed import find_repo_freeze_dir, seed_golden_quadratic
 from myroad_core.store import PathStore
 from myroad_core.tools import AgentTools
 from myroad_core.ui.learner_actions import register_learner_actions
+from myroad_core.analytics import analytics_enabled
+from myroad_core.ui.events_api import register_events_api
 from myroad_core.ui.placement_api import register_placement_api
 from myroad_core.ui.platform_routes import register_platform_routes
 
 UI_DIR = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(UI_DIR / "templates"))
+# #208: the client batcher is only served when analytics is on (MYROAD_ANALYTICS).
+TEMPLATES.env.globals["analytics_enabled"] = analytics_enabled
 
 ACTOR_LEARNER = "user_learner_poc"
 ACTOR_HUMAN = "user_owner_poc"
@@ -265,6 +269,7 @@ def create_learner_app(
         _corr=_corr,
     )
     register_placement_api(app, store=path_store)
+    register_events_api(app, store=path_store)
 
     return app
 

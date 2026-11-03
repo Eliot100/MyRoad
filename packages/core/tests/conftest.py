@@ -13,6 +13,9 @@ if _worker or not os.environ.get("MYROAD_DB"):
         Path(tempfile.mkdtemp(prefix=f"myroad-{_worker or 'main'}-")) / "test.db"
     )
 
+# #208: analytics is on in the app and off in tests unless a test turns it on.
+os.environ.setdefault("MYROAD_ANALYTICS", "0")
+
 import pytest
 
 from myroad_core.seed import find_repo_freeze_dir
