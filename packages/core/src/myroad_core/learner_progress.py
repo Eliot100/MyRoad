@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from myroad_core.store_schema import _iso_now
@@ -93,6 +94,8 @@ _LEARNER_EXTRA_COLUMNS = (
     ("writing_on", "INTEGER NOT NULL DEFAULT 0"),
     # Weekly days goal (docs/decisions/0004-session-model.md): NULL = not set (default 3 shown).
     ("weekly_goal", "INTEGER"),
+    # Guest sign-up offer (#210): NULL = not shown yet, "offered", "dismissed".
+    ("guest_offer", "TEXT"),
 )
 
 WEEKLY_GOALS = (2, 3, 5)
@@ -103,6 +106,9 @@ STEP_EVENT_TYPES = ("step_view", "answer", "mastery")
 # Server-side cap on time attributed to one answer (idle tabs must not inflate totals).
 MAX_STEP_DURATION_MS = 30 * 60 * 1000
 
+
+GUEST_PREFIX = "gst_"
+GUEST_RETENTION_DAYS = 30
 
 class LearnerProgressMixin:
     """Mixin expecting self._conn (sqlite3 connection)."""
@@ -721,6 +727,62 @@ class LearnerProgressMixin:
         ).fetchone()
         return json.loads(row[0]) if row else None
 
+    def create_guest(self, locale: str = "he") -> dict[str, Any]:
+        """A pseudonymous guest learner (#210): random id, no name, no email."""
+        return self.upsert_learner(f"{GUEST_PREFIX}{uuid.uuid4().hex}", "", locale=locale)
+
+    @staticmethod
+    def is_guest(user_id: str | None) -> bool:
+        return bool(user_id) and str(user_id).startswith(GUEST_PREFIX)
+
+    def get_guest_offer(self, user_id: str | None) -> str | None:
+        row = self._conn.execute("SELECT guest_offer FROM learners WHERE user_id = ?", (user_id,)).fetchone()
+        return row[0] if row else None
+
+    def set_guest_offer(self, user_id: str, state: str) -> None:
+        if state not in ("offered", "dismissed"):
+            raise ValueError("guest_offer must be offered or dismissed")
+        self._conn.execute("UPDATE learners SET guest_offer = ? WHERE user_id = ?", (state, user_id))
+        self._conn.commit()
+
+    def purge_stale_guests(self, days: int = GUEST_RETENTION_DAYS, *, now: datetime | None = None) -> int:
+        """Delete guests (gst_) with no activity for ``days`` and every row they own (#241).
+        Last activity = newest of the learner row, progress, events, attempts, sessions.
+        Idempotent: a second run finds nothing. Returns the number of guests deleted."""
+        cutoff = ((now or datetime.now(timezone.utc)) - timedelta(days=days)).isoformat()
+        sql = """
+            SELECT l.user_id FROM learners l WHERE substr(l.user_id, 1, 4) = 'gst_' AND MAX(
+              l.updated_at,
+              COALESCE((SELECT MAX(updated_at) FROM learner_progress p WHERE p.user_id = l.user_id), ''),
+              COALESCE((SELECT MAX(created_at) FROM learner_events e WHERE e.user_id = l.user_id), ''),
+              COALESCE((SELECT MAX(finished_at) FROM learner_attempts a WHERE a.user_id = l.user_id), ''),
+              COALESCE((SELECT MAX(created_at) FROM learner_sessions s WHERE s.user_id = l.user_id), '')
+            ) < ?
+        """
+        ids = [r[0] for r in self._conn.execute(sql, (cutoff,)).fetchall()]
+        tables = ["learner_progress", "learner_events", "learner_attempts", "learner_sessions",
+                  "placement_details", "auth_sessions", "analytics_ids", "learners"]
+        have = {r[0] for r in self._conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        for uid in ids:
+            for table in tables:
+                if table in have:
+                    self._conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (uid,))
+        self._conn.commit()
+        return len(ids)
+
+    def merge_guest(self, guest_id: str | None, to_user_id: str) -> bool:
+        """Guest -> registered (#210): move data and step preference, drop the guest row."""
+        if not self.is_guest(guest_id) or guest_id == to_user_id or not self.get_learner(guest_id):
+            return False
+        prefs = self.get_step_settings(guest_id)
+        self.adopt_learner_data(guest_id, to_user_id)  # type: ignore[arg-type]
+        self.set_step_settings(to_user_id, audio=prefs["audio"], writing=prefs["writing"])
+        for table in ("learner_progress", "placement_details", "learner_sessions", "learners"):
+            # Rows the account already had won; the guest's leftovers go (no orphans).
+            self._conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (guest_id,))
+        self._conn.commit()
+        return True
+
     def adopt_learner_data(self, from_user_id: str, to_user_id: str) -> None:
         """Carry a session learner's placement (progress, answers, detail, analytics id) to a new
         learner id, e.g. guest -> registered (#210). Rows the target already has are kept."""
@@ -730,6 +792,8 @@ class LearnerProgressMixin:
         c.execute("UPDATE OR IGNORE learner_progress SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.execute("UPDATE learner_events SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.execute("UPDATE OR IGNORE placement_details SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.execute("UPDATE learner_attempts SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.execute("UPDATE OR IGNORE learner_sessions SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.commit()
         if hasattr(self, "move_analytics_id"):
             self.move_analytics_id(from_user_id, to_user_id)

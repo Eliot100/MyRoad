@@ -9,7 +9,7 @@ from typing import Any, Callable
 from urllib.parse import quote
 
 from fastapi import Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from myroad_core.content.variants import select_variants
@@ -54,6 +54,7 @@ from myroad_core.ui.i18n import (
     subject_label,
     t,
 )
+from myroad_core.ui.guest_limit import GUEST_WINDOW_SECONDS, GuestLimiter
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
@@ -288,6 +289,14 @@ def register_platform_routes(
             "link_suffix": f"&subject={quote(subject)}&group={quote(group)}",
         }
 
+    def _account(request: Request) -> dict[str, Any] | None:
+        """A signed-in (registered) learner; a guest (#210) is not one."""
+        learner = _learner(request)
+        return None if not learner or store.is_guest(learner["userId"]) else learner
+
+    guest_limiter = GuestLimiter()
+    app.state.guest_limiter = guest_limiter
+
     @app.middleware("http")
     async def _auth_gate(request: Request, call_next):
         path = request.url.path
@@ -297,24 +306,40 @@ def register_platform_routes(
             or path.startswith("/login")
         ):
             return await call_next(request)
-        protected = (
-            path == "/"
-            or path.startswith("/play")
-            or path.startswith("/add-path")
-            or path.startswith("/author")
-            or path.startswith("/settings")
+        if path.startswith("/add-path") or path.startswith("/author") or path.startswith("/settings"):
+            if not _account(request):
+                return _login_redirect(request)
+            return await call_next(request)
+        practice = path.startswith("/play/") or (
+            path == "/api/settings/steps" and request.headers.get("X-MyRoad-Request") == "1"
         )
-        if protected and not _learner(request):
-            return _login_redirect(request)
+        if practice and request.method != "GET" and not _learner(request):
+            # #210 guest mode, lazy: a cookieless page view writes nothing; the first answer /
+            # POST creates a pseudonymous learner + server-side session (rate-limited per IP).
+            if not guest_limiter.allow(_client_ip(request)):
+                return PlainTextResponse("too many new guests from this address", status_code=429,
+                                         headers={"Retry-After": str(GUEST_WINDOW_SECONDS)})
+            guest = store.create_guest(_locale(request))
+            sid = store.create_session(guest["userId"])
+            cookie = f"{SESSION_COOKIE}={sid}".encode()
+            headers = [(k, v) for k, v in request.scope["headers"] if k != b"cookie"]
+            old = request.headers.get("cookie")
+            headers.append((b"cookie", (old.encode() + b"; " + cookie) if old else cookie))
+            request.scope["headers"] = headers
+            resp = await call_next(request)
+            resp.set_cookie(
+                SESSION_COOKIE, sid, httponly=True, samesite="lax", max_age=SESSION_TTL_SECONDS,
+                secure=cookie_secure(),
+            )
+            return resp
         return await call_next(request)
 
     def _play_session(request: Request, path_id: str, *, resume: bool = True) -> dict[str, Any]:
         sid = request.cookies.get("myroad_play")
         sessions: dict[str, dict[str, Any]] = app.state.play_sessions
         learner = _require_learner(request)
-        if not learner:
-            raise RuntimeError("auth required")
-        user_id = learner["userId"]
+        # Cookieless page view (#210): an anonymous, unsaved session; nothing is written.
+        user_id = learner["userId"] if learner else None
 
         if not sid or sid not in sessions or sessions[sid].get("pathId") != path_id:
             sid = uuid.uuid4().hex
@@ -977,6 +1002,8 @@ def register_platform_routes(
             )
             resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login", secure=cookie_secure(), httponly=True)
             return resp
+        guest_id = store.get_session_user(request.cookies.get(SESSION_COOKIE))
+        store.merge_guest(guest_id, learner["userId"])  # #210: keep the guest's progress
         resp = RedirectResponse(dest, status_code=303)
         _start_session(request, resp, learner, learner.get("locale") or locale)
         resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login", secure=cookie_secure(), httponly=True)
@@ -1151,6 +1178,24 @@ def register_platform_routes(
         resp.delete_cookie(EMAIL_CHANGE_COOKIE, path="/settings", secure=cookie_secure(), httponly=True)
         return resp
 
+    @app.get("/api/guest")
+    def guest_state(request: Request) -> JSONResponse:
+        """Guest flags for the UI (#227): is_guest and whether to show the sign-up offer now."""
+        learner = _learner(request)
+        uid = learner["userId"] if learner else None
+        guest = store.is_guest(uid)
+        return JSONResponse({
+            "is_guest": guest,
+            "offer_registration": guest and store.get_guest_offer(uid) == "offered",
+        })
+
+    @app.post("/api/guest/offer/dismiss")
+    def guest_offer_dismiss(request: Request) -> JSONResponse:
+        learner = _learner(request)
+        if learner and store.is_guest(learner["userId"]):
+            store.set_guest_offer(learner["userId"], "dismissed")
+        return JSONResponse({"offer_registration": False})
+
     @app.post("/logout")
     def logout(request: Request) -> RedirectResponse:
         store.revoke_session(request.cookies.get(SESSION_COOKIE))
@@ -1164,7 +1209,7 @@ def register_platform_routes(
         store=store,
         tools=tools,
         shell_ctx=_shell_ctx,
-        current_learner=_learner,
+        current_learner=_account,
         login_redirect=_login_redirect,
         locale_of=_locale,
     )
@@ -2012,6 +2057,8 @@ def register_platform_routes(
 
     def _step_event(sess: dict[str, Any], block: dict[str, Any], kind: str, ok: bool | None = None) -> None:
         """Per-step measurement (#25); never breaks the player. Answers also emit a #208 event."""
+        if not sess.get("userId"):
+            return  # anonymous page view: no rows (#210)
         try:
             ev = store.record_step_event(sess["userId"], sess["pathId"], block["blockId"], kind, ok=ok)
         except Exception:  # pragma: no cover - measurement is best-effort
@@ -2240,6 +2287,18 @@ def register_platform_routes(
             # Shown under the choices of this same step (not as a page-top flash).
             sess["answer_feedback"] = feedback
         _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
+        offer = (
+            ok and scored and store.is_guest(sess["userId"])
+            and store.get_guest_offer(sess["userId"]) is None
+        )
+        if offer:  # #210: first passed step of a guest -> offer sign-up once
+            store.set_guest_offer(sess["userId"], "offered")
+        resp = _play_answer_response(request, sess, doc, blocks, path_id, hx, ok, feedback, answered_idx, locale)
+        if offer:
+            resp.headers["X-Offer-Registration"] = "true"
+        return resp
+
+    def _play_answer_response(request, sess, doc, blocks, path_id, hx, ok, feedback, answered_idx, locale):
         if hx:
             # htmx: answer in place. Wrong -> same card with the explanation; right -> the
             # answered card with its feedback and a button to the next step (or the summary).
