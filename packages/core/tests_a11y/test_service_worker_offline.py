@@ -124,3 +124,60 @@ def test_service_workers_blocked_degrades_cleanly(browser_context, server) -> No
         assert errors == []
     finally:
         c.close()
+
+
+def _serve(port: int, db: str, kill: bool):
+    import os
+    import subprocess
+    import sys
+    import time
+    import urllib.request
+    from pathlib import Path
+
+    env = {**os.environ, "MYROAD_DB": db, "MYROAD_DEV_INSECURE_COOKIES": "1"}
+    env["MYROAD_SW_KILL"] = "1" if kill else "0"
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", "myroad_core.ui.app:app", "--host", "127.0.0.1",
+         "--port", str(port), "--log-level", "warning"],
+        cwd=Path(__file__).resolve().parent.parent, env=env,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for _ in range(100):
+        try:
+            urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=1)
+            return proc
+        except OSError:
+            time.sleep(0.2)
+    proc.terminate()
+    raise RuntimeError("server did not start")
+
+
+def test_kill_switch_unregisters_and_clears_caches(browser_context, tmp_path) -> None:
+    """Deploy with MYROAD_SW_KILL=1: on the next visit the installed worker is replaced by the
+    kill worker, which deletes every cache and unregisters itself."""
+    from conftest import _free_port
+
+    port = _free_port()
+    db = str(tmp_path / "kill.db")
+    base = f"http://127.0.0.1:{port}"
+    c = browser_context.browser.new_context(locale="he-IL")
+    proc = _serve(port, db, kill=False)
+    try:
+        pg = c.new_page()
+        pg.goto(base + "/login")
+        _ready(pg)
+        assert _caches(pg)
+        proc.terminate(); proc.wait(timeout=10)
+        proc = _serve(port, db, kill=True)
+        pg.goto(base + "/login")  # navigation triggers the SW update check
+        state = None
+        for _ in range(100):
+            state = pg.evaluate("async () => [(await navigator.serviceWorker.getRegistrations()).length,"
+                                " (await caches.keys()).length]")
+            if state == [0, 0]:
+                break
+            pg.wait_for_timeout(100)
+        assert state == [0, 0]
+        assert pg.goto(base + "/login").status == 200  # app works without a worker
+    finally:
+        c.close()
+        proc.terminate(); proc.wait(timeout=10)

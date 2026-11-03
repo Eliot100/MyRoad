@@ -75,3 +75,17 @@ def test_register_is_guarded_for_plain_http(client) -> None:
     js = client.get("/static/sw-register.js").text
     assert '!("serviceWorker" in navigator) || !window.isSecureContext) return;' in js
     assert ".catch(function () {})" in js  # a failed register is never an unhandled rejection
+
+
+def test_kill_switch_serves_self_unregistering_worker(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("MYROAD_SW_KILL", "1")
+    store = PathStore(str(tmp_path / "k.db"))
+    try:
+        with TestClient(create_learner_app(store=store, seed=False, seed_content=False)) as c:
+            r = c.get("/sw.js")
+            assert r.status_code == 200 and r.headers["cache-control"] == "no-cache"
+            src = r.text
+            assert "registration.unregister()" in src and "caches.delete(key)" in src
+            assert "PRECACHE" not in src and "cache.put(" not in src and "fetch" not in src
+    finally:
+        store.close()

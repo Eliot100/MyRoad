@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -66,8 +67,28 @@ def sw_source() -> str:
     )
 
 
+KILL_ENV = "MYROAD_SW_KILL"
+
+# Served instead of the real worker when MYROAD_SW_KILL=1: browsers that installed an older
+# worker fetch /sw.js on their next visit, get this one, drop every cache and unregister.
+KILL_SW = """/* MyRoad service worker kill switch (MYROAD_SW_KILL=1, decision 0015). */
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => {
+  event.waitUntil((async () => {
+    for (const key of await caches.keys()) await caches.delete(key);
+    await self.registration.unregister();
+    for (const client of await self.clients.matchAll({ type: "window" })) client.navigate(client.url);
+  })());
+});
+"""
+
+
+def sw_killed() -> bool:
+    return os.environ.get(KILL_ENV, "").strip() == "1"
+
+
 def register_pwa_routes(app: FastAPI) -> None:
-    source = sw_source()
+    source = KILL_SW if sw_killed() else sw_source()
     offline = offline_html()
 
     @app.get("/sw.js", include_in_schema=False)
