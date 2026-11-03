@@ -85,3 +85,42 @@ def test_old_caches_deleted_on_update(ctx) -> None:
     keys = set(_caches(pg))
     assert "myroad-shell-old" not in keys and "other-app" in keys
     assert len([k for k in keys if k.startswith("myroad-shell-")]) == 1
+
+
+def test_plain_http_lan_host_degrades_cleanly(browser_context, server) -> None:
+    """Production today: plain http on a LAN host -> not a secure context, so no SW is
+    registered; pages load with no console errors or unhandled rejections."""
+    port = server[0].rsplit(":", 1)[1]
+    br = browser_context.browser.browser_type.launch(args=["--host-resolver-rules=MAP lan.test 127.0.0.1"])
+    errors: list[str] = []
+    try:
+        pg = br.new_context(locale="he-IL").new_page()
+        pg.on("pageerror", lambda e: errors.append(str(e)))
+        pg.on("console", lambda m: m.type == "error" and errors.append(m.text))
+        pg.add_init_script(
+            "window.addEventListener('unhandledrejection', e => console.error('unhandled: ' + e.reason))")
+        for path in ("/login", "/roads", "/offline"):
+            r = pg.goto(f"http://lan.test:{port}{path}")
+            assert r and r.status == 200, path
+            pg.wait_for_load_state("load")
+        assert pg.evaluate("window.isSecureContext") is False
+        assert pg.evaluate("!('serviceWorker' in navigator) || navigator.serviceWorker.getRegistrations()"
+                           ".then(r => r.length === 0)")
+        pg.wait_for_timeout(300)
+        assert errors == []
+    finally:
+        br.close()
+
+
+def test_service_workers_blocked_degrades_cleanly(browser_context, server) -> None:
+    c = browser_context.browser.new_context(base_url=server[0], locale="he-IL", service_workers="block")
+    errors: list[str] = []
+    try:
+        pg = c.new_page()
+        pg.on("pageerror", lambda e: errors.append(str(e)))
+        pg.on("console", lambda m: m.type == "error" and errors.append(m.text))
+        for path in ("/login", "/roads"):
+            assert pg.goto(path).status == 200, path
+        assert errors == []
+    finally:
+        c.close()

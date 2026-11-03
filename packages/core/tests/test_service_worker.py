@@ -68,3 +68,10 @@ def test_offline_page_three_locales_with_dir(client) -> None:
 
 def test_base_shell_registers_sw(client) -> None:
     assert '<script src="/static/sw-register.js" defer>' in client.get("/login").text
+
+
+def test_register_is_guarded_for_plain_http(client) -> None:
+    """Plain http on a LAN IP is not a secure context: registration is skipped, never thrown."""
+    js = client.get("/static/sw-register.js").text
+    assert '!("serviceWorker" in navigator) || !window.isSecureContext) return;' in js
+    assert ".catch(function () {})" in js  # a failed register is never an unhandled rejection
