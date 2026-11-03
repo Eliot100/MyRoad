@@ -49,3 +49,7 @@ Add an issue to the board:
 ```sh
 gh project item-add 4 --owner Eliot100 --url https://github.com/Eliot100/MyRoad/issues/123
 ```
+
+## CI checks on main
+
+Ruleset "required CI checks on main" (id 24684510) requires `core-tests`, `validate-freeze-json` and `a11y` (axe + Playwright, incl. the service-worker browser tests) before a PR can merge. `docker-image` runs but isn't required. `a11y` became required on 2026-11-03 after 10 green runs on main in a row with no re-runs (decision 0008). To change the list, `GET repos/Eliot100/MyRoad/rulesets/24684510`, edit `required_status_checks`, and `PUT` the whole ruleset back so no other rule is lost.
