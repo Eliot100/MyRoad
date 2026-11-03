@@ -202,6 +202,11 @@ class ContentNode(BaseModel):
     # one step per base: the variant whose variant_when matches the learner settings, else the base.
     variant_of: str | None = None
     variant_when: VariantWhen | None = None
+    # Optional (#211, decision 0012): placement items only. ``area`` is the domain the item
+    # measures (e.g. vocabulary, grammar, reading, listening); ``difficulty`` is its 1PL b
+    # parameter (-4..4). Once any scored item of a placement has an area, all must.
+    area: str | None = Field(default=None, pattern=r"^[a-z][a-z0-9_]{0,39}$")
+    difficulty: float | None = Field(default=None, ge=-4, le=4)
 
     @model_validator(mode="after")
     def _variant_needs_when(self) -> ContentNode:
@@ -396,6 +401,17 @@ class ContentPath(BaseModel):
         if not v.startswith("path_"):
             raise ValueError("path id must start with 'path_'")
         return v
+
+    @model_validator(mode="after")
+    def _placement_areas(self) -> ContentPath:
+        from myroad_core.placement_cat import is_placement_id, untagged_placement_items
+
+        if is_placement_id(self.id):
+            missing = untagged_placement_items(self.nodes)
+            scored = [n for n in self.nodes if n.type in ("practice", "check") and n.choices and not n.variant_of]
+            if missing and len(missing) < len(scored):
+                raise ValueError(f"placement '{self.id}': items without area: {missing}")
+        return self
 
     @model_validator(mode="after")
     def _prerequisites_shape(self) -> ContentPath:

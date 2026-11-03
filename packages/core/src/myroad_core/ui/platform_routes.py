@@ -14,6 +14,7 @@ from fastapi.templating import Jinja2Templates
 
 from myroad_core.content.variants import select_variants
 from myroad_core.content.english_bagrut import placement_band as english_placement_band
+from myroad_core import placement_cat
 from myroad_core.ui.placement_api import placement_routes, placement_target
 from myroad_core.agent_builder.suggest import catalog_entries, completed_path_ids
 from myroad_core.auth.captcha import captcha_site_key, captcha_verifier_from_env
@@ -594,7 +595,30 @@ def register_platform_routes(
         }
 
     def _maybe_done(sess: dict[str, Any], n: int) -> bool:
-        return n > 0 and len(sess.get("mastered") or set()) >= n
+        # #211: the adaptive English placement ends when the engine stops, not at the last tile.
+        return n > 0 and (bool(sess.get("adaptive_done")) or len(sess.get("mastered") or set()) >= n)
+
+    def _adaptive_advance(sess: dict[str, Any], doc: dict[str, Any], blocks: list[dict]) -> bool:
+        """Adaptive English placement (#211): move to the engine's next item, or end the test.
+
+        Returns False (caller keeps the linear step) for any other path or a doc with no items.
+        """
+        if sess.get("pathId") != placement_cat.ENGLISH_PLACEMENT_ID or not sess.get("userId"):
+            return False
+        items = placement_cat.items_from_doc(doc)
+        if not items:
+            return False
+        responses = store.first_try_answers(sess["userId"], sess["pathId"], since=sess.get("started_at"))
+        nxt = placement_cat.next_item(items, responses)
+        if nxt is None:
+            sess["adaptive_done"] = True
+            sess["index"] = len(blocks) - 1
+            store.save_placement_detail(sess["userId"], sess["pathId"], placement_cat.summarize(items, responses))
+            return True
+        found = _block_index(blocks, nxt.block_id)
+        if found is not None:
+            sess["index"] = found
+        return True
 
     # --- schema v2 prerequisite_path_ids: a path stays locked (read-only) until they are finished ---
     def _prereq_index(locale: str) -> tuple[dict[str, list[str]], dict[str, str]]:
@@ -2024,6 +2048,7 @@ def register_platform_routes(
             return resp
         if reset:
             sess["index"] = 0
+            sess.pop("adaptive_done", None)
             sess["mastered"] = set()
             sess["correct_taps"] = 0
             sess["incorrect_taps"] = 0
@@ -2083,7 +2108,9 @@ def register_platform_routes(
                 "level": "ok",
                 "text": kids.get("feedback_ok") or t(locale, "continue"),
             }
-            if sess["index"] < len(blocks) - 1:
+            if _adaptive_advance(sess, doc, blocks):
+                pass
+            elif sess["index"] < len(blocks) - 1:
                 sess["index"] += 1
         _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
         if _maybe_done(sess, len(blocks)):
@@ -2180,7 +2207,9 @@ def register_platform_routes(
             # No-JS: the next step opens with this note (the answered card is htmx-only).
             sess["flash"] = {"level": "ok", "text": kids.get("feedback_ok") or "✓"}
             sess.pop("answer_feedback", None)
-            if sess["index"] < len(blocks) - 1:
+            if _adaptive_advance(sess, doc, blocks):
+                sess["last_result"] = None
+            elif sess["index"] < len(blocks) - 1:
                 sess["index"] += 1
                 sess["last_result"] = None
         else:

@@ -67,6 +67,13 @@ CREATE TABLE IF NOT EXISTS learner_sessions (
   created_at TEXT NOT NULL,
   PRIMARY KEY (user_id, path_id, session_no)
 );
+CREATE TABLE IF NOT EXISTS placement_details (
+  user_id TEXT NOT NULL,
+  placement_id TEXT NOT NULL,
+  detail_json TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, placement_id)
+);
 CREATE INDEX IF NOT EXISTS idx_events_user_path ON learner_events(user_id, path_id, block_id);
 CREATE INDEX IF NOT EXISTS idx_progress_user ON learner_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_user ON learner_attempts(user_id);
@@ -684,6 +691,48 @@ class LearnerProgressMixin:
         since = since or ""
         row = self._conn.execute(sql, (user_id, path_id, since, since)).fetchone()
         return int(row[0] or 0)
+
+    def first_try_answers(self, user_id: str, path_id: str, since: str | None = None) -> list[tuple[str, bool]]:
+        """(block_id, first-try ok) per answered step, in answer order (#199 rule, #211)."""
+        sql = (
+            "SELECT e.block_id, e.ok FROM learner_events e WHERE e.user_id = ? AND e.path_id = ? "
+            "AND e.event_type = 'answer' AND e.created_at >= ? "
+            "AND e.event_id = (SELECT MIN(e2.event_id) FROM learner_events e2 "
+            "WHERE e2.user_id = e.user_id AND e2.path_id = e.path_id AND e2.block_id = e.block_id "
+            "AND e2.event_type = 'answer' AND e2.created_at >= ?) ORDER BY e.event_id"
+        )
+        since = since or ""
+        return [(r[0], bool(r[1])) for r in self._conn.execute(sql, (user_id, path_id, since, since)).fetchall()]
+
+    def save_placement_detail(self, user_id: str, placement_id: str, detail: dict[str, Any]) -> None:
+        """Adaptive placement result per domain (#211), one row per learner and placement."""
+        self._conn.execute(
+            "INSERT INTO placement_details (user_id, placement_id, detail_json, updated_at) VALUES (?,?,?,?) "
+            "ON CONFLICT(user_id, placement_id) DO UPDATE SET detail_json = excluded.detail_json, "
+            "updated_at = excluded.updated_at",
+            (user_id, placement_id, json.dumps(detail, ensure_ascii=False), _iso_now()),
+        )
+        self._conn.commit()
+
+    def get_placement_detail(self, user_id: str, placement_id: str) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT detail_json FROM placement_details WHERE user_id = ? AND placement_id = ?",
+            (user_id, placement_id),
+        ).fetchone()
+        return json.loads(row[0]) if row else None
+
+    def adopt_learner_data(self, from_user_id: str, to_user_id: str) -> None:
+        """Carry a session learner's placement (progress, answers, detail, analytics id) to a new
+        learner id, e.g. guest -> registered (#210). Rows the target already has are kept."""
+        if not from_user_id or from_user_id == to_user_id:
+            return
+        c = self._conn
+        c.execute("UPDATE OR IGNORE learner_progress SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.execute("UPDATE learner_events SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.execute("UPDATE OR IGNORE placement_details SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.commit()
+        if hasattr(self, "move_analytics_id"):
+            self.move_analytics_id(from_user_id, to_user_id)
 
     def record_placement_gap(self, user_id: str, placement_id: str, band: int) -> None:
         """A finished placement had no matching placement_route (routing gap). block_id = "band:<n>"."""

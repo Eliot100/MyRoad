@@ -47,6 +47,14 @@ def select_variants(doc: dict[str, Any], settings: dict[str, bool] | None = None
         if nid in best:
             chosen = dict(best[nid][1])
             chosen["content"] = {**chosen.get("content", {}), "baseNodeId": nid}
+            # #211: a variant measures the same thing as its base (placement area / difficulty).
+            base_kids = (b.get("content") or {}).get("kids") or {}
+            kids = dict(chosen["content"].get("kids") or {})
+            for key in ("area", "difficulty"):
+                if key not in kids and key in base_kids:
+                    kids[key] = base_kids[key]
+            if kids:
+                chosen["content"]["kids"] = kids
             chosen["blockId"] = b["blockId"]
             out_blocks.append(chosen)
         else:
