@@ -173,6 +173,10 @@ def register_placement_api(app, *, store) -> None:
             needs_practice=False,
         )
         result = _result(progress, pid)
+        for qid, ok in first.items():
+            store.emit_server_event(uid, "placement_answer", path_id=pid, block_id=qid[:160], ok=ok)
+        store.emit_server_event(uid, "placement_result", path_id=pid, band=result["band"],
+                                correct=correct, incorrect=incorrect)
         if result["routing_gap"]:
             store.record_placement_gap(uid, pid, result["band"])
         return JSONResponse(result)

@@ -10,6 +10,9 @@
   <script src="/static/prefs.js"></script>
   <link rel="stylesheet" href="/static/platform.css" />
 {% block head_extra %}{% endblock %}
+{%- if analytics_enabled() %}
+  <script src="/static/analytics.js" defer></script>
+{%- endif %}
 </head>
 <body{% block body_attrs %}{% endblock %}>
 {%- if sidebar is defined and sidebar %}
