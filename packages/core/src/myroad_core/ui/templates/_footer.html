@@ -1,0 +1,8 @@
+{#- Shared footer (#139, #209): the platform line, then the privacy and terms links. -#}
+  <footer>
+    <small>{{ t('footer_platform', product=product) }}</small>
+    <nav class="legal-links" aria-label="{{ t('legal_nav') }}">
+      <a href="/privacy"{% if legal_doc == 'privacy' %} aria-current="page"{% endif %}>{{ t('legal_privacy_link') }}</a>
+      <a href="/terms"{% if legal_doc == 'terms' %} aria-current="page"{% endif %}>{{ t('legal_terms_link') }}</a>
+    </nav>
+  </footer>

@@ -72,13 +72,13 @@
     </form>
     {% endif %}
     {% if mode == 'register' %}
+    {#- #209: legal links at the signup step (template only; the signup flow itself is #210). -#}
+    <p class="lede tiny register-legal">{{ t('register_legal_note') }} <a href="/privacy">{{ t('legal_privacy_link') }}</a> {{ t('register_legal_and') }} <a href="/terms">{{ t('legal_terms_link') }}</a></p>
     <p class="lede tiny"><a href="/login?next={{ next_url }}">{{ t('login_have_account') }}</a></p>
     {% elif mode != 'verify' %}
     <p class="lede tiny"><a href="/login?mode=register&next={{ next_url }}">{{ t('login_new_here') }}</a></p>
     {% endif %}
     <p class="lede tiny">{{ t('login_email_note') }}</p>
   </main>
-  <footer>
-    <small>{{ t('footer_platform', product=product) }}</small>
-  </footer>
+{% include "_footer.html" %}
 {% endblock %}
