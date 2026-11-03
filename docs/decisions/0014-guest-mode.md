@@ -1,37 +1,38 @@
-# 0014 Guest mode: practise before sign-up (#210)
+# 0014 Guest mode: practise before sign-up (#210, #241)
 
 ## Context
-D25 / item 19: a new learner answers a question before any sign-up. The auth gate sent `/` and
-`/play` to `/login`. Placement, progress, step settings and events are all keyed by `user_id`,
-and `adopt_learner_data` already moves those rows to a new id.
+D25 / item 19: a new learner answers a question before any sign-up. Placement, progress,
+settings and events are keyed by `user_id`; `adopt_learner_data` moves them to a new id.
+Security review (#240): page views must not write, guest creation must be rate-limited,
+guest data must expire, offer flags must live in the DB.
 
 ## Options
 | Option | Pros | Cons | Score | Cost to switch |
 |---|---|---|---|---|
-| A. Guest learner row (`gst_` + random id, no name/email) + the existing server-side session cookie | Every route, API and store call works unchanged; merge = `adopt_learner_data`; no schema change | Guest rows accumulate until purged | 9 | Low: one gate branch + `merge_guest` |
-| B. Separate guest cookie + guest tables | Clear split from accounts | Duplicates progress/placement storage and every read path | 4 | High |
-| C. Client-only state (localStorage), upload at sign-up | No server rows for guests | Placement/progress are server-side today; trusting client progress; no-JS flow breaks | 3 | High |
+| A. Lazy guest learner row (`gst_` + random, no name/email) + existing server-side session | All routes/APIs unchanged; merge = `adopt_learner_data`; one column added | Rows per active guest; needs purge + limit | 9 | Low |
+| B. Separate guest cookie + guest tables | Clear split | Duplicates storage and every read path | 4 | High |
+| C. Client-only state, upload at sign-up | No server rows | Trusts client progress; no-JS breaks | 3 | High |
 
 ## Decision
-A. The gate mints a guest learner + session on a cookie-less GET of `/` or `/play/*` (never on a
-POST). `/author`, `/settings`, `/add-path` and the tools API need a non-guest account. On
-`/login/verify`, `merge_guest` moves progress, attempts, sessions, events, placement detail and
-`audio_on/writing_on` to the account, then deletes the guest's rows (no duplicate learner).
-The first passed scored step returns `X-Offer-Registration: true` once; `GET /api/guest`
-reports it for the UI (#227), `POST /api/guest/offer/dismiss` hides it. Built: no library
-fits; it reuses sessions and `adopt_learner_data`.
+A. Cookieless GETs of `/` and `/play/*` render anonymously and write no learner/session
+rows. The first `POST /play/*` (or `POST /api/settings/steps` with the CSRF header) creates
+the guest + session; per-IP limit 20/hour (`MYROAD_GUEST_MAX_PER_HOUR`), else 429. Built:
+in-process sliding window (`ui/guest_limit.py`); slowapi/limits are route decorators plus two
+deps. `/author`, `/settings`, `/add-path`, the tools API need an account. `/login/verify` →
+`merge_guest` (data + prefs, then guest rows deleted). Offer state is `learners.guest_offer`
+(offered/dismissed), header `X-Offer-Registration: true` once, `GET /api/guest`,
+`POST /api/guest/offer/dismiss`. Cleanup (#241): `purge_stale_guests` deletes `gst_` learners
+idle 30+ days with all their rows, at every app start and via
+`python -m myroad_core.guest_cleanup [--db PATH]` (cron-safe, idempotent).
 
 ## Verified checks
-`tests/test_guest_mode.py`: GET `/` -> 200 as guest, no PII; preference stored; offer once and
-dismiss; sign-up keeps progress + preference, guest row gone; returning login merges without
-overwriting; two guests never see each other's data; guests get 303 on `/author`,
-`/settings`, `/add-path` and no tools principal. Full core suite green.
+`tests/test_guest_mode.py`: 100 cookieless GETs → 0 new rows; lazy creation; 429 after limit;
+offer once/dismiss persisted across a second store; sign-up merge, no duplicate; guests isolated;
+guests blocked from author/settings/tools; cleanup deletes only idle guests, idempotent, CLI.
 
 ## Known limits
-- Offer/dismiss state is in memory (lost on restart -> may be offered again once).
-- No purge job yet for never-registered guests; retention must follow the #209 notice.
-- Guest locale comes from the locale cookie at creation; UI half (prompt, settings) is #227.
+- Rate limit is per worker; a multi-worker deploy gets N× the limit (fine on one LAN box).
+- `events` (tool audit trail) still logs one anonymous `path.get_version` per play view.
 
 ## How to switch
-To B/C: replace `create_guest`/`merge_guest` and the guest branch in `_auth_gate`; routes keep
-reading `_learner()`.
+To B/C: replace `create_guest`/`merge_guest`/`purge_stale_guests` and the gate branch.

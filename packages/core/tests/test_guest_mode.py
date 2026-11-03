@@ -42,6 +42,8 @@ def _guest(app) -> TestClient:
     c.cookies.set("myroad_locale", "en")
     r = c.get("/", follow_redirects=False)
     assert r.status_code == 200, r.headers.get("location")
+    assert c.cookies.get("myroad_session") is None  # lazy: a page view creates nothing
+    c.post(f"/play/{PLACE}/start", data={"reset": "1"})  # first POST -> guest
     return c
 
 
@@ -91,12 +93,12 @@ def test_guest_data_not_visible_to_another_guest(app_store) -> None:
     _answer(a), _answer(a)
     a.post("/api/settings/steps", json={"writing": True}, headers=H)
     assert store.get_progress(_uid(a), PLACE)
-    assert store.get_progress(_uid(b), PLACE) is None
+    assert not (store.get_progress(_uid(b), PLACE) or {}).get("mastered")
     assert b.get("/api/settings/steps").json() == {"audio": True, "writing": False}  # a1w0 default
     assert b.get("/api/placement/result").status_code == 404
     # B logging in must not pull A's data.
     login_with_code(b, {"first_name": "B", "last_name": "B", "email": "b210@example.com", "next": "/"})
-    assert store.get_progress(_uid(b), PLACE) is None
+    assert not (store.get_progress(_uid(b), PLACE) or {}).get("mastered")
 
 
 def test_guest_cannot_reach_author_settings_or_tools(app_store) -> None:
@@ -109,9 +111,8 @@ def test_guest_cannot_reach_author_settings_or_tools(app_store) -> None:
     assert resolve_principal(req, store) is None
     fresh = TestClient(app)
     assert fresh.get("/author", follow_redirects=False).status_code == 303
-    # No cookie on a POST: no guest is minted for a state change.
-    assert fresh.post(f"/play/{PLACE}/answer", data={"choice": "a"}, follow_redirects=False).status_code == 303
-    assert fresh.cookies.get("myroad_session") is None
+    assert fresh.post("/settings", data={}, follow_redirects=False).status_code == 303
+    assert fresh.cookies.get("myroad_session") is None  # no guest for account routes
 
 
 def test_returning_learner_login_merges_guest_without_overwriting(app_store) -> None:
@@ -122,6 +123,7 @@ def test_returning_learner_login_merges_guest_without_overwriting(app_store) -> 
     c.post("/logout")
     c.cookies.clear()
     c.get("/")
+    c.post(f"/play/{PLACE}/start", data={"reset": "1"})
     gid = _uid(c)
     assert store.is_guest(gid) and gid != uid
     c.post(f"/play/{PLACE}/start", data={"reset": "1"})
@@ -129,3 +131,82 @@ def test_returning_learner_login_merges_guest_without_overwriting(app_store) -> 
     login_with_code(c, {"email": "r210@example.com", "next": "/"})
     assert _uid(c) == uid and store.get_progress(uid, PLACE)["mastered"]
     assert store.get_learner(gid) is None
+
+
+def _row_counts(store) -> dict[str, int]:
+    # `events` is the tool audit trail; reads by the fixed POC learner actor log there for every
+    # visitor (pre-existing, no visitor id). Every learner/guest/session table must stay unchanged.
+    tables = [r[0] for r in store._conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
+              if r[0] != "events"]
+    return {t: store._conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in tables}
+
+
+def test_crawler_100_gets_writes_nothing(app_store) -> None:
+    app, store = app_store
+    before = _row_counts(store)
+    for i in range(100):
+        c = TestClient(app)  # cookieless every time, like a crawler
+        path = ("/", f"/play/{PLACE}", f"/play/{ZERO}", f"/play/{PLACE}?view=learn")[i % 4]
+        assert c.get(path, follow_redirects=False).status_code == 200, path
+    assert _row_counts(store) == before
+
+
+def test_guest_creation_rate_limited_per_ip(app_store) -> None:
+    from myroad_core.ui.guest_limit import GuestLimiter
+
+    app, store = app_store
+    app.state.guest_limiter.__init__(max_per_window=3)
+    codes = []
+    for _ in range(5):
+        c = TestClient(app)
+        codes.append(c.post(f"/play/{PLACE}/start", data={"reset": "1"}, follow_redirects=False).status_code)
+    assert 429 not in codes[:3] and codes[3:] == [429, 429]
+    assert sum(1 for r in store._conn.execute("SELECT user_id FROM learners") if store.is_guest(r[0])) == 3
+    t = [0.0]
+    lim = GuestLimiter(max_per_window=1, window=10, clock=lambda: t[0])
+    assert lim.allow("ip") and not lim.allow("ip") and lim.allow("other")
+    t[0] = 11
+    assert lim.allow("ip")  # window slid
+
+
+def test_offer_flag_persists_in_db_across_app_instances(app_store, tmp_path) -> None:
+    app, store = app_store
+    c = _guest(app)
+    gid = _uid(c)
+    _answer(c), _answer(c)
+    assert store.get_guest_offer(gid) == "offered"
+    c.post("/api/guest/offer/dismiss")
+    # A second worker on the same DB sees the same state.
+    other = PathStore(str(tmp_path / "g.db"))
+    try:
+        assert other.get_guest_offer(gid) == "dismissed"
+    finally:
+        other.close()
+    assert "x-offer-registration" not in _answer(c).headers
+
+
+def test_cleanup_deletes_idle_guests_and_rows_idempotently(app_store) -> None:
+    from datetime import datetime, timedelta, timezone
+
+    from myroad_core.guest_cleanup import main as cleanup_main
+
+    app, store = app_store
+    old, fresh = _guest(app), _guest(app)
+    _answer(old), _answer(old)
+    oid, fid = _uid(old), _uid(fresh)
+    acct = TestClient(app)
+    login_with_code(acct, {"first_name": "K", "last_name": "K", "email": "k241@example.com", "next": "/"})
+    later = datetime.now(timezone.utc) + timedelta(days=31)
+    # Run the job "31 days from now": the old guest is idle past 30 days, the fresh one was active a day ago.
+    stamp = (later - timedelta(days=1)).isoformat()
+    store._conn.execute("UPDATE learners SET updated_at = ? WHERE user_id = ?", (stamp, fid))
+    store._conn.commit()
+    assert store.purge_stale_guests(now=later) == 1
+    counts = {t: store._conn.execute(f"SELECT COUNT(*) FROM {t} WHERE user_id = ?", (oid,)).fetchone()[0]
+              for t in ("learners", "learner_progress", "learner_events", "learner_attempts",
+                        "learner_sessions", "placement_details", "auth_sessions")}
+    assert set(counts.values()) == {0}, counts
+    assert store.get_learner(fid) and store.get_learner_by_email("k241@example.com")
+    assert store.purge_stale_guests(now=later) == 0  # idempotent
+    assert old.get("/api/guest").json()["is_guest"] is False  # old cookie is dead
+    assert cleanup_main(["--db", app.state.db_path]) == 0

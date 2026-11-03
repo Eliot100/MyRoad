@@ -94,6 +94,8 @@ def create_learner_app(
     app.state.tools = tools
     app.state.seed = seeded
     app.state.content_seed = content_seed
+    # #241: drop guests idle 30+ days at every start; cron can run `python -m myroad_core.guest_cleanup`.
+    app.state.guests_purged = path_store.purge_stale_guests()
     app.state.sessions: dict[str, dict[str, Any]] = {}
     app.state.play_sessions: dict[str, dict[str, Any]] = {}
     # Opaque sid -> gateway check passed. Never stores provider keys.

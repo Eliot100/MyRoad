@@ -9,7 +9,7 @@ from typing import Any, Callable
 from urllib.parse import quote
 
 from fastapi import Form, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from myroad_core.content.variants import select_variants
@@ -54,6 +54,7 @@ from myroad_core.ui.i18n import (
     subject_label,
     t,
 )
+from myroad_core.ui.guest_limit import GUEST_WINDOW_SECONDS, GuestLimiter
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
@@ -290,7 +291,8 @@ def register_platform_routes(
         learner = _learner(request)
         return None if not learner or store.is_guest(learner["userId"]) else learner
 
-    app.state.guest_offer = {}  # guest user id -> "offered" (#210: offer sign-up once)
+    guest_limiter = GuestLimiter()
+    app.state.guest_limiter = guest_limiter
 
     @app.middleware("http")
     async def _auth_gate(request: Request, call_next):
@@ -305,11 +307,15 @@ def register_platform_routes(
             if not _account(request):
                 return _login_redirect(request)
             return await call_next(request)
-        practice = path == "/" or path.startswith("/play")
-        if practice and not _learner(request):
-            if request.method != "GET":
-                return _login_redirect(request)
-            # #210 guest mode: a pseudonymous learner + a normal server-side session, no PII.
+        practice = path.startswith("/play/") or (
+            path == "/api/settings/steps" and request.headers.get("X-MyRoad-Request") == "1"
+        )
+        if practice and request.method != "GET" and not _learner(request):
+            # #210 guest mode, lazy: a cookieless page view writes nothing; the first answer /
+            # POST creates a pseudonymous learner + server-side session (rate-limited per IP).
+            if not guest_limiter.allow(_client_ip(request)):
+                return PlainTextResponse("too many new guests from this address", status_code=429,
+                                         headers={"Retry-After": str(GUEST_WINDOW_SECONDS)})
             guest = store.create_guest(_locale(request))
             sid = store.create_session(guest["userId"])
             cookie = f"{SESSION_COOKIE}={sid}".encode()
@@ -329,9 +335,8 @@ def register_platform_routes(
         sid = request.cookies.get("myroad_play")
         sessions: dict[str, dict[str, Any]] = app.state.play_sessions
         learner = _require_learner(request)
-        if not learner:
-            raise RuntimeError("auth required")
-        user_id = learner["userId"]
+        # Cookieless page view (#210): an anonymous, unsaved session; nothing is written.
+        user_id = learner["userId"] if learner else None
 
         if not sid or sid not in sessions or sessions[sid].get("pathId") != path_id:
             sid = uuid.uuid4().hex
@@ -995,8 +1000,7 @@ def register_platform_routes(
             resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login", secure=cookie_secure(), httponly=True)
             return resp
         guest_id = store.get_session_user(request.cookies.get(SESSION_COOKIE))
-        if store.merge_guest(guest_id, learner["userId"]):  # #210: keep the guest's progress
-            app.state.guest_offer.pop(guest_id, None)
+        store.merge_guest(guest_id, learner["userId"])  # #210: keep the guest's progress
         resp = RedirectResponse(dest, status_code=303)
         _start_session(request, resp, learner, learner.get("locale") or locale)
         resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login", secure=cookie_secure(), httponly=True)
@@ -1179,14 +1183,14 @@ def register_platform_routes(
         guest = store.is_guest(uid)
         return JSONResponse({
             "is_guest": guest,
-            "offer_registration": guest and app.state.guest_offer.get(uid) == "offered",
+            "offer_registration": guest and store.get_guest_offer(uid) == "offered",
         })
 
     @app.post("/api/guest/offer/dismiss")
     def guest_offer_dismiss(request: Request) -> JSONResponse:
         learner = _learner(request)
         if learner and store.is_guest(learner["userId"]):
-            app.state.guest_offer[learner["userId"]] = "dismissed"
+            store.set_guest_offer(learner["userId"], "dismissed")
         return JSONResponse({"offer_registration": False})
 
     @app.post("/logout")
@@ -2047,6 +2051,8 @@ def register_platform_routes(
 
     def _step_event(sess: dict[str, Any], block: dict[str, Any], kind: str, ok: bool | None = None) -> None:
         """Per-step measurement (#25); never breaks the player. Answers also emit a #208 event."""
+        if not sess.get("userId"):
+            return  # anonymous page view: no rows (#210)
         try:
             ev = store.record_step_event(sess["userId"], sess["pathId"], block["blockId"], kind, ok=ok)
         except Exception:  # pragma: no cover - measurement is best-effort
@@ -2277,10 +2283,10 @@ def register_platform_routes(
         _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
         offer = (
             ok and scored and store.is_guest(sess["userId"])
-            and sess["userId"] not in app.state.guest_offer
+            and store.get_guest_offer(sess["userId"]) is None
         )
         if offer:  # #210: first passed step of a guest -> offer sign-up once
-            app.state.guest_offer[sess["userId"]] = "offered"
+            store.set_guest_offer(sess["userId"], "offered")
         resp = _play_answer_response(request, sess, doc, blocks, path_id, hx, ok, feedback, answered_idx, locale)
         if offer:
             resp.headers["X-Offer-Registration"] = "true"
