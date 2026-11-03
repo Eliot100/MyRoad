@@ -47,7 +47,8 @@ def _path() -> dict:
              "body_en": "Subtracting a negative number is adding."},
             {"id": "p1", "type": "practice", "title": "תרגול 1", "title_en": "Practice 1",
              "body_he": MATH_HE, "body_en": "What is 5 − (−3)?",
-             "choices": [{"id": "a", "label": "2"}, {"id": "b", "label": "8"}, {"id": "c", "label": "−8"}],
+             "choices": [{"id": "a", "label": "2", "feedback": "התוצאה הזו יוצאת כשמחסרים במקום להוסיף."},
+                         {"id": "b", "label": "8"}, {"id": "c", "label": "−8"}],
              "correct": "b",
              "feedback_ok": "נכון! 5 − (−3) = 8.",
              "feedback_try": "מינוס של מינוס הוא פלוס: 5 + 3."},
@@ -121,12 +122,14 @@ def test_hx_wrong_answer_returns_only_the_step_card_with_feedback_under_choices(
     fb = card[i_fb - 200:i_nav]
     assert 'role="status"' in fb and 'aria-live="polite"' in fb and 'tabindex="-1"' in fb
     assert "step-feedback try" in fb
-    assert "מינוס של מינוס הוא פלוס" in fb  # the content's feedback_try explains the wrong pick
+    # The full solution replaces the generic feedback_try (decision 0016); the picked choice keeps its own note.
+    assert "מינוס של מינוס הוא פלוס" not in card
+    assert "התוצאה הזו יוצאת כשמחסרים במקום להוסיף." in card
     # A miss shows the calm lead, the right answer and one next step (issue 215).
     assert "כמעט. ככה פותרים:" in fb and "התשובה הנכונה:" in fb and "בחרו את התשובה המסומנת כדי להמשיך." in fb
     # The tapped tile is marked (shape + text, not color alone) and points at the feedback.
     picked = re.search(r'<button[^>]*value="a"[^>]*>', card).group(0)
-    assert "is-wrong" in picked and 'aria-describedby="step-feedback"' in picked
+    assert "is-wrong" in picked and 'aria-describedby="choice-feedback step-feedback"' in picked
     assert "disabled" not in picked  # the learner can pick again
     # Focus moves to the feedback after the swap; the progress block comes out-of-band.
     assert 'data-swap-focus="step-feedback"' in card
@@ -193,7 +196,7 @@ def test_no_js_wrong_answer_redirects_and_shows_feedback_under_choices_once(app)
     assert '<form method="post" action="/play/%s/answer"' % PID in page.text  # real post target
     card = _card(page.text)
     assert card.index("</form>") < card.index('id="step-feedback"') < card.index('class="nav row')
-    assert "מינוס של מינוס הוא פלוס" in card
+    assert "מינוס של מינוס הוא פלוס" not in card and "התשובה הנכונה:" in card
     assert "is-wrong" in re.search(r'<button[^>]*value="c"[^>]*>', card).group(0)
     assert "data-swap-focus" not in page.text  # only htmx swaps move focus
     assert 'class="flash warn"' not in page.text  # no page-top duplicate
@@ -364,19 +367,20 @@ def test_en_ui_marks_hebrew_feedback_fallback_with_lang_and_dir_auto(app) -> Non
     card = _card(c.post(f"/play/{PID}/answer", data={"choice": "a"}, headers=HX).text)
     region = re.search(r'<div id="step-feedback"[^>]*>', card).group(0)
     assert 'dir="auto"' in region and 'role="status"' in region
-    text = re.search(r'<span class="feedback-text"[^>]*>', card).group(0)
-    assert text == '<span class="feedback-text" dir="auto" lang="he">'
+    note = re.search(r'<p id="choice-feedback"[^>]*>', card).group(0)
+    assert 'dir="auto"' in note and 'lang="he"' in note  # Hebrew choice note marked in the en UI
     assert "Not quite." in card and "Pick the marked answer to continue." in card  # chrome stays in the UI locale
     # The no-JS page renders the same region.
     c.post(f"/play/{PID}/answer", data={"choice": "c"}, follow_redirects=False)
     page = c.get(f"/play/{PID}?view=learn").text
-    assert '<span class="feedback-text" dir="auto" lang="he">' in page
+    assert "The right answer:" in page and "מינוס של מינוס" not in page
 
 
 def test_he_ui_feedback_needs_no_lang_override(app) -> None:
     c = _at_practice(app, "he")
     card = _card(c.post(f"/play/{PID}/answer", data={"choice": "a"}, headers=HX).text)
-    assert '<span class="feedback-text" dir="auto">' in card and 'lang="he"' not in card
+    fb = card.split('id="step-feedback"', 1)[1].split('class="nav row', 1)[0]
+    assert "כמעט. ככה פותרים:" in fb and 'lang="he"' not in fb.split('class="solution"', 1)[0]
 
 
 def test_en_ui_flash_fallback_carries_lang_only_for_content_feedback(app) -> None:

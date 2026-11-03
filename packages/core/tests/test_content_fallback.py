@@ -141,8 +141,10 @@ def test_he_only_path_falls_back_to_hebrew_marked_lang_he(app, locale) -> None:
     assert 'lang="he"' in _attrs(play, "שלם אחד")
     assert 'lang="he"' not in _attrs(play, "2</")  # numeric choice: no language to switch to
     after = c.post(f"/play/{HE_ONLY}/answer", data={"choice": "b"}, headers={"HX-Request": "true"}).text
-    fb = _attrs(after, "נסו שוב")
-    assert 'dir="auto"' in fb and 'lang="he"' in fb
+    assert "נסו שוב" not in after  # the full solution replaces the generic feedback_try (decision 0016)
+    sol = after.split('class="solution"', 1)[1]
+    fb = _attrs(sol, "שלם אחד")  # the Hebrew right answer inside the solution keeps lang="he"
+    assert 'lang="he"' in fb
 
     locked = c.get(f"/play/{HE_LOCKED}").text
     tag = _attrs(locked, "שברים למבוגרים</bdi>")

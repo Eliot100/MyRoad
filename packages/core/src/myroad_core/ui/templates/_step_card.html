@@ -198,9 +198,7 @@
     <p class="feedback-line">{{ t('fb_wrong_lead') }}</p>
     <div class="solution">
       <p class="solution-answer">{{ t('fb_right_answer') }} {% for l in sol.labels %}<strong class="solution-pick" dir="auto"{{ sl.choice|content_lang(locale, l) }}>{{ l|bdi }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}</p>
-      {%- if kids.feedback_try and answer.text == kids.feedback_try %}
-      <p class="solution-note"><span class="feedback-text" dir="auto"{% if fb_lang %} lang="{{ fb_lang }}"{% endif %}>{{ answer.text|bdi }}</span></p>
-      {%- endif %}
+      {#- The generic feedback_try is not shown here: the solution is the one instruction (decision 0016). -#}
       {%- if sol.method %}
       {#- One line per step, each isolated on its own so math keeps LTR order inside RTL text. -#}
       {%- set lines = sol.method.split('\n')|map('trim')|select|list %}
