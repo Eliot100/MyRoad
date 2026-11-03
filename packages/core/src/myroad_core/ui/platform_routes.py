@@ -62,7 +62,10 @@ from myroad_core.ui.engagement_view import (
     can_do_line,
     engagement_view,
     mastered_skills,
+    session_can_do,
     session_end,
+    road_progress,
+    wrong_solution,
     stage_end,
     week_view,
 )
@@ -1669,6 +1672,9 @@ def register_platform_routes(
     templates.env.globals.update(session_end=session_end, stage_end=stage_end, week_view=week_view,
                                  mastered_skills=mastered_skills)
     templates.env.globals["can_do_line"] = can_do_line
+    # Wrong answer solution and session end progress / actions (#215): pure view helpers.
+    templates.env.globals.update(wrong_solution=wrong_solution, road_progress=road_progress,
+                                 session_can_do=session_can_do)
 
     def placement_result_for(learner: dict[str, Any] | None, doc: dict[str, Any], locale: str):
         """Read only view glue for #212: the learner's stored placement detail for this road."""

@@ -218,3 +218,51 @@ def session_end(engagement: Mapping[str, Any] | None) -> dict[str, Any] | None:
         "can_do": [str(x) for x in (sess.get("can_do") or [])[:2] if x],
         "today_counted": any(d.get("today") and d.get("active") for d in week.get("days") or []),
     }
+
+
+def session_can_do(se: Mapping[str, Any] | None, blocks: Iterable[Mapping[str, Any]] | None) -> list[dict[str, str]]:
+    """The session end 'now you can' lines as tappable actions (issue 215): text + the step to reopen.
+
+    session.can_do carries only text (the step's can_do, else its title, as engagement.py builds
+    it), so the step id is found by matching that text against the road's blocks. A line with no
+    matching step keeps an empty ``node`` and renders as plain text."""
+    index: dict[str, str] = {}
+    for b in blocks or []:
+        bid = b.get("blockId")
+        if not bid:
+            continue
+        kids = (b.get("content") or {}).get("kids") or {}
+        for text in (kids.get("can_do"), b.get("title")):
+            if text and str(text) not in index:
+                index[str(text)] = str(bid)
+    return [{"text": str(t), "node": index.get(str(t), "")} for t in (se or {}).get("can_do") or []]
+
+
+def road_progress(topics: Iterable[Mapping[str, Any]] | None, mastered: Iterable[str] | None) -> dict[str, int] | None:
+    """Real progress toward the road's end for the session end (#215): שלבים fully done of total."""
+    done = set(mastered or [])
+    topics = list(topics or [])
+    if not topics:
+        return None
+    full = 0
+    for tp in topics:
+        ids = list(tp.get("blockIds") or [s.get("blockId") for s in tp.get("steps") or []])
+        if ids and set(ids) <= done:
+            full += 1
+    return {"done": full, "total": len(topics), "pct": round(100 * full / len(topics))}
+
+
+def wrong_solution(kids: Mapping[str, Any] | None, locale: str = "he") -> dict[str, Any] | None:
+    """What a wrong answer shows (#215): the right choice(s), the worked method, and the right
+    choice's own feedback as the 'why'. None when the step has no known right choice."""
+    kids = kids or {}
+    correct = kids.get("correct")
+    ids = [str(c) for c in correct] if isinstance(correct, list) else ([str(correct)] if correct else [])
+    labels, why = [], ""
+    for ch in kids.get("choices") or []:
+        if str(ch.get("id")) in ids:
+            labels.append(ch.get("label_en") if locale == "en" and ch.get("label_en") else ch.get("label") or "")
+            why = why or ch.get("feedback") or ""
+    if not labels:
+        return None
+    return {"ids": ids, "labels": [x for x in labels if x], "method": kids.get("worked_method") or "", "why": why}

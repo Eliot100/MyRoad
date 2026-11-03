@@ -69,7 +69,8 @@
       (platform.js); never posted, never graded. Closed by default. -#}
   {%- set sp_key = 'myroad.scratch.' ~ ((learner.userId if learner else '') or 'anon') ~ '.' ~ doc.pathId ~ '.' ~ (block.blockId or kids.id or index) %}
   <div class="scratch-area">
-    {% if kids.worked_method %}
+    {#- After a wrong answer the method is shown open in the feedback (#215), not twice. -#}
+    {% if kids.worked_method and not (answer and not answer.ok) %}
     <details class="worked-method">
       <summary>{{ t('worked_method_title') }}</summary>
       <p class="worked-method-text" dir="auto" lang="{{ explain_locale or 'he' }}">{{ kids.worked_method|bdi }}</p>
@@ -112,16 +113,18 @@
   </details>
   {% endif %}
   {#- No JS: a plain form post (303 back to the player). With htmx: only this card is swapped. -#}
+  {%- set sol = wrong_solution(kids, locale) if (answer and not answer.ok and wrong_solution is defined) else none %}
   <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices" data-step-form
         hx-post="/play/{{ doc.pathId }}/answer" hx-target="#step-card" hx-swap="outerHTML"
         hx-sync="this:drop">
     {% for ch in kids.choices %}
     {% set picked = answer and answer.choice == ch.id %}
-    <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile{% if picked and answer.ok %} is-correct{% elif picked %} is-wrong{% endif %}"
+    <button type="submit" name="choice" value="{{ ch.id }}" class="choice-tile{% if picked and answer.ok %} is-correct{% elif picked %} is-wrong{% endif %}{% if sol and ch.id|string in sol.ids %} is-solution{% endif %}"
       {%- if picked %} aria-describedby="{% if ch.feedback %}choice-feedback {% endif %}step-feedback"{% endif %}{% if answered %} disabled{% endif %}>
       {% if ch.emoji %}<span class="choice-emoji">{{ ch.emoji }}</span>{% endif %}
       {% set chl = ch.label_en if (locale == 'en' and ch.label_en) else ch.label %}<span class="choice-label" dir="auto"{{ ('en' if (locale == 'en' and ch.label_en) else sl.choice)|content_lang(locale, chl) }}>{{ chl|bdi }}</span>
-      {% if picked %}<span class="choice-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span>{% endif %}
+      {% if picked and answer.ok %}<span class="choice-mark" aria-hidden="true">✓</span>{% endif %}
+      {% if sol and ch.id|string in sol.ids %}<span class="choice-tag">{{ t('fb_solution_tag') }}</span>{% endif %}
     </button>
     {%- if picked and ch.feedback %}
     {#- Optional per choice explanation, under the picked choice only. -#}
@@ -186,14 +189,41 @@
   {%- set fb_lang = (explain_locale or 'he') if fb_from_content and locale != (explain_locale or 'he') else none %}
   <div id="step-feedback" class="step-feedback{% if answer %}{% if answer.ok %} ok{% else %} try{% endif %}{% endif %}" dir="auto" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
     {%- if answer -%}
-    <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">{% if answer.ok %}✓{% else %}✗{% endif %}</span> <span class="feedback-verdict visually-hidden">{% if answer.ok %}{{ t('feedback_correct') }}{% else %}{{ t('feedback_not_yet') }}{% endif %}</span> <span class="feedback-text" dir="auto"{% if fb_lang %} lang="{{ fb_lang }}"{% endif %}>{{ answer.text|bdi }}</span></p>
+    {%- if answer.ok %}
+    {#- No authored feedback_ok: the server sends a bare mark; show the word, not a second ✓. -#}
+    {%- set ok_text = answer.text if (answer.text and answer.text|trim not in ['✓', '']) else t('feedback_correct') %}
+    <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">✓</span>{% if ok_text != t('feedback_correct') %} <span class="feedback-verdict visually-hidden">{{ t('feedback_correct') }}</span>{% endif %} <span class="feedback-text" dir="auto"{% if fb_lang and ok_text == answer.text %} lang="{{ fb_lang }}"{% endif %}>{{ ok_text|bdi }}</span></p>
+    {%- elif sol %}
+    {#- Wrong answer (#215): calm lead, the right answer, the full worked solution, one next step. -#}
+    <p class="feedback-line">{{ t('fb_wrong_lead') }}</p>
+    <div class="solution">
+      <p class="solution-answer">{{ t('fb_right_answer') }} {% for l in sol.labels %}<strong class="solution-pick" dir="auto"{{ sl.choice|content_lang(locale, l) }}>{{ l|bdi }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}</p>
+      {%- if kids.feedback_try and answer.text == kids.feedback_try %}
+      <p class="solution-note"><span class="feedback-text" dir="auto"{% if fb_lang %} lang="{{ fb_lang }}"{% endif %}>{{ answer.text|bdi }}</span></p>
+      {%- endif %}
+      {%- if sol.method %}
+      {#- One line per step, each isolated on its own so math keeps LTR order inside RTL text. -#}
+      {%- set lines = sol.method.split('\n')|map('trim')|select|list %}
+      {%- if lines|length > 1 %}
+      <ol class="solution-method solution-steps" lang="{{ explain_locale or 'he' }}">{% for ln in lines %}<li dir="auto">{{ ln|bdi }}</li>{% endfor %}</ol>
+      {%- else %}
+      <p class="solution-method" dir="auto" lang="{{ explain_locale or 'he' }}">{{ sol.method|bdi }}</p>
+      {%- endif %}
+      {%- elif sol.why %}
+      <p class="solution-method" dir="auto" lang="{{ explain_locale or 'he' }}">{{ sol.why|bdi }}</p>
+      {%- endif %}
+    </div>
+    <p class="feedback-hint">{{ t('fb_pick_solution') }}</p>
+    {%- else %}
+    <p class="feedback-line"><span class="feedback-verdict">{{ t('feedback_not_yet') }}</span> <span class="feedback-text" dir="auto"{% if fb_lang %} lang="{{ fb_lang }}"{% endif %}>{{ answer.text|bdi }}</span></p>
+    {%- endif %}
     {%- if answer.ok and answered %}
     {#- Step done moment (#191): one calm line inside the same live region, so it is read once. -#}
     {%- set eng_s = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
     {%- set cando = can_do_line(eng_s, block.blockId, kids.can_do or (display.title if display is defined and display.title else block.title)) %}
     {%- if cando %}<p class="step-done-line"><span class="step-done-mark" aria-hidden="true">✓</span> {{ t('eng_now_you_can') }} <span class="step-done-what" dir="auto"{{ sl.title|content_lang(locale) }}>{{ cando|bdi }}</span></p>{% endif %}
     {%- endif %}
-    {%- if not answer.ok %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}
+    {%- if not answer.ok and not sol %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}
     {%- endif -%}
   </div>
   {% endif %}
