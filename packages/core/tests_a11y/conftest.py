@@ -46,7 +46,8 @@ def server():
     tmp = Path(tempfile.mkdtemp(prefix="myroad-a11y-"))
     content = tmp / "content"
     shutil.copytree(src, content, ignore=shutil.ignore_patterns(".git"))
-    shutil.copy(HERE / "path_a11y_step_player.json", content / "adult" / "path_a11y_step_player.json")
+    for fx in HERE.glob("path_a11y_*.json"):
+        shutil.copy(fx, content / "adult" / fx.name)
     port = _free_port()
     log = tmp / "server.log"
     env = {

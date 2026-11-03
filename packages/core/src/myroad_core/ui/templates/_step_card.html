@@ -198,7 +198,14 @@
   </div>
   {% endif %}
 
-  {% if answered %}
+  {%- if answered %}
+  {%- set eng_e = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
+  {%- set se = session_end(eng_e) if session_end is defined else none %}
+  {%- set st = stage_end(topics, mastered, block.blockId) if stage_end is defined else none %}
+  {%- endif %}
+  {% if answered and (se or st) %}
+  {% include "_session_end.html" %}
+  {% elif answered %}
   <div class="nav row step-continue">
     <a class="primary big continue-step" href="{{ continue_url }}"{% if continue_hx %} hx-get="{{ continue_url }}" hx-target="#step-card" hx-swap="outerHTML"{% endif %}>{% if continue_hx %}{{ t('next_step') }}{% else %}{{ t('finish') }}{% endif %}</a>
   </div>

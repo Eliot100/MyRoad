@@ -128,7 +128,9 @@ def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
     assert 'class="station-list" data-stations="22"' in html
     assert html.count('<li class="station ') == N_TOPICS
     assert "topic-diagram" not in html  # the big one-box-per-topic diagram is for short paths
-    assert html.count("<details") == N_TOPICS + 1 and html.count("<details open") == 1
+    # Week strip goal setting (#193) adds one more closed <details> in the path head.
+    n_head = html.count('<details class="week-goal-set"') + html.count('<details class="goal-skills"')
+    assert html.count("<details") == N_TOPICS + 1 + n_head and html.count("<details open") == 1
     assert '<details class="world-list" open>' in html  # the no-JS list under the world map
     assert "Stage 1 of 22" in html and "0 of 22 stages done" in html
     assert html.count('class="mini-bar"') == N_TOPICS

@@ -118,3 +118,35 @@ def test_step_done(page):
     page.locator("button.choice-tile[value=b]").click()
     page.locator("details.step-hint").wait_for(state="detached")
     scan(page, "step-done")
+
+
+def test_week_strip_goal_set_open(page):
+    """Path head week strip (#193) with the days goal disclosure and mastered skills open."""
+    page.goto(STEP_PATH + "?view=map")
+    page.locator(".week-strip").wait_for()
+    page.locator("details.week-goal-set summary").click()
+    skills = page.locator("details.goal-skills summary")
+    if skills.count():
+        skills.click()
+    scan(page, "week-strip")
+
+
+SESSION_PATH = "/play/path_a11y_session"  # two שלבים of one step each (decision 0010)
+
+
+def test_stage_end(page):
+    """Right answer that closes שלב 1: stage end line + choice, inside the step card (#191)."""
+    page.goto(SESSION_PATH)
+    _submit(page, f"{SESSION_PATH}/start")
+    page.goto(SESSION_PATH + "?view=learn")
+    page.locator("button.choice-tile[value=b]").click()
+    page.locator(".stage-end").wait_for()
+    scan(page, "stage-end")
+
+
+def test_session_end(page):
+    """The last step of the session: real numbers and the end actions, same card (#191)."""
+    page.goto(SESSION_PATH + "?view=learn")
+    page.locator("button.choice-tile[value=a]").click()
+    page.locator(".session-end").wait_for()
+    scan(page, "session-end")

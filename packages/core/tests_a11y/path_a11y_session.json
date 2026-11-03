@@ -1,0 +1,89 @@
+{
+ "id": "path_a11y_session",
+ "subject": "math",
+ "group_ids": [
+  "adult"
+ ],
+ "emoji": "➕",
+ "estimated_minutes": 5,
+ "titles": {
+  "he": "סשן קצר",
+  "en": "Short session",
+  "ar": "جلسة قصيرة"
+ },
+ "blurbs": {
+  "he": "חיבור בעמודות.",
+  "en": "Column addition.",
+  "ar": "الجمع بالأعمدة."
+ },
+ "topics": [
+  {
+   "id": "t1",
+   "titles": {
+    "he": "ראשון",
+    "en": "First",
+    "ar": "أول"
+   },
+   "node_ids": [
+    "p1"
+   ]
+  },
+  {
+   "id": "t2",
+   "titles": {
+    "he": "שני",
+    "en": "Second",
+    "ar": "ثان"
+   },
+   "node_ids": [
+    "p2"
+   ]
+  }
+ ],
+ "nodes": [
+  {
+   "id": "p1",
+   "type": "practice",
+   "title": "חיבור עם העברה",
+   "body_he": "487 + 256 = ?",
+   "hint": "חשבו על חיבור בעמודות.",
+   "media_hint": "column_addition",
+   "choices": [
+    {
+     "id": "a",
+     "label": "633",
+     "feedback": "633 יוצא כשלא מעבירים את ה 1 לעמודה הבאה."
+    },
+    {
+     "id": "b",
+     "label": "743",
+     "feedback": "743: 7 + 6 = 13, כותבים 3 ומעבירים 1."
+    },
+    {
+     "id": "c",
+     "label": "733"
+    }
+   ],
+   "correct": "b",
+   "feedback_try": "נסו שוב.",
+   "feedback_ok": "נכון."
+  },
+  {
+   "id": "p2",
+   "type": "practice",
+   "title": "עוד אחד",
+   "body_he": "15 + 7 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "22"
+    },
+    {
+     "id": "b",
+     "label": "21"
+    }
+   ],
+   "correct": "a"
+  }
+ ]
+}
