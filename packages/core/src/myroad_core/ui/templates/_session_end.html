@@ -19,15 +19,39 @@
     <div><dt>{{ t('eng_stat_rft') }}</dt><dd><bdi>{{ se.rft }}</bdi></dd></div>
     {%- if se.today_counted %}<div><dt>{{ t('eng_stat_today') }}</dt><dd class="is-note"><span aria-hidden="true">✓</span> {{ t('eng_stat_today_yes') }}</dd></div>{% endif %}
   </dl>
-  {%- if se.can_do %}
-  <p class="session-cando-lead tiny">{{ t('eng_now_you_can') }}</p>
-  <ul class="session-cando">{% for c in se.can_do %}<li dir="auto">{{ c|bdi }}</li>{% endfor %}</ul>
+  {#- Real progress toward the end of the road (#215): finished שלבים of all, from mastered steps. -#}
+  {%- set rp = road_progress(topics, mastered) if (road_progress is defined and topics is defined) else none %}
+  {%- if rp %}
+  <div class="session-road">
+    <p class="session-road-label"><span>{{ t('eng_stat_road') }}</span> <span class="session-road-count">{{ t('eng_stat_of', n='<bdi>%s</bdi>'|format(rp.done), total='<bdi>%s</bdi>'|format(rp.total))|safe }}</span></p>
+    <div class="session-road-bar" aria-hidden="true"><span style="inline-size: {{ rp.pct }}%"></span></div>
+  </div>
+  {%- endif %}
+  {%- if session_can_do is defined %}{% set cando = session_can_do(se, doc.blocks) %}
+  {%- else %}{% set cando = [] %}{% for c in se.can_do %}{% set _ = cando.append({'text': c, 'node': ''}) %}{% endfor %}{% endif %}
+  {%- if cando %}
+  <p class="session-cando-lead tiny" id="session-cando-lead">{{ t('eng_now_you_can') }}</p>
+  <ul class="session-cando" aria-labelledby="session-cando-lead">
+    {%- for c in cando %}
+    <li>
+      {%- if c.node and not read_only %}
+      <form method="post" action="/play/{{ doc.pathId }}/start" class="cando-form">
+        <input type="hidden" name="node" value="{{ c.node }}" />
+        <button type="submit" class="cando-action"><span class="cando-text" dir="auto">{{ c.text|bdi }}</span><span class="cando-go tiny">{{ t('eng_cando_practice') }}</span></button>
+      </form>
+      {%- else %}
+      <span class="cando-text cando-plain" dir="auto">{{ c.text|bdi }}</span>
+      {%- endif %}
+    </li>
+    {%- endfor %}
+  </ul>
   {%- endif %}
 </section>
 <div class="nav row step-continue session-actions">
   {%- if continue_hx %}
-  <a class="primary big" href="/play/{{ doc.pathId }}?view=map">{{ t('eng_done_today') }}</a>
-  <a class="secondary big continue-step" href="{{ continue_url }}" data-next-session="/api/path/{{ doc.pathId }}/session/next" hx-get="{{ continue_url }}" hx-target="#step-card" hx-swap="outerHTML">{{ t('eng_one_more') }}</a>
+  {#- Continue leads (#215, #238): the filled button keeps the learner going; ending is the quiet one. -#}
+  <a class="primary big continue-step" href="{{ continue_url }}" data-next-session="/api/path/{{ doc.pathId }}/session/next" hx-get="{{ continue_url }}" hx-target="#step-card" hx-swap="outerHTML">{{ t('eng_one_more') }}</a>
+  <a class="secondary big" href="/play/{{ doc.pathId }}?view=map">{{ t('eng_done_today') }}</a>
   {%- else %}
   {#- The whole road is done: the finish link records the attempt (POST free stats view). -#}
   <a class="primary big continue-step" href="{{ continue_url }}">{{ t('finish') }}</a>

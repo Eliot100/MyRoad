@@ -109,8 +109,11 @@ def test_step_hint_open(page):
 
 
 def test_step_wrong_choice_feedback(page):
+    """A miss shows the right answer and the full worked solution, open, in the live region (#215)."""
     page.locator("button.choice-tile[value=a]").click()
     page.locator("#choice-feedback").wait_for()
+    page.locator("#step-feedback .solution .solution-method").wait_for()
+    assert page.locator("button.choice-tile.is-solution[value=b]").count() == 1
     scan(page, "step-feedback")
 
 
@@ -150,6 +153,26 @@ def test_session_end(page):
     page.locator("button.choice-tile[value=a]").click()
     page.locator(".session-end").wait_for()
     scan(page, "session-end")
+
+
+MORE_PATH = "/play/path_a11y_session_more"  # seven one step שלבים: the session ends mid road
+
+
+def test_session_end_continue_first(page):
+    """Session end with more road left: continue is the filled button, now-you-can are actions (#215)."""
+    page.goto(MORE_PATH)
+    _submit(page, f"{MORE_PATH}/start")
+    for _ in range(6):
+        page.goto(MORE_PATH + "?view=learn")
+        page.locator("button.choice-tile[value=a]").click()
+        page.locator("#step-feedback.ok").wait_for()
+        if page.locator(".session-end").count():
+            break
+    page.locator(".session-end").wait_for()
+    assert page.locator(".session-actions .primary").count() == 1
+    assert page.locator(".session-actions .primary.continue-step").count() == 1
+    assert page.locator(".cando-action").count() >= 1
+    scan(page, "session-end-continue")
 
 
 def test_placement_result(page):

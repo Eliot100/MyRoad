@@ -21,6 +21,8 @@ Generalized, testable lessons from Eliot's feedback. Add new entries dated, with
 - [2026-11-02] Rule: allowed on screen product words are דרך, שרשרת, נתיב, שלב, פער and now סשן. Why: Eliot approved "סשן" (item 6, 2.11).
 - [2026-11-02] Rule: the end of a שלב gets a short premium animation (line and check, under 1s, off with reduced motion), then the learner chooses what to continue with. The session end sits in the same step card with "סיימתי להיום" and "עוד אחד קצר", so the learner can pass straight through. Why: Eliot items 8 and 9, 2.11.
 - [2026-11-02] Rule: every UI PR to main shows before/after screenshots of each changed component (375/1280, light/dark) in a לפני / אחרי section. Why: "על כל PR של הUI למיין אני אראה את הלפני ואחרי בקומפוננטות שהשתנו".
+- [2026-11-03] Rule: a wrong answer is kind and complete: calm lead, the right answer named, the full worked method open right under the choices (numbered lines), the right tile marked as the next tap, no red ✗. Session end: continue is the filled button, ending for today is secondary, and "עכשיו אפשר" lines are real actions. Test: test_full_solution_session_end.py. Why: Eliot, #215 / #238 moments 2 and 3.
+- [2026-11-03] Rule: no dashes (— or –) in UI copy in any locale; an inline-flex link with an arrow needs a CSS gap (whitespace collapses). Why: Eliot on the 360px shots ("Got it — continue", "→הנתיב").
 - [2026-11-01] Always: practice and check steps offer an optional place to work out the answer (scratchpad, closed by default, device only, never graded). Test: a practice step with choices has a closed scratchpad under the question. Why: on math step 2 (487 + 256) there was "no place to write out working" (relayed by frank).
 
 ## Preferences (taste)
@@ -58,3 +60,4 @@ Mockup rounds for the road screen:
 - 2026-11-02: login code field (#59), decision 0009: one input with one-time-code autofill, LTR digits in RTL, paste normalized by JS, error tied via aria-describedby; auth surface PRs wait for Cyber security, no auto-merge.
 - 2026-11-02: session end + stage end in the step card (#191), forgiving weekly days goal strip and mastered skills on the goal meter (#193, #206), decision 0010. סשן added to the allowed words.
 - 2026-11-03: placement result (#212, #200), decision 0013: per domain level and score sit in the first step of the recommended road (no separate screen), five segment meter + level word + score, gap named as פער by weight; fallback to the hint when the API fields are missing.
+- 2026-11-03: full solution after a mistake + continue first at the session end (#215), decision 0016.

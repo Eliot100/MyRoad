@@ -122,7 +122,8 @@ def test_hx_wrong_answer_returns_only_the_step_card_with_feedback_under_choices(
     assert 'role="status"' in fb and 'aria-live="polite"' in fb and 'tabindex="-1"' in fb
     assert "step-feedback try" in fb
     assert "מינוס של מינוס הוא פלוס" in fb  # the content's feedback_try explains the wrong pick
-    assert "עוד לא." in fb and "בחרו תשובה אחרת." in fb
+    # A miss shows the calm lead, the right answer and one next step (issue 215).
+    assert "כמעט. ככה פותרים:" in fb and "התשובה הנכונה:" in fb and "בחרו את התשובה המסומנת כדי להמשיך." in fb
     # The tapped tile is marked (shape + text, not color alone) and points at the feedback.
     picked = re.search(r'<button[^>]*value="a"[^>]*>', card).group(0)
     assert "is-wrong" in picked and 'aria-describedby="step-feedback"' in picked
@@ -228,7 +229,8 @@ def test_full_page_loads_vendored_htmx_only_on_the_player(app) -> None:
 
 @pytest.mark.parametrize(
     ("locale", "direction", "verdict", "label"),
-    [("he", "rtl", "עוד לא.", "תרגול 1"), ("en", "ltr", "Not yet.", "Practice 1"), ("ar", "rtl", "ليس بعد.", None)],
+    [("he", "rtl", "כמעט. ככה פותרים:", "תרגול 1"), ("en", "ltr", "Not quite. Here is how to solve it:", "Practice 1"),
+     ("ar", "rtl", "ليس تمامًا. هكذا نحلّها:", None)],
 )
 def test_feedback_follows_ui_locale_and_direction(app, locale, direction, verdict, label) -> None:
     c = _at_practice(app, locale)
@@ -364,7 +366,7 @@ def test_en_ui_marks_hebrew_feedback_fallback_with_lang_and_dir_auto(app) -> Non
     assert 'dir="auto"' in region and 'role="status"' in region
     text = re.search(r'<span class="feedback-text"[^>]*>', card).group(0)
     assert text == '<span class="feedback-text" dir="auto" lang="he">'
-    assert "Not yet." in card and "Pick another answer." in card  # chrome stays in the UI locale
+    assert "Not quite." in card and "Pick the marked answer to continue." in card  # chrome stays in the UI locale
     # The no-JS page renders the same region.
     c.post(f"/play/{PID}/answer", data={"choice": "c"}, follow_redirects=False)
     page = c.get(f"/play/{PID}?view=learn").text
@@ -399,8 +401,9 @@ def test_ui_locale_fallback_feedback_gets_no_lang(tmp_path: Path, monkeypatch: p
     try:
         c = _at_practice(create_learner_app(store=store, seed=False, seed_content=True), "en")
         card = _card(c.post(f"/play/{PID}/answer", data={"choice": "a"}, headers=HX).text)
-        assert "Finish this step before moving on." in card
-        assert '<span class="feedback-text" dir="auto">' in card and 'lang="he"' not in card
+        # No authored feedback_try: the solution (right answer) replaces the generic gate line (issue 215).
+        assert "Finish this step before moving on." not in card
+        assert "The right answer:" in card and 'lang="he"' not in card.split('id="step-feedback"', 1)[1].split("</div>", 1)[0]
     finally:
         store.close()
 

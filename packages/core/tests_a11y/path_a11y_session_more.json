@@ -1,0 +1,240 @@
+{
+ "id": "path_a11y_session_more",
+ "subject": "math",
+ "group_ids": [
+  "adult"
+ ],
+ "emoji": "➕",
+ "estimated_minutes": 10,
+ "titles": {
+  "he": "סשן ועוד אחד",
+  "en": "Session and one more",
+  "ar": "جلسة وواحدة أخرى"
+ },
+ "blurbs": {
+  "he": "חיבור בעמודות, שבעה שלבים.",
+  "en": "Column addition, seven stages.",
+  "ar": "الجمع بالأعمدة، سبع مراحل."
+ },
+ "topics": [
+  {
+   "id": "t1",
+   "titles": {
+    "he": "חיבור בלי העברה",
+    "en": "Adding without carrying",
+    "ar": "جمع بلا حمل"
+   },
+   "node_ids": [
+    "p1"
+   ]
+  },
+  {
+   "id": "t2",
+   "titles": {
+    "he": "חיבור עשרות",
+    "en": "Adding tens",
+    "ar": "جمع العشرات"
+   },
+   "node_ids": [
+    "p2"
+   ]
+  },
+  {
+   "id": "t3",
+   "titles": {
+    "he": "העברה ראשונה",
+    "en": "First carry",
+    "ar": "أول حمل"
+   },
+   "node_ids": [
+    "p3"
+   ]
+  },
+  {
+   "id": "t4",
+   "titles": {
+    "he": "שתי עמודות",
+    "en": "Two columns",
+    "ar": "عمودان"
+   },
+   "node_ids": [
+    "p4"
+   ]
+  },
+  {
+   "id": "t5",
+   "titles": {
+    "he": "העברה בעשרות",
+    "en": "Carrying tens",
+    "ar": "حمل العشرات"
+   },
+   "node_ids": [
+    "p5"
+   ]
+  },
+  {
+   "id": "t6",
+   "titles": {
+    "he": "בדיקה בעיגול",
+    "en": "Checking by rounding",
+    "ar": "التحقق بالتقريب"
+   },
+   "node_ids": [
+    "p6"
+   ]
+  },
+  {
+   "id": "t7",
+   "titles": {
+    "he": "חזרה מסכמת",
+    "en": "Summary review",
+    "ar": "مراجعة ختامية"
+   },
+   "node_ids": [
+    "p7"
+   ]
+  }
+ ],
+ "nodes": [
+  {
+   "id": "p1",
+   "type": "practice",
+   "title": "חיבור בלי העברה",
+   "can_do": "לחבר 12 + 5",
+   "body_he": "12 + 5 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "17"
+    },
+    {
+     "id": "b",
+     "label": "7",
+     "feedback": "7 יוצא כששוכחים את ההעברה."
+    }
+   ],
+   "correct": "a",
+   "worked_method": "מחברים אחדות ואז עשרות.\nאחדות: 2 + 5 = 7.\nעשרות: 1 + 0 = 1.\nהתשובה: 17."
+  },
+  {
+   "id": "p2",
+   "type": "practice",
+   "title": "חיבור עשרות",
+   "can_do": "לחבר 23 + 14",
+   "body_he": "23 + 14 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "37"
+    },
+    {
+     "id": "b",
+     "label": "27",
+     "feedback": "27 יוצא כששוכחים את ההעברה."
+    }
+   ],
+   "correct": "a",
+   "worked_method": "מחברים אחדות ואז עשרות.\nאחדות: 3 + 4 = 7.\nעשרות: 2 + 1 = 3.\nהתשובה: 37."
+  },
+  {
+   "id": "p3",
+   "type": "practice",
+   "title": "העברה ראשונה",
+   "can_do": "לחבר 38 + 7",
+   "body_he": "38 + 7 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "45"
+    },
+    {
+     "id": "b",
+     "label": "35",
+     "feedback": "35 יוצא כששוכחים את ההעברה."
+    }
+   ],
+   "correct": "a",
+   "worked_method": "מחברים אחדות ואז עשרות.\nאחדות: 8 + 7 = 15.\nעשרות: 3 + 0 + 1 = 4.\nהתשובה: 45."
+  },
+  {
+   "id": "p4",
+   "type": "practice",
+   "title": "שתי עמודות",
+   "can_do": "לחבר 45 + 26",
+   "body_he": "45 + 26 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "71"
+    },
+    {
+     "id": "b",
+     "label": "61",
+     "feedback": "61 יוצא כששוכחים את ההעברה."
+    }
+   ],
+   "correct": "a",
+   "worked_method": "מחברים אחדות ואז עשרות.\nאחדות: 5 + 6 = 11.\nעשרות: 4 + 2 + 1 = 7.\nהתשובה: 71."
+  },
+  {
+   "id": "p5",
+   "type": "practice",
+   "title": "העברה בעשרות",
+   "can_do": "לחבר 57 + 35",
+   "body_he": "57 + 35 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "92"
+    },
+    {
+     "id": "b",
+     "label": "82",
+     "feedback": "82 יוצא כששוכחים את ההעברה."
+    }
+   ],
+   "correct": "a",
+   "worked_method": "מחברים אחדות ואז עשרות.\nאחדות: 7 + 5 = 12.\nעשרות: 5 + 3 + 1 = 9.\nהתשובה: 92."
+  },
+  {
+   "id": "p6",
+   "type": "practice",
+   "title": "בדיקה בעיגול",
+   "can_do": "לחבר 64 + 29",
+   "body_he": "64 + 29 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "93"
+    },
+    {
+     "id": "b",
+     "label": "83",
+     "feedback": "83 יוצא כששוכחים את ההעברה."
+    }
+   ],
+   "correct": "a",
+   "worked_method": "מחברים אחדות ואז עשרות.\nאחדות: 4 + 9 = 13.\nעשרות: 6 + 2 + 1 = 9.\nהתשובה: 93."
+  },
+  {
+   "id": "p7",
+   "type": "practice",
+   "title": "חזרה מסכמת",
+   "can_do": "לחבר 76 + 18",
+   "body_he": "76 + 18 = ?",
+   "choices": [
+    {
+     "id": "a",
+     "label": "94"
+    },
+    {
+     "id": "b",
+     "label": "84",
+     "feedback": "84 יוצא כששוכחים את ההעברה."
+    }
+   ],
+   "correct": "a",
+   "worked_method": "מחברים אחדות ואז עשרות.\nאחדות: 6 + 8 = 14.\nעשרות: 7 + 1 + 1 = 9.\nהתשובה: 94."
+  }
+ ]
+}
