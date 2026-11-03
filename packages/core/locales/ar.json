@@ -531,5 +531,16 @@
   "eng_stat_today": "اليوم",
   "eng_stat_today_yes": "محسوب في الأسبوع",
   "eng_done_today": "انتهيت لليوم",
-  "eng_one_more": "واحدة قصيرة أخرى"
+  "eng_one_more": "واحدة قصيرة أخرى",
+  "pr_title": "نتيجتك في الاختبار",
+  "pr_overall": "الدرجة الإجمالية من {total}",
+  "pr_level_1": "أساسي",
+  "pr_level_2": "مبتدئ",
+  "pr_level_3": "متوسط",
+  "pr_level_4": "جيد",
+  "pr_level_5": "متقدم",
+  "pr_domain_a11y": "{domain}: المستوى {level}، الدرجة {score} من 100",
+  "pr_gap_title": "الفجوة لديك: سنتدرّب هنا أكثر",
+  "pr_start": "ابدأ التدريب",
+  "pr_map": "عرض الطريق كاملًا"
 }

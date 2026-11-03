@@ -167,8 +167,11 @@ def test_finishing_placement_flows_into_the_next_cell(bagrut_app) -> None:
     assert again.status_code == 303 and again.headers["location"] == nxt
     step = client.get(nxt).text
     assert 'class="card step-card' in step and "lock-banner" not in step  # straight into a משבצת
-    assert 'id="placement-hint"' in step and f'href="/play/{TIME}?view=map#here"' in step  # map stays optional
-    assert 'id="placement-hint"' not in client.get(f"/play/{TIME}?view=learn").text  # dismissed
+    # #212: the per domain result sits above the first step (no separate screen); map stays optional.
+    assert 'id="placement-result"' in step and f'href="/play/{TIME}?view=map#here"' in step
+    assert 'id="step-card"' in step
+    dismissed = client.get(f"/play/{TIME}?view=learn").text
+    assert 'id="placement-hint"' not in dismissed and 'id="placement-result"' not in dismissed
 
 
 def test_finishing_placement_without_recommendation_falls_back_to_series(tmp_path, monkeypatch) -> None:

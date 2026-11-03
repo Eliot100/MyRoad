@@ -1,0 +1,37 @@
+{#- Placement result in the first step of the recommended road (#212, #200, decision 0013).
+    No separate screen: the learner lands on the step, the result sits above it. Fields missing
+    from the API -> the plain placement hint (pr is None). -#}
+{%- set pr = placement_result_for(learner, doc, locale) %}
+{%- if pr %}
+<section class="placement-result" id="placement-result" aria-labelledby="placement-result-title">
+  <div class="pr-head">
+    <h2 class="pr-title" id="placement-result-title">{{ t('pr_title') }}</h2>
+    {%- if pr.overall is not none %}
+    <p class="pr-overall"><span class="pr-overall-num"><bdi>{{ pr.overall }}</bdi></span> <span class="pr-overall-of">{{ t('pr_overall', total='<bdi>100</bdi>')|safe }}</span></p>
+    {%- endif %}
+  </div>
+  <ul class="pr-domains" role="list">
+    {%- for d in pr.domains %}
+    <li class="pr-domain{% if d.id in pr.gaps|map(attribute='id')|list %} is-gap{% endif %}">
+      <span class="pr-domain-name">{{ d.label|bdi }}</span>
+      <span class="pr-meter" role="img" aria-label="{{ t('pr_domain_a11y', domain=d.label, level=t('pr_level_' ~ d.level), score=d.score) }}">
+        {%- for i in range(1, 6) %}<span class="pr-seg{% if i <= d.level %} on{% endif %}"></span>{% endfor -%}
+      </span>
+      <span class="pr-domain-level" aria-hidden="true">{{ t('pr_level_' ~ d.level) }} <span class="pr-score"><bdi>{{ d.score }}</bdi></span></span>
+    </li>
+    {%- endfor %}
+  </ul>
+  {%- if pr.gaps %}
+  <div class="pr-gap">
+    <h3 class="pr-gap-title">{{ t('pr_gap_title') }}</h3>
+    <ol class="pr-gap-list">{% for g in pr.gaps %}<li>{{ g.label|bdi }}</li>{% endfor %}</ol>
+  </div>
+  {%- endif %}
+  <div class="pr-actions">
+    <a class="primary big" href="/play/{{ doc.pathId }}?view=learn#step-card" data-ev="placement_result_start"{% if block %} data-first-step="{{ block.blockId }}"{% endif %}>{{ t('pr_start') }}</a>
+    <a class="text-link" href="/play/{{ doc.pathId }}?view=map#here" data-ev="placement_result_map">{{ t('pr_map') }}</a>
+  </div>
+</section>
+{%- else %}
+<aside class="placement-hint" id="placement-hint" role="status"><p>{{ t('placement_hint') }}</p><a class="text-link" href="/play/{{ doc.pathId }}?view=learn">{{ t('placement_hint_close') }}</a></aside>
+{%- endif %}

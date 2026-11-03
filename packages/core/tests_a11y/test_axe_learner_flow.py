@@ -150,3 +150,18 @@ def test_session_end(page):
     page.locator("button.choice-tile[value=a]").click()
     page.locator(".session-end").wait_for()
     scan(page, "session-end")
+
+
+def test_placement_result(page):
+    """Per domain result above the road's first step (#212): no separate screen."""
+    body = page.evaluate("""async () => {
+      const r = await fetch('/api/placement/result', {method: 'POST', credentials: 'same-origin',
+        headers: {'X-MyRoad-Request': '1', 'Content-Type': 'application/json'},
+        body: JSON.stringify({answers: [{questionId: 'a11y_q1', correct: true}]})});
+      return {status: r.status, json: await r.json()};
+    }""")
+    assert body["status"] == 200, body
+    road = body["json"].get("recommended_road_id") or body["json"].get("gap")
+    page.goto(f"/play/{road}?view=learn&from=placement")
+    page.locator("#placement-result").wait_for()
+    scan(page, "placement-result")

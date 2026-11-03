@@ -531,5 +531,16 @@
   "eng_stat_today": "Today",
   "eng_stat_today_yes": "counts this week",
   "eng_done_today": "Done for today",
-  "eng_one_more": "Another short one"
+  "eng_one_more": "Another short one",
+  "pr_title": "Your placement result",
+  "pr_overall": "overall score out of {total}",
+  "pr_level_1": "Foundation",
+  "pr_level_2": "Early",
+  "pr_level_3": "Middle",
+  "pr_level_4": "Strong",
+  "pr_level_5": "Advanced",
+  "pr_domain_a11y": "{domain}: level {level}, score {score} of 100",
+  "pr_gap_title": "Your gap: we'll practise more here",
+  "pr_start": "Start practising",
+  "pr_map": "See the whole road"
 }
