@@ -37,8 +37,15 @@ from myroad_core.content.english_bagrut import (
     recommended_index as english_recommended_index,
 )
 from myroad_core.content.loader import group_catalog, list_catalog_cards
+from myroad_core.content.math_bagrut import (
+    SERIES as MATH_SERIES,
+    TEACHING as MATH_TEACHING,
+    is_series as is_math_series,
+    road_state as math_road_state,
+)
 from myroad_core.content.locale_rules import resolve_node_display
 from myroad_core.content.schema import GROUPS, SUBJECTS
+from myroad_core.content.stage_metrics import build_stage_board
 from myroad_core.ui.i18n import (
     COOKIE_LOCALE,
     COOKIE_USER,
@@ -622,6 +629,57 @@ def register_platform_routes(
             "needsPractice": bool(prog.get("needsPractice")),
             "lastRun": last or None,
         }
+
+    def _math_stage_board(request: Request, path_id: str, topics: list[dict[str, Any]], mastered: set[str]) -> dict[str, Any] | None:
+        """Level, last-N accuracy, and trend for the math chain. Read only."""
+        if not is_math_series(path_id):
+            return None
+        learner = _learner(request)
+        user_id = learner["userId"] if learner else None
+        events: list[dict[str, Any]] = []
+        if user_id:
+            try:
+                events = [
+                    event for event in store.answer_events(user_id)
+                    if str(event.get("pathId") or "").startswith("path_math_bagrut5_")
+                ]
+            except Exception:
+                events = []
+        board_rows = []
+        for pid, he, en in MATH_TEACHING:
+            if pid == path_id:
+                row_topics = [{"id": topic.get("id"), "blockIds": list(topic.get("blockIds") or [])} for topic in topics]
+                row_mastered = set(mastered or set())
+                title = en if _locale(request) == "en" else he
+            else:
+                loaded = _published_level_topics(pid)
+                row_topics = loaded[1] if loaded else []
+                title = en if _locale(request) == "en" else ((loaded[0] if loaded else None) or he)
+                row_mastered = set()
+                if user_id:
+                    try:
+                        prog = store.get_progress(user_id, pid) or {}
+                        row_mastered = set(prog.get("mastered") or [])
+                    except Exception:
+                        row_mastered = set()
+            board_rows.append({"pathId": pid, "title": title, "topics": row_topics, "mastered": row_mastered})
+        return build_stage_board(board_rows, events)
+
+    def _published_level_topics(path_id: str) -> tuple[str, list[dict[str, Any]]] | None:
+        try:
+            version = store.get_path_latest_published(path_id)
+        except Exception:
+            return None
+        if version is None:
+            return None
+        dump = version.model_dump(mode="json")
+        node_to_block = dump.get("nodeToBlock") or {}
+        topics = []
+        for topic in dump.get("topics") or []:
+            block_ids = [node_to_block[node_id] for node_id in (topic.get("node_ids") or []) if node_id in node_to_block]
+            topics.append({"id": topic.get("id"), "blockIds": block_ids})
+        titles = dump.get("titles") or {}
+        return titles.get("he") or dump.get("name") or path_id, topics
 
     def _maybe_done(sess: dict[str, Any], n: int) -> bool:
         # #211: the adaptive English placement ends when the engine stops, not at the last tile.
@@ -1511,6 +1569,7 @@ def register_platform_routes(
             for it in c["lockedBy"]:
                 it["titleLang"] = card_langs.get(it["pathId"], "")
         series_home = any(str(c.get("pathId") or "").startswith("path_english_bagrut5_") for c in cards)
+        math_series_home = any(str(c.get("pathId") or "").startswith("path_math_bagrut5_") for c in cards)
 
         # "Continue" resumes the most recently touched path at the step the learner was on.
         continue_card = None
@@ -1692,6 +1751,7 @@ def register_platform_routes(
                 groups=groups_ui,
                 subjects=subjects_ui,
                 series_home=series_home,
+                math_series_home=math_series_home,
                 started_tiles=started_tiles,
                 rec_tiles=rec_tiles,
                 ui_preview=preview,
@@ -1855,6 +1915,61 @@ def register_platform_routes(
             _shell_ctx(request, roads=roads, band=band, ceiling=ceiling),
         )
 
+    @app.get("/series/math-bagrut5", response_class=HTMLResponse)
+    def math_bagrut_series(request: Request) -> HTMLResponse:
+        """The math 5-unit chain. One road opens the next. The exam waits until the end."""
+        locale = _locale(request)
+        learner = _learner(request)
+        user_id = learner["userId"] if learner else None
+        cards = {c["pathId"]: c for c in list_catalog_cards(store, locale=locale)}
+        completed = completed_path_ids(store, user_id)
+        weak: set[str] = set()
+        if user_id:
+            try:
+                for row in store.list_user_progress(user_id):
+                    if row.get("needsPractice"):
+                        weak.add(row["pathId"])
+            except Exception:
+                weak = set()
+        roads = []
+        for i, (pid, he, en) in enumerate(MATH_SERIES):
+            card = cards.get(pid) or {}
+            chrome = localize_path_chrome(
+                locale=locale,
+                titles=card.get("titles") or {"he": he, "en": en},
+                blurbs=card.get("blurbs"),
+                source_locale=card.get("explainLocale") or "he",
+            )
+            state = math_road_state(i, completed, weak)
+            hold_title = ""
+            if state == "locked" and i > 0:
+                prev = MATH_SERIES[i - 1][0]
+                hold_title = (cards.get(prev) or {}).get("title") or (MATH_SERIES[i - 1][2] if locale == "en" else MATH_SERIES[i - 1][1])
+            roads.append({
+                "pathId": pid,
+                "index": i,
+                "title": chrome["title"] or (en if locale == "en" else he),
+                "titleLang": chrome["titleLang"],
+                "blurb": chrome["blurb"],
+                "blurbLang": chrome["blurbLang"],
+                "emoji": card.get("emoji") or "∑",
+                "minutes": card.get("estimatedMinutes"),
+                "state": state,
+                "inCatalog": bool(card),
+                "holdTitle": hold_title,
+                "holdId": MATH_SERIES[i - 1][0] if state == "locked" and i else "",
+            })
+        return templates.TemplateResponse(
+            request,
+            "series.html",
+            _shell_ctx(
+                request,
+                roads=roads,
+                series_title=t(locale, "math_series_title"),
+                series_lede=t(locale, "math_series_lede"),
+            ),
+        )
+
     @app.get("/play/{path_id}", response_class=HTMLResponse)
     def play_path(
         request: Request,
@@ -1914,6 +2029,7 @@ def register_platform_routes(
                 topics=topics,
                 unlocked_next=_unlocked_next(request, path_id),
                 road_metrics=_road_metrics(request, sess, topics, blocks, mastered),
+                stage_board=_math_stage_board(request, path_id, topics, mastered),
                 ui_preview=preview_enabled(),
                 preview_skills=mock_skills(path_id, meta.get("subject") or "", int(round(100 * len(mastered) / n)) if n else 0) if preview_enabled() else [],
                 finished=_maybe_done(sess, n),
@@ -1956,7 +2072,11 @@ def register_platform_routes(
                 locked_by=locked_by,
                 read_only=read_only,
                 open_index=open_index,
-                linear_rows=str(path_id).startswith("path_english_bagrut5_"),
+                linear_rows=str(path_id).startswith("path_english_bagrut5_") or is_math_series(path_id),
+                series_href=(
+                    "/series/english-bagrut5" if str(path_id).startswith("path_english_bagrut5_")
+                    else "/series/math-bagrut5" if is_math_series(path_id) else ""
+                ),
                 engagement=_engagement(sess, doc, locale),
                 sidebar=_sidebar_ctx(request, active_path=path_id),
             )
