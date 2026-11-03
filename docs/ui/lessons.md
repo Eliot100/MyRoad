@@ -57,3 +57,4 @@ Mockup rounds for the road screen:
 - 2026-11-02: path head goal meter + continue card (#193) and in flow step done line (#191 first AC), decision 0007. Progress copy uses only שלב/נתיב; no end screen, the learner stays on the step card with Next.
 - 2026-11-02: login code field (#59), decision 0009: one input with one-time-code autofill, LTR digits in RTL, paste normalized by JS, error tied via aria-describedby; auth surface PRs wait for Cyber security, no auto-merge.
 - 2026-11-02: session end + stage end in the step card (#191), forgiving weekly days goal strip and mastered skills on the goal meter (#193, #206), decision 0010. סשן added to the allowed words.
+- 2026-11-03: placement result (#212, #200), decision 0013: per domain level and score sit in the first step of the recommended road (no separate screen), five segment meter + level word + score, gap named as פער by weight; fallback to the hint when the API fields are missing.

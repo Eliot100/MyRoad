@@ -531,5 +531,16 @@
   "eng_stat_today": "היום",
   "eng_stat_today_yes": "נספר בשבוע",
   "eng_done_today": "סיימתי להיום",
-  "eng_one_more": "עוד אחד קצר"
+  "eng_one_more": "עוד אחד קצר",
+  "pr_title": "התוצאה שלך במבדק",
+  "pr_overall": "ציון מסכם מתוך {total}",
+  "pr_level_1": "בסיס",
+  "pr_level_2": "ראשוני",
+  "pr_level_3": "ביניים",
+  "pr_level_4": "טוב",
+  "pr_level_5": "מתקדם",
+  "pr_domain_a11y": "{domain}: רמה {level}, ציון {score} מתוך 100",
+  "pr_gap_title": "הפער שלך: כאן נתרגל יותר",
+  "pr_start": "ממשיכים לשלב הראשון",
+  "pr_map": "לכל הדרך"
 }

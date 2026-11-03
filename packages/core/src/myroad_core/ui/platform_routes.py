@@ -57,6 +57,7 @@ from myroad_core.ui.i18n import (
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
+from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
 from myroad_core.ui.engagement_view import (
     can_do_line,
     engagement_view,
@@ -1668,6 +1669,22 @@ def register_platform_routes(
     templates.env.globals.update(session_end=session_end, stage_end=stage_end, week_view=week_view,
                                  mastered_skills=mastered_skills)
     templates.env.globals["can_do_line"] = can_do_line
+
+    def placement_result_for(learner: dict[str, Any] | None, doc: dict[str, Any], locale: str):
+        """Read only view glue for #212: the learner's stored placement detail for this road."""
+        if not learner:
+            return None
+        pid = (doc.get("placementRoute") or {}).get("from_placement") or ENGLISH_SERIES[0][0]
+        detail = store.get_placement_detail(learner["userId"], pid)
+        if not detail:
+            return None
+        card = next((c for c in list_catalog_cards(store) if c["pathId"] == pid), None)
+        topics = []
+        if card:
+            topics = store.get_version(pid, card["versionId"]).model_dump(mode="json", by_alias=True).get("topics") or []
+        return placement_result_view(detail, domain_labels(topics, locale))
+
+    templates.env.globals["placement_result_for"] = placement_result_for
 
 
     @app.get("/road/{path_id}", response_class=HTMLResponse)
