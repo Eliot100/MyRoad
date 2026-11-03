@@ -29,6 +29,7 @@ from myroad_core.ui.learner_actions import register_learner_actions
 from myroad_core.analytics import analytics_enabled
 from myroad_core.ui.events_api import register_events_api
 from myroad_core.ui.placement_api import register_placement_api
+from myroad_core.ui.pwa import register_pwa_routes
 from myroad_core.ui.platform_routes import register_platform_routes
 
 UI_DIR = Path(__file__).resolve().parent
@@ -261,6 +262,7 @@ def create_learner_app(
         redirect_path="/author",
     )
 
+    register_pwa_routes(app)
     register_platform_routes(
         app,
         templates=TEMPLATES,

@@ -542,5 +542,8 @@
   "pr_domain_a11y": "{domain}: level {level}, score {score} of 100",
   "pr_gap_title": "Your gap: we'll practise more here",
   "pr_start": "Start practising",
-  "pr_map": "See the whole road"
+  "pr_map": "See the whole road",
+  "offline_title": "You're offline",
+  "offline_body": "This page didn't load because there is no connection. Your progress is saved on the server. Try again when you're back online.",
+  "offline_retry": "Try again"
 }
