@@ -248,6 +248,11 @@ gets a "your email was changed" notice.
   change request cancels the previous pending one. Confirming a change
   trusts the new address + IP pair.
 
+## Service worker (offline shell)
+
+- `/sw.js` precaches the public shell under `/static` plus `/offline`, and never caches `/api`, `/tools`, `/login*` or signed-in pages (decision 0015). Browsers register it only on HTTPS or localhost. On plain http it is skipped and the app works as normal.
+- **Kill switch:** set `MYROAD_SW_KILL=1` in the server env and restart. `/sw.js` then serves a worker that deletes every cache and unregisters itself, so each browser drops the worker on its next visit. Leave it set until every device has visited. To turn it off, unset it and restart. Test: `tests/test_service_worker.py`, plus `tests_a11y` (browser).
+
 ## What this package does
 
 - Pydantic types for PathVersion, Block, Edge, Source, Attempt, Feedback, Event
