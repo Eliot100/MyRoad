@@ -538,6 +538,8 @@ def register_platform_routes(
         else:
             attempt = sess.get("last_attempt") or store.latest_attempt(sess["userId"], sess["pathId"])
         needs = nums["masteryPct"] < 85.0 or nums["incorrectTaps"] >= 2
+        if _is_placement(sess["pathId"]):
+            needs = False  # #199: a finished placement is banded, never marked for practice
         _persist_progress(sess, completed=True, needs_practice=needs)
         return attempt or {}
 
@@ -705,18 +707,19 @@ def register_platform_routes(
             announced.append({"pathId": pid, "title": titles[pid]})
         return _with_title_langs(announced, _locale(request))
 
+    def _is_placement(path_id: str) -> bool:
+        # A placement: the English one, any path id ending in "_placement", or one a route names.
+        return path_id == ENGLISH_SERIES[0][0] or path_id.endswith("_placement") or any(
+            (d.get("placementRoute") or {}).get("from_placement") == path_id for d in placement_routes(store)
+        )
+
     def _placement_finish_target(request: Request, path_id: str) -> str | None:
         """Where a finished placement sends the learner, or None if path_id is not a placement.
 
         Every placement (English and Arabic, decision 0003): the published path whose
         placement_route covers the band, else the in-subject fallback (placement_target).
         """
-        routes = placement_routes(store)
-        # A placement: the English one, any path id ending in "_placement", or one a route names.
-        is_placement = path_id == ENGLISH_SERIES[0][0] or path_id.endswith("_placement") or any(
-            (d.get("placementRoute") or {}).get("from_placement") == path_id for d in routes
-        )
-        if not is_placement:
+        if not _is_placement(path_id):
             return None
         learner = _learner(request)
         progress = store.get_progress(learner["userId"], path_id) if learner else None
@@ -2152,6 +2155,14 @@ def register_platform_routes(
             "text": (kids.get("feedback_ok") or "✓") if ok else (kids.get("feedback_try") or t(locale, "gate_practice")),
         }
         _step_event(sess, block, "answer", ok=ok)
+        if scored and _is_placement(sess["pathId"]):
+            # #199: a placement counts wrong ITEMS by first try (from learner_events), not taps.
+            try:
+                sess["incorrect_taps"] = store.first_try_wrong_count(
+                    sess["userId"], sess["pathId"], since=sess.get("started_at")
+                )
+            except Exception:  # pragma: no cover - keep the tap count if events are unavailable
+                pass
         if ok and block["blockId"] not in sess["mastered"]:
             _step_event(sess, block, "mastery", ok=True)
         if ok:

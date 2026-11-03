@@ -153,8 +153,12 @@ def register_placement_api(app, *, store) -> None:
         uid = _user_id(request)
         if not uid:
             return _error(401, "unknown_learner")
-        correct = sum(1 for a in body.answers if a.correct)
-        incorrect = len(body.answers) - correct
+        # #199: band on the first answer per question; repeated taps on one item do not add.
+        first: dict[str, bool] = {}
+        for a in body.answers:
+            first.setdefault(a.questionId, a.correct)
+        correct = sum(1 for ok in first.values() if ok)
+        incorrect = len(first) - correct
         pid = body.placementId or PLACEMENT_ID
         existing = store.get_progress(uid, pid) or {}
         progress = store.save_progress(

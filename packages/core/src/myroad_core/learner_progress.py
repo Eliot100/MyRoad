@@ -669,6 +669,22 @@ class LearnerProgressMixin:
             "createdAt": now,
         }
 
+    def first_try_wrong_count(self, user_id: str, path_id: str, since: str | None = None) -> int:
+        """Items whose FIRST ``answer`` event (at or after ``since``) was wrong (#199).
+
+        Repeated wrong taps on one item count once; a later re-answer never changes it.
+        """
+        sql = (
+            "SELECT COUNT(*) FROM learner_events e WHERE e.user_id = ? AND e.path_id = ? "
+            "AND e.event_type = 'answer' AND e.ok = 0 AND e.created_at >= ? "
+            "AND e.event_id = (SELECT MIN(e2.event_id) FROM learner_events e2 "
+            "WHERE e2.user_id = e.user_id AND e2.path_id = e.path_id AND e2.block_id = e.block_id "
+            "AND e2.event_type = 'answer' AND e2.created_at >= ?)"
+        )
+        since = since or ""
+        row = self._conn.execute(sql, (user_id, path_id, since, since)).fetchone()
+        return int(row[0] or 0)
+
     def record_placement_gap(self, user_id: str, placement_id: str, band: int) -> None:
         """A finished placement had no matching placement_route (routing gap). block_id = "band:<n>"."""
         self._conn.execute(

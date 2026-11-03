@@ -37,8 +37,10 @@ def placement_band(progress: dict[str, Any] | None) -> int:
     """Highest road index (1-8) the learner should work now. 0 means still on the placement."""
     if not progress or not progress.get("completedAt"):
         return 0
+    # incorrectTaps on a placement holds first-try wrong items only (#199); needsPractice
+    # is not used: a finished placement is banded, never sent to practice.
     wrong = int(progress.get("incorrectTaps") or 0)
-    if progress.get("needsPractice") or wrong >= 4:
+    if wrong >= 4:
         return 1
     if wrong >= 1:
         return 3
