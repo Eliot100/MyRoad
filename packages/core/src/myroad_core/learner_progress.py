@@ -104,6 +104,8 @@ STEP_EVENT_TYPES = ("step_view", "answer", "mastery")
 MAX_STEP_DURATION_MS = 30 * 60 * 1000
 
 
+GUEST_PREFIX = "gst_"
+
 class LearnerProgressMixin:
     """Mixin expecting self._conn (sqlite3 connection)."""
 
@@ -721,6 +723,27 @@ class LearnerProgressMixin:
         ).fetchone()
         return json.loads(row[0]) if row else None
 
+    def create_guest(self, locale: str = "he") -> dict[str, Any]:
+        """A pseudonymous guest learner (#210): random id, no name, no email."""
+        return self.upsert_learner(f"{GUEST_PREFIX}{uuid.uuid4().hex}", "", locale=locale)
+
+    @staticmethod
+    def is_guest(user_id: str | None) -> bool:
+        return bool(user_id) and str(user_id).startswith(GUEST_PREFIX)
+
+    def merge_guest(self, guest_id: str | None, to_user_id: str) -> bool:
+        """Guest -> registered (#210): move data and step preference, drop the guest row."""
+        if not self.is_guest(guest_id) or guest_id == to_user_id or not self.get_learner(guest_id):
+            return False
+        prefs = self.get_step_settings(guest_id)
+        self.adopt_learner_data(guest_id, to_user_id)  # type: ignore[arg-type]
+        self.set_step_settings(to_user_id, audio=prefs["audio"], writing=prefs["writing"])
+        for table in ("learner_progress", "placement_details", "learner_sessions", "learners"):
+            # Rows the account already had won; the guest's leftovers go (no orphans).
+            self._conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (guest_id,))
+        self._conn.commit()
+        return True
+
     def adopt_learner_data(self, from_user_id: str, to_user_id: str) -> None:
         """Carry a session learner's placement (progress, answers, detail, analytics id) to a new
         learner id, e.g. guest -> registered (#210). Rows the target already has are kept."""
@@ -730,6 +753,8 @@ class LearnerProgressMixin:
         c.execute("UPDATE OR IGNORE learner_progress SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.execute("UPDATE learner_events SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.execute("UPDATE OR IGNORE placement_details SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.execute("UPDATE learner_attempts SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.execute("UPDATE OR IGNORE learner_sessions SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.commit()
         if hasattr(self, "move_analytics_id"):
             self.move_analytics_id(from_user_id, to_user_id)

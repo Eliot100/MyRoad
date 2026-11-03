@@ -45,4 +45,6 @@ def resolve_principal(request: Any, store: Any) -> Principal | None:
     user_id = store.get_session_user(request.cookies.get(SESSION_COOKIE))
     if not user_id or not store.get_learner(user_id):
         return None
+    if getattr(store, "is_guest", lambda _u: False)(user_id):
+        return None  # guests (#210) only practise; the tools API needs an account
     return Principal(actor_id=user_id, kind="user", agent_id=None)

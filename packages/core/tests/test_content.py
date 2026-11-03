@@ -415,8 +415,8 @@ def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:
         with TestClient(app) as c:
             assert c.get("/health").status_code == 200
             home = c.get("/", follow_redirects=False)
-            assert home.status_code == 303
-            assert "/login?next=" in home.headers["location"]
+            assert home.status_code == 200  # #210: a guest practises without sign-up
+            c.cookies.clear()
             author = c.get("/author", follow_redirects=False)
             assert author.status_code == 303
             assert "/login?next=" in author.headers["location"]
