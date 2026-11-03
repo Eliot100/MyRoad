@@ -226,7 +226,7 @@ def test_play_math_path_mouse_flow(platform_client: TestClient) -> None:
         follow_redirects=True,
     )
     assert wrong.status_code == 200
-    assert "נסו שוב" in wrong.text or "לא בדיוק" in wrong.text or "flash" in wrong.text
+    assert 'class="solution"' in wrong.text and "is-solution" in wrong.text  # full solution, issue 215
 
     right = platform_client.post(
         "/play/path_grade3_math_add20/answer",

@@ -32,8 +32,8 @@ def _path() -> dict:
         node = {"id": f"p{i}", "type": "practice", "title": f"כלל {i}", "can_do": f"לחבר {i} ועוד 1",
                 "body_he": f"{i} + 1 = ?",
                 "choices": [{"id": "a", "label": str(i + 1), "feedback": f"{i} ועוד 1 הוא {i + 1}."},
-                            {"id": "b", "label": "0"}],
-                "correct": "a"}
+                            {"id": "b", "label": "0", "feedback": "אפס יוצא כששוכחים לחבר."}],
+                "correct": "a", "feedback_try": "נסו שוב."}
         if i == 1:
             node["worked_method"] = METHOD
         nodes.append(node)
@@ -79,6 +79,8 @@ def test_wrong_answer_shows_right_answer_full_solution_and_one_next_step(client)
     assert "התשובה הנכונה:" in txt and "2" in fb.split("התשובה הנכונה:", 1)[1][:200]
     assert "אחדות" in txt and "ומעבירים" in txt  # the worked method, open, in the live region
     assert "בחרו את התשובה המסומנת כדי להמשיך." in txt
+    assert "נסו שוב" not in _text(card)  # generic feedback_try gives way to the one instruction
+    assert 'id="choice-feedback"' in card and "אפס יוצא כששוכחים לחבר." in card  # picked tile keeps its own note
     assert "✗" not in card  # no red cross as the dominant signal
     # The right tile is marked as the next tap (text, not colour only) and stays enabled.
     right = re.search(r'<button[^>]*value="a"[^>]*>.*?</button>', card, re.S).group(0)
