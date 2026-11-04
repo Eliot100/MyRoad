@@ -248,7 +248,7 @@ def _client(app) -> TestClient:
 
 def _shape(e: dict) -> None:
     assert set(e) == {"session", "week", "goal_meter", "gap_days", "warmup_suggested"}
-    assert set(e["session"]) == {"no", "steps", "size", "done_count", "right_first_time", "complete", "can_do"}
+    assert set(e["session"]) == {"no", "steps", "size", "done_count", "right_first_time", "complete", "can_do", "can_do_ids"}
     for st in e["session"]["steps"]:
         assert set(st) == {"id", "title", "done", "right_first_time"}
         assert isinstance(st["id"], str) and isinstance(st["title"], str)

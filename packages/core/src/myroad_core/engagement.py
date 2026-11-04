@@ -109,6 +109,7 @@ def session_for(store, user_id: str, doc: dict[str, Any], *, n: int = SESSION_SI
         "right_first_time": sum(1 for st in steps if st["right_first_time"]),
         "complete": all(st["done"] for st in steps),
         "can_do": [can_do.get(st["id"]) or st["title"] for st in done_steps[:2]],
+        "can_do_ids": [st["id"] for st in done_steps[:2]],  # #247: same order as can_do
     }
 
 

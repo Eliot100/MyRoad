@@ -2272,6 +2272,7 @@ def register_platform_routes(
         if ok and block["blockId"] not in sess["mastered"]:
             _step_event(sess, block, "mastery", ok=True)
         if ok:
+            sess.pop("wrong_on", None)
             sess["mastered"].add(block["blockId"])
             sess["last_result"] = {"ok": True, "text": kids.get("feedback_ok") or "✓"}
             # No-JS: the next step opens with this note (the answered card is htmx-only).
@@ -2284,6 +2285,7 @@ def register_platform_routes(
                 sess["last_result"] = None
         else:
             sess["last_result"] = {"ok": False, "text": feedback["text"]}
+            sess["wrong_on"] = block["blockId"]  # #247: allows /seen_solution on this step
             # Shown under the choices of this same step (not as a page-top flash).
             sess["answer_feedback"] = feedback
         _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
@@ -2296,6 +2298,38 @@ def register_platform_routes(
         resp = _play_answer_response(request, sess, doc, blocks, path_id, hx, ok, feedback, answered_idx, locale)
         if offer:
             resp.headers["X-Offer-Registration"] = "true"
+        return resp
+
+    @app.post("/play/{path_id}/seen_solution")
+    def play_seen_solution(path_id: str, request: Request) -> Response:
+        """#247: after a wrong answer, move on without counting the step as correct."""
+        hx = _is_htmx(request)
+        sess = _play_session(request, path_id)
+        if _lock_state(request, path_id):
+            resp = _read_only_redirect(request, sess, path_id)
+            return _hx_redirect(resp.headers["location"]) if hx else resp
+        doc = _load_play_doc(sess)
+        blocks = doc.get("blocks") or []
+        block = blocks[sess["index"]] if blocks else None
+        if (not block or not sess.get("userId") or _is_placement(sess["pathId"])
+                or sess.get("wrong_on") != block["blockId"]):
+            return JSONResponse({"ok": False, "error": "no_wrong_answer"}, status_code=409)
+        sess.pop("wrong_on", None)
+        sess.pop("answer_feedback", None)
+        sess["last_result"] = None
+        sess["view"] = "learn"
+        store.emit_server_event(
+            sess["userId"], "solution_seen_continue", path_id=sess["pathId"], block_id=block["blockId"]
+        )
+        if not _adaptive_advance(sess, doc, blocks) and sess["index"] < len(blocks) - 1:
+            sess["index"] += 1
+        _persist_progress(sess)
+        url = f"/play/{path_id}?view=learn"
+        if hx:
+            resp = _render_step(request, sess, doc, locked_by=[], idx=sess["index"])
+        else:
+            resp = RedirectResponse(url, status_code=303)
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return resp
 
     def _play_answer_response(request, sess, doc, blocks, path_id, hx, ok, feedback, answered_idx, locale):

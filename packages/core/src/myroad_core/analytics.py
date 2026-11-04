@@ -42,7 +42,7 @@ CREATE INDEX IF NOT EXISTS idx_analytics_events_aid ON analytics_events(analytic
 # Client-sent types (POST /api/events). Anything else is rejected.
 CLIENT_EVENT_TYPES = ("tap", "screen_view", "answer_submit")
 # Server-emitted types (never accepted from the client).
-SERVER_EVENT_TYPES = ("answer", "placement_answer", "placement_result")
+SERVER_EVENT_TYPES = ("answer", "placement_answer", "placement_result", "solution_seen_continue")
 EVENT_TYPES = CLIENT_EVENT_TYPES + SERVER_EVENT_TYPES
 
 # Keys that must never appear anywhere in a payload, at any depth.
