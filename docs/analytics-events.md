@@ -48,6 +48,7 @@ Server (emitted by the app, never accepted from the client):
 | `answer` | `POST /play/{path}/answer` (non-placement paths) | `path_id`, `block_id`, `ok`, `latency_ms` (server clock, since the previous event on that step, as in #25) |
 | `placement_answer` | same, on a placement path; and per question in `POST /api/placement/result` | same as `answer` (`latency_ms` absent from the API) |
 | `placement_result` | `POST /api/placement/result` | `path_id`, `band`, `correct`, `incorrect` |
+| `solution_seen_continue` | `POST /play/{path}/seen_solution` (#247), only after a wrong answer on the current step; not on placement paths. Not an answer: mastery, right first time and the #213 KPI ignore it | `path_id`, `block_id` |
 
 ## `POST /api/events`
 
