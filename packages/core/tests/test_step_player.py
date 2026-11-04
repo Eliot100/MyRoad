@@ -344,7 +344,7 @@ def test_step_player_targets_and_reduced_motion() -> None:
     assert m and "min-block-size: 44px" in m.group(1) and "min-inline-size: 44px" in m.group(1)
     for sel in (".play .nav button", ".play .step-card .primary", ".play .icon-btn"):
         assert sel in css[m.start():m.end()]
-    assert re.search(r"\.play \.shell-top \.back,[^{]*\{[^}]*min-block-size: 24px", css)
+    assert re.search(r"\.play \.shell-top \.back,[^{]*\{[^}]*min-block-size: 44px", css)  # #233: 44px on phones
     assert "@media (prefers-reduced-motion: reduce)" in css
     assert "@media (prefers-reduced-motion: no-preference)" in css
     # The new step-player block keeps to logical properties too.

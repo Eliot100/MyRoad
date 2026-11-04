@@ -397,3 +397,17 @@
   document.addEventListener("htmx:afterSettle", function () { scan(); });
 })();
 
+
+/* Issue 233: when the soft keyboard opens on a phone, keep the focused field in view. */
+(function () {
+  var vv = window.visualViewport;
+  if (!vv) return;
+  function keep() {
+    var el = document.activeElement;
+    if (!el || !el.matches || !el.matches("input:not([type=hidden]):not([type=checkbox]):not([type=radio]), textarea, select")) return;
+    var r = el.getBoundingClientRect();
+    if (r.bottom > vv.height - 8 || r.top < 0) el.scrollIntoView({ block: "center", behavior: "auto" });
+  }
+  vv.addEventListener("resize", keep);
+  document.addEventListener("focusin", function () { setTimeout(keep, 300); });
+})();
