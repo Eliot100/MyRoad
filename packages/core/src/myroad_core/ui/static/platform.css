@@ -966,7 +966,7 @@ main:focus { outline: none; }
 .play .piano-key,
 .play .beat-btn { min-block-size: 44px; min-inline-size: 44px; }
 .play .shell-top .back,
-.play .shell-top .settings-link,
+.play .shell-top .settings-link { display: inline-flex; align-items: center; min-block-size: 24px; }
 .play .lock-link { display: inline-flex; align-items: center; min-block-size: 44px; }
 .play .choice-tile { position: relative; }
 .play .choice-label bdi, .play .body-text bdi, .play .feedback-text bdi,
@@ -1085,7 +1085,7 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
 .map-view .map-actions button,
 .map-view .map-actions .link-btn { min-block-size: 44px; }
 .map-view .shell-top .back,
-.map-view .shell-top .settings-link,
+.map-view .shell-top .settings-link { display: inline-flex; align-items: center; min-block-size: 24px; }
 .map-view .lock-link { display: inline-flex; align-items: center; min-block-size: 44px; }
 /* Review stations differ by shape and icon, not by color alone:
    a square badge (understanding stations are round), a dashed start bar, and the 🔁 icon. */
@@ -1971,10 +1971,15 @@ html[dir="ltr"] .cando-go::after { content: " →"; }
 
 /* --- Mobile pass, issue 233 (decision 0017): 44px touch targets, mirrored back arrow, no horizontal scroll --- */
 .skip-link { min-block-size: 44px; display: inline-flex; align-items: center; }
-/* Header and back links: the visible text stays small, the tap area is 44px tall. */
-.shell-top .brand-name,
-.shell-top .back,
-.shell-top .settings-link,
+/* Header and back links: the visible text stays small, the tap area is 44px tall.
+   Narrow viewports only, so the desktop header keeps its height and lines up with the sidebar. */
+@media (max-width: 640px) {
+  .shell-top .brand-name,
+  .shell-top .back,
+  .shell-top .settings-link,
+  .play .shell-top .back, .play .shell-top .settings-link,
+  .map-view .shell-top .back, .map-view .shell-top .settings-link { display: inline-flex; align-items: center; min-block-size: 44px; min-inline-size: 44px; }
+}
 .play .lock-link,
 .map-view .lock-link,
 .rm-link,
@@ -1994,5 +1999,7 @@ html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
   html:has(.map-view) { scroll-padding-block-end: 6rem; }
 }
 /* Filter and view chips and the sidebar subject tabs: a one word tab ("הכל", "All") still gets a 44px wide tap area. */
-.chip, .qtabs > a { min-block-size: 44px; min-inline-size: 44px; justify-content: center; }
-.qtabs > a { display: inline-flex; align-items: center; }
+@media (max-width: 640px) {
+  .chip, .qtabs > a { min-block-size: 44px; min-inline-size: 44px; justify-content: center; }
+  .qtabs > a { display: inline-flex; align-items: center; }
+}
