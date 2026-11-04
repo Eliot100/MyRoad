@@ -115,10 +115,12 @@
         var lvTxt = preview && t.review ? " · " + fill(L.level, { n: sampleLevel(t) }) : "";
         var label = kind + t.title + " · " + stateTxt + lvTxt;
         var g = '<g transform="translate(' + x.toFixed(1) + "," + y.toFixed(1) + ')">' + tileSvg(t, sz) + "</g>";
+        /* Issue 233: an invisible hit circle (44px or more after the map scales down) so a tile is easy to tap on a phone. */
+        var hit = '<circle class="wm-hit" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="27" fill="currentColor" fill-opacity="0"/>';
         if (t.state === "lock") o += '<g aria-hidden="true">' + g + "</g>";
         else {
           var href = readOnly ? "/play/" + encodeURIComponent(host.dataset.path) + "?topic=" + encodeURIComponent(s.id) : "#";
-          o += '<a class="wm-tile" href="' + href + '" data-node="' + esc(t.id) + '" aria-label="' + esc(label) + '"' + (t.state === "cur" ? ' aria-current="step"' : "") + "><title>" + esc(label) + "</title>" + g + "</a>";
+          o += '<a class="wm-tile" href="' + href + '" data-node="' + esc(t.id) + '" aria-label="' + esc(label) + '"' + (t.state === "cur" ? ' aria-current="step"' : "") + "><title>" + esc(label) + "</title>" + hit + g + "</a>";
         }
         if (t.state === "cur") {
           /* The marker sits outside the ring, along the tile's own direction, so it never covers the stage name. */

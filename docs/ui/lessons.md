@@ -61,3 +61,4 @@ Mockup rounds for the road screen:
 - 2026-11-02: session end + stage end in the step card (#191), forgiving weekly days goal strip and mastered skills on the goal meter (#193, #206), decision 0010. סשן added to the allowed words.
 - 2026-11-03: placement result (#212, #200), decision 0013: per domain level and score sit in the first step of the recommended road (no separate screen), five segment meter + level word + score, gap named as פער by weight; fallback to the hint when the API fields are missing.
 - 2026-11-03: full solution after a mistake + continue first at the session end (#215), decision 0016.
+- 2026-11-04: mobile pass at 360 and 412 px (#233), decision 0017: 44px tap areas on header links, chips, subject tabs and map tiles with the text size unchanged; focused field kept above the soft keyboard; CI test tests_a11y/test_mobile_360_412.py in he, ar and en.

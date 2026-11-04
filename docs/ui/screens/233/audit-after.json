@@ -1,0 +1,638 @@
+{
+ "login-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "login-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "home-360-he": {
+  "overflow": 0,
+  "wide": [
+   "LI. -174..77",
+   "ARTICLE.tv-tile.tv-rec -174..77",
+   "P.tv-kicker -155..58",
+   "H3.tv-name -155..58",
+   "A. -50..58",
+   "P.tv-desc -155..58",
+   "P.tv-goal -155..58",
+   "SPAN. -99..58",
+   "SPAN.tv-sub.tv-foot -155..58",
+   "LI. -441..-190",
+   "ARTICLE.tv-tile.tv-rec -441..-190",
+   "P.tv-kicker -421..-209"
+  ],
+  "small": [],
+  "sticky": []
+ },
+ "home-412-he": {
+  "overflow": 0,
+  "wide": [
+   "LI. -203..88",
+   "ARTICLE.tv-tile.tv-rec -203..88",
+   "P.tv-kicker -184..69",
+   "H3.tv-name -184..69",
+   "A. -39..69",
+   "P.tv-desc -184..69",
+   "P.tv-goal -184..69",
+   "SPAN. -144..20",
+   "SPAN.tv-sub.tv-foot -184..69",
+   "LI. -510..-219",
+   "ARTICLE.tv-tile.tv-rec -510..-219",
+   "P.tv-kicker -491..-238"
+  ],
+  "small": [],
+  "sticky": []
+ },
+ "placement-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-result-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-result-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "first-step-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "first-step-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "practice-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "practice-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "worked-example-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "worked-example-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "wrong-answer-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "wrong-answer-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "map-360-he": {
+  "overflow": 0,
+  "wide": [
+   "g. -145..505",
+   "ellipse. 79..367",
+   "ellipse. 31..415",
+   "ellipse. -17..463",
+   "ellipse. -20..268",
+   "ellipse. -68..316",
+   "ellipse. -116..364",
+   "ellipse. -40..248",
+   "ellipse. -88..296",
+   "ellipse. -136..344",
+   "ellipse. -1..191",
+   "ellipse. -49..239"
+  ],
+  "small": [],
+  "sticky": [
+   "DIV.row.map-actions h77"
+  ]
+ },
+ "map-412-he": {
+  "overflow": 0,
+  "wide": [
+   "g. -135..547",
+   "ellipse. 64..448",
+   "ellipse. 16..496",
+   "ellipse. -5..283",
+   "ellipse. -53..331",
+   "ellipse. -101..379",
+   "ellipse. -28..260",
+   "ellipse. -76..308",
+   "ellipse. -124..356",
+   "ellipse. -39..249",
+   "ellipse. -87..297",
+   "ellipse. -135..345"
+  ],
+  "small": [],
+  "sticky": [
+   "DIV.row.map-actions h77"
+  ]
+ },
+ "stage-end-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "stage-end-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "session-end-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "session-end-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "empty-search-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "empty-search-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "settings-360-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "settings-412-he": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "login-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "login-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "home-360-en": {
+  "overflow": 0,
+  "wide": [
+   "LI. 283..534",
+   "ARTICLE.tv-tile.tv-rec 283..534",
+   "P.tv-kicker 302..515",
+   "H3.tv-name 302..515",
+   "A. 302..438",
+   "P.tv-desc 302..515",
+   "P.tv-goal 302..515",
+   "SPAN. 338..488",
+   "SPAN.tv-sub.tv-foot 302..515",
+   "LI. 550..801",
+   "ARTICLE.tv-tile.tv-rec 550..801",
+   "P.tv-kicker 569..781"
+  ],
+  "small": [],
+  "sticky": []
+ },
+ "home-412-en": {
+  "overflow": 0,
+  "wide": [
+   "LI. 324..615",
+   "ARTICLE.tv-tile.tv-rec 324..615",
+   "P.tv-kicker 343..596",
+   "H3.tv-name 343..596",
+   "A. 343..479",
+   "P.tv-desc 343..596",
+   "P.tv-goal 343..596",
+   "SPAN. 379..529",
+   "SPAN.tv-sub.tv-foot 343..596",
+   "LI. 631..922",
+   "ARTICLE.tv-tile.tv-rec 631..922",
+   "P.tv-kicker 650..903"
+  ],
+  "small": [],
+  "sticky": []
+ },
+ "placement-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-result-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-result-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "first-step-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "first-step-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "practice-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "practice-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "worked-example-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "worked-example-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "wrong-answer-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "wrong-answer-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "map-360-en": {
+  "overflow": 0,
+  "wide": [
+   "g. -145..505",
+   "ellipse. 79..367",
+   "ellipse. 31..415",
+   "ellipse. -17..463",
+   "ellipse. -20..268",
+   "ellipse. -68..316",
+   "ellipse. -116..364",
+   "ellipse. -40..248",
+   "ellipse. -88..296",
+   "ellipse. -136..344",
+   "ellipse. -1..191",
+   "ellipse. -49..239"
+  ],
+  "small": [],
+  "sticky": [
+   "DIV.row.map-actions h77"
+  ]
+ },
+ "map-412-en": {
+  "overflow": 0,
+  "wide": [
+   "g. -135..547",
+   "ellipse. 64..448",
+   "ellipse. 16..496",
+   "ellipse. -5..283",
+   "ellipse. -53..331",
+   "ellipse. -101..379",
+   "ellipse. -28..260",
+   "ellipse. -76..308",
+   "ellipse. -124..356",
+   "ellipse. -39..249",
+   "ellipse. -87..297",
+   "ellipse. -135..345"
+  ],
+  "small": [],
+  "sticky": [
+   "DIV.row.map-actions h77"
+  ]
+ },
+ "stage-end-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "stage-end-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "session-end-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "session-end-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "empty-search-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "empty-search-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "settings-360-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "settings-412-en": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "login-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "login-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "home-360-ar": {
+  "overflow": 0,
+  "wide": [
+   "LI. -174..77",
+   "ARTICLE.tv-tile.tv-rec -174..77",
+   "P.tv-kicker -155..58",
+   "H3.tv-name -155..58",
+   "A. -44..58",
+   "P.tv-desc -155..58",
+   "P.tv-goal -155..58",
+   "SPAN. -137..21",
+   "SPAN.tv-sub.tv-foot -155..58",
+   "LI. -441..-190",
+   "ARTICLE.tv-tile.tv-rec -441..-190",
+   "P.tv-kicker -421..-209"
+  ],
+  "small": [],
+  "sticky": []
+ },
+ "home-412-ar": {
+  "overflow": 0,
+  "wide": [
+   "LI. -203..88",
+   "ARTICLE.tv-tile.tv-rec -203..88",
+   "P.tv-kicker -184..69",
+   "H3.tv-name -184..69",
+   "A. -33..69",
+   "P.tv-desc -184..69",
+   "P.tv-goal -184..69",
+   "SPAN. -125..32",
+   "SPAN.tv-sub.tv-foot -184..69",
+   "LI. -510..-219",
+   "ARTICLE.tv-tile.tv-rec -510..-219",
+   "P.tv-kicker -491..-238"
+  ],
+  "small": [],
+  "sticky": []
+ },
+ "placement-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-result-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "placement-result-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "first-step-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "first-step-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "practice-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "practice-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "worked-example-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "worked-example-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "wrong-answer-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "wrong-answer-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "map-360-ar": {
+  "overflow": 0,
+  "wide": [
+   "g. -145..505",
+   "ellipse. 79..367",
+   "ellipse. 31..415",
+   "ellipse. -17..463",
+   "ellipse. -20..268",
+   "ellipse. -68..316",
+   "ellipse. -116..364",
+   "ellipse. -40..248",
+   "ellipse. -88..296",
+   "ellipse. -136..344",
+   "ellipse. -1..191",
+   "ellipse. -49..239"
+  ],
+  "small": [],
+  "sticky": [
+   "DIV.row.map-actions h77"
+  ]
+ },
+ "map-412-ar": {
+  "overflow": 0,
+  "wide": [
+   "g. -135..547",
+   "ellipse. 64..448",
+   "ellipse. 16..496",
+   "ellipse. -5..283",
+   "ellipse. -53..331",
+   "ellipse. -101..379",
+   "ellipse. -28..260",
+   "ellipse. -76..308",
+   "ellipse. -124..356",
+   "ellipse. -39..249",
+   "ellipse. -87..297",
+   "ellipse. -135..345"
+  ],
+  "small": [],
+  "sticky": [
+   "DIV.row.map-actions h77"
+  ]
+ },
+ "stage-end-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "stage-end-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "session-end-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "session-end-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "empty-search-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "empty-search-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "settings-360-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ },
+ "settings-412-ar": {
+  "overflow": 0,
+  "wide": [],
+  "small": [],
+  "sticky": []
+ }
+}

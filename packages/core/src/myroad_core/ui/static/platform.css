@@ -967,7 +967,7 @@ main:focus { outline: none; }
 .play .beat-btn { min-block-size: 44px; min-inline-size: 44px; }
 .play .shell-top .back,
 .play .shell-top .settings-link,
-.play .lock-link { display: inline-flex; align-items: center; min-block-size: 24px; }
+.play .lock-link { display: inline-flex; align-items: center; min-block-size: 44px; }
 .play .choice-tile { position: relative; }
 .play .choice-label bdi, .play .body-text bdi, .play .feedback-text bdi,
 .play .step-feedback bdi, .play .session-end bdi { unicode-bidi: isolate; }
@@ -1086,7 +1086,7 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
 .map-view .map-actions .link-btn { min-block-size: 44px; }
 .map-view .shell-top .back,
 .map-view .shell-top .settings-link,
-.map-view .lock-link { display: inline-flex; align-items: center; min-block-size: 24px; }
+.map-view .lock-link { display: inline-flex; align-items: center; min-block-size: 44px; }
 /* Review stations differ by shape and icon, not by color alone:
    a square badge (understanding stations are round), a dashed start bar, and the 🔁 icon. */
 .station.review .station-num { border-radius: 5px; }
@@ -1192,7 +1192,7 @@ button.linear-tile { cursor: pointer; }
   a.path-card:hover { transform: none; }
 }
 /* Stand-alone links under the sign-in form: 24px+ targets (WCAG 2.5.8). */
-.auth-card .lede.tiny > a { display: inline-block; min-height: 24px; padding-block: .2rem; }
+.auth-card .lede.tiny > a { display: inline-flex; align-items: center; min-block-size: 44px; }
 
 .settings-a11y h2 { font-size: 1rem; margin: 1.25rem 0 .25rem; }
 
@@ -1968,3 +1968,31 @@ html[dir="ltr"] .cando-go::after { content: " →"; }
 .solution-note { margin: var(--space-2) 0 0; font-weight: 400; color: var(--ink); }
 .solution-steps { padding-inline-start: 1.4em; display: grid; gap: var(--space-1); }
 .solution-steps li::marker { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* --- Mobile pass, issue 233 (decision 0017): 44px touch targets, mirrored back arrow, no horizontal scroll --- */
+.skip-link { min-block-size: 44px; display: inline-flex; align-items: center; }
+/* Header and back links: the visible text stays small, the tap area is 44px tall. */
+.shell-top .brand-name,
+.shell-top .back,
+.shell-top .settings-link,
+.play .lock-link,
+.map-view .lock-link,
+.rm-link,
+.settings-card .lede a,
+.auth-card .tiny a { display: inline-flex; align-items: center; min-block-size: 44px; min-inline-size: 44px; }
+.rm-link { justify-content: center; }
+.shell-top { align-items: center; }
+/* The back arrow points to where the learner came from: right in RTL, left in LTR. */
+.back-arrow { display: inline-block; }
+html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
+/* Language switch on the login card and the summaries that open a panel. */
+.auth-lang .lang-btn { min-block-size: 44px; min-inline-size: 44px; }
+.week-goal-set summary, .goal-skills summary { min-block-size: 44px; }
+/* A sticky action bar never hides the focused control (WCAG 2.4.11). */
+.map-view { scroll-padding-block-end: 6rem; }
+@media (max-width: 640px) {
+  html:has(.map-view) { scroll-padding-block-end: 6rem; }
+}
+/* Filter and view chips and the sidebar subject tabs: a one word tab ("הכל", "All") still gets a 44px wide tap area. */
+.chip, .qtabs > a { min-block-size: 44px; min-inline-size: 44px; justify-content: center; }
+.qtabs > a { display: inline-flex; align-items: center; }
