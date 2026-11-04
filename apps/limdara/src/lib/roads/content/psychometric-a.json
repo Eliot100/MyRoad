@@ -1,0 +1,1832 @@
+{
+  "stages": [
+    {
+      "id": "psy-test",
+      "index": 1,
+      "title": "The test, from the outside",
+      "he": "המבחן מבחוץ",
+      "topic": "The test, from the outside",
+      "thesis": "Before any trick, you need the shape of the test, the score, and the fact that a blank line does not help you.",
+      "syllabus": [
+        "Who writes it and what the score range means",
+        "The three scored domains",
+        "Sections, timing, and pilot sections",
+        "No calculator, and what that implies",
+        "Guessing and when to move on",
+        "How this road is meant to be used from zero to a simulation"
+      ],
+      "levels": [
+        {
+          "id": "psy-test-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-test-l1a",
+              "title": "Who writes the score",
+              "he": "מי כותב את הציון",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Who writes it and what the score range means"
+              ],
+              "objectives": [
+                "Name NITE as the writer of the PET and describe the scaled score.",
+                "Refuse a homemade conversion from a raw percent into that scale."
+              ],
+              "teach": "The Israeli Psychometric Entrance Test is written by NITE, מרכז ארצי לבחינות ולהערכה. Universities use the result when they rank applicants. This is not a school quiz a teacher wrote for one class. It is a national instrument with a fixed shape and a published score scale.\n\nThe reported result is a scaled score of about 200 to 800. Scaled means the number sits on that range after the raw work is processed. It is not a raw percent of items correct. This road will not invent a conversion table from right answers onto that scale. Learn the items. Let NITE do the scaling.",
+              "rules": [
+                "The PET is written by NITE, מרכז ארצי לבחינות ולהערכה.",
+                "The reported score is scaled, about 200 to 800, not a percent correct.",
+                "Do not use a homemade table that turns a raw count into that scale.",
+                "A higher scaled score ranks above a lower one. The number itself is not a percent."
+              ],
+              "example": {
+                "prompt": "Which claim is right? (A) A raw 75% is the same thing as a scaled score of 600. (B) The PET score is scaled, about 200 to 800, and is not a raw percent. (C) This road gives the conversion table from raw counts.",
+                "steps": [
+                  "The reported number sits on a scale of about 200 to 800.",
+                  "That scale is not percent of items correct, so 75% is not 600 by multiplying 800.",
+                  "This road does not give a conversion table, so both A and C invent one."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "Which range is the scaled PET score? (A) 0 to 100 (B) about 200 to 800 (C) 1 to 5",
+                  "answer": "B",
+                  "why": "NITE reports a scaled score of about 200 to 800. It is not a percent and not a school grade out of 5."
+                },
+                {
+                  "q": "A raw count of correct items is 60. Which scaled score does this road assign? (A) 600 (B) 480 (C) None: no conversion table is used here",
+                  "answer": "C",
+                  "why": "The score is scaled. A raw count is not turned into 200–800 by a table on this road."
+                }
+              ]
+            },
+            {
+              "id": "psy-test-l1b",
+              "title": "Three scored domains",
+              "he": "שלושה תחומים שנבדקים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "The three scored domains"
+              ],
+              "objectives": [
+                "Name the three domains that receive a score.",
+                "Separate this English quantitative fragment from the Hebrew verbal work that comes later."
+              ],
+              "teach": "Three domains are scored: verbal reasoning, quantitative reasoning, and English. Verbal reasoning asks how words and short arguments relate. Quantitative reasoning asks how numbers, shapes, and charts relate. English asks you to read English under time. The total blends the three. A hole in one domain is not hidden by comfort in another.\n\nThe live verbal section is in Hebrew. This fragment does not train that Hebrew. It trains quantitative reasoning, and it trains how the test is built, in English. Hebrew verbal work comes in a later fragment. Do not invent a writing or essay section. The object here is the current multiple-choice PET.",
+              "rules": [
+                "Scored domains: verbal reasoning, quantitative reasoning, and English.",
+                "The live verbal section is in Hebrew. This fragment stays in English and leaves Hebrew for later.",
+                "There is no essay to prepare. The current PET on this road is multiple choice.",
+                "All three domains count. Comfort in English does not erase a quantitative gap."
+              ],
+              "example": {
+                "prompt": "A student will study only English, calling the psychometric an English test. Which correction is right? (A) Only quantitative reasoning is scored. (B) Verbal reasoning, quantitative reasoning, and English are all scored. (C) An essay replaces the verbal domain.",
+                "steps": [
+                  "The scored domains are verbal reasoning, quantitative reasoning, and English.",
+                  "English is one of the three, not the whole test.",
+                  "No essay is part of the current multiple-choice PET, so C is invented."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "Which of these is not a scored domain on the current PET? (A) Verbal reasoning (B) Quantitative reasoning (C) A written essay",
+                  "answer": "C",
+                  "why": "The scored domains are verbal reasoning, quantitative reasoning, and English. This road does not add an essay."
+                },
+                {
+                  "q": "What does this fragment train, and what language is the live verbal section? (A) Quantitative work in English here; live verbal is Hebrew (B) Verbal work in English here and on the live paper (C) English only, both here and live",
+                  "answer": "A",
+                  "why": "This fragment trains quantitative reasoning and test orientation in English. Hebrew verbal work comes in a later fragment."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-test-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-test-l2a",
+              "title": "Sections and hidden pilots",
+              "he": "פרקים ופרקי ניסוי",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Sections, timing, and pilot sections"
+              ],
+              "objectives": [
+                "Describe the work as several short timed multiple-choice sections.",
+                "Treat every section as scored because a pilot is not identified."
+              ],
+              "teach": "The PET is several timed multiple-choice sections. This road will not invent an official count of sections or of items in one section. What you need is the shape of a short timed section: a clock, a block of choices, and no return once that block ends. Pace the section in front of you.\n\nUnscored pilot sections are mixed in, and they are not identified. A pilot tries items for a later form. Because you cannot tell which section is the pilot, every section is treated as real. Do not hunt for an experimental block and then coast. The one you dismiss may be scored.",
+              "rules": [
+                "The work arrives as several short timed multiple-choice sections.",
+                "Do not memorize a made-up official count of sections or of items per section.",
+                "Pilot sections are unscored, mixed in, and not labeled.",
+                "Treat every section as scored, because you cannot see which one is the pilot."
+              ],
+              "example": {
+                "prompt": "A section feels odd, and someone whispers that it is the pilot so you should leave it blank. What should you do? (A) Leave it blank to save energy. (B) Treat it as real and answer every item. (C) Ask the proctor which section is scored.",
+                "steps": [
+                  "Pilot sections are mixed in and not identified.",
+                  "A guess about which section is the pilot can throw away a scored block.",
+                  "The working rule is that every section is real, so this one gets full answers."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "How should you treat a section you suspect is a pilot? (A) As real (B) As optional scratch work (C) As an essay",
+                  "answer": "A",
+                  "why": "Pilots are not identified. Every section is treated as scored."
+                },
+                {
+                  "q": "Which description matches how the PET is delivered? (A) One untimed essay (B) Several timed multiple-choice sections (C) A count of sections you must memorize before item one",
+                  "answer": "B",
+                  "why": "The test is several timed multiple-choice sections. This road does not state an official section count."
+                }
+              ]
+            },
+            {
+              "id": "psy-test-l2b",
+              "title": "No calculator",
+              "he": "בלי מחשבון",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "No calculator, and what that implies"
+              ],
+              "objectives": [
+                "State that quantitative sections allow no calculator.",
+                "Choose a cancel, a factor, or a benchmark instead of a long decimal grind."
+              ],
+              "teach": "No calculator is allowed on the quantitative work. Items are built so the numbers cancel, factor, or sit near a friendly benchmark such as 10 or 100. A path that needs a long grind of ugly decimals is usually the wrong path, not a test of endurance.\n\nThe ban is a habit. Write the line that changes the problem: a percent as a hundredth, a ratio as parts, a rate as a fraction. Estimate before you grind, so a wild result shows itself. Later nodes train the moves. Here, your pencil and a clean setup replace the device you will not have.",
+              "rules": [
+                "No calculator on the quantitative sections.",
+                "Prefer a cancel, a factor, or a benchmark over a long decimal grind.",
+                "If the arithmetic turns ugly, reread the setup before you multiply harder.",
+                "Estimation catches a wild decimal. It does not replace an exact step when choices are close."
+              ],
+              "example": {
+                "prompt": "No calculator is on the desk. What is 20% of 150? (A) 15 (B) 30 (C) 35",
+                "steps": [
+                  "20% is 20/100, which is 1/5.",
+                  "One fifth of 150 is 150/5.",
+                  "150/5 = 30."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "Without a calculator, what is 10% of 240?",
+                  "answer": "24",
+                  "why": "10% is 1/10, and 240/10 = 24. The calculator ban rewards a clean tenth."
+                },
+                {
+                  "q": "A path asks for 49 times pi written out to six decimal places. What does the ban suggest? (A) Grind the six places by hand (B) Keep 49pi if that is the form the stem allows (C) The ban applies only to the English section",
+                  "answer": "B",
+                  "why": "Items are written for clean forms. A six-place grind is a signal to keep pi or to reread, not to invent a calculator."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-test-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-test-l3a",
+              "title": "Answer every item",
+              "he": "עונים על כל פריט",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Guessing and when to move on"
+              ],
+              "objectives": [
+                "State that a blank is not safer than a wrong answer.",
+                "Mark a best live choice and move when the next step is not visible."
+              ],
+              "teach": "There is no negative marking worth leaving a blank. A wrong choice and an empty line are not a clever trade. A blank cannot become right later, and it does not protect the score. Before time is called, every item should carry an answer. That rule is not a reason to camp on the first hard stem.\n\nMove when the next step is not visible. Mark the stem, put down your best live choice if you have one, and keep going. Return only if time remains. A last-minute fill beats a blank, because a blank cannot be the key. Do not invent a penalty the test does not charge.",
+              "rules": [
+                "No negative mark makes a blank safer than a guess.",
+                "Every item should have an answer before time is called.",
+                "When you are stuck, mark the item, keep a best guess if you have one, and move.",
+                "Do not spend the section on one stem while later items stay blank."
+              ],
+              "example": {
+                "prompt": "Thirty seconds remain and four items are still blank. You cannot read them. What is the better use of those seconds? (A) Leave the four blank to avoid a penalty (B) Fill a choice on each of the four (C) Erase two earlier answers you were unsure about",
+                "steps": [
+                  "A blank is not safer than a wrong choice. Nothing rewards the empty line.",
+                  "Filling a choice gives each item a chance. A blank has none.",
+                  "Erasing earlier work can turn a right mark into an empty one."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "Is there a scoring penalty that makes a blank better than a wrong answer? (A) Yes (B) No",
+                  "answer": "B",
+                  "why": "There is no negative marking worth leaving a blank. Answer every item before time is called."
+                },
+                {
+                  "q": "You have eliminated two of four choices and the clock is tight. What should you do? (A) Leave it blank (B) Mark one of the two remaining choices and move (C) Wait so the item is void",
+                  "answer": "B",
+                  "why": "A guess among the live choices can be right. A blank cannot. Move so the rest of the section still gets answers."
+                }
+              ]
+            },
+            {
+              "id": "psy-test-l3b",
+              "title": "From zero to a simulation",
+              "he": "מאפס עד סימולציה",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "How this road is meant to be used from zero to a simulation"
+              ],
+              "objectives": [
+                "Order the road from the shape of the test, through quantitative skill, toward a later simulation.",
+                "Use each node as one line: a lesson, a worked example, and checks."
+              ],
+              "teach": "This road is a sequence, not a pile of tips. Start from the outside: who writes the test, what a scaled score of about 200 to 800 means, how sections and pilots work, and why a blank does not help. Then build quantitative skill in English: arithmetic, algebra, words, geometry, and charts. Each node owns one line. Read it, follow one worked example, and do the checks.\n\nA simulation is the far end, not tonight. Hebrew verbal work is a later fragment, so do not stall this start waiting for it. The object is the current multiple-choice PET. Stay until you can say why each check is right.",
+              "rules": [
+                "Work in order: test shape, then quantitative craft, then later Hebrew and a simulation.",
+                "Each node owns one line: a lesson, one worked example, and the checks.",
+                "This fragment is quantitative reasoning and orientation in English. Hebrew verbal comes later.",
+                "Do not open with a full simulation. Use it when the moves are already in your hands.",
+                "There is no essay track on the current multiple-choice PET."
+              ],
+              "example": {
+                "prompt": "A new student wants a simulation tonight and plans to skip arithmetic. Which plan matches this road? (A) Simulation tonight, arithmetic only if the score is bad (B) Orientation and quantitative nodes first, simulation after the moves exist, Hebrew verbal in a later fragment (C) Essay practice, then a simulation",
+                "steps": [
+                  "The road starts with the shape of the test, then builds quantitative skill in English.",
+                  "A simulation measures moves. It does not teach them, so it is not night one.",
+                  "There is no essay track. Hebrew verbal is later, not a reason to skip the quantitative start."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "What should you do first on this road? (A) A full simulation (B) The shape of the test, then the quantitative nodes (C) An essay section",
+                  "answer": "B",
+                  "why": "Orientation comes before tricks, and quantitative skill comes before a simulation. No essay is part of this road."
+                },
+                {
+                  "q": "Which language is this fragment using for quantitative work? (A) Hebrew (B) English (C) Only the live verbal language",
+                  "answer": "B",
+                  "why": "This fragment trains quantitative reasoning and test orientation in English. Hebrew comes in a later fragment."
+                },
+                {
+                  "q": "A pilot section might be in the room. What do you do with it? (A) Treat it as real (B) Leave it blank (C) Use it as a calculator break",
+                  "answer": "A",
+                  "why": "Pilots are not identified, and no calculator is available. Every section is treated as scored."
+                },
+                {
+                  "q": "The score you are training toward is (A) a raw percent (B) a scaled score of about 200 to 800 (C) a grade out of 5",
+                  "answer": "B",
+                  "why": "NITE reports a scaled score of about 200 to 800. It is not a raw percent, and this road gives no conversion table."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-arith",
+      "index": 2,
+      "title": "Arithmetic",
+      "he": "חשבון",
+      "topic": "Arithmetic",
+      "thesis": "Quantitative speed is fractions, percents, ratios, and averages, done without a calculator.",
+      "syllabus": [
+        "Fractions and reciprocals",
+        "Percents as hundredths, including percent change",
+        "Ratios and proportion",
+        "Averages and weighted averages",
+        "Powers of ten and scientific notation lightly, estimation",
+        "Number properties: parity, divisibility, remainders"
+      ],
+      "levels": [
+        {
+          "id": "psy-arith-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-arith-l1a",
+              "title": "Fractions and reciprocals",
+              "he": "שברים והופכי",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Fractions and reciprocals"
+              ],
+              "objectives": [
+                "Simplify a fraction and multiply or divide by using a reciprocal.",
+                "Rewrite a mixed number as an improper fraction before you operate."
+              ],
+              "teach": "A fraction a/b means a divided by b, and b is not zero. Cancel before you multiply: 18/24 is 3/4, because 6 divides both. The product of two fractions multiplies tops and bottoms. Dividing by a fraction multiplies by its reciprocal. The reciprocal of a/b is b/a, and the reciprocal of 4 is 1/4.\n\nZero has no reciprocal. A mixed number is a whole plus a fraction: 2 1/2 is 5/2, not 21/2. On a timed section that misreading is the usual miss. Write the improper fraction before you add or multiply. Simplify the result the same way you simplified the start.",
+              "rules": [
+                "a/b means a divided by b. Cancel a common factor before you multiply.",
+                "Dividing by a/b is multiplying by b/a.",
+                "The reciprocal of n is 1/n. Zero has no reciprocal.",
+                "The mixed number a b/c equals (a*c + b)/c. So 2 1/2 = 5/2."
+              ],
+              "example": {
+                "prompt": "Compute (2/3) divided by (4/5). What is the simplified fraction?",
+                "steps": [
+                  "Dividing by 4/5 is multiplying by 5/4.",
+                  "(2/3)*(5/4) = 10/12.",
+                  "Cancel a factor of 2: 10/12 = 5/6."
+                ],
+                "answer": "5/6"
+              },
+              "practice": [
+                {
+                  "q": "What is the reciprocal of 3/7? (A) 7/3 (B) 3/7 (C) 1/21",
+                  "answer": "A",
+                  "why": "Swap top and bottom. (3/7)*(7/3) = 1, so 7/3 is the reciprocal."
+                },
+                {
+                  "q": "Write 12/18 in lowest terms.",
+                  "answer": "2/3",
+                  "why": "6 divides 12 and 18. 12/18 = 2/3. 2 and 3 share no further factor."
+                }
+              ]
+            },
+            {
+              "id": "psy-arith-l1b",
+              "title": "Percents and percent change",
+              "he": "אחוזים ושינוי באחוזים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Percents as hundredths, including percent change"
+              ],
+              "objectives": [
+                "Turn a percent into a hundredth and take it of a number.",
+                "Apply a second percent to the new base, not to the original."
+              ],
+              "teach": "A percent is a hundredth. 20% is 1/5, so 20% of 150 is 30. Of means multiply. The reverse question is different: 30 is what percent of 150? That ratio is 30/150, which is 1/5, which is 20%. One question starts from the percent. The other builds it.\n\nPercent change uses the value you have now. A price of 100 rises 20% and becomes 120. A later fall of 20% is 20% of 120, which is 24, so the price is 96. From 100 to 96 is a 4% drop, not zero. The rise and the fall do not cancel, because the second 20% is taken from 120.",
+              "rules": [
+                "p% of N is (p/100)*N. 20% of 150 is 30.",
+                "A is what percent of B means (A/B)*100.",
+                "A percent change applies to the value you have now, unless the stem says otherwise.",
+                "Up 20% then down 20% is not a return to the start: 100 becomes 120, then 96, a 4% drop."
+              ],
+              "example": {
+                "prompt": "A price of 100 rises by 20%, then falls by 20%. What is the net percent change? (A) 0 (B) a 4% drop (C) a 4% rise",
+                "steps": [
+                  "20% of 100 is 20, so the price rises from 100 to 120.",
+                  "20% of 120 is 24, so the price falls from 120 to 96.",
+                  "From 100 to 96 is a drop of 4, which is 4% of the original 100."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "What is 20% of 150?",
+                  "answer": "30",
+                  "why": "20% is 1/5, and 150/5 = 30."
+                },
+                {
+                  "q": "A value of 100 rises by 20% and then falls by 20%. What is the final value?",
+                  "answer": "96",
+                  "why": "100 rises to 120. 20% of 120 is 24, and 120 - 24 = 96. The net change is a 4% drop."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-arith-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-arith-l2a",
+              "title": "Ratios and parts",
+              "he": "יחסים וחלקים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Ratios and proportion"
+              ],
+              "objectives": [
+                "Split a total into a given ratio by counting parts.",
+                "Solve a proportion by cross products."
+              ],
+              "teach": "A ratio 2:3 means 2 parts and 3 parts of the same size, so 5 parts in all. If the total is 40, each part is 40/5, which is 8. The shares are 16 and 24. Check both: 16+24 is 40, and 16:24 still simplifies to 2:3. The terms of a ratio are not the amounts unless the total really is the sum of those terms.\n\nA proportion sets two ratios equal. If 2/3 = x/12, then 2*12 = 3*x, so x is 8. Cross products are the whole method. Do not add across the proportion. Read parts first, then scale.",
+              "rules": [
+                "In a:b the number of parts is a+b.",
+                "A share is its parts, over total parts, times the amount.",
+                "If a sum is split 2:3 and the total is 40, the parts are 16 and 24.",
+                "In a proportion the cross products are equal."
+              ],
+              "example": {
+                "prompt": "A sum of 40 is split in the ratio 2:3. What is the larger share?",
+                "steps": [
+                  "Total parts: 2+3 = 5. Each part is 40/5 = 8.",
+                  "The larger share has 3 parts: 3*8 = 24.",
+                  "The smaller share is 16. Check: 16+24 = 40, and 16:24 = 2:3."
+                ],
+                "answer": "24"
+              },
+              "practice": [
+                {
+                  "q": "A sum of 40 is split 2:3. What is the smaller share?",
+                  "answer": "16",
+                  "why": "Five parts make 40, so one part is 8. Two parts are 16. The other share is 24."
+                },
+                {
+                  "q": "If 3/4 = x/20, what is x?",
+                  "answer": "15",
+                  "why": "Cross multiply: 3*20 = 4*x, so 60 = 4x and x = 15. Check: 3/4 = 15/20."
+                }
+              ]
+            },
+            {
+              "id": "psy-arith-l2b",
+              "title": "Averages and weights",
+              "he": "ממוצעים ומשקלות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Averages and weighted averages"
+              ],
+              "objectives": [
+                "Recover a sum from an average, and a missing value from that sum.",
+                "Weight an average by counts instead of averaging the averages."
+              ],
+              "teach": "The average is the sum divided by the count. The average of 4 and 10 is 7. Turn it around when a piece is missing: sum equals average times count. Five numbers with average 8 add to 40. If four of them add to 30, the fifth is 10. You need the known sum, not each hidden number.\n\nWeights follow the counts. Three scores of 80 and one score of 100 are not averaged as a pair. The sum is 240+100 = 340, four scores, average 85. The larger group pulls harder. Average the group averages only when the groups are the same size.",
+              "rules": [
+                "Average = sum / count. Sum = average * count.",
+                "The average of 4 and 10 is 7.",
+                "Five numbers with average 8 sum to 40. If four sum to 30, the fifth is 10.",
+                "A weighted average repeats each value as many times as its count."
+              ],
+              "example": {
+                "prompt": "Five numbers average 8. Four of them sum to 30. What is the fifth?",
+                "steps": [
+                  "The five numbers sum to 5*8 = 40.",
+                  "The fifth is 40 - 30.",
+                  "40 - 30 = 10. Check: (30+10)/5 = 8."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "What is the average of 4 and 10?",
+                  "answer": "7",
+                  "why": "(4+10)/2 = 14/2 = 7."
+                },
+                {
+                  "q": "Three scores are 70 and one score is 90. What is the average of the four scores?",
+                  "answer": "75",
+                  "why": "Sum = 70*3 + 90 = 210+90 = 300. Average = 300/4 = 75. The three 70s pull harder than one 90."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-arith-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-arith-l3a",
+              "title": "Powers of ten",
+              "he": "חזקות של עשר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Powers of ten and scientific notation lightly, estimation"
+              ],
+              "objectives": [
+                "Move the decimal with a power of ten, including a light scientific notation.",
+                "Estimate a product by rounding, then reject an answer in the wrong neighborhood."
+              ],
+              "teach": "A power of ten moves the decimal. 10^2 is 100, 10^3 is 1000, and 10 to the minus 1 is 0.1. Scientific notation is a coefficient from 1 up to but not including 10, times a power of ten. 4500 is 4.5 * 10^3. You need the form when a header says in thousands, or a stem writes 3.6 * 10^2, which is 360.\n\nEstimation checks a decimal. Round each factor and multiply. 48*21 is near 50*20, which is 1000. An answer of 100 or of 10000 is a misplaced point, not a near miss. Estimate when choices are far apart. Compute when they are close.",
+              "rules": [
+                "10^n moves the decimal n places. A negative n moves it left.",
+                "Scientific notation uses a coefficient from 1 up to, not including, 10.",
+                "4500 = 4.5 * 10^3. A header in thousands multiplies the printed figure by 1000.",
+                "Estimate by rounding, then compare neighborhoods, not single digits."
+              ],
+              "example": {
+                "prompt": "Which choice is 4500 in scientific notation? (A) 45 * 10^2 (B) 4.5 * 10^3 (C) 4.5 * 10^4",
+                "steps": [
+                  "Move the decimal until one nonzero digit stands in front: 4.5.",
+                  "The decimal moved 3 places, so the power is 10^3.",
+                  "45 * 10^2 equals 4500 but the coefficient is not between 1 and 10. 4.5 * 10^4 is 45000."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "What is 3.2 * 10^2?",
+                  "answer": "320",
+                  "why": "10^2 moves the decimal two places right. 3.2 becomes 320."
+                },
+                {
+                  "q": "Estimate 19*31 by rounding each factor to the nearest ten, then multiply those tens. What estimate do you get?",
+                  "answer": "600",
+                  "why": "19 is near 20 and 31 is near 30. 20*30 = 600. The exact product is 589, so 600 is the right neighborhood."
+                }
+              ]
+            },
+            {
+              "id": "psy-arith-l3b",
+              "title": "Parity and remainders",
+              "he": "זוגיות ושארית",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Number properties: parity, divisibility, remainders"
+              ],
+              "objectives": [
+                "Use parity and a digit test to reject a choice.",
+                "Write a remainder as n = d*q + r with r smaller than d."
+              ],
+              "teach": "Even plus even is even, odd plus odd is even, and even plus odd is odd. A product is even if any factor is even, so parity can kill a choice fast. Divisible by 3 means the digit sum is a multiple of 3. By 5: the number ends in 0 or 5. By 9: the digit sum is a multiple of 9.\n\n23 = 5*4 + 3, so the remainder is 3, smaller than the divisor. If division by 5 leaves remainder 3, the number is 5k+3. Try whole values of k until the stem's other condition holds.",
+              "rules": [
+                "Even plus even is even. Odd plus odd is even. Even plus odd is odd.",
+                "Divisible by 3: digit sum is a multiple of 3. By 5: ends in 0 or 5. By 9: digit sum is a multiple of 9.",
+                "n = d*q + r, with r smaller than d and not negative. 23 = 5*4 + 3.",
+                "A remainder of r on division by d means the number has the form d*k + r."
+              ],
+              "example": {
+                "prompt": "What is the remainder when 23 is divided by 5?",
+                "steps": [
+                  "The largest multiple of 5 that is still at most 23 is 20, which is 5*4.",
+                  "23 - 20 = 3.",
+                  "Check the form: 23 = 5*4 + 3, and 3 is smaller than 5."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "17 + 8 is which? (A) even (B) odd",
+                  "answer": "B",
+                  "why": "17 is odd and 8 is even. Odd plus even is odd. 17+8 = 25."
+                },
+                {
+                  "q": "What is the remainder when 41 is divided by 6?",
+                  "answer": "5",
+                  "why": "6*6 = 36 and 41-36 = 5. The remainder 5 is smaller than 6. 41 = 6*6 + 5."
+                },
+                {
+                  "q": "Which of these is divisible by 3? (A) 124 (B) 125 (C) 126",
+                  "answer": "C",
+                  "why": "Digit sums: 7, 8, and 9. Only 9 is a multiple of 3, so 126 is divisible by 3."
+                },
+                {
+                  "q": "What is the smallest integer greater than 20 that leaves a remainder of 3 when divided by 5?",
+                  "answer": "23",
+                  "why": "21 leaves 1, 22 leaves 2, and 23 = 5*4 + 3. The next such integer is 28, which is larger."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-alg",
+      "index": 3,
+      "title": "Algebra",
+      "he": "אלגברה",
+      "topic": "Algebra",
+      "thesis": "The algebra on this test is short: one equation, a sign flip, a factoring, not a calculus course.",
+      "syllabus": [
+        "Linear equations and substitution",
+        "Inequalities and sign",
+        "Exponents and roots in the psychometric range",
+        "Quadratics by factoring, not by a long formula hunt",
+        "Functions as input-output, including simple graphs",
+        "Expressions: factor, expand, simplify under time"
+      ],
+      "levels": [
+        {
+          "id": "psy-alg-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-alg-l1a",
+              "title": "One linear equation",
+              "he": "משוואה לינארית אחת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Linear equations and substitution"
+              ],
+              "objectives": [
+                "Solve a short linear equation by undoing it from the outside.",
+                "Check by substitution, and substitute a known value into a second expression."
+              ],
+              "teach": "A linear equation balances two expressions, and the unknown is to the first power. Undo it from the outside, doing the same thing to both sides. The anchor is 3(x-2) = 2x+4. Expand: 3x-6 = 2x+4. Subtract 2x: x-6 = 4. Add 6: x = 10.\n\nPut 10 back. The left side is 3*8 = 24. The right side is 20+4 = 24. Substitution uses a value you already trust. If y = 2x-1 and x is 10, then y is 19. One equation and a check is the whole job. If the work has turned into a long polynomial, the setup went wrong.",
+              "rules": [
+                "Do the same operation to both sides.",
+                "Expand brackets before you gather like terms: 3(x-2) = 3x-6.",
+                "Check by putting the result back into the original line.",
+                "The anchor 3(x-2) = 2x+4 gives x = 10."
+              ],
+              "example": {
+                "prompt": "Solve 3(x-2) = 2x+4.",
+                "steps": [
+                  "Expand: 3x-6 = 2x+4.",
+                  "Subtract 2x to get x-6 = 4, then add 6 to get x = 10.",
+                  "Check: 3(10-2) = 24 and 2*10+4 = 24."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "Solve 2(x+4) = 18. What is x?",
+                  "answer": "5",
+                  "why": "2x+8 = 18, so 2x = 10 and x = 5. Check: 2(5+4) = 18."
+                },
+                {
+                  "q": "If x = 10 and y = 3x-6, what is y?",
+                  "answer": "24",
+                  "why": "3*10 - 6 = 24. That is substitution. Note that 3(x-2) at x = 10 is also 24."
+                }
+              ]
+            },
+            {
+              "id": "psy-alg-l1b",
+              "title": "The sign flip",
+              "he": "היפוך הסימן",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Inequalities and sign"
+              ],
+              "objectives": [
+                "Solve a linear inequality without flipping the sign by accident.",
+                "Flip the inequality when multiplying or dividing by a negative."
+              ],
+              "teach": "An inequality keeps a direction. Adding or subtracting does not flip it. Multiplying or dividing by a positive number does not flip it. Multiplying or dividing by a negative number does. That flip is the topic. Forget it and you report the reversed ray.\n\nIf -2x > 6, divide by -2 and flip: x < -3. Check inside and outside. At x = -4, -2*(-4) = 8, which is greater than 6, so -4 belongs. At x = 0, the product is 0, which is not greater than 6, so 0 does not belong. The flipped sign is what put the true values on the correct side.",
+              "rules": [
+                "Adding or subtracting does not flip an inequality.",
+                "Multiplying or dividing by a negative number does flip it.",
+                "If -2x > 6, then x < -3.",
+                "Check one number inside the answer and one number outside it."
+              ],
+              "example": {
+                "prompt": "Solve -2x > 6. Which choice is the solution? (A) x > -3 (B) x < -3 (C) x < 3",
+                "steps": [
+                  "Divide both sides by -2. Because -2 is negative, the inequality flips.",
+                  "x < 6/(-2), so x < -3.",
+                  "At x = -4, -2*(-4) = 8 > 6, so it belongs. At x = 0 the inequality fails."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "Solve -3x < 12. What is true of x? (A) x > -4 (B) x < -4 (C) x < 4",
+                  "answer": "A",
+                  "why": "Divide by -3 and flip: x > -4. Check x = 0: -3*0 < 12 is true, and 0 is greater than -4."
+                },
+                {
+                  "q": "Solve 2x - 1 ≥ 7. What is the smallest integer x that works?",
+                  "answer": "4",
+                  "why": "2x ≥ 8, so x ≥ 4. The smallest integer is 4. Check: 2*4 - 1 = 7."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-alg-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-alg-l2a",
+              "title": "Exponents and roots",
+              "he": "חזקות ושורשים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Exponents and roots in the psychometric range"
+              ],
+              "objectives": [
+                "Add, subtract, or multiply exponents when the bases match.",
+                "Take a positive square root after combining what is inside it."
+              ],
+              "teach": "An exponent counts factors. 2^3 is 8, not 6. For the same base, multiply by adding exponents: 2^3 * 2^2 = 2^5 = 32. Divide by subtracting them. A power of a power multiplies the exponents: (2^3)^2 = 2^6 = 64. A nonzero number to the power 0 is 1. A negative exponent is a reciprocal: 2^(-2) = 1/4. One rule on a line is enough.\n\nA square root undoes a square. sqrt(49) = 7. Lengths here are positive, so report the positive root. Do not split a root across a sum. sqrt(9+16) = sqrt(25) = 5, not 3+4.",
+              "rules": [
+                "a^m * a^n = a^(m+n). a^m / a^n = a^(m-n). (a^m)^n = a^(m*n).",
+                "a^0 = 1 for a not zero. a^(-n) = 1/a^n.",
+                "sqrt(49) = 7, the positive number whose square is 49.",
+                "A root does not split over addition. sqrt(9+16) = 5, not 7."
+              ],
+              "example": {
+                "prompt": "Compute 2^3 * 2^2.",
+                "steps": [
+                  "Same base, so add the exponents: 2^(3+2) = 2^5.",
+                  "2^5 = 32.",
+                  "The long way agrees: 8*4 = 32."
+                ],
+                "answer": "32"
+              },
+              "practice": [
+                {
+                  "q": "What is (3^2)^2?",
+                  "answer": "81",
+                  "why": "A power of a power multiplies exponents: 3^(2*2) = 3^4 = 81. Also 9^2 = 81."
+                },
+                {
+                  "q": "What is sqrt(9+16)?",
+                  "answer": "5",
+                  "why": "Add first: 9+16 = 25, and sqrt(25) = 5. It is not 3+4."
+                }
+              ]
+            },
+            {
+              "id": "psy-alg-l2b",
+              "title": "Factor the quadratic",
+              "he": "פירוק של ריבועית",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Quadratics by factoring, not by a long formula hunt"
+              ],
+              "objectives": [
+                "Factor a simple monic quadratic by finding a pair of numbers.",
+                "Read the roots from the factors, and leave the quadratic formula for when factoring fails."
+              ],
+              "teach": "Under time, factor the quadratic. The anchor is x^2 - 5x + 6 = (x-2)(x-3). You want two numbers that multiply to +6 and add to -5: they are -2 and -3. The roots make a factor zero, so x = 2 or x = 3. Expand to check. If the original polynomial does not return, the pair is wrong.\n\nThe quadratic formula exists, and it handles messy coefficients. Factoring is faster when a pair is visible, and these items are usually built that way. Do not hunt the formula first. If the lead coefficient is not 1, pull out a common factor, then split.",
+              "rules": [
+                "For x^2 + bx + c, seek two numbers with product c and sum b.",
+                "x^2 - 5x + 6 = (x-2)(x-3). The roots are 2 and 3.",
+                "A product is zero only when a factor is zero.",
+                "The quadratic formula exists. Factor when the pair is visible. It is faster."
+              ],
+              "example": {
+                "prompt": "Solve x^2 - 5x + 6 = 0. What is the larger root?",
+                "steps": [
+                  "Factor: x^2 - 5x + 6 = (x-2)(x-3).",
+                  "Set each factor to zero: x = 2 or x = 3.",
+                  "The larger root is 3. Expanding (x-2)(x-3) returns x^2 - 5x + 6."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "Which product is x^2 - 5x + 6? (A) (x-1)(x-6) (B) (x-2)(x-3) (C) (x+2)(x+3)",
+                  "answer": "B",
+                  "why": "-2 and -3 multiply to 6 and add to -5. (x+2)(x+3) gives +5x in the middle, not -5x."
+                },
+                {
+                  "q": "Solve x^2 - 7x + 10 = 0. What is the smaller root?",
+                  "answer": "2",
+                  "why": "The pair is -2 and -5. (x-2)(x-5) = 0, so the roots are 2 and 5. The smaller is 2."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-alg-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-alg-l3a",
+              "title": "Input and output",
+              "he": "קלט ופלט",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Functions as input-output, including simple graphs"
+              ],
+              "objectives": [
+                "Evaluate a simple function at a given input.",
+                "Read a point on its graph as an input paired with an output."
+              ],
+              "teach": "A function sends each input to exactly one output. If f(x) = 2x-1, then f(4) = 8-1 = 7, and f(0) = -1. The point (4, 7) on the graph is that pair: input 4, output 7. Each step of +1 in x raises the output by 2, so the slope is 2. You are reading a machine, not sketching a calculus curve.\n\nThe output is 0 where the graph meets the horizontal axis. Set 2x-1 = 0 and the input is 1/2. If a table lists one input with two different outputs, it is not a function. Same input, same output, every time.",
+              "rules": [
+                "f(a) means replace the input with a. It does not mean f times a.",
+                "The point (a, b) on the graph means f(a) = b.",
+                "For f(x) = 2x-1 the slope is 2: each +1 in x gives +2 in the output.",
+                "The output is zero where the graph meets the horizontal axis."
+              ],
+              "example": {
+                "prompt": "f(x) = 2x - 1. What is f(4)?",
+                "steps": [
+                  "Replace x with 4: f(4) = 2*4 - 1.",
+                  "8 - 1 = 7.",
+                  "The matching point on the graph is (4, 7)."
+                ],
+                "answer": "7"
+              },
+              "practice": [
+                {
+                  "q": "f(x) = 3x + 1. What is f(2)?",
+                  "answer": "7",
+                  "why": "3*2 + 1 = 7. The point (2, 7) is on the graph."
+                },
+                {
+                  "q": "On f(x) = 2x - 1 the output is 9. What is the input?",
+                  "answer": "5",
+                  "why": "2x - 1 = 9, so 2x = 10 and x = 5. Check: f(5) = 10 - 1 = 9."
+                }
+              ]
+            },
+            {
+              "id": "psy-alg-l3b",
+              "title": "Shrink the expression",
+              "he": "צמצום הביטוי",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Expressions: factor, expand, simplify under time"
+              ],
+              "objectives": [
+                "Expand, factor, or cancel a factor before substituting.",
+                "Refuse a cancellation that eats a term rather than a factor."
+              ],
+              "teach": "Shrink an expression before you grind. Expand to free like terms: 3(x-2)+4 = 3x-6+4 = 3x-2. Factor when every term shares a piece: 6x+9 = 3(2x+3). Cancel factors, not terms. (6x+9)/3 = 2x+3, because 3 divides both terms on top. You may not cancel the x in (6x+9)/x against the 9.\n\nIf x = 10 and the expression is 3(x-2)-2x, simplify to x-6 first, then 10-6 = 4. To compare two expressions, expand both, or substitute one easy number as a quick reject. A cancel that ate a term is a trap.",
+              "rules": [
+                "Expand brackets, then combine like terms.",
+                "Factor out the common factor when every term shares it.",
+                "Cancel factors, not terms. (6x+9)/3 = 2x+3.",
+                "Simplify before you substitute a large input.",
+                "Test a claimed equality by expanding both sides or by one easy number."
+              ],
+              "example": {
+                "prompt": "Simplify (6x+9)/3 and then evaluate at x = 1. What number do you get?",
+                "steps": [
+                  "6x+9 = 3(2x+3), so (6x+9)/3 = 2x+3.",
+                  "At x = 1, 2*1 + 3 = 5.",
+                  "From the original: (6+9)/3 = 15/3 = 5."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "Evaluate 4(x-1)+3 at x = 5.",
+                  "answer": "19",
+                  "why": "4(x-1)+3 = 4x-1. At x = 5 that is 20-1 = 19. From the original: 4*4+3 = 19."
+                },
+                {
+                  "q": "Which factoring is 6x+9? (A) 3(2x+3) (B) 6(x+9) (C) 3(2x+9)",
+                  "answer": "A",
+                  "why": "3*2x = 6x and 3*3 = 9. Option C expands to 6x+27, and B expands to 6x+54."
+                },
+                {
+                  "q": "What is (8x-4)/4 when x = 3?",
+                  "answer": "5",
+                  "why": "(8x-4)/4 = 2x-1. At x = 3, 6-1 = 5. Original: (24-4)/4 = 5."
+                },
+                {
+                  "q": "Which cancellation is legal? (A) (2x+4)/2 = x+2 (B) (2x+4)/x = 2+4 (C) (2x+4)/2 = 2x+2",
+                  "answer": "A",
+                  "why": "2x+4 = 2(x+2), so dividing by 2 leaves x+2. B cancels a term, and C forgets to divide 4 by 2."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-word",
+      "index": 4,
+      "title": "Word problems",
+      "he": "בעיות מילוליות",
+      "topic": "Word problems",
+      "thesis": "A word problem is a translation into the arithmetic you already know, or a backsolve from the choices.",
+      "syllabus": [
+        "Translating a sentence into an equation",
+        "Rate, time, and distance",
+        "Work problems",
+        "Mixture and percent-of problems",
+        "Averages hiding a missing value",
+        "Age and number problems, and when to backsolve"
+      ],
+      "levels": [
+        {
+          "id": "psy-word-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-word-l1a",
+              "title": "Translate the sentence",
+              "he": "תרגום המשפט",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Translating a sentence into an equation"
+              ],
+              "objectives": [
+                "Turn is, more than, less than, and times into symbols, with order preserved.",
+                "Check the solution in the original sentence."
+              ],
+              "teach": "A word problem is a translation. Is means equals. More than means plus. Times and of mean multiply. Order matters: 5 less than x is x-5, not 5-x. Name what x counts before you write symbols.\n\nThree times a number, decreased by 6, equals twice the number plus 4. That sentence is 3(x-2) = 2x+4, so x = 10. Check in the sentence. Three times 10, minus 6, is 24. Twice 10, plus 4, is 24. If the check fails, the translation failed. Solving a wrong equation a second time only delivers the wrong number faster.",
+              "rules": [
+                "Is becomes =. More than becomes +. Times and of become multiplication.",
+                "5 less than x is x-5. Order matters.",
+                "Name what x counts before you write the equation.",
+                "The sentence 3(x-2) = 2x+4 has solution x = 10. Check it in words."
+              ],
+              "example": {
+                "prompt": "Three times a number, decreased by 6, equals twice the number plus 4. What is the number?",
+                "steps": [
+                  "Translate: 3(x-2) = 2x+4, since three times the number decreased by 6 is 3x-6.",
+                  "Solve: 3x-6 = 2x+4, so x = 10.",
+                  "Check the sentence: 3*10 - 6 = 24, and 2*10 + 4 = 24."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "A number plus 7 is 22. What is the number?",
+                  "answer": "15",
+                  "why": "x+7 = 22, so x = 15. The sentence checks: 15+7 = 22."
+                },
+                {
+                  "q": "Five less than a number is 9. What is the number?",
+                  "answer": "14",
+                  "why": "Five less than x is x-5. Then x-5 = 9, so x = 14. Five less than 14 is 9."
+                }
+              ]
+            },
+            {
+              "id": "psy-word-l1b",
+              "title": "Distance, rate, time",
+              "he": "דרך, קצב, זמן",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Rate, time, and distance"
+              ],
+              "objectives": [
+                "Use distance = rate * time and both rearrangements.",
+                "Add rates when travelers close a gap, and subtract them when they go the same way."
+              ],
+              "teach": "Distance equals rate times time. Time is distance divided by rate, and rate is distance divided by time. The anchor: 60 km at 40 km/h takes 60/40 = 1.5 hours, which is 90 minutes. Convert minutes and hours before you multiply. Do not mix them in one product.\n\nToward each other, add the rates: together they close the gap. Same direction, subtract the rates. Write that link in words before the symbols. If two legs share a clock, the times match. If they share a road end to end, the distances add. A neat equation that answers the wrong question is the usual miss.",
+              "rules": [
+                "distance = rate * time. Rearrange before you substitute.",
+                "60 km at 40 km/h takes 1.5 hours.",
+                "Convert minutes to hours before using a per-hour rate, or convert the rate.",
+                "Toward each other, add the rates. Same direction, subtract the rates."
+              ],
+              "example": {
+                "prompt": "A car travels 60 km at 40 km/h. How many hours does the trip take?",
+                "steps": [
+                  "Time = distance / rate = 60/40.",
+                  "60/40 = 1.5.",
+                  "Check: 40 km/h * 1.5 h = 60 km."
+                ],
+                "answer": "1.5"
+              },
+              "practice": [
+                {
+                  "q": "How many hours does it take to travel 60 km at 40 km/h?",
+                  "answer": "1.5",
+                  "why": "Time = 60/40 = 1.5 hours. Check: 40*1.5 = 60."
+                },
+                {
+                  "q": "A train moves at 80 km/h for 2 hours. How many km does it cover?",
+                  "answer": "160",
+                  "why": "Distance = 80*2 = 160 km."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-word-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-word-l2a",
+              "title": "Shared work",
+              "he": "עבודה משותפת",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Work problems"
+              ],
+              "objectives": [
+                "Turn a finish time into a rate of one job per that many hours.",
+                "Add rates to find a shared time."
+              ],
+              "teach": "If A finishes a job in 6 hours, A's rate is 1/6 of the job per hour. If B finishes it in 3 hours, B's rate is 1/3. Together, add rates, not times: 1/6 + 1/3 = 1/2 of the job per hour. The job then takes 2 hours. Adding 6 and 3 is the error.\n\nFraction done equals rate times time. In those 2 hours, A does 1/3 and B does 2/3, which sum to 1. If someone stops early, multiply that rate only by the hours worked. The job is finished when the fractions sum to 1.",
+              "rules": [
+                "A finish time of t hours means a rate of 1/t of the job per hour.",
+                "Together, add the rates. Do not add the times.",
+                "A in 6 hours and B in 3: 1/6 + 1/3 = 1/2, so together they take 2 hours.",
+                "Fraction done = rate * time. The job is done when the fractions sum to 1."
+              ],
+              "example": {
+                "prompt": "A finishes a job in 6 hours. B finishes it in 3 hours. How many hours do they need together?",
+                "steps": [
+                  "Rates: A is 1/6 of the job per hour, B is 1/3.",
+                  "Together: 1/6 + 1/3 = 1/6 + 2/6 = 1/2 of the job per hour.",
+                  "Time = 1 / (1/2) = 2 hours. In 2 hours A does 1/3 and B does 2/3."
+                ],
+                "answer": "2"
+              },
+              "practice": [
+                {
+                  "q": "A pipe fills a tank in 4 hours. What fraction of the tank does it fill in one hour? Answer as a fraction.",
+                  "answer": "1/4",
+                  "why": "A finish time of 4 hours means a rate of 1/4 of the tank per hour."
+                },
+                {
+                  "q": "One worker finishes in 6 hours and another in 3 hours. How many hours do they need together?",
+                  "answer": "2",
+                  "why": "1/6 + 1/3 = 1/2 of the job per hour, so the whole job takes 2 hours."
+                }
+              ]
+            },
+            {
+              "id": "psy-word-l2b",
+              "title": "Mixtures",
+              "he": "תערובות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Mixture and percent-of problems"
+              ],
+              "objectives": [
+                "Track pure amount, not only the volume of mixture.",
+                "Combine two mixtures by adding pure amounts and adding volumes."
+              ],
+              "teach": "Pure amount equals percent times volume. A 150 ml bottle at 20% acid holds 30 ml of acid. When two mixes join, add the pure amounts and add the volumes, then divide. Average the percents only if the volumes match. 100 ml at 10% plus 100 ml at 30% is 40 ml pure in 200 ml, which is 20%.\n\nEach percent applies to the amount that sentence names. A price of 100 up 20%, then down 20%, goes 100 to 120 to 96. In an even mix, removing a fifth of the bottle removes a fifth of the acid.",
+              "rules": [
+                "Pure amount = percent * volume. 20% of 150 ml is 30 ml.",
+                "When combining, add pure amounts and add volumes, then divide.",
+                "Average the percents only when the volumes are equal.",
+                "A later percent applies to the amount named in that sentence."
+              ],
+              "example": {
+                "prompt": "A 150 ml bottle is 20% acid. How many ml of acid are in it?",
+                "steps": [
+                  "20% is 1/5.",
+                  "1/5 of 150 ml is 30 ml.",
+                  "Check: 30/150 = 1/5 = 20%. The other 120 ml is not acid."
+                ],
+                "answer": "30"
+              },
+              "practice": [
+                {
+                  "q": "20% of a 150 ml solution is acid. How many ml of acid is that?",
+                  "answer": "30",
+                  "why": "20% of 150 is 30. That is the pure acid, not the whole bottle."
+                },
+                {
+                  "q": "100 ml of a 10% salt mix is combined with 100 ml of a 30% salt mix. What is the resulting percent?",
+                  "answer": "20",
+                  "why": "Pure salt: 10+30 = 40 ml. Volume: 200 ml. 40/200 = 20%. Equal volumes, so the percents average."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-word-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-word-l3a",
+              "title": "The hidden sum",
+              "he": "הסכום המוסתר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Averages hiding a missing value"
+              ],
+              "objectives": [
+                "Rebuild a total from an average and a count inside a story.",
+                "Find one missing number, or the number still needed to hit a target average."
+              ],
+              "teach": "An average in a story is a hidden sum. Five numbers with average 8 add to 5*8 = 40. If four of them add to 30, the fifth is 10. The average of 4 and 10, as a small check, is 7. Sum equals average times count, used backwards.\n\nA target uses the same product. Four scores add to 30, and you want five scores to average 8. The five must add to 40, so you still need 10. Read whether 8 is a fact about numbers you have, or a bar you must clear. The story changes. The 40 does not.",
+              "rules": [
+                "Sum = average * count before you hunt for a missing piece.",
+                "Five numbers with average 8 sum to 40.",
+                "If four of them sum to 30, the fifth is 10.",
+                "A target average uses that same sum. It says what the missing piece must be."
+              ],
+              "example": {
+                "prompt": "The average of five numbers is 8. Four of them sum to 30. What is the fifth?",
+                "steps": [
+                  "The five numbers sum to 5*8 = 40.",
+                  "The fifth is 40 minus 30.",
+                  "40 - 30 = 10. Check: (30+10)/5 = 8."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "What is the average of 4 and 10?",
+                  "answer": "7",
+                  "why": "(4+10)/2 = 7."
+                },
+                {
+                  "q": "Six numbers average 5. Five of them sum to 22. What is the sixth?",
+                  "answer": "8",
+                  "why": "The six sum to 6*5 = 30. The sixth is 30-22 = 8. Check: (22+8)/6 = 5."
+                }
+              ]
+            },
+            {
+              "id": "psy-word-l3b",
+              "title": "Ages and backsolving",
+              "he": "גילים ופתרון לאחור",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Age and number problems, and when to backsolve"
+              ],
+              "objectives": [
+                "Write an age problem as a now column and a later column.",
+                "Backsolve from the choices when that is shorter than a fresh translation."
+              ],
+              "teach": "Write ages now and later. The gap between two people does not change. A father is 30 and his son is 6. When will the father be twice the son's age? Set 30+t = 2(6+t). Then 30+t = 12+2t, so t = 18. In 18 years they are 48 and 24. Twice holds, and the gap is still 24.\n\nBacksolve when the choices are shorter than a fresh translation. Put a choice into the sentence and keep the one that makes it true. A sum of 40 split 2:3 is still 16 and 24, story or not.",
+              "rules": [
+                "Write a now column and a later column. Add the same years to every person.",
+                "The age gap between two people does not change.",
+                "Father 30 and son 6: the father is twice the son's age in 18 years, at 48 and 24.",
+                "Backsolve by putting a choice into the sentence. Keep the choice that makes it true.",
+                "A sum of 40 split 2:3 is still 16 and 24 inside a story."
+              ],
+              "example": {
+                "prompt": "A father is 30. His son is 6. In how many years will the father be twice as old as the son?",
+                "steps": [
+                  "Let the wait be t years. Then 30+t = 2(6+t).",
+                  "30+t = 12+2t, so t = 18.",
+                  "Check: ages 48 and 24. 48 is twice 24, and the gap is still 24, matching 30-6."
+                ],
+                "answer": "18"
+              },
+              "practice": [
+                {
+                  "q": "In 18 years a father who is now 30 will be twice his son, who is now 6. How old will the son be then?",
+                  "answer": "24",
+                  "why": "6+18 = 24. The father will be 48, which is twice 24."
+                },
+                {
+                  "q": "Two numbers sum to 40 and are in the ratio 2:3. What is the larger?",
+                  "answer": "24",
+                  "why": "Five parts make 40, so a part is 8. Three parts are 24. The smaller is 16."
+                },
+                {
+                  "q": "Choices for x: (A) 8 (B) 10 (C) 12. Which satisfies 3(x-2) = 2x+4?",
+                  "answer": "B",
+                  "why": "At 10: 3*8 = 24 and 20+4 = 24. At 8: 18 against 20. At 12: 30 against 28. Only 10 works."
+                },
+                {
+                  "q": "Maya is 4 years older than Noam. Noam is 12. How old is Maya?",
+                  "answer": "16",
+                  "why": "4 years older is addition: 12+4 = 16. The gap stays 4 in any later year."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-geom",
+      "index": 5,
+      "title": "Geometry",
+      "he": "גאומטריה",
+      "topic": "Geometry",
+      "thesis": "Psychometric geometry is lengths, areas, and similar triangles, not a Euclidean proof.",
+      "syllabus": [
+        "Angles, parallel lines, triangles",
+        "Special right triangles and Pythagoras",
+        "Area and perimeter of polygons",
+        "Circles: circumference, area, arc, sector",
+        "Similar triangles and scale",
+        "Spatial figures: box, cube, cylinder at formula level"
+      ],
+      "levels": [
+        {
+          "id": "psy-geom-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-geom-l1a",
+              "title": "Angles on parallels",
+              "he": "זוויות על מקבילים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Angles, parallel lines, triangles"
+              ],
+              "objectives": [
+                "Use 180 degrees on a straight line and inside a triangle.",
+                "Use corresponding angles and consecutive interior angles when lines are parallel."
+              ],
+              "teach": "Angles on a straight line sum to 180 degrees. A triangle's interior angles also sum to 180, so 50 and 60 force a third of 70. Vertical angles, opposite when two lines cross, are equal. Do not treat the drawing as to scale.\n\nIf a line crosses two parallel lines, corresponding angles are equal. Consecutive interior angles, the pair between the parallels on the same side of the cutter, sum to 180. One of 70 forces the other to be 110. Without the word parallel, you may not use either fact.",
+              "rules": [
+                "Angles on a straight line sum to 180. Angles in a triangle sum to 180.",
+                "Vertical angles are equal.",
+                "Parallel lines: corresponding angles are equal.",
+                "Parallel lines: consecutive interior angles sum to 180."
+              ],
+              "example": {
+                "prompt": "A transversal cuts a pair of parallel lines. One consecutive interior angle is 70 degrees. What is the other, in degrees?",
+                "steps": [
+                  "Consecutive interior angles on parallel lines sum to 180.",
+                  "The other angle is 180-70.",
+                  "180-70 = 110. Corresponding angles would both be 70. This pair supplements."
+                ],
+                "answer": "110"
+              },
+              "practice": [
+                {
+                  "q": "Two angles of a triangle are 50 and 60 degrees. What is the third, in degrees?",
+                  "answer": "70",
+                  "why": "180 - 50 - 60 = 70."
+                },
+                {
+                  "q": "Corresponding angles on parallel lines: one is 65 degrees. What is the other, in degrees?",
+                  "answer": "65",
+                  "why": "Corresponding angles are equal when the lines are parallel. The consecutive interior partner would be 115."
+                }
+              ]
+            },
+            {
+              "id": "psy-geom-l1b",
+              "title": "Right triangles",
+              "he": "משולשים ישרי זווית",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Special right triangles and Pythagoras"
+              ],
+              "objectives": [
+                "Apply Pythagoras, including the 3-4-5 family and its scales.",
+                "Use the side ratios 1:1:√2 and 1:√3:2 only on the matching special triangles."
+              ],
+              "teach": "In a right triangle, a^2 + b^2 = c^2, and c is the hypotenuse, opposite the right angle. The anchor is 3-4-5: 9+16 = 25. Doubling gives 6-8-10, because 36+64 = 100. Add the squares to find the hypotenuse. Subtract one square to find a leg. Name c before you choose.\n\nA 45-45-90 triangle has sides 1 : 1 : √2. A 30-60-90 triangle has sides 1 : √3 : 2, short leg opposite 30 degrees. If that hypotenuse is 10, the short leg is 5, half of it. These ratios belong only to these two shapes. A random right triangle still uses Pythagoras, not the special list.",
+              "rules": [
+                "a^2 + b^2 = c^2, and c is the hypotenuse.",
+                "3-4-5 is a right triangle because 9+16 = 25. So is 6-8-10.",
+                "45-45-90 sides are in the ratio 1 : 1 : √2.",
+                "30-60-90 sides are in the ratio 1 : √3 : 2, short leg opposite 30 degrees."
+              ],
+              "example": {
+                "prompt": "A right triangle has legs 3 and 4. How long is the hypotenuse?",
+                "steps": [
+                  "The hypotenuse is the longest side: c^2 = 3^2 + 4^2.",
+                  "c^2 = 9+16 = 25.",
+                  "c = 5. This is the 3-4-5 triangle."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "A right triangle has legs 6 and 8. How long is the hypotenuse?",
+                  "answer": "10",
+                  "why": "This is 3-4-5 scaled by 2. 36+64 = 100, and the positive square root is 10."
+                },
+                {
+                  "q": "A 30-60-90 triangle has hypotenuse 10. How long is the side opposite 30 degrees?",
+                  "answer": "5",
+                  "why": "The sides are 1 : √3 : 2. The hypotenuse is the 2-part, so the short leg is half of 10, which is 5."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-geom-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-geom-l2a",
+              "title": "Fence and surface",
+              "he": "היקף ושטח",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Area and perimeter of polygons"
+              ],
+              "objectives": [
+                "Compute a perimeter as the sum of the outer sides.",
+                "Compute rectangle, triangle, and parallelogram areas from a true height."
+              ],
+              "teach": "Perimeter adds the outer sides once. A 3 by 4 rectangle has perimeter 14 and area 12, from length times width. Report the one the stem named. The diagonal of that rectangle is 5, by 3-4-5, and 5 is neither the fence nor the surface. Units help: length versus length squared.\n\nA triangle's area is half of base times perpendicular height. A slanted side is not the height unless it really stands perpendicular to the base you chose. A parallelogram is base times perpendicular height, with no one-half. A composite figure is a sum or a difference of these. Do not invent a formula for a silhouette.",
+              "rules": [
+                "Perimeter is the sum of the outer sides. A 3 by 4 rectangle has perimeter 14.",
+                "Rectangle area = length * width. The 3 by 4 rectangle has area 12.",
+                "Triangle area = half * base * perpendicular height.",
+                "Parallelogram area = base * perpendicular height.",
+                "Do not report a perimeter when the stem asks for area, or the reverse."
+              ],
+              "example": {
+                "prompt": "A rectangle is 3 by 4. What is its area?",
+                "steps": [
+                  "Area of a rectangle is length times width.",
+                  "3*4 = 12.",
+                  "The perimeter would be 14, and the diagonal would be 5. The stem asked for area."
+                ],
+                "answer": "12"
+              },
+              "practice": [
+                {
+                  "q": "A rectangle is 3 by 4. What is its perimeter?",
+                  "answer": "14",
+                  "why": "3+4+3+4 = 14. The area would be 12. The stem asked for the fence."
+                },
+                {
+                  "q": "A triangle has base 10 and perpendicular height 6. What is its area?",
+                  "answer": "30",
+                  "why": "Half of 10*6 is 30. The 6 has to be the perpendicular height, not a slanted side."
+                }
+              ]
+            },
+            {
+              "id": "psy-geom-l2b",
+              "title": "Circles and sectors",
+              "he": "מעגלים וגזרות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Circles: circumference, area, arc, sector"
+              ],
+              "objectives": [
+                "Compute circumference and area from the radius.",
+                "Take a 90 degree sector as one quarter of the disk."
+              ],
+              "teach": "Circumference is 2*pi*r. Area is pi*r^2. Radius 7 gives circumference 14pi and area 49pi. The square marks the area. Halve a diameter before you start: diameter 14 is this same circle.\n\nA sector is a fraction of the disk, and an arc is that same fraction of the circumference. The fraction is the central angle over 360. A 90 degree sector is 1/4 of the disk. Its area is (1/4)*49pi if the radius is 7, and its arc is (1/4)*14pi. A 180 degree sector is a half, not a quarter. Name area or arc before you multiply.",
+              "rules": [
+                "Circumference = 2*pi*r. Area = pi*r^2.",
+                "Radius 7: circumference 14pi, area 49pi.",
+                "A sector's fraction is the central angle over 360. A 90 degree sector is 1/4 of the disk.",
+                "Arc length uses that fraction of the circumference. Sector area uses it on the area."
+              ],
+              "example": {
+                "prompt": "A circle has radius 7. What is its area? (A) 14pi (B) 49pi (C) 7pi",
+                "steps": [
+                  "Area is pi times radius squared.",
+                  "7^2 = 49, so the area is 49pi.",
+                  "14pi is the circumference, 2*pi*7. 7pi is neither."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "A circle has radius 7. What is its circumference? (A) 14pi (B) 49pi (C) 7pi",
+                  "answer": "A",
+                  "why": "Circumference is 2*pi*r = 14pi. 49pi is the area."
+                },
+                {
+                  "q": "A 90 degree sector has radius 7. Its area is what fraction of 49pi? (A) 1/2 (B) 1/4 (C) 1/3",
+                  "answer": "B",
+                  "why": "90/360 = 1/4. A 90 degree sector is a quarter of the disk."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-geom-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-geom-l3a",
+              "title": "Same shape, new scale",
+              "he": "אותה צורה, קנה מידה חדש",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Similar triangles and scale"
+              ],
+              "objectives": [
+                "Scale every length of a similar triangle by one factor.",
+                "Scale area by the square of the length factor."
+              ],
+              "teach": "Similar triangles share angles, so their matching sides stay in one ratio. Match the side opposite a given angle with the side opposite the same angle. A flip in the drawing does not change the match. One scale factor covers every length, and therefore the perimeter.\n\nArea takes the square of that factor. Lengths doubled means area times 4. A 3-4-5 triangle has area (1/2)*3*4 = 6. The similar triangle 6-8-10 has area 24, and 24/6 = 4, which is 2 squared. If a stem says twice as big, decide whether it means the sides or the surface before you scale.",
+              "rules": [
+                "Similar triangles have equal angles and proportional sides.",
+                "One scale factor applies to every length, including the perimeter.",
+                "Area scales by the square of the length factor.",
+                "3-4-5 and 6-8-10 are similar. Length factor 2, area factor 4."
+              ],
+              "example": {
+                "prompt": "A triangle similar to a 3-4-5 triangle is scaled by 2 on the lengths. What is the area of the larger triangle?",
+                "steps": [
+                  "The 3-4-5 triangle has area (1/2)*3*4 = 6.",
+                  "Lengths scale by 2, so area scales by 4.",
+                  "6*4 = 24. The sides 6, 8, and 10 give (1/2)*6*8 = 24."
+                ],
+                "answer": "24"
+              },
+              "practice": [
+                {
+                  "q": "The sides of a triangle are doubled. By what factor does the perimeter grow?",
+                  "answer": "2",
+                  "why": "Perimeter is a length, so it takes the length factor 2. Area would take 4."
+                },
+                {
+                  "q": "A similar copy uses length scale factor 3. The small area is 5. What is the large area?",
+                  "answer": "45",
+                  "why": "Area scales by 3^2 = 9. 5*9 = 45."
+                }
+              ]
+            },
+            {
+              "id": "psy-geom-l3b",
+              "title": "Boxes and cylinders",
+              "he": "תיבות וגלילים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Spatial figures: box, cube, cylinder at formula level"
+              ],
+              "objectives": [
+                "Compute box, cube, and cylinder volumes from the formulas.",
+                "Find the square of the space diagonal of a 3 by 4 by 5 box."
+              ],
+              "teach": "A box has volume length times width times height. A 3 by 4 by 5 box holds 60. A cube of edge 3 holds 27, the edge cubed. The space diagonal of the 3-4-5 box runs through the interior: its square is 9+16+25 = 50, so the diagonal is sqrt(50), which is 5√2. The 3-4 face diagonal is already 5, and Pythagoras with the third edge repeats that 50.\n\nA cylinder has volume pi*r^2*h. Radius 7 and height 1 gives 49pi, the base area times the height. Do not report a circumference or a face area when the noun in the stem is volume.",
+              "rules": [
+                "Box volume = length * width * height. Cube volume = edge cubed.",
+                "A 3 by 4 by 5 box has volume 60.",
+                "Its space diagonal d satisfies d^2 = 9+16+25 = 50, so d = 5√2.",
+                "Cylinder volume = pi*r^2*h."
+              ],
+              "example": {
+                "prompt": "A box is 3 by 4 by 5. What is the square of its space diagonal?",
+                "steps": [
+                  "The space diagonal d satisfies d^2 = 3^2 + 4^2 + 5^2.",
+                  "d^2 = 9+16+25 = 50.",
+                  "So d = sqrt(50) = 5√2. The question asked for the square, which is 50."
+                ],
+                "answer": "50"
+              },
+              "practice": [
+                {
+                  "q": "What is the volume of a 3 by 4 by 5 box?",
+                  "answer": "60",
+                  "why": "Volume = 3*4*5 = 60."
+                },
+                {
+                  "q": "For the space diagonal of a 3 by 4 by 5 box,  d^2 = 9+16+25. What is d^2?",
+                  "answer": "50",
+                  "why": "9+16 = 25, and 25+25 = 50. Then d = sqrt(50) = 5√2. The squared length is 50."
+                },
+                {
+                  "q": "A cylinder has radius 7 and height 1. Its volume is which choice? (A) 14pi (B) 49pi (C) 7pi",
+                  "answer": "B",
+                  "why": "Volume = pi*r^2*h = 49pi*1 = 49pi. 14pi is the circumference of the base, not the volume."
+                },
+                {
+                  "q": "A cube has edge 3. What is its volume?",
+                  "answer": "27",
+                  "why": "Edge cubed: 3*3*3 = 27. The surface area would be 6*9 = 54, which was not asked."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-data",
+      "index": 6,
+      "title": "Data and quantitative craft",
+      "he": "נתונים וטכניקה",
+      "topic": "Data and quantitative craft",
+      "thesis": "Charts are reading, and the craft moves — backsolve, plug in a number — are how a timed section is finished.",
+      "syllabus": [
+        "Tables",
+        "Graphs: bar, line, pie, scatter at exam depth",
+        "Comparing rates on a chart",
+        "Backsolving from the choices",
+        "Plugging in a convenient number",
+        "A timed set of six mixed quantitative items"
+      ],
+      "levels": [
+        {
+          "id": "psy-data-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-data-l1a",
+              "title": "One cell, then a sum",
+              "he": "תא אחד ואז סכום",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Tables"
+              ],
+              "objectives": [
+                "Read a table cell by its row and its column, including the header unit.",
+                "Check a total by adding along the other direction."
+              ],
+              "teach": "A cell is one row crossed with one column. Read both labels, and any unit in the header, before you use the digit. Here the cells are plain book counts. Shop A sold 4 on Monday, 6 on Tuesday, and 5 on Wednesday. Shop B sold 3, 7, and 2.\n\nShop A totals 15 and Shop B totals 12, so together 27. The three columns total 7, 13, and 7, which also add to 27. If those paths disagree, a cell was doubled or skipped. On a grid this small, add it. Do not estimate.",
+              "rules": [
+                "A cell is the crossing of one row and one column. Read both labels.",
+                "Honor a unit in the header before you compare the cell to a sentence.",
+                "Check a total the other way: row sums should match column sums.",
+                "Shop A is 4, 6, 5, totaling 15. Shop B is 3, 7, 2, totaling 12. Together, 27."
+              ],
+              "example": {
+                "prompt": "Books sold — A: Monday 4, Tuesday 6, Wednesday 5. B: Monday 3, Tuesday 7, Wednesday 2. How many books did the two shops sell on Tuesday?",
+                "steps": [
+                  "Tuesday is one column: Shop A sold 6 and Shop B sold 7.",
+                  "6+7 = 13.",
+                  "The other columns are Monday 7 and Wednesday 7. With Tuesday, 7+13+7 = 27, which matches 15+12."
+                ],
+                "answer": "13"
+              },
+              "practice": [
+                {
+                  "q": "Shop A sold 4, 6, and 5 books over three days. How many is that?",
+                  "answer": "15",
+                  "why": "4+6+5 = 15. The partial sum 4+6 = 10, and 10+5 = 15."
+                },
+                {
+                  "q": "Shop B sold 3, 7, and 2, a total of 12. Shop A sold 15. How many more did A sell than B?",
+                  "answer": "3",
+                  "why": "15-12 = 3. Day by day the gaps are +1, -1, and +3, which also sum to 3."
+                }
+              ]
+            },
+            {
+              "id": "psy-data-l1b",
+              "title": "Four kinds of graph",
+              "he": "ארבעה סוגי תרשים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Graphs: bar, line, pie, scatter at exam depth"
+              ],
+              "objectives": [
+                "Say what a bar, a line, a pie, and a scatterplot are each for.",
+                "Read a value from a graph described in words, without inventing a scale."
+              ],
+              "teach": "Bars compare amounts, and the taller bar is larger when the scale starts at zero. A line shows change along an ordered axis, usually time. A pie is one whole: slices are percents of that whole and sum to 100. A 25% slice is a quarter of the pie.\n\nA scatter dot is one pair, horizontal then vertical. A cloud rising to the right is a positive association, not a proof of cause. At this depth you read a value, compare two marks, or name the trend. If the stem describes the figure in words, those words are the figure.",
+              "rules": [
+                "Bars compare amounts. Lines show change across an order. Pies show parts of one whole.",
+                "A pie's slices sum to 100% of that whole.",
+                "A scatter dot is a pair. Association is not, by itself, a cause.",
+                "Read the axis label, including in thousands, before you quote a height."
+              ],
+              "example": {
+                "prompt": "A pie has three slices: 25%, 35%, and the rest. What percent is the rest?",
+                "steps": [
+                  "The slices of one pie sum to 100%.",
+                  "The known slices sum to 25+35 = 60.",
+                  "The rest is 100-60 = 40."
+                ],
+                "answer": "40"
+              },
+              "practice": [
+                {
+                  "q": "A line graph drops from 20 to 14 over one year. By how many units did it fall?",
+                  "answer": "6",
+                  "why": "20-14 = 6. The line shows the change. The subtraction is the reading."
+                },
+                {
+                  "q": "A scatterplot of hours studied against score rises as you look right. Which statement is fair? (A) More hours are associated with higher scores in this plot (B) The plot proves that hours cause the scores (C) The slices of this pie sum to the score",
+                  "answer": "A",
+                  "why": "A rising scatter shows a positive association. It does not by itself prove a cause, and it is not a pie."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-data-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-data-l2a",
+              "title": "Rates off a chart",
+              "he": "קצבים מתוך תרשים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Comparing rates on a chart"
+              ],
+              "objectives": [
+                "Turn two points on a described line into a rate.",
+                "Compare per-day rates instead of comparing raw totals."
+              ],
+              "teach": "Rate is a change divided by the time it took. A line from 0 km to 60 km over 1.5 hours has rate 60/1.5 = 40 km/h. Equal rises are not equal rates if one took longer. Steeper means faster only on an even time axis.\n\nShop A sold 15 books in 3 days, which is 5 a day. Shop B sold 12 in 2 days, which is 6 a day. B is faster, though A's total is larger. When the stem says per, divide. A pie slice of 20% of a whole of 150 is 30 books. Multiply the caption by the slice.",
+              "rules": [
+                "Rate = change in amount / change in time. Watch the horizontal span.",
+                "60 km over 1.5 hours is 40 km/h.",
+                "A larger total can hide a smaller rate if the time was longer.",
+                "A percent on a chart is still hundredths of the whole in the caption. 20% of 150 is 30."
+              ],
+              "example": {
+                "prompt": "A line graph shows 0 km at time 0 and 60 km at 1.5 hours. What is the average speed in km/h?",
+                "steps": [
+                  "Rate = (60-0)/(1.5-0).",
+                  "60/1.5 = 40.",
+                  "Check: 40 km/h * 1.5 h = 60 km, the point on the graph."
+                ],
+                "answer": "40"
+              },
+              "practice": [
+                {
+                  "q": "Shop A sold 15 books in 3 days. Shop B sold 12 books in 2 days. Who sold more books per day? (A) Shop A (B) Shop B",
+                  "answer": "B",
+                  "why": "A is 15/3 = 5 per day. B is 12/2 = 6 per day. B's rate is higher even though A's total is higher."
+                },
+                {
+                  "q": "A caption says 150 deliveries, and a slice of the pie is 20%. How many deliveries is that slice?",
+                  "answer": "30",
+                  "why": "20% of 150 is 30. The pie gives the percent. The caption gives the whole."
+                }
+              ]
+            },
+            {
+              "id": "psy-data-l2b",
+              "title": "Test the choices",
+              "he": "בדיקת האפשרויות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Backsolving from the choices"
+              ],
+              "objectives": [
+                "Substitute a choice into the stem and keep the one that works.",
+                "Start from the middle choice when the choices are ordered."
+              ],
+              "teach": "Backsolving tests the choices in the stem. For 3(x-2) = 2x+4, try 10. The left side is 24 and the right side is 24, so 10 works. Try 8: 18 against 20, so 8 is dead. Do not average a miss with the choice that survived.\n\nIf the choices are ordered, start in the middle. Too high or too low tells you which way to step. If they are not ordered, plug the easiest number. Use this when the story is messy, and use it again as a check after algebra. The sentence stays the judge. A choice that fails one condition is finished.",
+              "rules": [
+                "Plug a choice into the stem. Keep the choice that makes the sentence true.",
+                "On 3(x-2) = 2x+4, the choice 10 works and the choice 8 does not.",
+                "If the choices are ordered, test the middle one first.",
+                "A failed plug is discarded. Do not average it with another choice."
+              ],
+              "example": {
+                "prompt": "Choices for x: (A) 6 (B) 10 (C) 14. Which satisfies 3(x-2) = 2x+4?",
+                "steps": [
+                  "Start at the middle, 10. Left: 3*8 = 24. Right: 20+4 = 24. Equal.",
+                  "At 6: left 12, right 16. Not equal.",
+                  "At 14: left 36, right 32. Not equal. Only 10 survives."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "Which choice satisfies x+7 = 22? (A) 14 (B) 15 (C) 16",
+                  "answer": "B",
+                  "why": "15+7 = 22. 14+7 = 21 and 16+7 = 23. Only 15 makes the sentence true."
+                },
+                {
+                  "q": "A finishes in 6 hours and B in 3. Choices for their joint time in hours: (A) 9 (B) 4 (C) 2. Which matches the rates?",
+                  "answer": "C",
+                  "why": "Adding the times gives the trap 9. Rates 1/6+1/3 = 1/2, so the time is 2. In 2 hours the fractions 1/3 and 2/3 sum to 1."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-data-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-data-l3a",
+              "title": "Invent a friendly number",
+              "he": "המצאת מספר נוח",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Plugging in a convenient number"
+              ],
+              "objectives": [
+                "Replace an unspecified amount with a number the percents or ratios divide evenly.",
+                "Match the numerical outcome to the choices, without treating the invented number as a given."
+              ],
+              "teach": "If no start is given, invent one the percents divide cleanly. A rise of 20% and then a fall of 20% does not depend on the start. Pick 100. It goes to 120, then loses 24, and lands on 96: a 4% drop.\n\nFor a 2:3 split, pick 40. The parts are 16 and 24. Do not pick 0 if you must divide by the amount. Compute the outcome, then match a choice. That is not backsolving. Backsolving plugs their number in. Here you plug yours, then look at theirs.",
+              "rules": [
+                "If no amount is given, invent one that the percents and ratios divide cleanly.",
+                "100 is the convenient price. Up 20% then down 20% sends 100 to 120 to 96, a 4% drop.",
+                "40 is a convenient total for a 2:3 split, giving 16 and 24.",
+                "Your invented number is not the answer unless the stem asked for an amount. Match the outcome to the choices."
+              ],
+              "example": {
+                "prompt": "A price rises 20% and then falls 20%. No starting price is given. What is the net change? (A) no change (B) a 4% drop (C) a 4% rise",
+                "steps": [
+                  "Invent a start of 100. No start was stated, so this is legal.",
+                  "Up 20%: 120. Down 20% of 120: 120-24 = 96.",
+                  "From 100 to 96 is a 4% drop. A start of 50 goes 50 to 60 to 48, the same 4% drop."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "No total is given. A sum is split 2:3. Using 40 as a convenient total, what is the larger part?",
+                  "answer": "24",
+                  "why": "40/5 = 8 per part. Three parts are 24 and two are 16. The stem fixed the ratio. 40 is your choice of total."
+                },
+                {
+                  "q": "Using 100 as the start, a quantity rises 10% and then rises another 10% of the new amount. What is the final value?",
+                  "answer": "121",
+                  "why": "10% of 100 is 10, so the value is 110. 10% of 110 is 11, so the final value is 121. Two rises of 10% are not 20% of the start."
+                }
+              ]
+            },
+            {
+              "id": "psy-data-l3b",
+              "title": "A starter set of four",
+              "he": "סט פתיחה של ארבעה",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A timed set of six mixed quantitative items"
+              ],
+              "objectives": [
+                "Finish four mixed items with no calculator and no blank left on purpose.",
+                "Keep percent, work, a triangle, and a chart-in-words distinct while the clock is in your head."
+              ],
+              "teach": "A real quantitative section is longer than this page. It is one short timed block among several, and a pilot section is not labeled, so you treat the block as scored. This node is a starter set of four. No calculator. No blank left on purpose. Work the four, then read the reasons.\n\nThey mix one percent, one work rate, one right triangle, and one one-line chart described in words, not drawn. If a stem stalls, mark a live choice and move. Worth a second look: 20% of 150 is 30, rates 1/6 and 1/3 add to 1/2, and 3 squared plus 4 squared is 25.",
+              "rules": [
+                "This node is a starter set of four. A real section is longer.",
+                "No calculator. Answer every item. A blank is not rewarded.",
+                "The mix is a percent, a work rate, a triangle, and a chart given in words.",
+                "Recompute the last arithmetic even when the move felt familiar."
+              ],
+              "example": {
+                "prompt": "Warm-up before the four checks: what is 20% of 150?",
+                "steps": [
+                  "20% is 1/5.",
+                  "150/5 = 30.",
+                  "The four checks below are the starter set. This line is the percent move in its clean form."
+                ],
+                "answer": "30"
+              },
+              "practice": [
+                {
+                  "q": "A price of 100 rises 20% and then falls 20%. What is the final price?",
+                  "answer": "96",
+                  "why": "20% of 100 is 20, so the price is 120. 20% of 120 is 24, and 120-24 = 96. From 100 that is a 4% drop."
+                },
+                {
+                  "q": "A finishes a job in 6 hours and B finishes the same job in 3 hours. How many hours do they need together?",
+                  "answer": "2",
+                  "why": "1/6 + 1/3 = 1/2 of the job per hour, so the job takes 2 hours. In 2 hours A does 1/3 and B does 2/3."
+                },
+                {
+                  "q": "A right triangle has legs 3 and 4. What is the hypotenuse?",
+                  "answer": "5",
+                  "why": "3^2 + 4^2 = 9+16 = 25, and the positive square root of 25 is 5."
+                },
+                {
+                  "q": "A one-line chart, described in words and not drawn, shows sales of 4 on Monday, 6 on Tuesday, and 5 on Wednesday. How many sales over the three days?",
+                  "answer": "15",
+                  "why": "Read the sentence as the chart: 4+6+5 = 15. Check: 4+6 = 10, and 10+5 = 15. There is no picture with a further mark."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

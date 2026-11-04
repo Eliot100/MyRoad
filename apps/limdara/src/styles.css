@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f3efe6;
+  --color-paper-2: #e6dfd2;
+  --color-ink: #171614;
+  --color-stone: #6b675e;
+  --color-line: #d2cbbd;
+  --color-pine: #1d4f42;
+  --color-pine-deep: #163f35;
+  --color-on-pine: #f3efe6;
+  --color-pine-soft: #e5efe9;
+  --font-display: "Fraunces", "Noto Serif Hebrew", "Noto Naskh Arabic", Georgia, serif;
+  --font-sans: "Literata", "Noto Serif Hebrew", "Noto Naskh Arabic", Georgia, serif;
+}
+
+/* Unlayered so a theme flip beats the Tailwind theme layer. */
+:root[data-theme="dark"] {
+  --color-paper: #141311;
+  --color-paper-2: #1e1d1a;
+  --color-ink: #f3efe6;
+  --color-stone: #a39e93;
+  --color-line: #34322c;
+  --color-pine: #9dcec0;
+  --color-pine-deep: #c5e2d8;
+  --color-on-pine: #14211c;
+  --color-pine-soft: #1a2824;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+  body {
+    overflow-x: clip;
+    line-height: 1.55;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-pine);
+    color: var(--color-on-pine);
+  }
+}
+
+.stack {
+  position: relative;
+  margin-right: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+.stack-back {
+  position: absolute;
+  inset: 0.5rem -0.45rem -0.6rem 0.65rem;
+  border: 1px solid var(--color-line);
+  border-radius: 1.125rem;
+  background: var(--color-paper-2);
+}
+.twist {
+  transition: transform 180ms ease;
+}
+details[open] .twist {
+  transform: rotate(90deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .twist {
+    transition: none;
+  }
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 50;
+  background: var(--color-pine);
+  color: var(--color-on-pine);
+  padding: 0.5rem 1rem;
+}
+.skip:focus {
+  top: 1rem;
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.dock {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  border-top: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+@media (min-width: 640px) {
+  .dock {
+    display: none;
+  }
+}
+

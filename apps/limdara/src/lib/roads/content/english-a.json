@@ -1,0 +1,1527 @@
+{
+  "stages": [
+    {
+      "id": "eng-verb",
+      "index": 1,
+      "title": "The verb system",
+      "he": "מערכת הפועל",
+      "topic": "The verb system",
+      "thesis": "Tense and aspect are the grammar the rest of the paper assumes you can control.",
+      "syllabus": [
+        "Present, past, and future forms",
+        "Progressive aspect",
+        "Perfect aspect",
+        "Perfect progressive, lightly",
+        "Stative verbs and aspect limits",
+        "Subject-verb agreement under distance"
+      ],
+      "levels": [
+        {
+          "id": "eng-verb-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-verb-l1a",
+              "title": "Finite forms of time",
+              "he": "צורות הזמן של הפועל",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Present, past, and future forms"
+              ],
+              "objectives": [
+                "Form present simple, past simple, and the common futures.",
+                "Choose will, be going to, present continuous, or a timetable present."
+              ],
+              "teach": "A finite verb shows time by its form. Present simple is the base form, with -s after he, she, or it: they study, she studies. Past simple adds -ed, or uses an irregular such as went, saw, or wrote. Spelling still matters: stop becomes stopped, and carry becomes carried.\n\nFuture has no single ending. Use will for a decision made while you speak. Use be going to or present continuous for a plan already made. Use present simple for a timetable: the bus leaves at seven. Do not add will in a time clause: when she arrives, not when she will arrive.",
+              "rules": [
+                "Third person singular present adds -s or -es: he watches, she goes.",
+                "Past -ed doubles a short stressed vowel plus one consonant: planned, stopped.",
+                "Will is a new decision. Be going to and present continuous mark a plan you already have.",
+                "After when, after, or until, use present simple for a future meaning, not will."
+              ],
+              "example": {
+                "prompt": "The exam starts at nine tomorrow. Noa decided last week to take the early bus. Complete: The exam ___ at nine, so she ___ the early bus.",
+                "steps": [
+                  "A clock time on a schedule takes present simple, not will.",
+                  "The bus plan was made last week, so it is not a new will-decision.",
+                  "Noa is third person, so the plan form is is going to take."
+                ],
+                "answer": "starts; is going to take"
+              },
+              "practice": [
+                {
+                  "q": "Dana sees dark clouds. Which fits? (a) It will rain. (b) It is going to rain.",
+                  "answer": "b",
+                  "why": "Visible clouds are present evidence, so be going to is the natural form. Will is for a decision made at the moment of speaking."
+                },
+                {
+                  "q": "Choose the legal time clause: (a) when he will arrive (b) when he arrives",
+                  "answer": "b",
+                  "why": "After when, future meaning still uses present simple. Will stays in the main clause: I will call when he arrives."
+                }
+              ]
+            },
+            {
+              "id": "eng-verb-l1b",
+              "title": "The progressive frame",
+              "he": "היבט ההמשך",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Progressive aspect"
+              ],
+              "objectives": [
+                "Build be plus verb-ing for an action in progress.",
+                "Contrast a temporary progressive with a permanent simple."
+              ],
+              "teach": "Progressive aspect is be plus the -ing form. It frames an action as unfinished around a time. Present progressive is for now or for a temporary period: she is living with her aunt this term. Past progressive sets a background: I was reading when the bell rang.\n\nThe -ing spelling changes the base. Drop a silent e: make, making. Double a stressed short vowel plus one consonant: sit, sitting. Do not double after a long vowel written with two letters: rain, raining. A state such as know is usually not progressive; that limit comes later.",
+              "rules": [
+                "Progressive equals the right form of be plus verb-ing.",
+                "Use it for an action in progress, a temporary situation, or a near arrangement: we are meeting at four.",
+                "In a when-sentence, the longer background is past progressive and the interruption is past simple.",
+                "A permanent fact stays simple: water boils at 100 degrees, unless you mean this sample right now."
+              ],
+              "example": {
+                "prompt": "At 8 p.m. yesterday Maya was already on a call. Then the power failed. Write one sentence.",
+                "steps": [
+                  "The call was in progress, so past progressive: was talking.",
+                  "The power cut is the short event, so past simple: failed.",
+                  "Link them with when. Either clause can come first."
+                ],
+                "answer": "Maya was talking when the power failed."
+              },
+              "practice": [
+                {
+                  "q": "Which spelling is right? (a) planing the trip (b) planning the trip",
+                  "answer": "b",
+                  "why": "Plan has a short stressed vowel plus one consonant, so the consonant doubles before -ing. Planing would come from the verb plane."
+                },
+                {
+                  "q": "She ___ in Haifa this month, but she lives in Be'er Sheva. Type the progressive of live.",
+                  "answer": "is living",
+                  "why": "This month marks a temporary arrangement, so present progressive is required. The permanent home stays in present simple: lives."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-verb-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-verb-l2a",
+              "title": "The perfect as a link",
+              "he": "הפרפקט כגשר בזמן",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Perfect aspect"
+              ],
+              "objectives": [
+                "Form present perfect and past perfect with have plus the past participle.",
+                "Decide whether the time link is to now or to an earlier past."
+              ],
+              "teach": "Perfect aspect is a form of have plus the past participle. Present perfect links a past event to now: she has finished the essay, so the essay is done. Past perfect links an earlier past to a later past: she had finished the essay before the bell rang.\n\nUse present perfect with already, yet, just, ever, never, and with for or since when the period reaches now. Use past simple when the time is closed: yesterday, in 2019, last year. Do not write she has finished yesterday. Irregular participles must be learned as forms: written, gone, taken, seen.",
+              "rules": [
+                "Present perfect is have or has plus the past participle. Past perfect is had plus the past participle.",
+                "Since takes a starting point. For takes a length: since Monday, for three days.",
+                "A finished time expression forces past simple, even if the result still matters.",
+                "Use past perfect only when you must mark an earlier of two past events."
+              ],
+              "example": {
+                "prompt": "Roni submitted the form at 4. The office closed at 5. Write one past-perfect sentence that shows the order.",
+                "steps": [
+                  "Both events are past. Submission is the earlier one.",
+                  "Mark the earlier event with had plus the past participle: had submitted.",
+                  "The later event stays past simple: closed. Link them with before."
+                ],
+                "answer": "Roni had submitted the form before the office closed."
+              },
+              "practice": [
+                {
+                  "q": "She ___ in this school since 2022. Type the present perfect of study.",
+                  "answer": "has studied",
+                  "why": "Since 2022 opens a period that includes now, so present perfect is required. She takes has, not have."
+                },
+                {
+                  "q": "Choose the legal sentence. (a) I have seen that film last night. (b) I saw that film last night.",
+                  "answer": "b",
+                  "why": "Last night is a closed time, so present perfect cannot carry it. Past simple saw is required."
+                }
+              ]
+            },
+            {
+              "id": "eng-verb-l2b",
+              "title": "Duration up to a point",
+              "he": "משך עד נקודת זמן",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Perfect progressive, lightly"
+              ],
+              "objectives": [
+                "Form have been plus verb-ing for an activity with duration.",
+                "Prefer the simple perfect when a finished count is the point."
+              ],
+              "teach": "Perfect progressive is have been or had been plus verb-ing. It stresses an activity lasting up to a point. Present perfect progressive reaches now: she has been revising for two hours, and she may still be at it. Past perfect progressive reaches an earlier past: she had been revising when the lights went out.\n\nKeep this form light. Use it when the length of the activity matters. If you care about a finished result, use the plain perfect: she has written three pages. Stative verbs such as know still avoid -ing. Do not stack perfect progressive where a simple perfect already says the result.",
+              "rules": [
+                "Present perfect progressive is have or has been plus verb-ing.",
+                "Past perfect progressive is had been plus verb-ing.",
+                "For and since fit this form when duration is the point of the sentence.",
+                "A counted result, such as three emails, usually wants present perfect simple."
+              ],
+              "example": {
+                "prompt": "It is 6 p.m. Gal started homework at 4 p.m. and is still working. Write one present perfect progressive sentence with for.",
+                "steps": [
+                  "The activity began in the past and continues now, so have been plus -ing.",
+                  "Gal is singular, so has been doing, or has been working.",
+                  "The length is two hours, so for two hours, not since two hours."
+                ],
+                "answer": "Gal has been doing homework for two hours."
+              },
+              "practice": [
+                {
+                  "q": "She wrote four emails and finished them. Type the present perfect phrase of write.",
+                  "answer": "has written",
+                  "why": "Four emails is a completed count, so present perfect simple marks the result. Progressive would stress the activity, not the number finished."
+                },
+                {
+                  "q": "They have been at the stop since noon and are still there. Type the present perfect progressive of wait.",
+                  "answer": "have been waiting",
+                  "why": "Since noon gives duration up to now, and wait is an activity, so have been waiting. They takes have, not has."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-verb-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-verb-l3a",
+              "title": "Verbs that refuse the -ing",
+              "he": "פעלים שדוחים צורת ing",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Stative verbs and aspect limits"
+              ],
+              "objectives": [
+                "Keep stative verbs in simple aspect unless the meaning becomes an action.",
+                "Spot verbs that are stative in one sense and active in another."
+              ],
+              "teach": "Some verbs name a state, not an action, so they usually reject progressive aspect. Common groups are mental states such as know, believe, and remember, emotions such as like and prefer, possession such as own and belong, and measures such as cost and weigh. Have is stative only when it means possess.\n\nA few verbs change class when the meaning changes. Have a shower is an activity: she is having a shower. See meaning meet is active: I am seeing the teacher at two. Think meaning believe stays simple: I think the answer is B. If you cannot picture someone doing the verb, do not use -ing.",
+              "rules": [
+                "Do not put know, believe, own, belong, or cost in a progressive form.",
+                "Have is stative for possession and active for activities such as lunch or a shower.",
+                "A sense verb is stative for the experience (I hear music) and the deliberate act uses a different verb (I am listening).",
+                "A general state stays simple even when the sentence is about right now."
+              ],
+              "example": {
+                "prompt": "Complete: I ___ (know) the answer, and I ___ (think) about how to explain it. Use know or am knowing, and think or am thinking.",
+                "steps": [
+                  "Know is a mental state, so it stays simple: know.",
+                  "Think about how to explain is the activity of considering, so progressive is allowed.",
+                  "The subject I takes am thinking, and know has no -s after I."
+                ],
+                "answer": "know; am thinking"
+              },
+              "practice": [
+                {
+                  "q": "Which sentence is acceptable? (a) She is owning two dictionaries. (b) She owns two dictionaries.",
+                  "answer": "b",
+                  "why": "Own is a state of possession and does not take progressive aspect. Present simple owns is the normal form."
+                },
+                {
+                  "q": "Type the correct form of have: He ___ lunch right now.",
+                  "answer": "is having",
+                  "why": "Have lunch is an activity, not possession, so present progressive is legal. He takes is having."
+                }
+              ]
+            },
+            {
+              "id": "eng-verb-l3b",
+              "title": "Agreement across a gap",
+              "he": "התאמה מעבר למרווח",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Subject-verb agreement under distance"
+              ],
+              "objectives": [
+                "Match the verb to the grammatical subject, not to a nearby noun.",
+                "Handle there, each, and phrases such as together with."
+              ],
+              "teach": "Agreement is between the verb and the grammatical subject, not the noun beside the verb. In the stack of books is heavy, the head is stack, so the verb is singular. A prepositional phrase after the subject does not change the number: the quality of the answers is high.\n\nThere and here take the verb from the subject after them: there are two reasons, there is one reason. Each, every, everyone, and nobody take a singular verb. As well as, together with, and along with do not add a subject: the teacher, along with the pupils, is late. And does make two subjects plural.",
+              "rules": [
+                "Ignore nouns inside a prepositional phrase when you choose is or are.",
+                "There is and there are agree with the noun that follows the verb.",
+                "Each, every, and nobody are singular even when a plural noun sits nearby.",
+                "Along with and as well as do not work like and.",
+                "Two subjects joined by and take a plural verb."
+              ],
+              "example": {
+                "prompt": "Choose the verb: The list of required books (is / are) on the board.",
+                "steps": [
+                  "Find the head noun. List is the subject. Of required books only modifies it.",
+                  "List is singular, so the verb is singular.",
+                  "Books is closer to the verb, which is why the sentence is a trap."
+                ],
+                "answer": "is"
+              },
+              "practice": [
+                {
+                  "q": "The results of the experiment ___ surprising. Type is or are.",
+                  "answer": "are",
+                  "why": "The head noun is results, which is plural. Of the experiment is only a modifier, so the verb is are."
+                },
+                {
+                  "q": "There ___ a problem with two of the answers. Type is or are.",
+                  "answer": "is",
+                  "why": "After there, the real subject is a problem, singular. With two of the answers does not make that subject plural."
+                },
+                {
+                  "q": "Everyone in the two classes ___ a dictionary. Type has or have.",
+                  "answer": "has",
+                  "why": "Everyone is grammatically singular. In the two classes is a prepositional phrase and does not change the verb."
+                },
+                {
+                  "q": "The coach, together with the players, ___ waiting. Type is or are.",
+                  "answer": "is",
+                  "why": "Together with does not add the players to the subject. The subject is the coach, so is waiting."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-clause",
+      "index": 2,
+      "title": "Clause architecture",
+      "he": "מבנה הפסוקית",
+      "topic": "Clause architecture",
+      "thesis": "Most marks lost after the basics are clause mistakes: relatives, conditionals, passive, and reported speech.",
+      "syllabus": [
+        "Relative clauses, defining and non-defining",
+        "Conditionals: zero, first, second, third",
+        "The passive, including impersonals",
+        "Reported speech and backshift",
+        "Modals for certainty, obligation, and advice",
+        "Participle clauses and sentence combining"
+      ],
+      "levels": [
+        {
+          "id": "eng-clause-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-clause-l1a",
+              "title": "Defining and extra relatives",
+              "he": "פסוקיות זיקה מגדירות ותוספת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Relative clauses, defining and non-defining"
+              ],
+              "objectives": [
+                "Build a defining relative with who, which, that, whose, or where.",
+                "Mark a non-defining relative with commas and do not use that."
+              ],
+              "teach": "A relative clause adds facts about a noun. A defining clause says which one: the pupil who missed the test must sit it on Sunday. Who is for people, which for things, that for either in a defining clause, whose for possession, and where for a place.\n\nA non-defining clause only adds extra facts. Set it off with commas, and do not use that: Ms Levi, who teaches physics, is absent. The commas mean her name already identifies her. Keep a subject relative. You may drop an object relative: the book I borrowed.",
+              "rules": [
+                "Defining relatives have no commas. Non-defining relatives have commas and cannot use that.",
+                "Who is for people and which is for things. Whose shows possession for either.",
+                "A relative that is the subject of its own clause cannot be omitted.",
+                "Where can replace in which for places: the room where we sat."
+              ],
+              "example": {
+                "prompt": "Combine the facts into one sentence with a non-defining clause about Dan and a defining clause about the novel: Dan lives in Haifa. Dan borrowed a novel. The novel won a prize.",
+                "steps": [
+                  "Dan is already named, so the Haifa fact is extra and needs commas plus who.",
+                  "The novel needs defining which one: which won a prize. Which is the subject, so keep it.",
+                  "Do not use that after a comma, and do not use which for Dan."
+                ],
+                "answer": "Dan, who lives in Haifa, borrowed a novel which won a prize."
+              },
+              "practice": [
+                {
+                  "q": "Which sentence is a legal non-defining relative? (a) My brother that lives in Eilat is a medic. (b) My brother, who lives in Eilat, is a medic.",
+                  "answer": "b",
+                  "why": "A non-defining clause takes commas and who or which, not that. Option a uses that and has no commas."
+                },
+                {
+                  "q": "Fill the gap with whose, who, or which: The writer ___ novel we read is visiting.",
+                  "answer": "whose",
+                  "why": "The gap owns novel, so the possessive relative is required. Who would need a verb, and which is not possessive."
+                }
+              ]
+            },
+            {
+              "id": "eng-clause-l1b",
+              "title": "Four conditional shapes",
+              "he": "ארבע תבניות תנאי",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Conditionals: zero, first, second, third"
+              ],
+              "objectives": [
+                "Match zero, first, second, and third conditionals to fact, real future, unreal present, and unreal past.",
+                "Keep will and would out of the if clause."
+              ],
+              "teach": "Each conditional pairs an if clause with a result. Zero is for facts: if you heat ice, it melts. Both verbs are present simple. First is a real future possibility: if she studies, she will pass. The if clause is present. The result uses will, can, or may.\n\nSecond is unreal now: if I had time, I would help. The if clause looks like past simple. The result uses would, could, or might. Third is a past that did not happen: if they had left earlier, they would have caught the bus. Never put will or would in the if clause.",
+              "rules": [
+                "Zero uses present in both clauses. First uses present in the if clause and will, can, or may in the result.",
+                "Second uses past simple after if, and would, could, or might plus a base verb. Were is preferred in if I were you.",
+                "Third uses had plus a participle after if, and would have plus a participle in the result.",
+                "Will and would stay in the result clause, not after if."
+              ],
+              "example": {
+                "prompt": "The team did not train, and they lost. Write a third conditional that keeps both facts.",
+                "steps": [
+                  "The situation is past and did not happen the other way, so third conditional, not second.",
+                  "The if clause needs had plus the past participle: had trained.",
+                  "The result needs would have plus a participle. Would not have lost keeps the stated result."
+                ],
+                "answer": "If they had trained, they would not have lost."
+              },
+              "practice": [
+                {
+                  "q": "If water reaches 100 degrees, it ___. (a) boils (b) would boil",
+                  "answer": "a",
+                  "why": "This is a regular fact, so the zero conditional uses present simple in both clauses. Would belongs to the second conditional."
+                },
+                {
+                  "q": "If she ___ harder last year, she would have passed. Type the if-clause verb phrase of study.",
+                  "answer": "had studied",
+                  "why": "Would have passed is a third-conditional result, so the if clause needs had plus the past participle of study."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-clause-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-clause-l2a",
+              "title": "Passive and impersonal forms",
+              "he": "סביל וצורות בלתי אישיות",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "The passive, including impersonals"
+              ],
+              "objectives": [
+                "Build be plus the past participle and keep the tense on be.",
+                "Use it is said that when the source is unknown or unimportant."
+              ],
+              "teach": "The passive is a form of be plus the past participle. The object of the active verb becomes the subject: the class wrote the report becomes the report was written by the class. Tense sits on be: is written, was written, has been written, will be written, is being written.\n\nBy plus the agent is optional. Leave it out when the doer is unknown or unimportant, which is common in a process. Impersonal patterns hide the source of a claim: it is said that, it is believed that, she is thought to be. Do not invent an agent only to fill the pattern.",
+              "rules": [
+                "Passive equals be in the right tense plus the past participle.",
+                "Only transitive verbs passivize. Happen and arrive have no passive.",
+                "Drop by plus the agent unless the doer is new or important.",
+                "It is said, believed, or reported that plus a clause names no source.",
+                "She is said to plus a base verb is the same idea with a personal subject."
+              ],
+              "example": {
+                "prompt": "Rewrite with an impersonal it and drop the agent: People say that the cave is very old.",
+                "steps": [
+                  "The claim has no source worth keeping, so an impersonal passive fits.",
+                  "Say becomes is said. The that-clause stays after it.",
+                  "Do not write by people. The pattern exists to avoid that phrase."
+                ],
+                "answer": "It is said that the cave is very old."
+              },
+              "practice": [
+                {
+                  "q": "The letters ___ yesterday. Type the passive phrase with send.",
+                  "answer": "were sent",
+                  "why": "Yesterday forces past. Passive is be plus the participle, and letters is plural, so were sent."
+                },
+                {
+                  "q": "Choose the impersonal. (a) It is believed that the poem is older. (b) It believes that the poem is older.",
+                  "answer": "a",
+                  "why": "An impersonal opinion uses the passive of the reporting verb. Active believes would need a real subject such as the critic."
+                }
+              ]
+            },
+            {
+              "id": "eng-clause-l2b",
+              "title": "Backshift after a past report",
+              "he": "הזזת זמן אחרי דיווח בעבר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Reported speech and backshift"
+              ],
+              "objectives": [
+                "Backshift tenses after a past reporting verb.",
+                "Change pronouns and time words to the reporter's point of view."
+              ],
+              "teach": "When the reporting verb is past, the tense inside the report usually moves one step back. Present simple becomes past simple. Present perfect and past simple become past perfect. Will becomes would. She said, I am tired, becomes she said that she was tired. Can becomes could, and may becomes might.\n\nPronouns and time words follow the reporter. I becomes she or he. Tomorrow becomes the next day, and here becomes there if the place changed. A fact you still accept need not move: she said water boils at 100 degrees. Questions lose inversion: she asked where I lived.",
+              "rules": [
+                "After said, told, or asked in the past, shift present to past and will to would.",
+                "Tell needs a person object. Say does not: she told me, she said that.",
+                "Reported wh-questions use statement order. Yes or no questions use if or whether.",
+                "Keep a permanent truth in the present if you are endorsing it."
+              ],
+              "example": {
+                "prompt": "Dana said, I will finish the project tomorrow. Report it with told me, and treat Dana as she.",
+                "steps": [
+                  "Told needs the object me, which the task already supplies.",
+                  "Will backshifts to would because said-time is past.",
+                  "Tomorrow becomes the next day from the reporter's later point of view."
+                ],
+                "answer": "Dana told me she would finish the project the next day."
+              },
+              "practice": [
+                {
+                  "q": "He said, I have lost my key. Type the backshifted phrase that replaces have lost.",
+                  "answer": "had lost",
+                  "why": "Present perfect moves back to past perfect after a past reporting verb. Have lost becomes had lost."
+                },
+                {
+                  "q": "Choose the reported question. (a) She asked where did he live. (b) She asked where he lived.",
+                  "answer": "b",
+                  "why": "A reported wh-question uses statement word order. Did and inversion belong only to the direct question."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-clause-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-clause-l3a",
+              "title": "Modals of stance",
+              "he": "מודאלים של ודאות וחובה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Modals for certainty, obligation, and advice"
+              ],
+              "objectives": [
+                "Grade certainty with must, can't, may, might, and could.",
+                "Separate obligation, prohibition, no necessity, and advice."
+              ],
+              "teach": "Modals take a bare infinitive. For present certainty, must is a logical conclusion and can't is the opposite: she must be at school; she can't be home. May, might, and could only mark possibility. For a past conclusion, add have and the participle: she must have left.\n\nObligation splits four ways. Must and have to mean this is necessary. Mustn't means forbidden. Don't have to means not necessary, which is not the same as forbidden. Should and ought to advise. They are weaker than must, and should is the normal choice when an essay recommends a policy.",
+              "rules": [
+                "Must or can't plus a base verb is a strong present deduction. Add have plus a participle for the past.",
+                "May, might, and could are weaker than must. They do not prove the claim.",
+                "Mustn't means do not do this. Don't have to means you may skip it.",
+                "Should plus a base verb advises. Should have plus a participle criticizes a past choice."
+              ],
+              "example": {
+                "prompt": "The lights are off and her bag is gone. Give the past deduction with must, then the opposite with can't. Two verb phrases, separated by a semicolon.",
+                "steps": [
+                  "The evidence is strong, so must, not might.",
+                  "The leaving is already past, so must have plus the past participle of leave.",
+                  "The opposite deduction is can't have stayed, parallel in form."
+                ],
+                "answer": "must have left; can't have stayed"
+              },
+              "practice": [
+                {
+                  "q": "The form is optional. Which fits? (a) You mustn't sign it. (b) You don't have to sign it.",
+                  "answer": "b",
+                  "why": "Optional means not necessary. Don't have to carries that meaning. Mustn't would forbid the signature."
+                },
+                {
+                  "q": "She missed the chance yesterday. Type the past advice phrase of apologize with should.",
+                  "answer": "should have apologized",
+                  "why": "Advice about a finished past is should have plus the past participle. Should apologize would still be about now or the future."
+                }
+              ]
+            },
+            {
+              "id": "eng-clause-l3b",
+              "title": "Combining with participles",
+              "he": "צירוף משפטים בבינוני",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Participle clauses and sentence combining"
+              ],
+              "objectives": [
+                "Replace a same-subject clause with a present, past, or perfect participle.",
+                "Reject a dangling participle whose subject is not the main subject."
+              ],
+              "teach": "A participle clause combines two ideas that share a subject. The present participle matches an active verb at the same time: Opening the window, she let the smoke out. The past participle matches a passive: Written in haste, the note was hard to read. Having plus a participle marks an earlier action: Having checked the figures, he signed.\n\nThe participle's subject must be the main-clause subject. Written in haste, the teacher misread the note is wrong, because the note was written, not the teacher. That mistake is a dangling participle. If the subjects differ, keep a full clause with because, after, or although.",
+              "rules": [
+                "Same subject: you may reduce the first clause to a participle.",
+                "Active and simultaneous uses verb-ing. Passive uses the past participle. Earlier uses having plus a participle.",
+                "A dangling participle attaches the action to the wrong subject. Rewrite it as a full clause.",
+                "Do not stack more than one participle opener in a single exam sentence."
+              ],
+              "example": {
+                "prompt": "Combine, sharing the subject: Maya checked the sources. Then Maya wrote the paragraph.",
+                "steps": [
+                  "Both clauses have Maya as subject, so a participle is legal.",
+                  "Checking happened before writing, so having plus the past participle, not a plain -ing.",
+                  "The main clause keeps the later finite verb: wrote."
+                ],
+                "answer": "Having checked the sources, Maya wrote the paragraph."
+              },
+              "practice": [
+                {
+                  "q": "Which opener is legal before the letter was sent? (a) Writing it quickly (b) Written quickly",
+                  "answer": "b",
+                  "why": "The letter is the subject and does not write itself. The passive idea needs a past participle."
+                },
+                {
+                  "q": "Choose the grammatical sentence. (a) Running for the bus, the bag fell. (b) Running for the bus, she dropped the bag.",
+                  "answer": "b",
+                  "why": "The runner has to be the subject of the main clause. A bag cannot run. She gives the participle a real subject."
+                },
+                {
+                  "q": "Type the perfect participle of finish: ___ the exam, they left the room.",
+                  "answer": "Having finished",
+                  "why": "Finishing is earlier than leaving, and it is active, so having plus the past participle. A plain finishing would blur the order."
+                },
+                {
+                  "q": "The subjects differ. What should you do? (a) force a participle (b) keep a full clause",
+                  "answer": "b",
+                  "why": "A participle is only safe when both ideas share a subject. Different subjects need because, after, although, or a coordinating join."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-vocab",
+      "index": 3,
+      "title": "Vocabulary and word formation",
+      "he": "אוצר מילים ובניין מילים",
+      "topic": "Vocabulary and word formation",
+      "thesis": "Band III vocabulary is families, collocations, and a few confusable pairs, not a random word list.",
+      "syllabus": [
+        "Prefixes, suffixes, and word families",
+        "Collocation, not just synonyms",
+        "Academic verbs for the writing paper",
+        "Confusable pairs that cost marks",
+        "Guessing meaning from context",
+        "Phrasal verbs that actually appear in school reading"
+      ],
+      "levels": [
+        {
+          "id": "eng-vocab-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-vocab-l1a",
+              "title": "One root, several jobs",
+              "he": "שורש אחד, כמה תפקידים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Prefixes, suffixes, and word families"
+              ],
+              "objectives": [
+                "Turn a known root into a noun, verb, adjective, or adverb with a suffix.",
+                "Use a prefix to reverse or repeat a word you already know."
+              ],
+              "teach": "A word family is one root in several jobs. Act becomes action, actor, active, and actively. In a gap-fill, the slot decides the part of speech. After the or a possessive, expect a noun. After be or very, expect an adjective. An adverb often follows a verb: she spoke clearly.\n\nCommon noun suffixes are -tion, -sion, -ment, and -ness. Adjectives often take -ful or -less, and many adverbs take -ly. A prefix does not change the part of speech: un-, in-, and re- alter meaning. Watch the spelling shift: decide, decision; strong, strength. Do not build a form you have never met.",
+              "rules": [
+                "Decide the part of speech from the gap, then pick the family member.",
+                "The suffixes -tion, -ment, and -ness usually make nouns. The suffixes -ful and -less make adjectives. The suffix -ly often makes adverbs.",
+                "A negative prefix does not replace a suffix: unhappiness is a prefix plus a noun.",
+                "Irregular family members must be stored as pairs: long and length, broad and breadth."
+              ],
+              "example": {
+                "prompt": "Complete with one word from the family of decide: Her final ___ surprised the committee.",
+                "steps": [
+                  "After her and an adjective, and before the verb surprised, the gap is a noun.",
+                  "The noun in this family is decision, not decisive and not decide.",
+                  "The spelling drops the final e and uses -sion, not a fresh -tion on decide."
+                ],
+                "answer": "decision"
+              },
+              "practice": [
+                {
+                  "q": "The gap follows very. Which form of care fits? (a) careful (b) carefully (c) care",
+                  "answer": "a",
+                  "why": "Very modifies adjectives. Careful is the adjective. Carefully is an adverb and would follow a verb such as listen."
+                },
+                {
+                  "q": "Type the noun from strong: The ___ of the argument is its evidence.",
+                  "answer": "strength",
+                  "why": "The slot after the is a noun. Strong is the adjective. Strength is the irregular noun, not strongness."
+                }
+              ]
+            },
+            {
+              "id": "eng-vocab-l1b",
+              "title": "Words that travel together",
+              "he": "מילים שהולכות יחד",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Collocation, not just synonyms"
+              ],
+              "objectives": [
+                "Prefer a fixed partner over a synonym that is only close in meaning.",
+                "Test a pair by the verb or adjective already in the sentence."
+              ],
+              "teach": "A collocation is a pair that usage fixes, even when a synonym looks logical. You make a decision, not do a decision. You take an exam in school English, not make an exam. Heavy rain is normal, and strong rain is not, though strong wind is normal. A synonym list will not show the partner.\n\nIf two options share a meaning, keep the one that fits the word already there. Pay attention, not do attention. High probability is the noun pattern, and highly likely is the adjective pattern. In an essay, a plain accurate pair is safer than a rare synonym you cannot defend.",
+              "rules": [
+                "Make a decision, a mistake, or an effort. Make progress has no a, because progress is uncountable.",
+                "Take an exam, a photo, a break, or responsibility.",
+                "Do homework, research, or someone a favour.",
+                "Adjective plus noun pairs are collocations too: heavy rain, strong wind, a close friend."
+              ],
+              "example": {
+                "prompt": "Choose the collocation: The class will ___ a decision after the debate. (a) do (b) make",
+                "steps": [
+                  "Decision is the fixed partner of make in this meaning.",
+                  "Do pairs with homework or research, not with decision.",
+                  "Will takes the base form, so no extra ending is added."
+                ],
+                "answer": "make"
+              },
+              "practice": [
+                {
+                  "q": "Which pair is the student collocation? (a) make an exam (b) take an exam",
+                  "answer": "b",
+                  "why": "In school English a student takes or sits an exam. Make an exam is not that collocation."
+                },
+                {
+                  "q": "Type the usual adjective partner of rain, not strong: ___ rain flooded the street.",
+                  "answer": "heavy",
+                  "why": "Heavy rain is the fixed pair. Strong goes with wind, tea, or an accent, not with rain in standard school writing."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-vocab-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-vocab-l2a",
+              "title": "Verbs an essay can use",
+              "he": "פעלים שחיבור יכול לשאת",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Academic verbs for the writing paper"
+              ],
+              "objectives": [
+                "Replace a vague verb with one that names the thinking move.",
+                "Keep suggest, show, and prove at different strengths."
+              ],
+              "teach": "The writing paper rewards verbs that name a thinking move. Argue, claim, and state introduce a position. Explain and illustrate develop it. Compare and contrast set two cases side by side. Cause, lead to, and result in mark a consequence. Suggest and indicate are weaker than show, and show is weaker than prove.\n\nReplace get when a precise verb exists. The ban caused delays, not the ban got delays. A graph shows a rise; it does not say a rise. Keep the pattern: result in plus a noun, argue that plus a clause. Prove is rare outside a closed step, so do not use it for a possible link.",
+              "rules": [
+                "Claim and argue need support in the next sentence. They do not prove themselves.",
+                "Suggest and indicate leave room for doubt. Prove says you have closed the case.",
+                "Result in and lead to take a noun phrase, not a that-clause.",
+                "Discuss means examine more than one side. It is not a synonym of mention."
+              ],
+              "example": {
+                "prompt": "The paragraph only notes a possible link between sleep and grades. Replace prove: The study proves that sleep affects grades.",
+                "steps": [
+                  "A possible link is not proof, so prove is too strong.",
+                  "Suggest matches evidence that points but does not close the case.",
+                  "The that-clause can stay. Only the verb changes."
+                ],
+                "answer": "The study suggests that sleep affects grades."
+              },
+              "practice": [
+                {
+                  "q": "Which verb matches a closed logical step? (a) suggest (b) prove",
+                  "answer": "b",
+                  "why": "Prove is the strong verb, for a case you can fully close. Suggest only points toward a conclusion."
+                },
+                {
+                  "q": "Type result in to complete the pattern: The new rule may ___ longer queues.",
+                  "answer": "result in",
+                  "why": "Result in is the pair used before a noun such as longer queues. Result that would be ungrammatical."
+                }
+              ]
+            },
+            {
+              "id": "eng-vocab-l2b",
+              "title": "Pairs that cost the mark",
+              "he": "זוגות שעולים בנקודה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Confusable pairs that cost marks"
+              ],
+              "objectives": [
+                "Separate affect and effect, say and tell, rise and raise, and the other targeted pairs.",
+                "Choose by the grammar around the word, not by a quick look at the letters."
+              ],
+              "teach": "Affect is usually the verb and effect the noun: the ban affected traffic; the effect was immediate. Say takes no person; tell needs one: she said that she was late, she told me. Rise has no object; raise has one. Lie, lay, and lain take no object. Lay, laid, and laid do.\n\nBorrow means take for a time; lend means give for a time. Remember holds a fact yourself; remind needs another person. Further is the safe choice for both extra distance and an extra argument. Lose is the verb; loose means not tight. Read the pattern before you trust the spelling.",
+              "rules": [
+                "Affect is the verb. Effect is the noun. You can avoid the rare verb to effect a change.",
+                "Tell plus a person. Say plus a clause, or say to plus a person.",
+                "Rise, rose, risen has no object. Raise, raised, raised has an object.",
+                "Borrow from someone. Lend to someone. Remind someone to do something."
+              ],
+              "example": {
+                "prompt": "Choose affect or effect: Lack of sleep had a clear ___ on her score.",
+                "steps": [
+                  "After a and an adjective, the gap is a noun.",
+                  "Effect is the noun. Affect is the verb.",
+                  "The verb pattern would be affected her score, with no a clear in front of it."
+                ],
+                "answer": "effect"
+              },
+              "practice": [
+                {
+                  "q": "Type say or tell: She ___ me the test was moved.",
+                  "answer": "told",
+                  "why": "Me is a person object right after the verb. Tell takes that object. Say would need said to me, or said that with no me."
+                },
+                {
+                  "q": "The sun ___ at six. Type rose or raised.",
+                  "answer": "rose",
+                  "why": "The sun moves by itself and the verb has no object, so the intransitive past is rose. Raised would need an object."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-vocab-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-vocab-l3a",
+              "title": "Meaning from the nearby line",
+              "he": "משמעות מהשורה הסמוכה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Guessing meaning from context"
+              ],
+              "objectives": [
+                "Use definition, example, contrast, and cause clues in the local sentence.",
+                "Stop once those clues answer the question that was asked."
+              ],
+              "teach": "A context item asks what the word means here. The clue is usually in the same sentence or the next. A definition uses that is, which means, or commas. An example uses such as. A contrast uses but, however, or unlike, so the unknown word opposes a known one.\n\nA cause clue uses because or so. If pupils were weary because they had walked all day, weary is close to tired, not excited. Do not trust a prefix and ignore the sentence. Read one clause before the word and one after. A short paraphrase is enough when the question only needs the sense.",
+              "rules": [
+                "Search the same sentence first, then the next sentence, before you guess from the root.",
+                "That is, a pair of commas, and or often rename the word.",
+                "But, however, and unlike flip the meaning toward the opposite.",
+                "Because and so link the word to a cause or a result you can paraphrase."
+              ],
+              "example": {
+                "prompt": "The trail was arduous: it climbed for three hours and left the group exhausted. What does arduous mean here? Answer with one adjective.",
+                "steps": [
+                  "The colon gives the result of the trail: a three-hour climb.",
+                  "Exhausted confirms effort, so the word is not short or easy.",
+                  "A one-word paraphrase that fits a trail is difficult."
+                ],
+                "answer": "difficult"
+              },
+              "practice": [
+                {
+                  "q": "The room was spacious, unlike the cramped office next door. Spacious means (a) crowded (b) large.",
+                  "answer": "b",
+                  "why": "Unlike sets a contrast with cramped. The room is the opposite of the office, so spacious means large."
+                },
+                {
+                  "q": "Type a one-word paraphrase: She was reluctant to speak, so she stayed silent.",
+                  "answer": "unwilling",
+                  "why": "So links the word to the result, staying silent. Reluctant here means unwilling. Eager would have produced the opposite result."
+                }
+              ]
+            },
+            {
+              "id": "eng-vocab-l3b",
+              "title": "Phrasal verbs on the school page",
+              "he": "פעלים מורכבים בקטע לימודי",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Phrasal verbs that actually appear in school reading"
+              ],
+              "objectives": [
+                "Read a phrasal verb as one unit, not as a free particle plus a simple verb.",
+                "Use the small set that school reading actually repeats."
+              ],
+              "teach": "A phrasal verb is a verb plus a particle, and the meaning is not the sum of the parts. Give up means quit. School reading repeats a small set: carry out a study, point out a fact, bring about a change, come across a text, look into a problem, turn out, put off, set up, rule out, and take part in.\n\nRead the whole string as one item. Look into means investigate; look at does not. A pronoun object often splits the verb: put it off, not put off it. If the next clause glosses the phrasal, use that gloss and move on.",
+              "rules": [
+                "Carry out means conduct. Point out means draw attention to. Bring about means cause.",
+                "Look into means investigate. Rule out means exclude. Turn out means prove to be in the end.",
+                "Come across means find by chance. Put off means postpone. Take part in means participate.",
+                "A pronoun object goes in the middle of a separable phrasal: put it off, set it up."
+              ],
+              "example": {
+                "prompt": "In the sentence The team set up the experiment before noon, what does set up mean? Answer with one verb.",
+                "steps": [
+                  "Experiment is the object of the whole phrasal, not of set alone.",
+                  "Set up before a procedure means prepare it so it can run.",
+                  "A single-verb paraphrase that fits is prepared."
+                ],
+                "answer": "prepared"
+              },
+              "practice": [
+                {
+                  "q": "The results turned out to be wrong. Turned out means (a) left the building (b) proved in the end.",
+                  "answer": "b",
+                  "why": "Turn out to be means the final result proved to be something. It is not the literal action of exiting."
+                },
+                {
+                  "q": "Type the two-word phrasal that means postpone: They had to ___ the meeting.",
+                  "answer": "put off",
+                  "why": "Put off means postpone. Put out would mean extinguish, and put away would mean store."
+                },
+                {
+                  "q": "Where does the pronoun go? (a) put off it (b) put it off",
+                  "answer": "b",
+                  "why": "Put off is separable. A pronoun object stands between the verb and the particle."
+                },
+                {
+                  "q": "Look into the complaint means (a) investigate it (b) stare at it.",
+                  "answer": "a",
+                  "why": "Look into is the school phrasal for investigate. The literal reading is the trap the particle invites."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-read",
+      "index": 4,
+      "title": "Unseen reading",
+      "he": "הבנת הנקרא",
+      "topic": "Unseen reading",
+      "thesis": "An unseen is a set of question types with a clock, not a chance to understand every sentence.",
+      "syllabus": [
+        "The question types on a bagrut unseen",
+        "Skim, scan, and where not to reread",
+        "Reference words and paragraph role",
+        "Inference versus a trap paraphrase",
+        "Vocabulary in context inside the passage",
+        "Timing a full unseen"
+      ],
+      "levels": [
+        {
+          "id": "eng-read-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-read-l1a",
+              "title": "What an unseen asks",
+              "he": "מה שאלון הנקרא שואל",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The question types on a bagrut unseen"
+              ],
+              "objectives": [
+                "Name the recurring unseen tasks without assuming a fixed paper design.",
+                "Match each task to the kind of line that can answer it."
+              ],
+              "teach": "An unseen is a set of task types, not a demand to understand every sentence. The types recur when the text changes: a main idea or title, a fact you can point to, a reference such as it or this, a word to solve from context, and an inference the text must support.\n\nSome items are choices. Some want a short written answer or a completion. The mix is not fixed here. A fact wants a line you can point to. A reference wants a noun you can swap in. An inference wants a conclusion, not a sentence that only shares words.",
+              "rules": [
+                "Name the task before you read for it: fact, reference, word, inference, or main idea.",
+                "A factual answer is a phrase you could underline. If you cannot, you may be inferring.",
+                "A main-idea answer must cover the whole passage, not one vivid sentence.",
+                "An option can repeat passage words and still be wrong. Match the task, not the echo."
+              ],
+              "example": {
+                "prompt": "The question is: What does the writer say the pupils did after the tour? Name the task type in one word: fact, reference, vocabulary, or inference.",
+                "steps": [
+                  "The question asks for an action the writer states, not for a pronoun or a word meaning.",
+                  "After the tour is a locator. You should be able to point at a sentence.",
+                  "If the text states the action, the type is fact, not inference."
+                ],
+                "answer": "fact"
+              },
+              "practice": [
+                {
+                  "q": "The item says: What does they refer to? Name the type in one word.",
+                  "answer": "reference",
+                  "why": "A question about they, it, this, or these asks for the noun phrase the pronoun replaces. That is a reference item."
+                },
+                {
+                  "q": "An option copies a sentence from paragraph 4, but the question asks for the main idea of the whole text. The option is (a) safe (b) too narrow.",
+                  "answer": "b",
+                  "why": "A main-idea answer has to cover the passage, not one paragraph. A copied local sentence is too narrow even when every word is in the text."
+                }
+              ]
+            },
+            {
+              "id": "eng-read-l1b",
+              "title": "Skim once, scan for the item",
+              "he": "סריקה גסה ואיתור לפי סעיף",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Skim, scan, and where not to reread"
+              ],
+              "objectives": [
+                "Skim for topic and paragraph order, then scan for the words the question names.",
+                "Stop rereading a paragraph once the located sentence answers the item."
+              ],
+              "teach": "Skim and scan are different speeds. Skim once: read the title, the first sentence of each paragraph, and the last sentence of the passage. That pass gives the topic and the order of ideas. It is not the moment to solve vocabulary.\n\nScan when a question gives a hook: a name, a number, a date, or a visible word. Find the hook, then read that sentence and one neighbour. If they answer a fact, stop. Rereading the whole paragraph spends the next item's minute. Read a full paragraph only for purpose or tone.",
+              "rules": [
+                "Skim for the map: title, opening sentences, final sentence.",
+                "Scan for anchors the question already printed: names, years, numbers.",
+                "Read the anchor sentence plus the sentence before or after it.",
+                "Do not restart the passage because one item was hard. Mark it and move."
+              ],
+              "example": {
+                "prompt": "The question is: In what year was the bridge closed? Where do you look first? Answer with a short clause.",
+                "steps": [
+                  "Year is a number hook, so this is a scan, not another skim.",
+                  "Move until a year sits near bridge or closed.",
+                  "Read that sentence, plus one neighbour only if the year and the closing are split."
+                ],
+                "answer": "the sentence with the year"
+              },
+              "practice": [
+                {
+                  "q": "You need the main topic before any item. Which move comes first? (a) skim (b) scan for a single word",
+                  "answer": "a",
+                  "why": "Skim builds the map of the whole passage. Scanning for one word before you know the shape does not give the topic."
+                },
+                {
+                  "q": "A factual item is answered by one sentence. Should you reread the paragraph? (a) yes (b) no",
+                  "answer": "b",
+                  "why": "Once the located sentence answers a fact, more reading does not add evidence. It spends time the next item needs."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-read-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-read-l2a",
+              "title": "Pronouns and paragraph jobs",
+              "he": "כינויים ותפקיד הפסקה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Reference words and paragraph role"
+              ],
+              "objectives": [
+                "Replace it, this, these, and such with the noun or idea that agrees.",
+                "Name a paragraph's job: introduce, example, contrast, cause, or conclusion."
+              ],
+              "teach": "A reference word usually points backward. It and they replace a noun. This and these can replace a whole idea. Such means of that kind. The substitute must agree in number and must fit if you paste it back. In The museum closed. It was old, it is the museum, because closed is not the thing called old.\n\nParagraph role is the job, not a repeated detail. A paragraph may introduce, give an example, explain a cause, contrast, or conclude. However and for instance in the first sentence usually name that job. Answer with the job: it gives an example, not with a fact copied from inside.",
+              "rules": [
+                "Try the nearest previous noun that matches number, then check sense by substitution.",
+                "This and that often point to a whole clause, not to the last noun.",
+                "Role answers are jobs: introduces, exemplifies, contrasts, explains, concludes.",
+                "A detail inside the paragraph supports the role. It is not the role itself."
+              ],
+              "example": {
+                "prompt": "Tickets sold out in an hour. This surprised the organizers. What does This refer to? Answer with a short clause.",
+                "steps": [
+                  "This follows a whole event, not a single object such as tickets alone.",
+                  "Substitute the sell-out: that event surprised the organizers. The sentence still makes sense.",
+                  "The point of the first sentence is how fast the sale happened, so the reference includes that speed."
+                ],
+                "answer": "the quick sell-out"
+              },
+              "practice": [
+                {
+                  "q": "Pupils left early. They were tired. They refers to (a) pupils (b) early.",
+                  "answer": "a",
+                  "why": "They is plural and replaces a plural noun. Early is not a noun that can be the subject of were tired."
+                },
+                {
+                  "q": "A paragraph begins with For example and tells one story of a late bus. Its role is (a) example (b) conclusion.",
+                  "answer": "a",
+                  "why": "For example is an explicit role signal, and one story supports an earlier claim. It does not close the passage."
+                }
+              ]
+            },
+            {
+              "id": "eng-read-l2b",
+              "title": "A fair inference, a word trap",
+              "he": "היסק הוגן מול מלכודת מילים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Inference versus a trap paraphrase"
+              ],
+              "objectives": [
+                "Accept an inference only when two lines, put together, force it.",
+                "Reject an option that repeats passage words but changes the claim."
+              ],
+              "teach": "An inference joins two pieces and reaches a conclusion neither one states. If the cafe closes at four and the pupils arrived at half past four, you may infer they could not buy food there. You may not infer they were hungry. Nothing says that.\n\nA trap paraphrase borrows words from the right paragraph and builds a new claim. Shared vocabulary is not support. Ask which fact must be true, then check that it is written or forced by two written facts. Always, never, all, and only are traps unless the text is that strong. A maybe in the passage cannot become a must in the answer.",
+              "rules": [
+                "Point to the two lines before you accept an inference.",
+                "A paraphrase that adds always, the only, or everyone needs that strength in the text.",
+                "The right choice can use different words. The wrong choice often uses the same words.",
+                "If the text says may or some, do not choose must or all."
+              ],
+              "example": {
+                "prompt": "Text: Some pupils missed the bus because the gate opened late. Option A: All the pupils were late. Option B: The late gate made at least part of the class miss the bus. Which option is fair? Answer A or B.",
+                "steps": [
+                  "Some does not mean all. Option A upgrades the quantity, so it is a trap.",
+                  "Because states a cause, and missed the bus is the result for that group.",
+                  "Option B keeps the limited quantity and the stated cause."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "The text says the drug might reduce pain. An option says it cures pain. The option is (a) fair (b) too strong.",
+                  "answer": "b",
+                  "why": "Might is only possibility, and reduce is not cure. The option upgrades both the certainty and the result."
+                },
+                {
+                  "q": "No water was sold on the bus. The ride lasted five hours. A fair inference is that passengers (a) could not buy water on the bus (b) became ill.",
+                  "answer": "a",
+                  "why": "No water was sold forces the conclusion that passengers could not buy it there. Illness is a story you added, not a required conclusion."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-read-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-read-l3a",
+              "title": "The word the passage defines",
+              "he": "המילה שהקטע מגדיר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Vocabulary in context inside the passage"
+              ],
+              "objectives": [
+                "Solve a passage word from its local clue, not from a memorized list.",
+                "Reject a dictionary sense the paragraph cannot support."
+              ],
+              "teach": "In an unseen, a vocabulary line is a context problem. The word was chosen because the passage teaches it, or because a second meaning is the trap. Start at the word, finish the sentence, then read the previous clause. Look for a rename, an example, or a contrast before you trust a glossary.\n\nTest a known meaning inside the sentence. Bank can be a building or a river edge. Only the line decides. Swap in your paraphrase. If the grammar breaks, it is wrong. Keep the part of speech: a noun slot cannot take a verb. Nearby sentences with no and, but, or because are not extra evidence.",
+              "rules": [
+                "Read the host sentence to the full stop before you look at the options.",
+                "A second, familiar meaning is the usual trap. Make it pass a substitution test.",
+                "Match part of speech: noun for noun, verb for verb, adjective for adjective.",
+                "Stop at the nearest clue. Do not hunt the whole passage for a prettier synonym."
+              ],
+              "example": {
+                "prompt": "They moored the boat to the bank and climbed up the mud. In this line, bank means (a) a place that keeps money (b) the side of the river.",
+                "steps": [
+                  "The same sentence contains boat and mud, which fit a river, not a vault.",
+                  "Moored means tied a boat, so bank here is a physical edge.",
+                  "The money sense is the familiar trap and fails if you substitute it."
+                ],
+                "answer": "b"
+              },
+              "practice": [
+                {
+                  "q": "The plot was dull, unlike the brilliant ending. Dull here means (a) not sharp to touch (b) boring.",
+                  "answer": "b",
+                  "why": "Unlike the brilliant ending forces a contrast with brilliant as interesting. For a plot, dull means boring. The knife sense does not fit plot."
+                },
+                {
+                  "q": "The gap is a noun: Her ___ to leave early annoyed the guide. A verb paraphrase is (a) acceptable (b) the wrong part of speech.",
+                  "answer": "b",
+                  "why": "A noun such as decision or refusal fits the slot. A bare verb does not. A context answer still has to match grammar."
+                }
+              ]
+            },
+            {
+              "id": "eng-read-l3b",
+              "title": "A clock for the whole unseen",
+              "he": "שעון לכל שאלון הנקרא",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Timing a full unseen"
+              ],
+              "objectives": [
+                "Spend the first pass on the map and the last minutes on blank items.",
+                "Leave a finished factual item alone and fill a blank choice rather than reread."
+              ],
+              "teach": "A full unseen is a clock problem. Skim the passage once, then work the items in order. Facts and references are faster than inference, but jumping around rarely saves time. Write a short phrase, not a second essay. The marker matches meaning, not length.\n\nWhen time is almost gone, stop polishing. Fill every choice, because a blank cannot score. Check that a reference answer is a noun and that a completion has the right part of speech. Do not restart from line one. Return only to marked items. No official minute count is assumed here.",
+              "rules": [
+                "One skim, then items in order. Mark a hard item and keep moving.",
+                "Answer a fact with a phrase you can underline. Do not add a reason unless the item asks why.",
+                "A blank choice line scores nothing. Fill it before you reread.",
+                "Use the last minutes on empty lines and on answers that fail a number or part-of-speech check."
+              ],
+              "example": {
+                "prompt": "You have a completed fact, a blank choice, and an unfinished inference, with a minute left. What do you do first? Answer with a short clause.",
+                "steps": [
+                  "The fact is done. Polishing it cannot add a mark.",
+                  "A blank choice scores nothing. Filling it is the fastest possible gain.",
+                  "The inference gets any seconds that remain only after the choice is not blank."
+                ],
+                "answer": "fill the blank choice"
+              },
+              "practice": [
+                {
+                  "q": "A factual line is already answered in four words that match the text. Do you add a sentence of explanation? (a) yes (b) no",
+                  "answer": "b",
+                  "why": "Extra explanation spends time and can add a wrong claim. A matching phrase is the whole task unless the item asks for a reason."
+                },
+                {
+                  "q": "One choice is blank as time ends. You should (a) leave it (b) mark a guess.",
+                  "answer": "b",
+                  "why": "A blank choice cannot be correct. A filled choice might be. This drill assumes no extra penalty for a wrong choice, so leave nothing empty."
+                },
+                {
+                  "q": "The best use of the opening minute is (a) a skim of the title and first sentences (b) a full reading aloud.",
+                  "answer": "a",
+                  "why": "The opening pass only needs the map. Reading every line aloud before you see the items spends the clock twice."
+                },
+                {
+                  "q": "You are stuck on one item. The next item names a year you remember seeing. You should (a) restart the text (b) mark the stuck item and scan for that year.",
+                  "answer": "b",
+                  "why": "A printed year is a scan hook. Restarting from the top does not use it. Mark the stuck item and take the hook."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-listen",
+      "index": 5,
+      "title": "Listening",
+      "he": "הבנת הנשמע",
+      "topic": "Listening",
+      "thesis": "Listening marks come from prediction and from ignoring repeated bait words, which you can train on a transcript.",
+      "syllabus": [
+        "What the listening paper rewards",
+        "Predicting before the audio",
+        "Numbers, negatives, and contrast markers",
+        "Distractors that repeat a word from the clip",
+        "Note shape while listening",
+        "Transcript review when you have no audio player"
+      ],
+      "levels": [
+        {
+          "id": "eng-listen-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-listen-l1a",
+              "title": "What listening marks pay for",
+              "he": "על מה ההאזנה נותנת נקודות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "What the listening paper rewards"
+              ],
+              "objectives": [
+                "Track who decided, what changed, and which number survived a correction.",
+                "Train those decisions on a transcript because this reader has no audio."
+              ],
+              "teach": "This reader has no audio, so the drill is a transcript. The listening paper still rewards the same decisions a clip would: who is speaking, what they decided, which detail changed, and which number survived the correction. It does not reward copying the first noun you notice.\n\nSpeakers hesitate, repeat, and correct themselves. The mark usually sits on the correction, not the first attempt. In a transcript that repair looks like sorry, I mean, or actually. On the live paper you would hear it. Here you underline it. No question count is fixed in this drill.",
+              "rules": [
+                "Answer from the speaker's final decision, not from the first noun in the turn.",
+                "Sorry, actually, and I mean cancel the phrase before them.",
+                "Read the printed item before you hunt the transcript.",
+                "This reader has no audio. The practice text is the whole clip."
+              ],
+              "example": {
+                "prompt": "Transcript line, because this reader has no audio: Meet in the library. Sorry, I mean the lab. Where should they meet?",
+                "steps": [
+                  "There is no recording. The line is the clip.",
+                  "Sorry, I mean cancels library.",
+                  "The place that survives is the lab."
+                ],
+                "answer": "the lab"
+              },
+              "practice": [
+                {
+                  "q": "Bring a bottle. Actually, bring two. How many bottles? Type a digit.",
+                  "answer": "2",
+                  "why": "Actually corrects the first instruction. The surviving number is two. One bottle is cancelled."
+                },
+                {
+                  "q": "The first noun is museum, but the speaker ends with so we will visit the port instead. The answer is (a) museum (b) port.",
+                  "answer": "b",
+                  "why": "Instead marks a change of plan. The mark sits on the final decision, the port, not on the first noun."
+                }
+              ]
+            },
+            {
+              "id": "eng-listen-l1b",
+              "title": "Predict, then check the line",
+              "he": "לנבא ואז לבדוק בשורה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Predicting before the audio"
+              ],
+              "objectives": [
+                "Read each item and name the answer shape before the transcript.",
+                "Keep a phrase only if it has that shape."
+              ],
+              "teach": "This reader has no audio, so the drill is a transcript. Prediction still comes first. Before the transcript, decide what shape the answer must have. A when item wants a time. A where item wants a place. A why item wants a reason. A which item wants one of the named options.\n\nMark the shape as one word: time, place, reason, number, or name. Accept a phrase only if it has that shape. This blocks an interesting sentence that misses the question. On a live paper you predict before the clip. Here you predict before you read the transcript. Drop the prediction as soon as a line contradicts it.",
+              "rules": [
+                "Read the printed item first. Name the answer shape in one word.",
+                "Do not open the transcript until that shape is decided.",
+                "A vivid sentence of the wrong shape is not a partial answer.",
+                "If the transcript contradicts the prediction, the transcript wins."
+              ],
+              "example": {
+                "prompt": "Item: Why was the match postponed? This reader has no audio, so do not wait for a clip. What answer shape do you expect? One word.",
+                "steps": [
+                  "Why asks for a cause, not a place or a score.",
+                  "The shape word is reason.",
+                  "Only after that do you search a transcript for because or a cause clause."
+                ],
+                "answer": "reason"
+              },
+              "practice": [
+                {
+                  "q": "The item is: What time does the talk start? The shape word is (a) time (b) reason.",
+                  "answer": "a",
+                  "why": "What time asks for a clock time or a part of the day. A reason, however interesting, has the wrong shape."
+                },
+                {
+                  "q": "You predicted a place. The transcript says not the gym, the hall. You should answer (a) gym (b) hall.",
+                  "answer": "b",
+                  "why": "Prediction sets the shape, place, but the transcript chooses the value. Not cancels gym. Hall is the place that survives."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-listen-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-listen-l2a",
+              "title": "Numbers, not, and but",
+              "he": "מספרים, שלילה, וניגוד",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Numbers, negatives, and contrast markers"
+              ],
+              "objectives": [
+                "Keep the number that survives a correction, not the first number spoken.",
+                "Read not, but, however, and instead as meaning-changers on the transcript."
+              ],
+              "teach": "This reader has no audio, so the drill is a transcript. Numbers and contrast words do most of the damage. A time or a price is often said and then replaced. Write the second figure. Not and no longer delete the idea they touch. But, however, and instead keep the clause after them.\n\nFifty and fifteen are easy to swap. On a transcript you can see the letters, so choose before you look back. Circle the contrast word first. A number before but may belong to the rejected plan. The live exam plays audio twice in many sittings. A second pass is for the missed contrast.",
+              "rules": [
+                "If two numbers appear, the one after no, sorry, or actually is the one that stands.",
+                "Not cancels the phrase it attaches to. Read the noun that follows not.",
+                "After but or instead, the answer is usually in the clause on the right.",
+                "Check the full word in pairs such as fifteen and fifty, not only the first syllable."
+              ],
+              "example": {
+                "prompt": "Line from a transcript, since this reader has no audio: The coach costs forty shekels, but students pay fifteen. What do students pay? Type the number word.",
+                "steps": [
+                  "Two prices appear. But marks the contrast.",
+                  "The clause after but is about students, which is who the question names.",
+                  "Forty is the full fare. It is not the student price."
+                ],
+                "answer": "fifteen"
+              },
+              "practice": [
+                {
+                  "q": "Not the 3 o'clock bus, the 4 o'clock bus. Which hour? Type the digit.",
+                  "answer": "4",
+                  "why": "Not cancels 3 o'clock. The surviving hour is 4. The first number spoken is the trap."
+                },
+                {
+                  "q": "I wanted room 13. However, we got room 30. Which room did they get? Type the digit.",
+                  "answer": "30",
+                  "why": "However throws the weight onto the next clause. Wanted names the failed plan. Got names the fact."
+                }
+              ]
+            },
+            {
+              "id": "eng-listen-l2b",
+              "title": "The word that repeats is bait",
+              "he": "המילה שחוזרת היא פיתיון",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Distractors that repeat a word from the clip"
+              ],
+              "objectives": [
+                "Treat a repeated content word in an option as a suspect, not as proof.",
+                "Match the option to what was said about that word."
+              ],
+              "teach": "This reader has no audio, so the drill is a transcript. A distractor often repeats a clip word and attaches the wrong idea. If the museum is closed but the park is open, an option that says the museum is open has kept museum and dropped closed. The repeated word feels familiar. That is why it works.\n\nUnderline the shared word, then ask what was said about it. The right option may use a synonym and share no words. Familiarity is not evidence. Decide from the claim, not from the echo.",
+              "rules": [
+                "A word that appears in both the transcript and an option is not automatically correct.",
+                "Ask what the speaker said about that word. The claim about it is the answer.",
+                "A synonym option can be right. An echo option can be wrong.",
+                "Check any negative stuck to a repeated noun before you choose."
+              ],
+              "example": {
+                "prompt": "Transcript, because this reader has no audio: We will tour the old city, not the museum. Option A: They will tour the museum. Option B: They will tour the old city. Which is correct? A or B.",
+                "steps": [
+                  "Museum is the bait repeated in option A. Not cancels it.",
+                  "The claim that survives is tour the old city.",
+                  "Option B matches that claim. The shared word museum does not."
+                ],
+                "answer": "B"
+              },
+              "practice": [
+                {
+                  "q": "Homework is due Monday, not Friday. Which option is bait? (a) due Monday (b) due Friday",
+                  "answer": "b",
+                  "why": "Friday repeats a word from the line but keeps the cancelled day. Monday is the claim that survives not."
+                },
+                {
+                  "q": "The show is sold out. The best match is (a) no seats left (b) seats are cheap because the line says sold.",
+                  "answer": "a",
+                  "why": "Sold out means no seats remain. Option a is a synonym with no shared word. Option b grabs sold and invents a price."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-listen-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-listen-l3a",
+              "title": "A note that fits one replay",
+              "he": "פתק שמתאים להשמעה אחת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Note shape while listening"
+              ],
+              "objectives": [
+                "Use four slots only: who, change, number, and reason.",
+                "Leave a missed slot blank instead of inventing a likely detail."
+              ],
+              "teach": "This reader has no audio, so the drill is a transcript, but the note should still look like a listening note. Use four slots only: who, change, number, reason. Who is the person the decision is about. Change is the final plan after a correction. Number is the figure that survived. Reason is the because, and only if an item asks.\n\nDo not write sentences. Anchors are enough: lab, not library. An arrow shows a repair: library to lab. Leave a slot blank rather than invent a detail. The live exam plays audio twice in many sittings. Fill slots on the first pass, then check only blanks and numbers.",
+              "rules": [
+                "Four slots only: who, change, number, reason.",
+                "Record the final version of a corrected detail. You may arrow away the rejected one.",
+                "Leave unknowns blank. Do not guess a price, a room, or a time.",
+                "A second pass, on the page or in the ear, checks blanks and numbers only."
+              ],
+              "example": {
+                "prompt": "Transcript sentence, since this reader has no audio: Tell Yael the rehearsal moved from room 4 to room 9 because the roof leaked. Fill the four slots as who; change; number; reason.",
+                "steps": [
+                  "Who the message is about is Yael.",
+                  "The change is the room. The number that survived is 9, not 4.",
+                  "Because gives the reason: the roof leaked."
+                ],
+                "answer": "Yael; room 9; 9; roof leaked"
+              },
+              "practice": [
+                {
+                  "q": "You did not catch the price. What do you write in the number slot? (a) a likely school price (b) blank",
+                  "answer": "b",
+                  "why": "A blank can be filled on a second pass. An invented price becomes a false memory and is hard to delete."
+                },
+                {
+                  "q": "The line is not Monday, Wednesday. The change slot should hold (a) Monday (b) Wednesday.",
+                  "answer": "b",
+                  "why": "The change slot stores the final plan. Monday is the rejected day. Wednesday is what stands."
+                }
+              ]
+            },
+            {
+              "id": "eng-listen-l3b",
+              "title": "Review without a player",
+              "he": "חזרה בלי נגן",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Transcript review when you have no audio player"
+              ],
+              "objectives": [
+                "Review a short original transcript with the same checks as a second hearing.",
+                "Answer from a later fact, not from the first number in the script."
+              ],
+              "teach": "This reader has no audio, so the drill is a transcript. Review it like a second hearing. Predict the answer shape, read once, and note who, change, number, and reason. Cover the page and answer. Then check negatives, contrast words, and numbers.\n\nThe live exam plays audio twice in many sittings. This page copies that second pass. It assumes no fixed question count. The example script is an original school-trip announcement. Do not answer with the first number in it. The asked fact comes later.",
+              "rules": [
+                "Predict, read once, cover, answer, then uncover to check.",
+                "The first number in a script is often a departure time, not the answer.",
+                "Contrast and negatives outrank an earlier figure.",
+                "This drill has no fixed question count. Work the items you were given."
+              ],
+              "example": {
+                "prompt": "This reader has no audio. Read the original transcript once, then answer. Good morning. This is Ms Adler with a reminder about Thursday's school trip to the science museum. The bus leaves the side gate at 7:40, not from the front car park. Bring a packed lunch; the museum cafe closes at 11. You will have forty minutes in the planetarium after the guided tour. Students who still owe the 35-shekel fee should pay the secretary by Wednesday. If it rains, we still go. Wear comfortable shoes. How long will the students spend in the planetarium?",
+                "steps": [
+                  "There is no player. The script is the clip, and a live paper often plays audio twice.",
+                  "The first number is 7:40, the departure. The question asks for a duration, not that time.",
+                  "Eleven is the cafe, and 35 is the fee. The planetarium line says forty minutes.",
+                  "Forty minutes is the later fact that matches the question."
+                ],
+                "answer": "forty minutes"
+              },
+              "practice": [
+                {
+                  "q": "In the trip script, where does the bus leave? (a) the front car park (b) the side gate",
+                  "answer": "b",
+                  "why": "Not from the front car park cancels that place. The bus leaves the side gate. 7:40 is the time, not the place."
+                },
+                {
+                  "q": "Students who owe the fee should pay by which day? Type the day.",
+                  "answer": "Wednesday",
+                  "why": "The fee line says pay the secretary by Wednesday. Thursday is the trip day, mentioned earlier, and it is not the payment deadline."
+                },
+                {
+                  "q": "If it rains, the trip (a) is cancelled (b) still happens.",
+                  "answer": "b",
+                  "why": "The script says if it rains, we still go. Rain is a condition that does not cancel the plan."
+                },
+                {
+                  "q": "The cafe closing hour is not the first number spoken. Type that closing hour as a digit.",
+                  "answer": "11",
+                  "why": "7:40 is the first number and the wrong target. The cafe closes at 11. Forty minutes and 35 shekels answer other questions."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

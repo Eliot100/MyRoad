@@ -1,0 +1,1834 @@
+{
+  "stages": [
+    {
+      "id": "phys-wave",
+      "index": 7,
+      "title": "Oscillations and waves",
+      "he": "תנודות וגלים",
+      "topic": "Oscillations and waves",
+      "thesis": "A repeating motion and a traveling shape share frequency, and the exam asks you to tell them apart.",
+      "syllabus": [
+        "Simple harmonic motion descriptors",
+        "Mass-spring period",
+        "Simple pendulum period",
+        "Energy in SHM",
+        "Traveling waves, v = fλ",
+        "Superposition, standing waves, and the basic cases"
+      ],
+      "levels": [
+        {
+          "id": "phys-wave-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-wave-l1a",
+              "title": "What repeats in SHM",
+              "he": "מה חוזר בתנודה הרמונית",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Simple harmonic motion descriptors"
+              ],
+              "objectives": [
+                "Name amplitude, period, frequency, and angular frequency for a repeating motion.",
+                "State where speed and acceleration are greatest in simple harmonic motion."
+              ],
+              "teach": "Simple harmonic motion repeats about an equilibrium. Amplitude A is the greatest displacement, so the object moves between -A and +A. Period T is one full cycle, frequency is f = 1/T, and angular frequency is omega = 2*pi*f. These names come before any spring or pendulum formula.\n\nAcceleration points back toward equilibrium and is proportional to displacement. Speed is greatest at equilibrium and zero at either extreme. A displacement-time graph is a sine or a cosine. The choice depends only on when you start the clock.",
+              "rules": [
+                "Amplitude A is the greatest displacement. The motion runs from -A to +A.",
+                "f = 1/T and omega = 2*pi*f = 2*pi/T.",
+                "Acceleration is restoring and proportional to displacement.",
+                "Speed is greatest at equilibrium and zero at both extremes."
+              ],
+              "example": {
+                "prompt": "An oscillator has angular frequency omega = 4*pi rad/s. What is the period, in seconds?",
+                "steps": [
+                  "omega = 2*pi/T, so T = 2*pi/omega.",
+                  "Substitute omega = 4*pi: T = 2*pi/(4*pi).",
+                  "The pi cancels and T = 2/4 = 0.5 s."
+                ],
+                "answer": "0.5"
+              },
+              "practice": [
+                {
+                  "q": "A motion has frequency 5 Hz. What is its period, in seconds?",
+                  "answer": "0.2",
+                  "why": "T = 1/f = 1/5 = 0.2 s."
+                },
+                {
+                  "q": "In ideal SHM, what is the speed, in m/s, at a displacement extreme?",
+                  "answer": "0",
+                  "why": "At x = +A or x = -A the object turns around, so the speed is zero."
+                }
+              ]
+            },
+            {
+              "id": "phys-wave-l1b",
+              "title": "Period of a mass on a spring",
+              "he": "מחזור של מסה על קפיץ",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Mass-spring period"
+              ],
+              "objectives": [
+                "Calculate the period of a mass-spring oscillator from m and k.",
+                "Predict how the period changes when mass or spring stiffness changes."
+              ],
+              "teach": "A mass on a spring oscillates because the force is restoring and proportional to the stretch. The period is T = 2*pi*sqrt(m/k). A larger mass lengthens the period. A stiffer spring shortens it. Amplitude does not appear.\n\nFor m = 1 kg and k = 4 N/m, m/k = 1/4 and the square root is 1/2, so T = 2*pi*(1/2) = pi seconds. Substitute, take the root, then multiply by 2*pi. Leave the answer as pi unless a decimal is requested. This ideal period does not depend on g.",
+              "rules": [
+                "T = 2*pi*sqrt(m/k) for a mass on a spring.",
+                "The period does not depend on the amplitude in this ideal model.",
+                "Four times the mass, at the same k, doubles the period.",
+                "Four times the spring constant, at the same mass, halves the period."
+              ],
+              "example": {
+                "prompt": "A 1 kg mass is on a spring with k = 4 N/m. What is the period? Type pi.",
+                "steps": [
+                  "T = 2*pi*sqrt(m/k) = 2*pi*sqrt(1/4).",
+                  "sqrt(1/4) = 1/2.",
+                  "T = 2*pi*(1/2) = pi seconds."
+                ],
+                "answer": "pi"
+              },
+              "practice": [
+                {
+                  "q": "A 4 kg mass is on a spring with k = 4 N/m. What is the period? Type 2pi.",
+                  "answer": "2pi",
+                  "why": "T = 2*pi*sqrt(4/4) = 2*pi*sqrt(1) = 2*pi seconds."
+                },
+                {
+                  "q": "A 1 kg mass is on a spring with k = 16 N/m. What is the period? Type pi/2.",
+                  "answer": "pi/2",
+                  "why": "T = 2*pi*sqrt(1/16) = 2*pi*(1/4) = pi/2 seconds."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-wave-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-wave-l2a",
+              "title": "Period of a simple pendulum",
+              "he": "מחזור של מטוטלת פשוטה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Simple pendulum period"
+              ],
+              "objectives": [
+                "Calculate the period of a simple pendulum for a small angle.",
+                "State what the pendulum period does not depend on."
+              ],
+              "teach": "A simple pendulum is a bob on a light string of length L. For a small angle, T = 2*pi*sqrt(L/g). Take g = 10 m/s^2 when a number is required. Mass does not appear. A longer string means a longer period. A huge swing is outside this formula.\n\nWith L = 2.5 m and g = 10 m/s^2, L/g = 0.25 and the square root is 0.5, so T = pi seconds. Four times the length doubles the period. Doubling only the mass leaves the period unchanged. Do not use the mass-spring formula here.",
+              "rules": [
+                "For small angles, T = 2*pi*sqrt(L/g). Use g = 10 m/s^2.",
+                "The period does not depend on the mass of the bob.",
+                "Four times the length doubles the period.",
+                "The formula is for a small swing, not for a full circle."
+              ],
+              "example": {
+                "prompt": "A simple pendulum has length 2.5 m. Take g = 10 m/s^2. What is the period for a small angle? Type pi.",
+                "steps": [
+                  "T = 2*pi*sqrt(L/g) = 2*pi*sqrt(2.5/10).",
+                  "2.5/10 = 0.25 and sqrt(0.25) = 0.5.",
+                  "T = 2*pi*0.5 = pi seconds. The mass is not used."
+                ],
+                "answer": "pi"
+              },
+              "practice": [
+                {
+                  "q": "A simple pendulum has length 10 m. Take g = 10 m/s^2. What is the small-angle period? Type 2pi.",
+                  "answer": "2pi",
+                  "why": "T = 2*pi*sqrt(10/10) = 2*pi*sqrt(1) = 2*pi seconds."
+                },
+                {
+                  "q": "Only the bob's mass is doubled. Length and g stay fixed. By what factor does the period change?",
+                  "answer": "1",
+                  "why": "Mass is absent from T = 2*pi*sqrt(L/g), so the period is unchanged and the factor is 1."
+                }
+              ]
+            },
+            {
+              "id": "phys-wave-l2b",
+              "title": "Where the energy sits",
+              "he": "איפה יושבת האנרגיה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Energy in SHM"
+              ],
+              "objectives": [
+                "Calculate the total energy of a spring oscillator from k and A.",
+                "Say whether the energy at a given point is potential, kinetic, or both."
+              ],
+              "teach": "Ideal SHM keeps a constant total energy. For a spring, E = (1/2)*k*A^2. That energy swaps between potential (1/2)*k*x^2 and kinetic (1/2)*m*v^2. At an extreme the speed is zero, so the energy is all potential. At equilibrium the potential is zero, so the energy is all kinetic.\n\nWith k = 4 N/m and A = 0.5 m, E = (1/2)*4*(0.5)^2 = 0.5 J. For m = 1 kg the greatest speed is 1 m/s, because (1/2)*m*v^2 = 0.5 J. Nothing is damping the motion, so the amplitude does not fade.",
+              "rules": [
+                "Total spring energy is E = (1/2)*k*A^2, and it stays constant if nothing is damping the motion.",
+                "At maximum displacement the energy is all potential: (1/2)*k*A^2.",
+                "At equilibrium the energy is all kinetic: (1/2)*m*v^2.",
+                "The two stores swap. Their sum at any displacement is still (1/2)*k*A^2."
+              ],
+              "example": {
+                "prompt": "A spring has k = 4 N/m and amplitude 0.5 m. What is the total energy, in joules?",
+                "steps": [
+                  "E = (1/2)*k*A^2.",
+                  "A^2 = 0.25, so (1/2)*4*0.25 = 2*0.25.",
+                  "E = 0.5 J. At equilibrium this whole 0.5 J is kinetic."
+                ],
+                "answer": "0.5"
+              },
+              "practice": [
+                {
+                  "q": "A spring has k = 4 N/m and amplitude 0.2 m. What is the total energy, in joules?",
+                  "answer": "0.08",
+                  "why": "E = (1/2)*4*(0.2)^2 = 2*0.04 = 0.08 J."
+                },
+                {
+                  "q": "For that same spring, what is the potential energy at equilibrium, in joules?",
+                  "answer": "0",
+                  "why": "At x = 0 the spring potential (1/2)*k*x^2 is zero. The 0.08 J is then all kinetic."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-wave-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-wave-l3a",
+              "title": "Speed, frequency, wavelength",
+              "he": "מהירות, תדירות ואורך גל",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Traveling waves, v = fλ"
+              ],
+              "objectives": [
+                "Use v = f*lambda to find the missing wave quantity.",
+                "Say which of speed, frequency, and wavelength changes when the medium changes."
+              ],
+              "teach": "A traveling wave moves a shape through a medium without carrying the medium along. Speed, frequency, and wavelength are tied by v = f*lambda. The source sets the frequency. The medium sets the speed. Wavelength is whatever makes f*lambda equal that speed.\n\nA wave with f = 5 Hz and lambda = 2 m has v = 10 m/s. If the same source drives a medium where the speed doubles, f stays 5 Hz and the wavelength doubles. Decide which of v, f, and lambda the question actually changed.",
+              "rules": [
+                "v = f*lambda. Any one of the three can be the unknown.",
+                "The source sets f. The medium sets v. Lambda adjusts.",
+                "If f is fixed and v doubles, lambda doubles.",
+                "The wave transports energy. The particles of the medium oscillate and stay."
+              ],
+              "example": {
+                "prompt": "A traveling wave has frequency 5 Hz and wavelength 2 m. What is its speed, in m/s?",
+                "steps": [
+                  "Use v = f*lambda.",
+                  "Substitute f = 5 Hz and lambda = 2 m.",
+                  "v = 10 m/s."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "A wave has frequency 4 Hz and wavelength 3 m. What is its speed, in m/s?",
+                  "answer": "12",
+                  "why": "v = f*lambda = 4*3 = 12 m/s."
+                },
+                {
+                  "q": "Frequency stays fixed and the wave speed doubles. By what factor does the wavelength change?",
+                  "answer": "2",
+                  "why": "From lambda = v/f, doubling v at fixed f doubles lambda."
+                }
+              ]
+            },
+            {
+              "id": "phys-wave-l3b",
+              "title": "Standing waves and the basic cases",
+              "he": "גלים עומדים והמקרים הבסיסיים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Superposition, standing waves, and the basic cases"
+              ],
+              "objectives": [
+                "Fit the simplest standing wave to a string fixed at both ends.",
+                "Distinguish that case from a pipe closed at one end, and find a harmonic."
+              ],
+              "teach": "Superposition adds displacements. Two equal waves of one frequency, traveling opposite ways, make a standing wave. Nodes stay still. Antinodes, midway between nodes, swing widest. The pattern stays in place instead of traveling along the string.\n\nOn a string fixed at both ends the ends are nodes. The simplest pattern is half a wavelength in the length: L = lambda/2. Further patterns obey L = n*lambda/2. A pipe closed at one end is the other basic case, with simplest length L = lambda/4. Name the boundary before you pick the formula.",
+              "rules": [
+                "Standing waves come from superposition of two equal opposite traveling waves.",
+                "A string fixed at both ends has nodes at the ends. The simplest pattern is L = lambda/2.",
+                "Harmonics of that string: L = n*lambda/2 and f_n = n*f_1 for n = 1, 2, 3, ...",
+                "A pipe closed at one end has simplest length L = lambda/4.",
+                "Use v = f*lambda after the boundary has fixed lambda."
+              ],
+              "example": {
+                "prompt": "A string fixed at both ends has length 1 m. The simplest standing wave fits on it, and the wave speed is 10 m/s. What is the fundamental frequency, in hertz?",
+                "steps": [
+                  "The ends are nodes, so the simplest pattern is L = lambda/2.",
+                  "lambda = 2L = 2 m. That pattern has one antinode in the middle.",
+                  "f = v/lambda = 10/2 = 5 Hz."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "A string fixed at both ends has length 2 m. What is the fundamental wavelength, in metres?",
+                  "answer": "4",
+                  "why": "Simplest pattern: L = lambda/2, so lambda = 2L = 4 m."
+                },
+                {
+                  "q": "The fundamental frequency of a string fixed at both ends is 5 Hz. What is the third-harmonic frequency, in hertz?",
+                  "answer": "15",
+                  "why": "For this string f_n = n*f_1, so f_3 = 3*5 = 15 Hz."
+                },
+                {
+                  "q": "A pipe is closed at one end and has length 0.25 m. What is the fundamental wavelength, in metres?",
+                  "answer": "1",
+                  "why": "The simplest closed-pipe pattern is L = lambda/4, so lambda = 4*0.25 = 1 m."
+                },
+                {
+                  "q": "Two equal waves travel in opposite directions and superpose, leaving nodes. Type standing or traveling.",
+                  "answer": "standing",
+                  "why": "Equal opposite waves of one frequency make a standing wave. A traveling wave does not keep nodes fixed in place."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-elec",
+      "index": 8,
+      "title": "Electrostatics",
+      "he": "אלקטרוסטטיקה",
+      "topic": "Electrostatics",
+      "thesis": "Charge makes a field, a field exerts a force, and potential is energy per charge.",
+      "syllabus": [
+        "Charge and Coulomb's law",
+        "Electric field",
+        "Field lines and superposition",
+        "Electric potential and potential difference",
+        "Uniform field between plates",
+        "Motion of a charge in a uniform field"
+      ],
+      "levels": [
+        {
+          "id": "phys-elec-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-elec-l1a",
+              "title": "Coulomb's law",
+              "he": "חוק קולון",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Charge and Coulomb's law"
+              ],
+              "objectives": [
+                "Compute the size of the force between two point charges.",
+                "State whether that force is attractive or repulsive."
+              ],
+              "teach": "Like charges repel and opposite charges attract. Coulomb's law gives the size of the force between point charges: F = k*q1*q2/r^2, with k = 9*10^9. The force lies on the line joining the charges, and both charges feel the same size of force.\n\nTake +2 microcoulomb and +3 microcoulomb at r = 0.3 m. Then F = 9*10^9 * (2*10^-6)*(3*10^-6) / 0.09 = 0.054/0.09 = 0.6 N. Both charges are positive, so the force is repulsive. Write microcoulombs as 10^-6 C before you substitute.",
+              "rules": [
+                "F = k*q1*q2/r^2 with k = 9*10^9. Use coulombs and metres.",
+                "Like charges repel. Opposite charges attract. The formula itself gives the size.",
+                "Convert microcoulomb to coulomb before substituting: 1 microcoulomb = 10^-6 C.",
+                "If the separation doubles, the force becomes a quarter, because of r^2."
+              ],
+              "example": {
+                "prompt": "Charges +2 microcoulomb and +3 microcoulomb are 0.3 m apart. What is the size of the force, in newtons? Use k = 9*10^9.",
+                "steps": [
+                  "F = 9*10^9 * (2*10^-6)*(3*10^-6) / (0.3)^2.",
+                  "(0.3)^2 = 0.09, and the charge product is 6*10^-12, so the numerator is 0.054.",
+                  "F = 0.054/0.09 = 0.6 N, and the force is repulsive."
+                ],
+                "answer": "0.6"
+              },
+              "practice": [
+                {
+                  "q": "The same two charges are moved from 0.3 m apart to 0.6 m apart. By what factor does the size of the force change? Type a fraction.",
+                  "answer": "1/4",
+                  "why": "Force depends on 1/r^2. Doubling r multiplies r^2 by 4, so the force is multiplied by 1/4."
+                },
+                {
+                  "q": "A +2 microcoulomb charge and a -3 microcoulomb charge are 0.3 m apart. Type attractive or repulsive.",
+                  "answer": "attractive",
+                  "why": "Opposite signs attract. The size is still 0.6 N, because the law uses the magnitudes."
+                }
+              ]
+            },
+            {
+              "id": "phys-elec-l1b",
+              "title": "The electric field",
+              "he": "השדה החשמלי",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Electric field"
+              ],
+              "objectives": [
+                "Find an electric field from the force on a known charge.",
+                "Find the force on a charge placed in a known field."
+              ],
+              "teach": "The electric field at a point is the force a charge would feel, divided by that charge: E = F/q. Its direction is the force on a positive test charge. A negative charge is pushed the other way. A point charge produces E = k*q/r^2, pointing away if the charge is positive.\n\nThe field belongs to the place. If 4*10^-6 C feels 0.02 N, then E = 0.02 / 4*10^-6 = 5000 N/C. Another charge there feels F = q*E, while E stays the same. When F and the test charge are given, divide by that test charge.",
+              "rules": [
+                "E = F/q. The direction is the force direction on a positive charge.",
+                "A negative charge is pushed opposite the field.",
+                "For a point charge, E = k*q/r^2, with k = 9*10^9.",
+                "Once E is known, F = q*E for any charge placed there."
+              ],
+              "example": {
+                "prompt": "A charge of 4*10^-6 C feels a force of 0.02 N. What is the electric field, in N/C?",
+                "steps": [
+                  "E = F/q.",
+                  "E = 0.02 / 4*10^-6.",
+                  "E = 5000 N/C."
+                ],
+                "answer": "5000"
+              },
+              "practice": [
+                {
+                  "q": "That same field is 5000 N/C. What force, in newtons, does it exert on a charge of 2*10^-6 C?",
+                  "answer": "0.01",
+                  "why": "F = q*E = 5000 * 2*10^-6 = 0.01 N."
+                },
+                {
+                  "q": "A point charge of 2*10^-6 C is the source. What is the field, in N/C, at a distance of 3 m? Use k = 9*10^9.",
+                  "answer": "2000",
+                  "why": "E = k*q/r^2 = 9*10^9 * 2*10^-6 / 9 = 18000/9 = 2000 N/C."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-elec-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-elec-l2a",
+              "title": "Field lines and adding fields",
+              "he": "קווי שדה וחיבור שדות",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Field lines and superposition"
+              ],
+              "objectives": [
+                "Read direction and relative strength from a field-line picture.",
+                "Add electric fields as vectors, including a canceling midpoint."
+              ],
+              "teach": "Field lines leave positive charges and end on negative charges. Closer lines mean a stronger field. Lines never cross, because one point has one field direction. A uniform field is drawn as parallel, equally spaced lines, which is the picture between parallel plates.\n\nThe net field is the vector sum of the separate fields. Add sizes that share a direction, and subtract sizes that oppose. Two equal positive charges give equal opposite fields at the midpoint, so the net field there is zero. Draw arrows before you add.",
+              "rules": [
+                "Field lines leave positive charges and end on negative charges.",
+                "Closer lines mean a stronger field. Lines never cross.",
+                "Add fields as vectors. Scalars are not enough when the arrows differ.",
+                "Equal opposite contributions cancel. The midpoint between equal positive charges has E = 0."
+              ],
+              "example": {
+                "prompt": "At a point, one field is 300 N/C to the right and another is 100 N/C to the left. What is the size of the net field, in N/C?",
+                "steps": [
+                  "The fields are opposite, so subtract: 300 - 100 = 200.",
+                  "The larger field points right, so the net field points right.",
+                  "The size asked for is 200 N/C."
+                ],
+                "answer": "200"
+              },
+              "practice": [
+                {
+                  "q": "At a point, fields of 300 N/C and 100 N/C point the same way. What is the size of the net field, in N/C?",
+                  "answer": "400",
+                  "why": "Same direction, so the sizes add: 300 + 100 = 400 N/C."
+                },
+                {
+                  "q": "Two equal positive point charges sit on a line. What is the net field, in N/C, at the exact midpoint?",
+                  "answer": "0",
+                  "why": "The two fields are equal and opposite at the midpoint, so their vector sum is zero."
+                }
+              ]
+            },
+            {
+              "id": "phys-elec-l2b",
+              "title": "Potential and potential difference",
+              "he": "פוטנציאל והפרש פוטנציאלים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Electric potential and potential difference"
+              ],
+              "objectives": [
+                "Calculate the potential of a point charge with zero at infinity.",
+                "Turn a potential difference into a change of potential energy with q*deltaV."
+              ],
+              "teach": "Potential is potential energy per charge. Moving charge q through a potential difference changes its potential energy by q*deltaV. One volt is one joule per coulomb. For a point charge, with zero at infinity, V = k*q/r. Positive charge makes positive potential.\n\nPotential is a scalar, so signed values add without arrows. A question may want volts or joules. Volts are potential. Joules are q times a potential difference. Stop on the unit the question named.",
+              "rules": [
+                "deltaU = q*deltaV. One volt is one joule per coulomb.",
+                "For a point charge, V = k*q/r with zero at infinity and k = 9*10^9.",
+                "Potential is a scalar. Add signed values. Do not treat them as forces.",
+                "A positive charge raises the potential around it."
+              ],
+              "example": {
+                "prompt": "A point charge of 2*10^-6 C is the source. Take V = 0 at infinity and k = 9*10^9. What is the potential, in volts, at a distance of 3 m?",
+                "steps": [
+                  "V = k*q/r = 9*10^9 * 2*10^-6 / 3.",
+                  "9*10^9 * 2*10^-6 = 18000.",
+                  "V = 18000/3 = 6000 V."
+                ],
+                "answer": "6000"
+              },
+              "practice": [
+                {
+                  "q": "A charge of 0.02 C moves through a potential difference of 10 V. What is the size of the change in its electric potential energy, in joules?",
+                  "answer": "0.2",
+                  "why": "deltaU = q*deltaV = 0.02 * 10 = 0.2 J."
+                },
+                {
+                  "q": "Two contributions to the potential at one point are +40 V and -15 V. What is the net potential, in volts?",
+                  "answer": "25",
+                  "why": "Potential is a scalar, so 40 + (-15) = 25 V."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-elec-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-elec-l3a",
+              "title": "Plates and a uniform field",
+              "he": "לוחות ושדה אחיד",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Uniform field between plates"
+              ],
+              "objectives": [
+                "Use deltaV = E*d for a uniform field between parallel plates.",
+                "Find the field from a known potential difference and plate separation."
+              ],
+              "teach": "Between parallel plates, ignoring edge fringing, the field is uniform. Lines are parallel and equally spaced. The field points from the positive plate toward the negative plate, and the positive plate is at the higher potential. The magnitude relation is deltaV = E*d.\n\nIf E = 200 N/C and d = 0.05 m, then deltaV = 200*0.05 = 10 V. Reversed, 10 V across 0.05 m means E = 200 N/C. Use E*d only for a uniform field. Near the edges that product is not the whole story.",
+              "rules": [
+                "Between parallel plates the field is uniform and points from the positive plate to the negative plate.",
+                "The positive plate is at the higher potential.",
+                "For a uniform field, deltaV = E*d.",
+                "E = deltaV/d only while that uniform-field model applies."
+              ],
+              "example": {
+                "prompt": "A uniform field of 200 N/C lies between plates 0.05 m apart. What is the potential difference, in volts?",
+                "steps": [
+                  "For a uniform field, deltaV = E*d.",
+                  "deltaV = 200 * 0.05.",
+                  "deltaV = 10 V."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "The potential difference between two plates is 10 V and their separation is 0.05 m. The field is uniform. What is E, in N/C?",
+                  "answer": "200",
+                  "why": "E = deltaV/d = 10/0.05 = 200 N/C."
+                },
+                {
+                  "q": "A uniform field of 200 N/C fills a gap of 0.1 m. What is the potential difference, in volts?",
+                  "answer": "20",
+                  "why": "deltaV = E*d = 200 * 0.1 = 20 V."
+                }
+              ]
+            },
+            {
+              "id": "phys-elec-l3b",
+              "title": "A charge moving between plates",
+              "he": "מטען שנע בין הלוחות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Motion of a charge in a uniform field"
+              ],
+              "objectives": [
+                "Find the constant acceleration of a charge in a uniform field.",
+                "Use q*deltaV for the kinetic energy gained from rest, and state the direction for each sign of charge."
+              ],
+              "teach": "In a uniform field a charge feels a constant force F = q*E, so a = q*E/m is constant. A positive charge accelerates with the field. A negative charge accelerates against it. From rest the path is straight. A sideways entry makes a parabola. Ignore gravity unless the question includes weight.\n\nFrom rest, the kinetic energy gained across a potential difference is q*deltaV. Here E = 200 N/C and d = 0.05 m give deltaV = 10 V. A charge of 0.2 C that crosses those 10 V gains 2 J. Use a = q*E/m when time is given, and q*deltaV when energy is given.",
+              "rules": [
+                "F = q*E is constant in a uniform field, so a = q*E/m is constant.",
+                "A positive charge accelerates with the field, toward lower potential. A negative charge accelerates against the field.",
+                "Ignore gravity unless the question puts weight in the problem.",
+                "From rest, the kinetic energy gained across a potential difference is q*deltaV.",
+                "If the charge enters sideways, the path is a parabola, not a new force law."
+              ],
+              "example": {
+                "prompt": "A charge of 0.01 C and mass 0.05 kg is released from rest in a uniform field of 200 N/C. What speed, in m/s, does it have after 0.5 s? Ignore gravity.",
+                "steps": [
+                  "F = q*E = 0.01 * 200 = 2 N.",
+                  "a = F/m = 2/0.05 = 40 m/s^2.",
+                  "From rest, v = a*t = 40 * 0.5 = 20 m/s."
+                ],
+                "answer": "20"
+              },
+              "practice": [
+                {
+                  "q": "A charge of 0.01 C sits in a uniform field of 200 N/C. What is the size of the force, in newtons?",
+                  "answer": "2",
+                  "why": "F = q*E = 0.01 * 200 = 2 N."
+                },
+                {
+                  "q": "A charge of 0.01 C and mass 0.05 kg is in a uniform field of 200 N/C. What is the size of its acceleration, in m/s^2?",
+                  "answer": "40",
+                  "why": "F = 2 N and a = F/m = 2/0.05 = 40 m/s^2."
+                },
+                {
+                  "q": "A charge of 0.2 C starts from rest and crosses a potential difference of 10 V. What kinetic energy, in joules, does it gain? Ignore gravity.",
+                  "answer": "2",
+                  "why": "The kinetic energy gained from rest is q*deltaV = 0.2 * 10 = 2 J."
+                },
+                {
+                  "q": "A negative charge is released from rest in a uniform field. Type with or against for the direction of its acceleration relative to the field.",
+                  "answer": "against",
+                  "why": "The field direction is defined by the force on a positive charge. A negative charge is pushed the other way."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-circuit",
+      "index": 9,
+      "title": "Circuits",
+      "he": "מעגלים",
+      "topic": "Circuits",
+      "thesis": "A circuit problem is Ohm, Kirchhoff, and a decision about series versus parallel.",
+      "syllabus": [
+        "Current, voltage, resistance, Ohm's law",
+        "Resistivity",
+        "Series and parallel resistors",
+        "Kirchhoff's laws",
+        "Power in resistors",
+        "Real circuits: meters, shorts, and open branches"
+      ],
+      "levels": [
+        {
+          "id": "phys-circuit-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-circuit-l1a",
+              "title": "Current, voltage, and Ohm",
+              "he": "זרם, מתח ואוהם",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Current, voltage, resistance, Ohm's law"
+              ],
+              "objectives": [
+                "Use V = I*R for an ohmic resistor and name the unit of the result.",
+                "Find the charge that passes from current and time."
+              ],
+              "teach": "Current is charge per second, I = Q/t. Potential difference is energy per charge. Resistance measures how strongly an element opposes current. For an ohmic resistor, Ohm's law is V = I*R. Conventional current is drawn from high potential to low potential through the resistor.\n\nA 12 V battery across one 6 ohm resistor drives I = 12/6 = 2 A. In 4 s the charge that passes is Q = I*t = 8 C. Given two of V, I, and R, the third is one product or one division. Match the unit to ampere, volt, ohm, or coulomb.",
+              "rules": [
+                "I = Q/t. V = I*R for an ohmic resistor at steady temperature.",
+                "Conventional current goes from high potential to low potential outside the battery.",
+                "Given two of V, I, and R, compute the third. Do not add them.",
+                "Charge passed is Q = I*t when the current is steady."
+              ],
+              "example": {
+                "prompt": "A 12 V battery is connected across a single 6 ohm resistor. What is the current, in amperes?",
+                "steps": [
+                  "Ohm's law: I = V/R.",
+                  "I = 12/6.",
+                  "I = 2 A."
+                ],
+                "answer": "2"
+              },
+              "practice": [
+                {
+                  "q": "A steady current of 2 A flows for 4 s. What charge passes, in coulombs?",
+                  "answer": "8",
+                  "why": "Q = I*t = 2*4 = 8 C."
+                },
+                {
+                  "q": "A current of 0.5 A flows through a 6 ohm resistor. What is the potential difference, in volts?",
+                  "answer": "3",
+                  "why": "V = I*R = 0.5*6 = 3 V."
+                }
+              ]
+            },
+            {
+              "id": "phys-circuit-l1b",
+              "title": "Resistivity and the shape of the wire",
+              "he": "התנגדות סגולית וצורת התיל",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Resistivity"
+              ],
+              "objectives": [
+                "Calculate resistance from resistivity, length, and area.",
+                "Track how R changes when rho, L, and A are scaled."
+              ],
+              "teach": "For a uniform wire, R = rho*L/A. Rho is the resistivity of the material, L the length, and A the cross-sectional area. A longer wire has more resistance. A thicker wire has less. If the question is silent about temperature, keep rho fixed.\n\nDoubling rho and doubling L each double the numerator, while doubling A doubles the denominator, so R doubles. They do not all cancel. If only L and A double, R is unchanged. With rho = 2*10^-6 ohm*m, L = 2 m, and A = 1*10^-6 m^2, R = 4 ohm. Double all three inputs and R becomes 8 ohm.",
+              "rules": [
+                "R = rho*L/A. Longer raises R. Thicker lowers R.",
+                "If rho, L, and A all double, R doubles. The two numerator factors do not cancel the one denominator factor.",
+                "If only L and A double, R is unchanged.",
+                "Keep rho fixed unless the question says the temperature changed."
+              ],
+              "example": {
+                "prompt": "A uniform wire has rho = 2*10^-6 ohm*m, length 2 m, and area 1*10^-6 m^2. What is its resistance, in ohms?",
+                "steps": [
+                  "R = rho*L/A.",
+                  "R = (2*10^-6)*2 / (1*10^-6) = 4*10^-6 / 1*10^-6.",
+                  "R = 4 ohm."
+                ],
+                "answer": "4"
+              },
+              "practice": [
+                {
+                  "q": "Start from that 4 ohm wire and double rho, L, and A together. What is the new resistance, in ohms?",
+                  "answer": "8",
+                  "why": "Each doubling of rho and of L multiplies R by 2, and doubling A divides by 2, so the net factor is 2. New R = 8 ohm."
+                },
+                {
+                  "q": "Start again from 4 ohm. Double only the length and the area, and leave rho fixed. What is the new resistance, in ohms?",
+                  "answer": "4",
+                  "why": "L and A both double, so their ratio is unchanged and R stays 4 ohm."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-circuit-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-circuit-l2a",
+              "title": "Series or parallel",
+              "he": "טור או מקביל",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Series and parallel resistors"
+              ],
+              "objectives": [
+                "Find current and voltage for two resistors in series.",
+                "Find the equivalent and the total current for two equal resistors in parallel."
+              ],
+              "teach": "In series the current is the same, the voltages add, and R = R1 + R2. In parallel the voltage is the same, the currents add, and 1/R = 1/R1 + 1/R2. Two equal resistors in parallel have an equivalent of half of one of them. Decide the connection before you use Ohm's law.\n\nTwo 6 ohm resistors in series on 12 V have equivalent 12 ohm, so I = 1 A, and each drops 6 V. The same two resistors in parallel have equivalent 3 ohm, so the total current on 12 V is 4 A. Each parallel branch then carries 2 A.",
+              "rules": [
+                "Series: same current, voltages add, resistances add.",
+                "Parallel: same voltage, currents add, and 1/R = 1/R1 + 1/R2.",
+                "Two equal resistors in parallel have equivalent R/2.",
+                "Name the connection before you apply Ohm's law."
+              ],
+              "example": {
+                "prompt": "Two 6 ohm resistors are in series across a 12 V battery. What is the current, in amperes?",
+                "steps": [
+                  "Series equivalent R = 6 + 6 = 12 ohm.",
+                  "I = V/R = 12/12 = 1 A. The same 1 A passes through each resistor.",
+                  "Each drop is I*R = 1*6 = 6 V, and 6 + 6 = 12 V."
+                ],
+                "answer": "1"
+              },
+              "practice": [
+                {
+                  "q": "Two 6 ohm resistors are in parallel. What is the equivalent resistance, in ohms?",
+                  "answer": "3",
+                  "why": "1/R = 1/6 + 1/6 = 1/3, so R = 3 ohm. Two equal resistors in parallel halve."
+                },
+                {
+                  "q": "Those parallel 6 ohm resistors are placed across 12 V. What is the total current, in amperes?",
+                  "answer": "4",
+                  "why": "I = V/R = 12/3 = 4 A. Each branch carries 12/6 = 2 A."
+                }
+              ]
+            },
+            {
+              "id": "phys-circuit-l2b",
+              "title": "Junctions and loops",
+              "he": "צמתים ולולאות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Kirchhoff's laws"
+              ],
+              "objectives": [
+                "Apply the junction rule to find a missing current.",
+                "Check a series loop by adding the potential drops to the battery rise."
+              ],
+              "teach": "At a junction, current in equals current out. Charge does not pile up in a steady circuit. Around a closed loop, rises and drops add to zero. From the negative battery terminal toward the positive terminal is a rise. Through a resistor with the current is a drop.\n\nIf 5 A enters a junction and 2 A leaves on one wire, the other wire carries 3 A. A 12 V battery with two 6 ohm resistors in series has drops of 6 V and 6 V, and 12 - 6 - 6 = 0, so I = 1 A. Label currents before you write the equation.",
+              "rules": [
+                "Junction: current in equals current out.",
+                "Loop: the signed rises and drops around a closed path add to zero.",
+                "A battery rise is from its negative terminal toward its positive terminal.",
+                "A resistor drop is I*R when you travel with the current."
+              ],
+              "example": {
+                "prompt": "A junction has 5 A entering. One leaving wire carries 2 A. What current, in amperes, leaves in the other wire?",
+                "steps": [
+                  "Current in equals current out.",
+                  "5 = 2 + I.",
+                  "I = 3 A."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "A 12 V battery and two 6 ohm resistors form one series loop. What is the current, in amperes?",
+                  "answer": "1",
+                  "why": "The equivalent is 12 ohm, so I = 1 A. The loop is 12 - 6 - 6 = 0."
+                },
+                {
+                  "q": "9 A enters a junction. Two leaving wires carry 4 A and 2 A. What current, in amperes, leaves in the third wire?",
+                  "answer": "3",
+                  "why": "Current out must total 9 A, so the third wire carries 9 - 4 - 2 = 3 A."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-circuit-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-circuit-l3a",
+              "title": "Power in a resistor",
+              "he": "הספק בנגד",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Power in resistors"
+              ],
+              "objectives": [
+                "Compute the power in a resistor from I^2*R, V*I, or V^2/R.",
+                "Compare which resistor dissipates more in series and in parallel."
+              ],
+              "teach": "A resistor turns electrical energy into heat. Power, in watts, is P = I*V = I^2*R = V^2/R. Use I^2*R when resistors share a current, and V^2/R when they share a voltage. In series the larger resistance dissipates more. In parallel the smaller resistance dissipates more.\n\nOn the series pair, I = 1 A through each 6 ohm resistor. Each dissipates P = I^2*R = 6 W, which is also 6 V times 1 A. Together they dissipate 12 W, matching the battery power 12 V times 1 A. Each parallel 6 ohm resistor feels the full 12 V and dissipates 24 W.",
+              "rules": [
+                "P = I*V = I^2*R = V^2/R for an ohmic resistor.",
+                "Use I^2*R when the resistors share the current.",
+                "Use V^2/R when the resistors share the voltage.",
+                "In series, larger R dissipates more. In parallel, smaller R dissipates more."
+              ],
+              "example": {
+                "prompt": "Two 6 ohm resistors are in series on a 12 V battery, so the current is 1 A. What power, in watts, does each resistor dissipate?",
+                "steps": [
+                  "The current in each series resistor is 1 A.",
+                  "P = I^2*R = 1^2 * 6.",
+                  "P = 6 W. The drop check is 6 V * 1 A = 6 W."
+                ],
+                "answer": "6"
+              },
+              "practice": [
+                {
+                  "q": "What is the total power, in watts, dissipated by those two series resistors together?",
+                  "answer": "12",
+                  "why": "Each dissipates 6 W, so together 12 W. The battery supplies 12 V * 1 A = 12 W."
+                },
+                {
+                  "q": "A single 6 ohm resistor is connected across 12 V. What power, in watts, does it dissipate?",
+                  "answer": "24",
+                  "why": "P = V^2/R = 144/6 = 24 W. It feels the full 12 V, unlike one resistor in the series pair."
+                }
+              ]
+            },
+            {
+              "id": "phys-circuit-l3b",
+              "title": "Meters, shorts, and open branches",
+              "he": "מדידים, קצרים וענפים פתוחים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Real circuits: meters, shorts, and open branches"
+              ],
+              "objectives": [
+                "Place an ideal ammeter and an ideal voltmeter without changing the circuit.",
+                "Find the current after a short or an open removes one resistor from the action."
+              ],
+              "teach": "An ideal ammeter has nearly zero resistance and is placed in series. An ideal voltmeter has nearly infinite resistance and is placed in parallel. A voltmeter in series almost opens the branch. An ammeter across an element almost shorts it. Those swapped placements measure a circuit you have changed.\n\nA short across a resistor bypasses that resistor. The ideal short has about zero voltage, and the current takes the wire. An open branch carries no current. On 12 V, two 6 ohm resistors in series become one 6 ohm path if one is shorted, and the current rises from 1 A to 2 A.",
+              "rules": [
+                "An ideal ammeter has nearly zero resistance and goes in series.",
+                "An ideal voltmeter has nearly infinite resistance and goes in parallel.",
+                "A short across a resistor bypasses it. The voltage across the ideal short is about zero.",
+                "An open branch carries zero current.",
+                "After a short or an open, redraw the circuit and only then use Ohm's law."
+              ],
+              "example": {
+                "prompt": "Two 6 ohm resistors are in series on 12 V, and then one resistor is shorted by an ideal wire. What is the current, in amperes?",
+                "steps": [
+                  "The short bypasses one resistor, so only one 6 ohm resistor remains in the path.",
+                  "I = V/R = 12/6.",
+                  "I = 2 A. Before the short the current was 1 A."
+                ],
+                "answer": "2"
+              },
+              "practice": [
+                {
+                  "q": "Where is an ideal ammeter placed? Type series or parallel.",
+                  "answer": "series",
+                  "why": "Nearly zero resistance must sit in the branch whose current you want, so the ammeter is in series."
+                },
+                {
+                  "q": "Where is an ideal voltmeter placed? Type series or parallel.",
+                  "answer": "parallel",
+                  "why": "Nearly infinite resistance draws almost no current, so the voltmeter is in parallel with the element."
+                },
+                {
+                  "q": "Two 6 ohm resistors are in parallel on 12 V, and then one branch is opened. What is the total current, in amperes?",
+                  "answer": "2",
+                  "why": "The open branch carries 0. The remaining 6 ohm resistor draws 12/6 = 2 A."
+                },
+                {
+                  "q": "An ideal wire shorts a resistor. What is the voltage across that resistor, in volts?",
+                  "answer": "0",
+                  "why": "The ideal short has zero resistance, so the voltage across it, and across the resistor it bypasses, is 0."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-mag",
+      "index": 10,
+      "title": "Magnetism and induction",
+      "he": "מגנטיות והשראה",
+      "topic": "Magnetism and induction",
+      "thesis": "Magnetic force needs motion or current, and induction needs a changing flux.",
+      "syllabus": [
+        "Magnetic field and the force on a moving charge",
+        "Force on a current-carrying wire",
+        "Motors at the school diagram level",
+        "Magnetic flux",
+        "Faraday and Lenz",
+        "A simple generator or induced emf problem"
+      ],
+      "levels": [
+        {
+          "id": "phys-mag-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-mag-l1a",
+              "title": "Force on a moving charge",
+              "he": "כוח על מטען נע",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Magnetic field and the force on a moving charge"
+              ],
+              "objectives": [
+                "Compute F = q*v*B when velocity and field are perpendicular.",
+                "State the force when the velocity is parallel to the field."
+              ],
+              "teach": "A magnetic field does not push a charge that is sitting still. When velocity is perpendicular to the field, the force has size F = q*v*B. When velocity is parallel to the field, the force is zero. In between, F = q*v*B*sin(theta). The force is perpendicular to both v and B.\n\nFind that direction with the right-hand rule your class uses. Do not switch hand rules in the middle of a paper. A charge of 0.2 C moving at 4 m/s perpendicular to a 0.5 T field feels F = 0.2*4*0.5 = 0.4 N. Point the same velocity along the field and the force is zero.",
+              "rules": [
+                "A stationary charge feels no magnetic force.",
+                "When v is perpendicular to B, F = q*v*B. When v is parallel to B, F = 0.",
+                "In general the size is F = q*v*B*sin(theta), with theta between v and B.",
+                "The force is perpendicular to both v and B. Use your class right-hand rule for the direction."
+              ],
+              "example": {
+                "prompt": "A charge of 0.2 C moves at 4 m/s perpendicular to a 0.5 T field. What is the size of the force, in newtons?",
+                "steps": [
+                  "v is perpendicular to B, so F = q*v*B.",
+                  "F = 0.2*4*0.5.",
+                  "F = 0.4 N."
+                ],
+                "answer": "0.4"
+              },
+              "practice": [
+                {
+                  "q": "The same charge moves at 4 m/s parallel to the same 0.5 T field. What is the force, in newtons?",
+                  "answer": "0",
+                  "why": "Velocity parallel to the field gives sin(theta) = 0, so the magnetic force is zero."
+                },
+                {
+                  "q": "The same charge and field, with sin(theta) = 1/2. What is the force, in newtons?",
+                  "answer": "0.2",
+                  "why": "The perpendicular case was 0.4 N. Multiplying by sin(theta) = 1/2 gives 0.2 N."
+                }
+              ]
+            },
+            {
+              "id": "phys-mag-l1b",
+              "title": "Force on a wire",
+              "he": "כוח על תיל",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Force on a current-carrying wire"
+              ],
+              "objectives": [
+                "Compute F = I*L*B for a wire perpendicular to the field.",
+                "Predict the force when the current or the angle changes."
+              ],
+              "teach": "A current is moving charge, so a field pushes a wire too. When the wire is perpendicular to the field, F = I*L*B. L is the length actually inside the field. At an angle, F = I*L*B*sin(theta). A wire parallel to the field feels no magnetic force. The force is perpendicular to both the current and the field.\n\nTake L = 0.2 m, I = 3 A, and B = 0.5 T, perpendicular. Then F = 3*0.2*0.5 = 0.3 N. Double the current and the force doubles to 0.6 N. Turn the wire parallel to the field and the force becomes zero. State the angle before you multiply.",
+              "rules": [
+                "For a wire perpendicular to B, F = I*L*B.",
+                "L is only the length that sits in the field.",
+                "F = I*L*B*sin(theta) in general. Parallel to the field means F = 0.",
+                "Direction is perpendicular to both current and field, from the class right-hand rule."
+              ],
+              "example": {
+                "prompt": "A wire of length 0.2 m carries 3 A perpendicular to a 0.5 T field. What is the force, in newtons?",
+                "steps": [
+                  "F = I*L*B because the wire is perpendicular to the field.",
+                  "F = 3*0.2*0.5.",
+                  "F = 0.3 N."
+                ],
+                "answer": "0.3"
+              },
+              "practice": [
+                {
+                  "q": "The current becomes 6 A. Length and field stay 0.2 m and 0.5 T, still perpendicular. What is the force, in newtons?",
+                  "answer": "0.6",
+                  "why": "F is proportional to I, so doubling 3 A to 6 A doubles 0.3 N to 0.6 N."
+                },
+                {
+                  "q": "The 3 A wire is turned parallel to the 0.5 T field. What is the force, in newtons?",
+                  "answer": "0",
+                  "why": "A wire parallel to the field has sin(theta) = 0, so F = 0."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-mag-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-mag-l2a",
+              "title": "The school motor diagram",
+              "he": "סרטוט המנוע הבית-ספרי",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Motors at the school diagram level"
+              ],
+              "objectives": [
+                "Find the force on one side of a motor coil.",
+                "Explain why those forces form a couple and what the commutator does."
+              ],
+              "teach": "A school motor is a current-carrying coil in a magnetic field. Opposite sides carry opposite currents, so the forces on those sides are opposite. That pair is a couple: it twists the coil instead of pushing the whole coil sideways. A side perpendicular to the field feels F = I*L*B.\n\nWith L = 0.2 m, I = 3 A, and B = 0.5 T perpendicular to a side, each of those sides feels 0.3 N, in opposite directions. A split-ring commutator reverses the current every half turn, so a direct-current motor keeps turning the same way.",
+              "rules": [
+                "Opposite sides of the coil carry current in opposite directions, so their forces are opposite.",
+                "That pair is a couple: it twists the coil.",
+                "Each side perpendicular to B feels F = I*L*B.",
+                "A split-ring commutator reverses the current every half turn so a DC motor keeps turning the same way."
+              ],
+              "example": {
+                "prompt": "One side of a motor coil has length 0.2 m, carries 3 A, and is perpendicular to a 0.5 T field. What is the force on that side, in newtons?",
+                "steps": [
+                  "The side is perpendicular to B, so F = I*L*B.",
+                  "F = 3*0.2*0.5 = 0.3 N.",
+                  "The opposite side carries current the other way, so it feels 0.3 N the other way. The pair is a couple."
+                ],
+                "answer": "0.3"
+              },
+              "practice": [
+                {
+                  "q": "That same side is turned until the current is parallel to the field. What is the force on it, in newtons?",
+                  "answer": "0",
+                  "why": "Current parallel to B gives no magnetic force, so this instant has no couple from that pair of sides."
+                },
+                {
+                  "q": "In a direct-current motor, what does the split-ring commutator do to the current each half turn? Type reverse or keep.",
+                  "answer": "reverse",
+                  "why": "Reversing the current each half turn keeps the couple in the same rotational sense."
+                }
+              ]
+            },
+            {
+              "id": "phys-mag-l2b",
+              "title": "Flux through a loop",
+              "he": "שטף דרך לולאה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Magnetic flux"
+              ],
+              "objectives": [
+                "Calculate flux when the field is perpendicular to the area.",
+                "State the flux when the field lies in the plane of the loop."
+              ],
+              "teach": "Magnetic flux measures how much field passes through an area. When B is perpendicular to the area, flux = B*A, in webers. If theta is the angle between the field and the normal to the area, flux = B*A*cos(theta). When the field lies in the plane of the loop, the flux is zero.\n\nA field of 0.2 T through 0.05 m^2, perpendicular to that area, gives flux = 0.2*0.05 = 0.01 Wb. Double the area and the flux doubles to 0.02 Wb. Turn the loop until the field is parallel to its plane and the flux falls to zero. Flux is the bridge into induction.",
+              "rules": [
+                "When B is perpendicular to the area, flux = B*A, in webers.",
+                "With theta between B and the normal, flux = B*A*cos(theta).",
+                "Field in the plane of the loop means flux = 0.",
+                "Flux is not itself an emf. Induction needs the flux to change."
+              ],
+              "example": {
+                "prompt": "A field of 0.2 T is perpendicular to an area of 0.05 m^2. What is the flux, in webers?",
+                "steps": [
+                  "The field is perpendicular to the area, so flux = B*A.",
+                  "flux = 0.2*0.05.",
+                  "flux = 0.01 Wb."
+                ],
+                "answer": "0.01"
+              },
+              "practice": [
+                {
+                  "q": "The same 0.2 T field stays perpendicular, and the area doubles to 0.1 m^2. What is the flux, in webers?",
+                  "answer": "0.02",
+                  "why": "flux = B*A = 0.2*0.1 = 0.02 Wb. Doubling the area doubles the flux."
+                },
+                {
+                  "q": "The loop is turned so the 0.2 T field lies in the plane of the loop. What is the flux, in webers?",
+                  "answer": "0",
+                  "why": "The normal is then perpendicular to B, cos(theta) = 0, and the flux is zero."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-mag-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-mag-l3a",
+              "title": "Faraday and Lenz",
+              "he": "פאראדיי ולנץ",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Faraday and Lenz"
+              ],
+              "objectives": [
+                "Compute the average induced emf from a change of flux and the time taken.",
+                "State what Lenz's law opposes."
+              ],
+              "teach": "A changing flux induces an emf. For one turn the average size is the absolute value of delta flux over delta t. Multiply by N for N turns. A steady flux induces nothing. Lenz's law says the induced current makes a field that opposes the change in flux. If the flux is falling, the induced field tries to keep it.\n\nFlux falls from 0.01 Wb to zero in 0.2 s. The average emf is 0.01/0.2 = 0.05 V for one turn. Ten turns give 0.5 V. The same change over 0.4 s gives 0.025 V. Lenz opposes the change, not merely the field that was already there.",
+              "rules": [
+                "Average emf for one turn is the size of delta flux / delta t.",
+                "For N turns, multiply by N.",
+                "A steady flux induces no emf.",
+                "Lenz: the induced current opposes the change in flux, not merely the existing field."
+              ],
+              "example": {
+                "prompt": "Flux through one turn falls from 0.01 Wb to 0 in 0.2 s. What is the average induced emf, in volts?",
+                "steps": [
+                  "delta flux = 0.01 - 0 = 0.01 Wb.",
+                  "Average emf = 0.01/0.2.",
+                  "emf = 0.05 V. Lenz says the induced field tries to maintain the falling flux."
+                ],
+                "answer": "0.05"
+              },
+              "practice": [
+                {
+                  "q": "The same flux change happens in a coil of 10 turns, still in 0.2 s. What is the average emf, in volts?",
+                  "answer": "0.5",
+                  "why": "Multiply the one-turn emf by N: 10*0.05 = 0.5 V."
+                },
+                {
+                  "q": "One turn, the same 0.01 Wb change, but the time is 0.4 s. What is the average emf, in volts?",
+                  "answer": "0.025",
+                  "why": "emf = 0.01/0.4 = 0.025 V. A slower change means a smaller average emf."
+                }
+              ]
+            },
+            {
+              "id": "phys-mag-l3b",
+              "title": "A simple generator",
+              "he": "מחולל פשוט",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A simple generator or induced emf problem"
+              ],
+              "objectives": [
+                "Treat a quarter turn of a generator coil as a flux change.",
+                "Say why a coil held still at maximum flux induces nothing."
+              ],
+              "teach": "A simple generator is a coil turned so the flux through it keeps changing. Going from greatest flux to zero flux is Faraday's law again. Slip rings keep the spinning coil connected, and the emf alternates. A motor takes current and makes a couple. A generator takes rotation and makes an emf.\n\nOne turn of area 0.05 m^2 in a 0.2 T field starts at flux 0.01 Wb. Brought to zero flux in 0.2 s, the average emf is 0.05 V. Five turns give 0.25 V. Held still at maximum flux, the emf is zero because the flux is not changing.",
+              "rules": [
+                "A generator coil rotates so its flux keeps changing.",
+                "Average emf = N * |delta flux| / delta t over the interval you are given.",
+                "Slip rings keep a continuous connection, and the emf alternates as the flux rises and falls.",
+                "A motor uses current to make a couple. A generator uses motion to make an emf.",
+                "No change of flux means no induced emf, even at the position of greatest flux."
+              ],
+              "example": {
+                "prompt": "A one-turn generator coil of area 0.05 m^2 is in a 0.2 T field. It turns from maximum flux to zero flux in 0.2 s. What is the average induced emf, in volts?",
+                "steps": [
+                  "Maximum flux = B*A = 0.2*0.05 = 0.01 Wb, and the final flux is 0.",
+                  "delta flux = 0.01 Wb in 0.2 s, and N = 1.",
+                  "Average emf = 0.01/0.2 = 0.05 V."
+                ],
+                "answer": "0.05"
+              },
+              "practice": [
+                {
+                  "q": "For that coil, what is the maximum flux, in webers, before it turns?",
+                  "answer": "0.01",
+                  "why": "flux = B*A = 0.2*0.05 = 0.01 Wb when the field is perpendicular to the area."
+                },
+                {
+                  "q": "The coil has 5 turns and makes the same flux change, 0.01 Wb to 0, in 0.2 s. What is the average emf, in volts?",
+                  "answer": "0.25",
+                  "why": "emf = N*delta flux/delta t = 5*0.01/0.2 = 0.25 V."
+                },
+                {
+                  "q": "One turn makes the same 0.01 Wb change in 0.1 s. What is the average emf, in volts?",
+                  "answer": "0.1",
+                  "why": "emf = 0.01/0.1 = 0.1 V."
+                },
+                {
+                  "q": "The coil is held still at maximum flux. What is the induced emf, in volts?",
+                  "answer": "0",
+                  "why": "Flux is large but not changing, so Faraday's law gives zero emf."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-light",
+      "index": 11,
+      "title": "Light",
+      "he": "אור",
+      "topic": "Light",
+      "thesis": "School optics is reflection, refraction, a thin lens, and a qualitative word on waves.",
+      "syllabus": [
+        "Reflection and plane mirrors",
+        "Refraction and Snell's law",
+        "Total internal reflection",
+        "Thin lenses and the lens equation",
+        "Magnification and ray diagrams",
+        "Diffraction and interference at a qualitative exam level"
+      ],
+      "levels": [
+        {
+          "id": "phys-light-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-light-l1a",
+              "title": "Reflection and the plane mirror",
+              "he": "החזרה והמראה המישורית",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Reflection and plane mirrors"
+              ],
+              "objectives": [
+                "Place the image of a plane mirror at the same distance behind the mirror.",
+                "Use the law of reflection with angles measured from the normal."
+              ],
+              "teach": "The angle of incidence equals the angle of reflection. Both angles are measured from the normal, not from the mirror face. A plane mirror forms an image that is virtual, upright, and the same size as the object. The image is as far behind the mirror as the object is in front.\n\nAn object 25 cm in front of a plane mirror has its image 25 cm behind the mirror. Move the object to 40 cm and the image distance becomes 40 cm. Do not use the thin-lens equation on this mirror. A ray that hits at 35 degrees to the normal leaves at 35 degrees.",
+              "rules": [
+                "Angle of incidence equals angle of reflection, both from the normal.",
+                "A plane-mirror image is virtual, upright, and the same size as the object.",
+                "Image distance behind the mirror equals object distance in front.",
+                "Do not use the thin-lens equation for a plane mirror."
+              ],
+              "example": {
+                "prompt": "An object is 25 cm in front of a plane mirror. How far behind the mirror, in cm, is the image?",
+                "steps": [
+                  "For a plane mirror, image distance equals object distance.",
+                  "The image is virtual and behind the mirror.",
+                  "The distance is 25 cm. The image is the same size as the object."
+                ],
+                "answer": "25"
+              },
+              "practice": [
+                {
+                  "q": "An object is 40 cm in front of a plane mirror. How far behind the mirror, in cm, is the image?",
+                  "answer": "40",
+                  "why": "Image distance equals object distance, so the image is 40 cm behind the mirror."
+                },
+                {
+                  "q": "A ray hits a mirror at 35 degrees to the normal. What is the angle of reflection, in degrees?",
+                  "answer": "35",
+                  "why": "The angle of reflection equals the angle of incidence when both are measured from the normal."
+                }
+              ]
+            },
+            {
+              "id": "phys-light-l1b",
+              "title": "Snell's law",
+              "he": "חוק סנל",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Refraction and Snell's law"
+              ],
+              "objectives": [
+                "Apply n1*sin(theta1) = n2*sin(theta2) with angles from the normal.",
+                "Say which way a ray bends when n increases or decreases."
+              ],
+              "teach": "Refraction bends a ray entering a new medium. Refractive index is n = c/v, so a larger n means a slower speed. Snell's law uses angles from the normal: n1*sin(theta1) = n2*sin(theta2). Higher n bends the ray toward the normal. Lower n bends it away. Along the normal there is no bend.\n\nFrom air (n = 1) into glass (n = 1.5) with sin(theta1) = 3/4, sin(theta2) = (3/4)/1.5 = 1/2. Leave it as a sine unless degrees are requested. From glass to air, sin(theta1) = 1/3 gives sin(theta2) = 1/2, still below the critical angle.",
+              "rules": [
+                "n = c/v. Larger n means a slower speed in that medium.",
+                "n1*sin(theta1) = n2*sin(theta2). Angles are from the normal.",
+                "Entering a higher n bends the ray toward the normal.",
+                "A ray along the normal does not bend."
+              ],
+              "example": {
+                "prompt": "Light goes from air (n = 1) into glass (n = 1.5). sin(theta1) = 3/4. What is sin(theta2)? Type a fraction.",
+                "steps": [
+                  "n1*sin(theta1) = n2*sin(theta2).",
+                  "sin(theta2) = (1 * 3/4) / 1.5 = (3/4) / (3/2).",
+                  "sin(theta2) = 1/2. The ray bends toward the normal. Leave the sine; do not invent degrees."
+                ],
+                "answer": "1/2"
+              },
+              "practice": [
+                {
+                  "q": "A ray in air hits glass along the normal. What is the angle of refraction, in degrees?",
+                  "answer": "0",
+                  "why": "theta1 = 0, so sin(theta2) = 0 and the ray does not bend."
+                },
+                {
+                  "q": "Light in glass (n = 1.5) meets air. sin(theta1) = 1/3. What is sin of the angle in air? Type a fraction.",
+                  "answer": "1/2",
+                  "why": "sin(theta2) = 1.5 * (1/3) = 1/2. This is still less than 1, so the ray does refract."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-light-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-light-l2a",
+              "title": "The critical angle",
+              "he": "הזווית הקריטית",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Total internal reflection"
+              ],
+              "objectives": [
+                "Compute sin of the critical angle for glass to air.",
+                "State the two conditions required for total internal reflection."
+              ],
+              "teach": "Total internal reflection happens only when light goes from higher n toward lower n, and only when the angle of incidence is larger than the critical angle. At that critical angle the refracted ray would run along the boundary, so the sine in the second medium is 1. Then sin(theta_c) = n2/n1.\n\nFrom glass, n = 1.5, into air, n = 1, sin(theta_c) = 1/1.5 = 2/3. So theta_c = arcsin(2/3). Do not replace 2/3 with a made-up number of degrees. From air into glass the ray bends toward the normal, so this critical-angle story does not apply.",
+              "rules": [
+                "Total internal reflection needs travel from higher n toward lower n.",
+                "It also needs an angle of incidence greater than the critical angle.",
+                "sin(theta_c) = n2/n1, with n1 greater than n2.",
+                "theta_c = arcsin of that value. Do not invent a degree measure."
+              ],
+              "example": {
+                "prompt": "Light goes from glass (n = 1.5) toward air (n = 1). What is sin of the critical angle? Type a fraction.",
+                "steps": [
+                  "sin(theta_c) = n2/n1 = 1/1.5.",
+                  "1/1.5 = 2/3.",
+                  "theta_c = arcsin(2/3). The answer asked for is the sine, 2/3."
+                ],
+                "answer": "2/3"
+              },
+              "practice": [
+                {
+                  "q": "Can total internal reflection happen for light going from air into this glass? Type yes or no.",
+                  "answer": "no",
+                  "why": "Air to glass is lower n into higher n, so the ray bends toward the normal and a refracted ray remains."
+                },
+                {
+                  "q": "In glass, the angle of incidence toward air is greater than the critical angle. Type reflect or refract.",
+                  "answer": "reflect",
+                  "why": "Both conditions are met: higher n toward lower n, and the angle is past the critical angle, so the ray reflects."
+                }
+              ]
+            },
+            {
+              "id": "phys-light-l2b",
+              "title": "The thin-lens equation",
+              "he": "משוואת העדשה הדקה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Thin lenses and the lens equation"
+              ],
+              "objectives": [
+                "Solve 1/f = 1/do + 1/di for a real image.",
+                "Recognize a negative image distance as a virtual image."
+              ],
+              "teach": "In the school convention used here, a converging lens has positive focal length, and a real image on the opposite side from the object has positive image distance. The thin-lens equation is 1/f = 1/do + 1/di. Keep f, do, and di in the same unit. Find 1/di first, then invert.\n\nFor f = 10 cm and do = 30 cm, 1/di = 1/10 - 1/30 = 1/15, so di = 15 cm, a real image. At do = 20 cm, di = 20 cm. At do = 5 cm, inside the focus, di = -10 cm, a virtual image. Keep the minus sign.",
+              "rules": [
+                "School convention here: a converging lens has positive f, and a real image on the far side has positive di.",
+                "1/f = 1/do + 1/di. Use one unit for all three lengths.",
+                "Find 1/di, then invert.",
+                "A negative di means a virtual image on the same side as the object."
+              ],
+              "example": {
+                "prompt": "A converging lens has f = 10 cm. The object is 30 cm from the lens. What is di, in cm?",
+                "steps": [
+                  "1/di = 1/f - 1/do = 1/10 - 1/30.",
+                  "1/10 - 1/30 = 3/30 - 1/30 = 1/15.",
+                  "di = 15 cm, positive, so the image is real and on the far side."
+                ],
+                "answer": "15"
+              },
+              "practice": [
+                {
+                  "q": "A converging lens has f = 10 cm and the object is 20 cm away. What is di, in cm?",
+                  "answer": "20",
+                  "why": "1/di = 1/10 - 1/20 = 1/20, so di = 20 cm."
+                },
+                {
+                  "q": "A converging lens has f = 10 cm and the object is 5 cm away. What is di, in cm?",
+                  "answer": "-10",
+                  "why": "1/di = 1/10 - 1/5 = -1/10, so di = -10 cm. The image is virtual."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-light-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-light-l3a",
+              "title": "Magnification and the three rays",
+              "he": "הגדלה ושלוש הקרניים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Magnification and ray diagrams"
+              ],
+              "objectives": [
+                "Compute m = -di/do and read the sign as inverted or upright.",
+                "Name the three standard rays for a converging lens."
+              ],
+              "teach": "Magnification is m = -di/do in the same school convention. A negative m means the image is inverted. The size ratio is the absolute value of m. A single converging lens gives an upright virtual image only when di is negative, which makes m positive. The ray diagram should agree with that sign.\n\nThree rays are enough. A ray parallel to the axis leaves through the far focus. A ray through the optical center goes straight. A ray aimed at the near focus leaves parallel to the axis. For do = 30 cm and di = 15 cm, m = -15/30 = -1/2: inverted and half as tall.",
+              "rules": [
+                "m = -di/do. Negative means inverted. The absolute value is the height ratio.",
+                "A ray parallel to the axis leaves through the far focus.",
+                "A ray through the optical center does not bend.",
+                "A ray through the near focus leaves parallel to the axis."
+              ],
+              "example": {
+                "prompt": "A real image has di = 15 cm for an object at do = 30 cm. What is the magnification? Type a fraction.",
+                "steps": [
+                  "m = -di/do.",
+                  "m = -15/30.",
+                  "m = -1/2. The image is inverted and half as tall."
+                ],
+                "answer": "-1/2"
+              },
+              "practice": [
+                {
+                  "q": "An object and its real image are both 20 cm from a converging lens. What is the magnification? Type an integer.",
+                  "answer": "-1",
+                  "why": "m = -di/do = -20/20 = -1. Inverted, and the same height."
+                },
+                {
+                  "q": "A ray passes through the optical center of a thin lens. Type bends or straight.",
+                  "answer": "straight",
+                  "why": "The ray through the optical center is undeviated in the thin-lens ray diagram."
+                }
+              ]
+            },
+            {
+              "id": "phys-light-l3b",
+              "title": "Bright, dark, and spreading",
+              "he": "בהיר, כהה והתפשטות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Diffraction and interference at a qualitative exam level"
+              ],
+              "objectives": [
+                "Classify a meeting point as bright or dark from the path difference.",
+                "Say how gap width and wavelength change the spreading."
+              ],
+              "teach": "At this exam level, diffraction and interference are wave words, not a formula hunt. Diffraction is spreading at a gap or an edge. Spreading is greater when the gap is narrower and when the wavelength is longer. A gap much wider than the wavelength barely spreads the beam. Interference is what coherent waves do when they meet.\n\nA whole number of wavelengths of path difference, including zero, is bright. A half-integer number, such as one half or three halves, is dark. Answer from that rule. You do not need a slit-spacing formula.",
+              "rules": [
+                "Diffraction is spreading at a gap or an edge. Narrower gap, more spreading. Longer wavelength, more spreading.",
+                "Interference here means coherent waves adding.",
+                "Path difference of a whole number of wavelengths, including zero, is bright.",
+                "Path difference of a half-integer number of wavelengths is dark.",
+                "Do not invent a slit-spacing number the question did not give."
+              ],
+              "example": {
+                "prompt": "Two coherent waves meet with a path difference of one wavelength. Type bright or dark.",
+                "steps": [
+                  "One wavelength is a whole number of wavelengths.",
+                  "The waves arrive in step.",
+                  "The point is bright."
+                ],
+                "answer": "bright"
+              },
+              "practice": [
+                {
+                  "q": "Two coherent waves meet with path difference zero. Type bright or dark.",
+                  "answer": "bright",
+                  "why": "Zero is a whole number of wavelengths, so the meeting is constructive and bright."
+                },
+                {
+                  "q": "Two coherent waves meet with a path difference of half a wavelength. Type bright or dark.",
+                  "answer": "dark",
+                  "why": "Half a wavelength is a half-integer path difference, so the waves cancel and the point is dark."
+                },
+                {
+                  "q": "A gap is made narrower and the wavelength is unchanged. Type more or less for the spreading.",
+                  "answer": "more",
+                  "why": "Diffraction spreads more when the gap is narrower compared with the wavelength."
+                },
+                {
+                  "q": "The path difference is two wavelengths. Type bright or dark.",
+                  "answer": "bright",
+                  "why": "Two wavelengths is a whole number, so the point is bright."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-mod",
+      "index": 12,
+      "title": "Modern physics and the lab",
+      "he": "פיזיקה מודרנית ומעבדה",
+      "topic": "Modern physics and the lab",
+      "thesis": "The modern-physics paper is a few models — photon, levels, nucleus, half-life — plus the lab's demand that a conclusion fit the evidence.",
+      "syllabus": [
+        "Photons and the photoelectric effect",
+        "Atomic energy levels, Bohr at school depth",
+        "Nucleus, isotopes, and decay modes",
+        "Half-life",
+        "Mass-energy at the recognition level",
+        "Lab judgment: from raw table to a conclusion"
+      ],
+      "levels": [
+        {
+          "id": "phys-mod-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-mod-l1a",
+              "title": "Photons and the photoelectric effect",
+              "he": "פוטונים והאפקט הפוטואלקטרי",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Photons and the photoelectric effect"
+              ],
+              "objectives": [
+                "Compute Kmax = h*f - phi in one energy unit.",
+                "Separate the job of frequency from the job of intensity."
+              ],
+              "teach": "A photon carries E = h*f and, in the school model, gives that energy to one electron. The electron spends at least the work function phi to leave. The rest is Kmax = h*f - phi. Keep one energy unit. Below threshold no electron leaves, however bright the lamp.\n\nIf h*f = 3 eV and phi = 2 eV, then Kmax = 1 eV. If h*f equals phi, Kmax is 0. Brighter light above threshold means more electrons each second, but not a larger Kmax. Do not convert 1 eV into joules unless the question asks.",
+              "rules": [
+                "One photon gives its energy h*f to one electron in this model.",
+                "Kmax = h*f - phi. Keep eV if the data are in eV.",
+                "If h*f is below the work function, no electron leaves.",
+                "Above threshold, intensity changes how many electrons leave each second, not Kmax."
+              ],
+              "example": {
+                "prompt": "A photon has energy 3 eV and the work function is 2 eV. What is Kmax, in eV?",
+                "steps": [
+                  "Kmax = h*f - phi.",
+                  "Kmax = 3 - 2.",
+                  "Kmax = 1 eV. Do not convert to joules."
+                ],
+                "answer": "1"
+              },
+              "practice": [
+                {
+                  "q": "A photon has energy 2 eV and the work function is 2 eV. What is Kmax, in eV?",
+                  "answer": "0",
+                  "why": "Kmax = 2 - 2 = 0 eV. Electrons are just at the threshold."
+                },
+                {
+                  "q": "The light is above threshold and the intensity doubles. By what factor does Kmax change?",
+                  "answer": "1",
+                  "why": "Kmax depends on frequency and the work function, not on intensity, so the factor is 1."
+                }
+              ]
+            },
+            {
+              "id": "phys-mod-l1b",
+              "title": "Levels, jumps, and a photon",
+              "he": "רמות, קפיצות ופוטון",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Atomic energy levels, Bohr at school depth"
+              ],
+              "objectives": [
+                "Find the photon energy from the difference of two levels.",
+                "Reject a photon that does not match a level difference."
+              ],
+              "teach": "In the school Bohr picture, electrons occupy discrete levels, not the energies between them. A drop emits one photon whose energy equals the level difference, E = h*f. A climb absorbs a photon only if the energy matches. Do not derive the Rydberg formula.\n\nLevels at -1.5 eV and -3.5 eV differ by 2 eV, so the emitted photon carries 2 eV. The climb needs a 2 eV photon too. A 3 eV photon does not match this jump, so it is not absorbed. The higher level is the less negative one.",
+              "rules": [
+                "Electrons occupy discrete levels only.",
+                "A drop emits a photon with E = h*f equal to the level difference.",
+                "Absorption happens only when the photon matches a difference.",
+                "Do not derive the Rydberg formula. The higher level is the less negative one."
+              ],
+              "example": {
+                "prompt": "An electron drops from -1.5 eV to -3.5 eV. What is the emitted photon energy, in eV?",
+                "steps": [
+                  "Photon energy equals the difference of the levels.",
+                  "Difference = -1.5 - (-3.5) = 2.",
+                  "The photon carries 2 eV."
+                ],
+                "answer": "2"
+              },
+              "practice": [
+                {
+                  "q": "An electron climbs from -3.5 eV to -1.5 eV. What photon energy, in eV, must be absorbed?",
+                  "answer": "2",
+                  "why": "The climb is the same 2 eV gap, so the absorbed photon has energy 2 eV."
+                },
+                {
+                  "q": "A 3 eV photon meets an atom whose relevant gap is 2 eV. Type yes or no: is it absorbed for that jump?",
+                  "answer": "no",
+                  "why": "In the school model the photon is absorbed only when its energy matches the difference. 3 eV does not match 2 eV."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-mod-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-mod-l2a",
+              "title": "What alpha, beta, and gamma change",
+              "he": "מה משנים אלפא, בטא וגמא",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Nucleus, isotopes, and decay modes"
+              ],
+              "objectives": [
+                "State how A and Z change in alpha, beta-minus, and gamma decay.",
+                "Identify isotopes as the same Z with different A."
+              ],
+              "teach": "The mass number A counts protons and neutrons. The proton number Z counts protons. Neutrons are A - Z. Isotopes share Z and differ in A. An alpha particle is a helium nucleus: A falls by 4 and Z falls by 2. A gamma photon leaves A and Z unchanged.\n\nIn beta-minus decay a neutron becomes a proton, and an electron and an antineutrino leave. A is unchanged and Z rises by 1. From Z = 6 and A = 14 the daughter is Z = 7, A = 14. Alpha emission instead would leave A = 10 and Z = 4.",
+              "rules": [
+                "A is protons plus neutrons. Z is the proton number. Isotopes share Z and differ in A.",
+                "Alpha: A decreases by 4 and Z decreases by 2.",
+                "Beta-minus: a neutron becomes a proton, an electron and an antineutrino leave, Z increases by 1, and A is unchanged.",
+                "Gamma: A and Z are unchanged."
+              ],
+              "example": {
+                "prompt": "A nucleus with Z = 6 and A = 14 emits one beta-minus particle. What is the new proton number?",
+                "steps": [
+                  "Beta-minus turns a neutron into a proton.",
+                  "Z increases by 1 and A stays 14. An electron and an antineutrino leave.",
+                  "New Z = 7."
+                ],
+                "answer": "7"
+              },
+              "practice": [
+                {
+                  "q": "That same nucleus, Z = 6 and A = 14, emits an alpha particle instead. What is the new mass number?",
+                  "answer": "10",
+                  "why": "Alpha emission decreases A by 4, so 14 - 4 = 10. Z would become 4."
+                },
+                {
+                  "q": "A nucleus with A = 14 emits only a gamma photon. What is the new mass number?",
+                  "answer": "14",
+                  "why": "Gamma changes neither A nor Z, so A stays 14."
+                }
+              ]
+            },
+            {
+              "id": "phys-mod-l2b",
+              "title": "Counting half-lives",
+              "he": "ספירת מחציות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Half-life"
+              ],
+              "objectives": [
+                "Count how many half-lives fit in a given time.",
+                "Halve the sample once for each half-life."
+              ],
+              "teach": "Half-life is the time in which half of a sample of unstable nuclei decays. It does not depend on how much you started with. After n half-lives, the remainder is the initial amount divided by 2^n. Count n = t / half-life before you halve. Do not subtract a fixed mass each hour.\n\nStart with 80 g and a half-life of 2 hours. After 6 hours, n = 6/2 = 3. Halve three times: 80 g, 40 g, 20 g, 10 g. So 10 g remains. The question asks for the undecayed sample, not for a chemistry mass balance of the products.",
+              "rules": [
+                "After n half-lives, remaining amount = initial / 2^n.",
+                "n = t / half-life. Count n before you halve.",
+                "The half-life does not depend on the starting amount.",
+                "Do not subtract the same number of grams every hour."
+              ],
+              "example": {
+                "prompt": "A sample starts at 80 g. The half-life is 2 hours. What mass, in grams, remains after 6 hours?",
+                "steps": [
+                  "n = 6/2 = 3 half-lives.",
+                  "Halve three times: 80, 40, 20, 10.",
+                  "10 g remains."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "The same 80 g sample has a half-life of 2 hours. What mass, in grams, remains after 2 hours?",
+                  "answer": "40",
+                  "why": "One half-life leaves half of 80 g, which is 40 g."
+                },
+                {
+                  "q": "What mass, in grams, remains after 4 hours?",
+                  "answer": "20",
+                  "why": "4/2 = 2 half-lives. 80 becomes 40, then 20 g."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-mod-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-mod-l3a",
+              "title": "Mass defect means binding energy",
+              "he": "פחת מסה הוא אנרגיית קשר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Mass-energy at the recognition level"
+              ],
+              "objectives": [
+                "Identify a nuclear mass defect with binding energy through E = m*c^2.",
+                "Scale the binding energy when the mass defect is scaled, without a messy value of c^2."
+              ],
+              "teach": "At recognition level, E = m*c^2 means a mass difference corresponds to an energy difference. You are not asked to grind an ugly value of c^2. Separate protons and neutrons have more total mass than the nucleus they form. That missing mass is the mass defect, and the binding energy is the energy it represents.\n\nBecause energy is proportional to the mass difference, doubling the mass defect doubles the binding energy. Leaving the defect unchanged leaves the binding energy unchanged. A larger binding energy means a more tightly held nucleus, comparing like with like. If the mass is not a clean power of ten, stop at E = delta(m)*c^2.",
+              "rules": [
+                "E = m*c^2 links a mass difference to an energy difference.",
+                "A nucleus is lighter than its separate protons and neutrons. The difference is the mass defect.",
+                "Binding energy is the energy that defect represents.",
+                "Do not compute a messy numerical c^2. If the defect doubles, the binding energy doubles."
+              ],
+              "example": {
+                "prompt": "A nucleus has a mass defect, and that defect then doubles. By what factor does the binding energy change?",
+                "steps": [
+                  "Binding energy is proportional to the mass defect through E = delta(m)*c^2.",
+                  "c is unchanged, and the defect doubles.",
+                  "The binding energy doubles, so the factor is 2."
+                ],
+                "answer": "2"
+              },
+              "practice": [
+                {
+                  "q": "The mass defect stays the same. By what factor does the binding energy change?",
+                  "answer": "1",
+                  "why": "E is proportional to the defect. An unchanged defect leaves the binding energy unchanged, factor 1."
+                },
+                {
+                  "q": "Compare the nucleus with its separate nucleons. Type less or more for the mass of the nucleus.",
+                  "answer": "less",
+                  "why": "The nucleus is lighter. The missing mass is the mass defect that corresponds to the binding energy."
+                }
+              ]
+            },
+            {
+              "id": "phys-mod-l3b",
+              "title": "From the table to a conclusion",
+              "he": "מהטבלה אל המסקנה",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Lab judgment: from raw table to a conclusion"
+              ],
+              "objectives": [
+                "Name the quantity represented by the slope of a straight graph.",
+                "Accept a model only within the scatter, and do not invent a cause that was not varied."
+              ],
+              "teach": "Start from the table you took. Plot the measurements, fit the shape the points support, and name the slope. Voltage vertical and current horizontal means the slope is resistance, because slope = deltaV/deltaI. A straight line through the origin supports proportionality within the scatter. Scatter does not by itself name a cause.\n\nYou may say the data support Ohm's law within the scatter if the points follow that line and show no clear curve. You may not blame temperature unless it was varied or measured. From (0, 0) to (2 A, 12 V) the slope is 12/2 = 6 ohm. Report the graph, not an unmeasured cause.",
+              "rules": [
+                "The slope is rise over run from the line, and it has the unit of the vertical axis over the horizontal axis.",
+                "Voltage vertical and current horizontal: the slope is resistance.",
+                "A straight line through the origin supports proportionality within the scatter.",
+                "Scatter is allowed. A conclusion may not name a cause the experiment did not vary or measure.",
+                "Report what the graph shows. Do not add a mechanism that was not in the method."
+              ],
+              "example": {
+                "prompt": "Voltage is plotted vertically against current. The best-fit line passes through (0, 0) and (2 A, 12 V). What is the slope, in ohms?",
+                "steps": [
+                  "Slope = deltaV/deltaI, which is the resistance when voltage is vertical and current is horizontal.",
+                  "Slope = 12/2.",
+                  "Slope = 6 ohm. Points near that line would support Ohm's law within the scatter. Temperature was not measured, so it is not the conclusion."
+                ],
+                "answer": "6"
+              },
+              "practice": [
+                {
+                  "q": "A best-fit line of voltage against current passes through (0, 0) and (1 A, 6 V). What is the slope, in ohms?",
+                  "answer": "6",
+                  "why": "Slope = 6 V / 1 A = 6 ohm, which is the resistance."
+                },
+                {
+                  "q": "A best-fit line of voltage against current passes through (0, 0) and (4 A, 12 V). What is the slope, in ohms?",
+                  "answer": "3",
+                  "why": "Slope = 12/4 = 3 ohm."
+                },
+                {
+                  "q": "Temperature was neither varied nor measured. May the conclusion say temperature caused the scatter? Type yes or no.",
+                  "answer": "no",
+                  "why": "A conclusion may not claim a cause the experiment did not vary. The scatter alone does not identify temperature."
+                },
+                {
+                  "q": "Points follow a straight line through the origin, with small scatter and no curve. Do they support proportionality within the scatter? Type yes or no.",
+                  "answer": "yes",
+                  "why": "The shape matches a proportional model, and small scatter is allowed. The conclusion should say within the scatter."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

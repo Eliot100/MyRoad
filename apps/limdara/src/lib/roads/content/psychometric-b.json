@@ -1,0 +1,1829 @@
+{
+  "stages": [
+    {
+      "id": "psy-ana",
+      "index": 7,
+      "title": "Analogies",
+      "he": "אנלוגיות",
+      "topic": "Analogies",
+      "thesis": "An analogy is a bridge you can name in words; a shared topic is not a bridge.",
+      "syllabus": [
+        "The bridge: name the relation in words",
+        "Common relation types",
+        "Wrong answers that share a topic but not a relation",
+        "Reversed bridges",
+        "A Hebrew analogy, so the live paper is not a surprise",
+        "A timed analogy set"
+      ],
+      "levels": [
+        {
+          "id": "psy-ana-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-ana-l1a",
+              "title": "Name the bridge",
+              "he": "שם הגשר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The bridge: name the relation in words"
+              ],
+              "objectives": [
+                "Say the relation in one clause before you look at choices.",
+                "Reject a pair that shares a topic but not that clause."
+              ],
+              "teach": "An analogy is two pairs held by one relation you can say in words. That sentence is the bridge. Pen is to write as scissors is to cut, because each tool performs that action. If you only notice office stuff, you have a topic, not a bridge, and the traps will live inside that topic.\n\nWrite the bridge before you look at choices: tool to action, part to whole, cause to effect, lesser to greater, worker to workplace, or opposite. Force the second pair through the same clause, in the same direction. If the clause fits the stem and only one completion, that completion is the answer.",
+              "rules": [
+                "Say the relation as a clause before you hunt the fourth word.",
+                "A shared topic is not a bridge.",
+                "Keep the direction: the first word plays the same role as the third.",
+                "If you cannot finish the sentence, you do not have a bridge yet."
+              ],
+              "example": {
+                "prompt": "pen : write :: scissors : ?",
+                "steps": [
+                  "The pair is not things on a desk. Pen and write are not merely both about writing.",
+                  "Name the bridge: a pen is a tool used to write. The relation is tool to the action it performs.",
+                  "Scissors must be the tool, so the blank is the action. The action is cutting, not paper and not sharp."
+                ],
+                "answer": "cut"
+              },
+              "practice": [
+                {
+                  "q": "hammer : pound :: broom : ? Type the action, one word.",
+                  "answer": "sweep",
+                  "why": "A hammer is the tool used to pound. A broom is the tool used to sweep. Floor shares the topic and fails the bridge."
+                },
+                {
+                  "q": "In page : book, is the bridge both are reading, or part to whole? Type part to whole or topic.",
+                  "answer": "part to whole",
+                  "why": "A page is a part of a book. Both are reading is only a shared topic, and the page is not the act of reading."
+                }
+              ]
+            },
+            {
+              "id": "psy-ana-l1b",
+              "title": "Six common bridges",
+              "he": "שישה גשרים נפוצים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Common relation types"
+              ],
+              "objectives": [
+                "Name which of the six relations a stem uses.",
+                "Keep the direction that belongs to that relation."
+              ],
+              "teach": "Six bridges cover most pairs. Function: the tool performs the action (pen, write). Part to whole: the piece sits inside the larger thing (page, book). Cause to effect: the first brings about the second (spark, fire). Name the bridge, then keep its direction. A reversed name is a different bridge.\n\nDegree runs from lesser to greater of one quality, as warm does to hot. Worker to workplace puts the person in the place they work, as a chef in a kitchen. Antonym pairs opposites, as arrive does with depart. If a pair suggests two names, keep the one that also fits the third word.",
+              "rules": [
+                "Function is tool to the action it performs.",
+                "Part to whole and cause to effect are different bridges. Do not swap their names.",
+                "Degree stays inside one quality and runs lesser to greater.",
+                "Worker to workplace is a person and the place, not the person and the tool.",
+                "Antonym is an opposite, not a near synonym."
+              ],
+              "example": {
+                "prompt": "Which of the six is generous : stingy? Type the name.",
+                "steps": [
+                  "The words are not a tool and an action, and neither contains the other.",
+                  "They are not a person and a room. They name opposite traits.",
+                  "Opposite traits are the antonym bridge."
+                ],
+                "answer": "antonym"
+              },
+              "practice": [
+                {
+                  "q": "petal : flower. Type one label: function, part to whole, cause to effect, degree, worker to workplace, or antonym.",
+                  "answer": "part to whole",
+                  "why": "A petal is part of a flower. It is not the tool that makes a flower, and it is not the opposite of a flower."
+                },
+                {
+                  "q": "pilot : cockpit. Type one label from the same list of six.",
+                  "answer": "worker to workplace",
+                  "why": "A pilot works in the cockpit. That is worker to workplace. Function would need the action the pilot performs, not the place."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-ana-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-ana-l2a",
+              "title": "Topic is not enough",
+              "he": "נושא אינו מספיק",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Wrong answers that share a topic but not a relation"
+              ],
+              "objectives": [
+                "Cross out a choice that is true about the topic but does not finish the bridge.",
+                "Plug each remaining choice into the bridge sentence."
+              ],
+              "teach": "A wrong answer often comes from the same room as the stem. Pen, ink, and paper share a desk. Only one of them completes tool used to write. The other choices are built from that room: a part, a material, a user, a place. Topic warmth is the trap, not a hint that you are close.\n\nWhen two choices feel related, write the bridge sentence and plug each one in. Keep the choice that makes the sentence true in the same direction as the stem. Cross out a choice that is true about the topic but does not finish the sentence. Related is cheap. The bridge is the whole task.",
+              "rules": [
+                "A choice from the same topic is still wrong if the bridge sentence fails.",
+                "Plug each choice into the clause before you keep it.",
+                "Parts, materials, users, and places are the usual same-room traps.",
+                "Related is not a reason to select."
+              ],
+              "example": {
+                "prompt": "knife : cut :: brush : ? Traps you might invent: paint, artist, bristle. Type the activity.",
+                "steps": [
+                  "Stem bridge: a knife is the instrument used to cut. Direction is instrument to activity.",
+                  "Artist is the person, bristle is a part, and paint is the material. All of them share the painting topic.",
+                  "Only painting is the activity the brush performs, matching cut."
+                ],
+                "answer": "painting"
+              },
+              "practice": [
+                {
+                  "q": "pen : write :: oven : ? Type bake or kitchen.",
+                  "answer": "bake",
+                  "why": "Tool to the activity. A kitchen is the place and a baker would be the worker. Bake is what the oven is for."
+                },
+                {
+                  "q": "doctor : hospital :: teacher : ? Type school or student.",
+                  "answer": "school",
+                  "why": "Worker to workplace. A student shares the school topic and is not the place a teacher works."
+                }
+              ]
+            },
+            {
+              "id": "psy-ana-l2b",
+              "title": "Direction of the bridge",
+              "he": "כיוון הגשר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Reversed bridges"
+              ],
+              "objectives": [
+                "Test which role the first stem word plays, then give the third word that same role.",
+                "Reject a completion that works only if the second pair is read backward."
+              ],
+              "teach": "A reversed bridge uses the right ideas in the wrong order. Page is to book as brick is to wall: part, then whole. Wall is to brick runs the other way. If you reverse only the second pair, you pick a word that contains the third word, or a word the third word comes from, and you feel sure because the topic still matches.\n\nTest direction with roles. The third word takes the stem's first role, and your answer takes the second role. Say the sentence forward. If it sounds right only backward, it is the reverse trap.",
+              "rules": [
+                "The third word takes the role of the first stem word.",
+                "Your answer takes the role of the second stem word.",
+                "Say the sentence forward. Backward and true is still the reverse trap.",
+                "A larger container is not the part just because the topic matches."
+              ],
+              "example": {
+                "prompt": "book : page :: house : ? A reverse trap is city. Type the part.",
+                "steps": [
+                  "Order in the stem is whole then part, not part then whole.",
+                  "A room is part of a house, so house to room matches book to page.",
+                  "City is a larger whole that contains a house. That flips the direction."
+                ],
+                "answer": "room"
+              },
+              "practice": [
+                {
+                  "q": "hot : warm :: cold : ? The bridge is greater to lesser. Type cool or freezing.",
+                  "answer": "cool",
+                  "why": "Hot is a greater heat than warm. Cold is a greater cold than cool. Freezing goes the wrong way, toward a still greater degree."
+                },
+                {
+                  "q": "room : house is part then whole. For brick : ?, type wall or clay.",
+                  "answer": "wall",
+                  "why": "A brick is part of a wall. Clay is material the brick comes from, which runs backward, toward the source, not the whole."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-ana-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-ana-l3a",
+              "title": "Hebrew on the live paper",
+              "he": "עברית בדף החי",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "A Hebrew analogy, so the live paper is not a surprise"
+              ],
+              "objectives": [
+                "Translate a Hebrew pair only far enough to name the bridge in English.",
+                "Reject a same-scene Hebrew word that is not the activity."
+              ],
+              "teach": "On the live verbal paper the analogy is printed in Hebrew, not in English. The bridge does not change with the alphabet. עט is a pen, כתיבה is writing, מכחול is a brush, and ציור is drawing or painting as an activity. In English: a pen is an instrument used for writing, as a brush is an instrument used for painting.\n\nRead the Hebrew pair, then say the bridge in English if that is the language you think in. Translate the relation, not the topic. A same-scene word, such as the paint itself, fails in Hebrew for the same reason it fails in English. It is not the activity.",
+              "rules": [
+                "The live verbal analogy is in Hebrew. The bridge is still a sentence you can say.",
+                "Translate roles, not the whole scene.",
+                "Instrument to activity: the tool, then what it does.",
+                "A material from the same scene is the topic trap in either language."
+              ],
+              "example": {
+                "prompt": "עט : כתיבה :: מכחול : ?",
+                "steps": [
+                  "Translate only far enough to see the roles: עט is pen, כתיבה is writing, מכחול is brush.",
+                  "The bridge in English is instrument to the activity it performs. A pen is the instrument used for writing.",
+                  "The brush is the instrument, so the blank is the activity it performs: ציור, not the paint and not the painter."
+                ],
+                "answer": "ציור"
+              },
+              "practice": [
+                {
+                  "q": "גדול : קטן :: גבוה : ? Type the Hebrew opposite.",
+                  "answer": "נמוך",
+                  "why": "גדול means big and קטן means small, so the bridge is antonym. גבוה means tall or high, and the opposite is נמוך, short or low."
+                },
+                {
+                  "q": "In עט : כתיבה :: מכחול : ציור, the English bridge is instrument to what? Type activity.",
+                  "answer": "activity",
+                  "why": "The pen performs writing and the brush performs painting. That is instrument to activity, the same bridge as knife to cut."
+                }
+              ]
+            },
+            {
+              "id": "psy-ana-l3b",
+              "title": "Four bridges on a clock",
+              "he": "ארבעה גשרים בשעון",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A timed analogy set"
+              ],
+              "objectives": [
+                "Finish four bridges under time without inventing a new relation.",
+                "Leave a pair once the bridge is named, instead of staring."
+              ],
+              "teach": "A timed set uses the same six bridges under a clock. You do not get a new theory at the end. For each item, say the bridge, test the direction, and reject the choice that only shares a topic. If the pair will not name itself quickly, mark your best word and move. Staring does not invent a relation.\n\nThese four items are not a full verbal section. The live paper is as long as that booklet prints, and this road does not invent a count. Type a short answer, keep the order, and move once the bridge is named. Speed is the bridge becoming automatic.",
+              "rules": [
+                "Name the bridge, then the direction, then the word.",
+                "Do not invent a seventh relation under time.",
+                "A same-topic word loses to the word that finishes the clause.",
+                "This drill is not a count of the live verbal section."
+              ],
+              "example": {
+                "prompt": "needle : sew :: scissors : ? Use one verb, the activity.",
+                "steps": [
+                  "Sew is the activity a needle performs, so the bridge is instrument to activity.",
+                  "Scissors must take the instrument role. The blank takes the activity role.",
+                  "Cloth is the material, a same-topic trap. The activity is cut."
+                ],
+                "answer": "cut"
+              },
+              "practice": [
+                {
+                  "q": "needle : sew :: scissors : ? Type cut or cloth.",
+                  "answer": "cut",
+                  "why": "Instrument to activity. Scissors are used to cut. Cloth is what they cut, which shares the topic and misses the bridge."
+                },
+                {
+                  "q": "petal : flower :: brick : ? Type wall or clay.",
+                  "answer": "wall",
+                  "why": "Part to whole. A petal is part of a flower and a brick is part of a wall. Clay is a material, not the whole."
+                },
+                {
+                  "q": "cool : cold :: warm : ? Type hot or weather.",
+                  "answer": "hot",
+                  "why": "Lesser to greater inside one quality. Cool is less extreme than cold, and warm is less extreme than hot. Weather is only the topic."
+                },
+                {
+                  "q": "ancient : modern :: scarce : ? Type abundant or rare.",
+                  "answer": "abundant",
+                  "why": "Antonym. Ancient is opposed to modern, so scarce is opposed to abundant. Rare is a near synonym of scarce and drops the bridge."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-logic",
+      "index": 8,
+      "title": "Completions and logic",
+      "he": "השלמות והיגיון",
+      "topic": "Completions and logic",
+      "thesis": "Sentence completions and short arguments are both about the clue that is already on the page.",
+      "syllabus": [
+        "Sentence completions and the clue in the sentence",
+        "Contrast versus cause",
+        "Strengthening and weakening a claim",
+        "Necessary versus sufficient",
+        "A short argument and its assumption",
+        "Timed logic items"
+      ],
+      "levels": [
+        {
+          "id": "psy-logic-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-logic-l1a",
+              "title": "The clue already printed",
+              "he": "הרמז שכבר מודפס",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Sentence completions and the clue in the sentence"
+              ],
+              "objectives": [
+                "Mark the clue in a completion before you predict a word.",
+                "Separate a printed premise from a fact you wish were there."
+              ],
+              "teach": "A sentence completion is not a vocabulary contest you start from the blank. The sentence already holds the clue: a word of contrast or of cause that tells you what the blank must mean. Read the whole line, mark that clue, and predict a plain word before you look at choices. Then take the choice that matches the prediction.\n\nThe same habit runs a short argument. The conclusion is the claim the writer wants. The premises are the reasons already printed. Do not import a fact from outside. If a reason is not on the page, it is not a premise yet.",
+              "rules": [
+                "Mark the clue before you predict a word for the blank.",
+                "Contrast clues fight the other half. Cause clues follow it.",
+                "A premise is a reason already printed, not a fact you import.",
+                "Predict in plain words, then match a choice."
+              ],
+              "example": {
+                "prompt": "Although the trail was ___, the hikers finished before dark. Type a word that fights the finish.",
+                "steps": [
+                  "Although is the clue. It signals contrast, not a result.",
+                  "They finished before dark, a smooth outcome, so the blank must name something that worked against finishing.",
+                  "Short would agree with an easy finish and ignore Although. Steep contrasts with that finish."
+                ],
+                "answer": "steep"
+              },
+              "practice": [
+                {
+                  "q": "The museum was closed because the pipes had burst. Is the clue contrast or cause?",
+                  "answer": "cause",
+                  "why": "Because marks a cause. The burst pipes explain the closing. Although is not in the sentence."
+                },
+                {
+                  "q": "She kept working even though she was exhausted. Does the second half contrast with exhausted, or restate it? Type contrast or restate.",
+                  "answer": "contrast",
+                  "why": "Even though signals that working goes against being exhausted. It does not restate the tiredness."
+                }
+              ]
+            },
+            {
+              "id": "psy-logic-l1b",
+              "title": "Although versus because",
+              "he": "אף על פי מול מפני ש",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Contrast versus cause"
+              ],
+              "objectives": [
+                "Mark contrast linkers and cause linkers before you fill a blank.",
+                "Flip your prediction when the linker itself is swapped."
+              ],
+              "teach": "Contrast clues and cause clues ask for opposite fillings. Although, despite, yet, however, and but mean the blank fights the other half. Because, since, therefore, and so mean the blank follows from the other half, or produces it. Mark the linker before you think about style or about a hard word.\n\nDo not fill from the topic alone. In Although the plan was risky, it succeeded, the halves fight, so the risky slot cannot be a synonym of succeeded. In Because the plan was risky, it failed, failure follows from the risk. Swap although for because and the word that belongs in the blank flips.",
+              "rules": [
+                "Although, despite, yet, however, and but signal contrast.",
+                "Because, since, therefore, and so signal cause or result.",
+                "Do not fill from the topic while ignoring the linker.",
+                "Swap the linker and the word that belongs in the blank flips."
+              ],
+              "example": {
+                "prompt": "The road was clear, so the trip was ___. Type the result word.",
+                "steps": [
+                  "The linker is so, a result word, not a contrast.",
+                  "A clear road produces an easy trip, not a delayed one.",
+                  "Arduous would need although or but. Smooth matches the result of a clear road."
+                ],
+                "answer": "smooth"
+              },
+              "practice": [
+                {
+                  "q": "The experiment failed although the sample was pure. Does pure support the failure, or contrast with it? Type contrast or support.",
+                  "answer": "contrast",
+                  "why": "Although sets pure against failed. A pure sample would usually help, so the linker is doing contrast. Because would have needed a flaw, not purity."
+                },
+                {
+                  "q": "The sample was contaminated, so the reading was ___. Type useless or perfect.",
+                  "answer": "useless",
+                  "why": "So marks a result. Contamination produces a bad reading. Perfect would require a contrast linker."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-logic-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-logic-l2a",
+              "title": "What a new fact does",
+              "he": "מה עושה עובדה חדשה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Strengthening and weakening a claim"
+              ],
+              "objectives": [
+                "Say whether a new fact makes the stated reason stronger or weaker.",
+                "Ignore a fact that shares the topic and never touches the reason."
+              ],
+              "teach": "Strengthening and weakening do not ask whether you like the claim. They ask what a new fact does to the reason already given. A strengthener makes the conclusion more likely if that fact is true. A weakener makes it less likely. A fact that only shares the subject, and never touches the reason, does neither.\n\nStay on the writer's path. If the claim is that a new bus raised attendance because attendance rose after the bus began, a strengthener rules out another cause, and a weakener names another cause that arrived in the same weeks. \"Buses are large\" shares the topic and does no logical work.",
+              "rules": [
+                "A strengthener makes the stated reason more likely.",
+                "A weakener makes that reason less likely.",
+                "A same-topic fact that never touches the reason does neither.",
+                "You are not asked whether you like the claim."
+              ],
+              "example": {
+                "prompt": "Claim: late library hours raised homework completion, because completion rose after the hours were extended. Which weakens it? Type A or B. A: more tutors were hired in those same months. B: the library bought new lamps.",
+                "steps": [
+                  "The reason is a before-and-after. The gap is that something else may have changed too.",
+                  "New tutors in those months are another cause of finished homework. That weakens the claim that the hours did the work.",
+                  "New lamps are about the library and do not touch why homework rose. Topic is not a weakener."
+                ],
+                "answer": "A"
+              },
+              "practice": [
+                {
+                  "q": "Claim: the shop's soup sells because it is cheap. A pricier soup next door sells just as well. Type strengthen or weaken.",
+                  "answer": "weaken",
+                  "why": "If a higher price sells as well, cheapness is a worse explanation. The fact cuts the stated reason. It does not need to disprove every other story to weaken this one."
+                },
+                {
+                  "q": "Same claim. When this shop raised the soup price, sales fell. Type strengthen or weaken.",
+                  "answer": "strengthen",
+                  "why": "The price change moved sales in the direction the claim predicts, so because it is cheap is more likely. That is support, not a proof that no other cause exists."
+                }
+              ]
+            },
+            {
+              "id": "psy-logic-l2b",
+              "title": "Enough is not the only way",
+              "he": "מספיק אינו הדרך היחידה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Necessary versus sufficient"
+              ],
+              "objectives": [
+                "Call a cause sufficient when the claim says it is enough.",
+                "Refuse to call it necessary when another way could produce the result."
+              ],
+              "teach": "In the claim If it rains, the ground is wet, rain is sufficient for wet ground: rain is enough, inside this claim. Rain is not necessary. A sprinkler also wets the ground, so wet ground can happen with no rain. Sufficient means enough to produce the result. Necessary means the result cannot happen without it.\n\nDo not reverse the pair. If rain, then wet does not give you if wet, then rain. Wet ground does not prove that it rained. If another way exists, the named cause is not necessary. If that cause alone produces the result in the claim, it is sufficient.",
+              "rules": [
+                "Sufficient means enough, inside the claim as written.",
+                "Necessary means the result cannot happen without it.",
+                "If it rains, the ground is wet: rain is sufficient, not necessary.",
+                "Do not reverse if-then. Wet ground does not prove rain."
+              ],
+              "example": {
+                "prompt": "Claim: If the alarm is set, Maya wakes on time. In this claim, is the alarm sufficient or necessary for waking on time?",
+                "steps": [
+                  "The shape is if alarm, then wakes. Inside the claim, the alarm is enough. It is sufficient.",
+                  "The sentence does not say she wakes only when the alarm is set. A friend could wake her, so the alarm is not necessary.",
+                  "Reversing would mean if she wakes, the alarm was set. The claim does not say that."
+                ],
+                "answer": "sufficient"
+              },
+              "practice": [
+                {
+                  "q": "If the gate is locked, the dog stays in the yard. From this sentence alone, is a locked gate necessary or sufficient for the dog staying in?",
+                  "answer": "sufficient",
+                  "why": "The sentence says locking is enough for the dog to stay in. It does not say that is the only way. A high fence could also do it, so locking is not necessary."
+                },
+                {
+                  "q": "The plant dies only if it gets no water. From this wording, is no water necessary or sufficient for the death?",
+                  "answer": "necessary",
+                  "why": "Only if marks a necessary condition. In this claim, death does not happen without a lack of water. The sentence does not say lack of water is enough to kill the plant, so it is not sufficient."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-logic-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-logic-l3a",
+              "title": "The missing premise",
+              "he": "ההנחה החסרה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "A short argument and its assumption"
+              ],
+              "objectives": [
+                "State the gap between a printed reason and its conclusion.",
+                "Separate a required assumption from a fact that merely helps."
+              ],
+              "teach": "An assumption is a missing premise the argument needs, not a restatement of the conclusion. Line it up as reason, therefore conclusion. Ask what must be true for the therefore to work. If that missing piece is false, the reason no longer reaches the conclusion. That is the test.\n\nA statement that only helps a little is a strengthener, which you already separated from an assumption. Keep the assumption close to the gap. \"This bus is popular, so the city should buy more\" assumes that popularity is a reason to buy. \"Buses use fuel\" may be true and does nothing to the leap.",
+              "rules": [
+                "An assumption is required for the therefore to work.",
+                "If the assumption is false, the reason no longer reaches the conclusion.",
+                "A restatement of the conclusion is not the assumption.",
+                "A fact that only helps a little is a strengthener, not an assumption."
+              ],
+              "example": {
+                "prompt": "No one in the choir missed rehearsal, so the concert will be ready. Type the assumption as: attendance is enough",
+                "steps": [
+                  "Reason: rehearsal attendance was perfect. Conclusion: the concert will be ready.",
+                  "The leap treats attendance as enough for readiness. Nothing on the page says practice produces a ready concert.",
+                  "If perfect attendance does not make a concert ready, the reason fails. That needed link is the assumption. The choir likes music is not required."
+                ],
+                "answer": "attendance is enough"
+              },
+              "practice": [
+                {
+                  "q": "The trail is closed, so hikers will use the road. Which is required? Type no other path or hikers dislike trails.",
+                  "answer": "no other path",
+                  "why": "The leap from a closed trail to the road assumes hikers have no third route. Disliking trails is not required for the conclusion as written."
+                },
+                {
+                  "q": "This paint is the cheapest, so the school should buy it. Type cheapness matters or paint is blue.",
+                  "answer": "cheapness matters",
+                  "why": "The conclusion follows only if price is a reason to buy. Color is unused. If cheapness did not matter, the so would fail."
+                }
+              ]
+            },
+            {
+              "id": "psy-logic-l3b",
+              "title": "Four logic items",
+              "he": "ארבעה פריטי היגיון",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Timed logic items"
+              ],
+              "objectives": [
+                "Apply linker, new fact, sufficient or necessary, and assumption under time.",
+                "Type a short answer and move when the clue is already on the page."
+              ],
+              "teach": "Timed logic items use the clues you already trust. Find the linker in a completion, the effect of a new fact, the difference between enough and required, or the missing premise. No new vocabulary list appears when the clock is running. If an item will not resolve, put down the best short answer and move. A blank helps no one.\n\nThese four are a drill, not a full section. This road does not invent a booklet count. Type a short answer. When you miss, name the type rather than the mood.",
+              "rules": [
+                "Use the linker, the new fact, enough versus required, or the missing premise.",
+                "No new word list arrives when the clock is running.",
+                "Type the short answer and move.",
+                "A blank scores nothing. This drill is not a booklet count."
+              ],
+              "example": {
+                "prompt": "The room was quiet, yet the baby was ___. Type awake or asleep.",
+                "steps": [
+                  "Yet is a contrast linker.",
+                  "Quiet would suggest asleep, so the blank has to fight that suggestion.",
+                  "Awake is the contrast. Asleep agrees with quiet and wastes yet."
+                ],
+                "answer": "awake"
+              },
+              "practice": [
+                {
+                  "q": "The room was quiet, yet the baby was ___. Type awake or asleep.",
+                  "answer": "awake",
+                  "why": "Yet marks contrast. Quiet points toward asleep, so the blank that fights it is awake."
+                },
+                {
+                  "q": "Claim: sales rose because the sign was red. A blue sign at a similar shop was followed by the same rise. Type strengthen or weaken.",
+                  "answer": "weaken",
+                  "why": "A different color had the same result, so redness is a worse cause. The fact cuts the stated reason. It is not just another sentence about signs."
+                },
+                {
+                  "q": "If the switch is on, the lamp is lit. In this claim, is the switch necessary or sufficient for a lit lamp?",
+                  "answer": "sufficient",
+                  "why": "If switch, then lit makes the switch enough. Another cause could light the lamp, so the claim does not make the switch necessary. Do not reverse the sentence."
+                },
+                {
+                  "q": "Jonah studied the hardest, so he will score highest. Type the needed assumption: effort determines score",
+                  "answer": "effort determines score",
+                  "why": "The reason is only about effort. The highest score follows only if effort is what sets the score. Nothing else in the sentence supplies that link."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-vread",
+      "index": 9,
+      "title": "Verbal reading",
+      "he": "הבנת הנקרא המילולית",
+      "topic": "Verbal reading",
+      "thesis": "A reading set is a map of claim, support, and turn, then questions that try to sell you a true-but-irrelevant sentence.",
+      "syllabus": [
+        "Passage map: claim, support, turn",
+        "Question stems that look alike",
+        "Line references",
+        "Inference limits",
+        "Main idea versus a true detail",
+        "A full short passage set"
+      ],
+      "levels": [
+        {
+          "id": "psy-vread-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-vread-l1a",
+              "title": "Claim, support, and turn",
+              "he": "טענה, תמיכה ותפנית",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Passage map: claim, support, turn"
+              ],
+              "objectives": [
+                "Mark claim, support, and turn before answering a reading item.",
+                "Carry that map from this English practice onto the Hebrew verbal paper."
+              ],
+              "teach": "A passage map has three marks. The claim is what the author wants you to accept. The support is the fact or example offered for that claim. The turn is where the author limits or refuses a stronger idea, often at but, yet, or however. Write those three in a few words before you answer. A map is not a second essay.\n\nYou are practicing in English. On the live paper the verbal section is in Hebrew. The map transfers: claim, support, and turn do not depend on the alphabet. Translate only far enough to name those three jobs. The turn is the sentence that stops a careless summary.",
+              "rules": [
+                "The claim is what the author wants accepted.",
+                "Support is the fact or example offered for that claim.",
+                "The turn limits or refuses a stronger idea.",
+                "On the live paper the verbal section is Hebrew. The map still transfers."
+              ],
+              "example": {
+                "prompt": "The bridge cut travel time. Merchants used it daily. But the toll pushed some carts back to the old road. What is the turn, in a few words?",
+                "steps": [
+                  "The claim is that the bridge changed travel, mainly by cutting time.",
+                  "Merchants used it daily. That sentence is support, not the warning.",
+                  "But refuses a total success. The toll sent some carts back. A summary that says everyone gained misses the turn."
+                ],
+                "answer": "toll sent some carts back"
+              },
+              "practice": [
+                {
+                  "q": "Test scores rose after the new timetable. Two holidays were also added. Is the second sentence support for the timetable, or a limit on that support? Type support or limit.",
+                  "answer": "limit",
+                  "why": "The holidays are another change, so they limit how cleanly the timetable can take the credit. They are not evidence that the timetable worked."
+                },
+                {
+                  "q": "In a map, what do you call the sentence the author most wants accepted? Type one word.",
+                  "answer": "claim",
+                  "why": "The claim is the idea to accept. Support is the evidence. A turn qualifies the claim. Naming the claim first stops you from promoting a detail."
+                }
+              ]
+            },
+            {
+              "id": "psy-vread-l1b",
+              "title": "Stems that almost match",
+              "he": "ניסוחים כמעט זהים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Question stems that look alike"
+              ],
+              "objectives": [
+                "Name the job in a stem before you read the choices.",
+                "Keep the word NOT or EXCEPT from disappearing."
+              ],
+              "teach": "Stems that look alike are different jobs. According to the passage means the line is printed. Implies or suggests means a short step that the wording already forces. Main idea or main purpose means the claim, not a striking detail. NOT or EXCEPT flips the task: three choices are supported, and the answer is the one that is not.\n\nThe trap is dropping the small word. Ignore NOT and you will pick a true sentence. Treat implies like according to and you will refuse the one legal step, or accept a fact never written. Circle the job-word before the choices.",
+              "rules": [
+                "According to means the line is printed.",
+                "Implies means one short step the wording forces.",
+                "Main idea means the claim, not a striking detail.",
+                "NOT and EXCEPT flip the task. Do not drop them."
+              ],
+              "example": {
+                "prompt": "Stem: Which of the following is NOT stated? The passage says the room was cold, crowded, and free. It never says the room was new. Type the answer to the stem.",
+                "steps": [
+                  "The word NOT flips the task. You need the choice the passage does not support.",
+                  "Cold, crowded, and free are stated, so they cannot answer NOT.",
+                  "New is the absent statement. Dropping NOT would make you pick a true detail instead."
+                ],
+                "answer": "new"
+              },
+              "practice": [
+                {
+                  "q": "The stem says according to the author. May you add a fact the author never wrote? Type yes or no.",
+                  "answer": "no",
+                  "why": "According to means the line is in the passage. An added fact, even a sensible one, is not what the author wrote."
+                },
+                {
+                  "q": "Two stems: main purpose, and which detail is true. Which one asks for the claim rather than a single fact? Type purpose or detail.",
+                  "answer": "purpose",
+                  "why": "Purpose and main idea ask for the claim the passage is built to serve. A true detail can be real and still miss that job."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-vread-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-vread-l2a",
+              "title": "Stay inside the line",
+              "he": "להישאר בתוך השורה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Line references"
+              ],
+              "objectives": [
+                "Answer a line-reference item from the cited line and its neighbors.",
+                "Reject a true fact that sits outside that window."
+              ],
+              "teach": "A line reference is a box, not an invitation to wander. Read the cited line, the sentence before it, and the sentence after it, because the turn is often next door. Answer from that window. A choice that is true later in the passage, but not about the cited line, is the trap this question was built to sell.\n\nUse only what that window supports. A word's meaning comes from the sentence around the cited line, not from a famous sense and not from a later paragraph. Check the line number, then apply not or except inside that same window.",
+              "rules": [
+                "Read the cited line and one sentence on each side.",
+                "A true fact from another line does not answer a line reference.",
+                "Do not enlarge some into all inside the window.",
+                "Apply not or except inside that same window."
+              ],
+              "example": {
+                "prompt": "Line 2 says the toll pushed some carts back to the old road. The question asks what line 2 shows. A trap says the bridge failed completely. Type what the line does show.",
+                "steps": [
+                  "The box is line 2, read next to the claim that the bridge cut travel time.",
+                  "Some carts is not all carts. The line shows a partial return to the old road.",
+                  "Failed completely enlarges some into all and ignores the time saved. It is outside the line."
+                ],
+                "answer": "some carts returned"
+              },
+              "practice": [
+                {
+                  "q": "A question cites line 3. The right-looking fact is in line 9 and is true. Do you pick it? Type yes or no.",
+                  "answer": "no",
+                  "why": "A line reference boxes you to the cited place and its neighbors. A true fact from elsewhere does not answer that question."
+                },
+                {
+                  "q": "The cited line says a few shops closed. A choice says the market collapsed. Does the line support collapsed? Type yes or no.",
+                  "answer": "no",
+                  "why": "A few is limited. Collapsed enlarges it. Stay inside the degree the line actually used."
+                }
+              ]
+            },
+            {
+              "id": "psy-vread-l2b",
+              "title": "The short step only",
+              "he": "רק הצעד הקצר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Inference limits"
+              ],
+              "objectives": [
+                "Accept an inference only if denying it would make the passage false.",
+                "Refuse a step that widens some into all or restores a cause the author refused."
+              ],
+              "teach": "An inference is a short step the passage has almost stated, not a guess about the wider world. Three neighborhoods do not license every city. A refused cause may not be inferred back in. The author's some, may, and not are the limit.\n\nTest a tempting idea by denying it. If the passage can still be true while your idea is false, the idea is not supported. Prefer the dull step that uses only the printed claim and its turn. A vivid line about what the city should do next is past the limit, unless the author already made that recommendation.",
+              "rules": [
+                "An inference the passage can survive without is not supported.",
+                "Some does not license all. A refused cause stays refused.",
+                "May and not are part of the limit.",
+                "A recommendation you invented is past the limit."
+              ],
+              "example": {
+                "prompt": "Staffing and bus times also changed, so the rise cannot be pinned on the clock alone. What may you infer? Type cause unsettled or buses caused it.",
+                "steps": [
+                  "You may infer that the author treats the cause as unsettled. More than one change happened.",
+                  "You may not infer that the bus times caused the rise. The sentence does not pick a winner.",
+                  "You may not infer that late hours do nothing. The author refused a single cause, not every practical value."
+                ],
+                "answer": "cause unsettled"
+              },
+              "practice": [
+                {
+                  "q": "The passage says many residents use the room after dark. Can you infer that all residents do? Type yes or no.",
+                  "answer": "no",
+                  "why": "Many is not all. An inference that widens scope is not supported. The limit sits in the quantifier the author chose."
+                },
+                {
+                  "q": "The author writes that a cut would save little and take away the only free workspace. May you infer that the author thinks the cut is a poor trade? Type yes or no.",
+                  "answer": "yes",
+                  "why": "Save little plus the lost workspace is already the author's weighing. Calling the trade poor is a short step, not a new policy. One of those facts alone would not be enough."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-vread-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-vread-l3a",
+              "title": "The claim, not the fact",
+              "he": "הטענה, לא העובדה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Main idea versus a true detail"
+              ],
+              "objectives": [
+                "Choose the answer that still holds the point if a vivid detail is deleted.",
+                "Prefer a main idea that keeps the author's turn."
+              ],
+              "teach": "The main idea is the claim the whole map serves, after the turn has limited it. A true detail is a fact that appears and is still not that claim. Items love the true detail because you can point to it. Ask whether deleting the sentence would leave the point standing. If it would, the sentence is a detail.\n\nMatch the scope. A number from three neighborhoods cannot be the idea of a passage whose point is a practical recommendation, unless the author made the number the point. When you hesitate, choose the answer that keeps the turn, not the answer that repeats the sharpest fact.",
+              "rules": [
+                "If deleting a sentence leaves the point standing, that sentence is a detail.",
+                "A true detail is the favorite wrong answer on a main-idea item.",
+                "Match the idea's scope to the passage's scope.",
+                "Prefer the choice that keeps the turn."
+              ],
+              "example": {
+                "prompt": "Passage point: late hours matter as civic furniture, and the cause of the homework rise is not proven. A choice says adults filled out job forms. Is that choice the main idea or a detail?",
+                "steps": [
+                  "Job forms are true, and they are support. They show one use of the room.",
+                  "Delete that sentence and the claim about civic furniture can remain, so it is a detail.",
+                  "The main idea has to carry the practical claim and the refusal to boast about cause. The job-form sentence does neither job alone."
+                ],
+                "answer": "detail"
+              },
+              "practice": [
+                {
+                  "q": "Completion rose in three neighborhoods is true. On a main-idea question, do you choose it over the author's recommendation? Type detail or claim.",
+                  "answer": "detail",
+                  "why": "The number of neighborhoods is support. The recommendation is doing the claim's job. A true sentence can still be the wrong job."
+                },
+                {
+                  "q": "Which answer should be the one that can hold the author's but or however? Type main idea or statistic.",
+                  "answer": "main idea",
+                  "why": "The turn belongs inside the main idea. A statistic almost never contains the turn. A choice that drops the however is usually a detail dressed as the claim."
+                }
+              ]
+            },
+            {
+              "id": "psy-vread-l3b",
+              "title": "One passage, four questions",
+              "he": "קטע אחד, ארבע שאלות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A full short passage set"
+              ],
+              "objectives": [
+                "Map one short passage and answer four questions from that map.",
+                "Refuse a true sentence that is not the job the stem asked for."
+              ],
+              "teach": "This node is one short passage and four questions, the shape of a reading set without a pretend section length. The passage is printed in the worked example below, in English. On the live paper the verbal domain is Hebrew. The skill transfers: map the claim, the support, and the turn, then refuse a sentence that is true and irrelevant.\n\nRead once and mark claim, support, and turn. Do not reread from the top for every question. The author's label, the refused cause, and the neighborhood count are three different jobs. Type the short answer that does the job the question asked. This road does not invent a passage count.",
+              "rules": [
+                "Map claim, support, and turn once, then answer from the map.",
+                "The practice passage is in English. Live verbal reading is in Hebrew.",
+                "A true sentence can still be the wrong job.",
+                "Do not invent how many passages a booklet contains."
+              ],
+              "example": {
+                "prompt": "Late library hours do more than keep the doors open. In three neighborhoods, a year of later closing lined up with more finished homework and more adults using the public computers for job forms. The author refuses a causal boast. Staffing, grants, and bus times also changed in those months, so the rise cannot be pinned on the clock alone. The last paragraphs turn to a practical claim: a library is civic furniture, a warm room the city already owns. Ending the final two hours would save little and would take away the only free workspace many people have after dark.",
+                "steps": [
+                  "Claim, after the turn: a library is civic furniture, a room the city already owns, and cutting the last hours is a poor trade.",
+                  "Support includes three neighborhoods, homework, and job forms. The turn is the refusal to pin the rise on the clock alone.",
+                  "A question that sells bus times as the proven cause, or the number three as the main idea, is selling a true-looking sentence that misses its job."
+                ],
+                "answer": "civic furniture"
+              },
+              "practice": [
+                {
+                  "q": "In the worked-example passage, what two-word label does the author give the library?",
+                  "answer": "civic furniture",
+                  "why": "That label is the practical claim the last paragraphs turn toward. Homework totals and job forms are support for the room's use, not the label itself."
+                },
+                {
+                  "q": "Does the author claim that later hours caused the rise in homework? Type yes or no.",
+                  "answer": "no",
+                  "why": "The author refuses a causal boast. Staffing, grants, and bus times also changed, so the rise cannot be pinned on the clock alone."
+                },
+                {
+                  "q": "How many neighborhoods does the passage look at? Type the number. It is true support, not the main idea.",
+                  "answer": "3",
+                  "why": "Three is a detail used as support. It is not the claim that the library is civic furniture, and it is not the turn about cause."
+                },
+                {
+                  "q": "A choice says the city will go bankrupt if it keeps the late hours. Does the passage support that? Type yes or no.",
+                  "answer": "no",
+                  "why": "The passage says ending the hours would save little. Save little does not mean the city is near bankruptcy. That step leaves the text."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-ecomp",
+      "index": 10,
+      "title": "English completions",
+      "he": "השלמת משפטים באנגלית",
+      "topic": "English completions",
+      "thesis": "The English section's completions are vocabulary in a sentence that already contains the clue.",
+      "syllabus": [
+        "The English section's job inside the whole test",
+        "One-blank completions",
+        "Two-blank completions",
+        "Vocabulary you can learn in families",
+        "Eliminating on grammar and tone, not only on a hard word",
+        "A timed completion set"
+      ],
+      "levels": [
+        {
+          "id": "psy-ecomp-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-ecomp-l1a",
+              "title": "One job inside English",
+              "he": "תפקיד אחד בתוך האנגלית",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The English section's job inside the whole test"
+              ],
+              "objectives": [
+                "Place completions inside the English domain, not as the whole test.",
+                "Leave restatements and English reading for the next stage."
+              ],
+              "teach": "The English section is one of three scored domains, beside verbal and quantitative. The whole test is scaled from 200 to 800. There is no essay. This stage owns only the completions: a sentence with a blank and a clue already inside it. It is not the whole English score, and it is not the Hebrew verbal paper.\n\nRestatements and English reading are the next stage. They use the same clue-reading, but they are not completions. A strong completion drill does not finish the English domain. The live booklet decides how many items you see. This road will not invent that number.",
+              "rules": [
+                "English is one of three scored domains, beside verbal and quantitative.",
+                "This stage is completions only. It is not the whole English score.",
+                "Restatements and English reading are the next stage.",
+                "There is no essay. The booklet sets the item count."
+              ],
+              "example": {
+                "prompt": "Which task belongs to this stage, not the next one? Type filling a blank or restating a sentence.",
+                "steps": [
+                  "This stage owns completions: a blank whose meaning the sentence already signals.",
+                  "Restatement keeps a sentence's logical shape and is the next stage, with English reading.",
+                  "Completions are part of English, not the entire English domain, and not a Hebrew verbal task."
+                ],
+                "answer": "filling a blank"
+              },
+              "practice": [
+                {
+                  "q": "Are restatements part of this completion stage? Type yes or no.",
+                  "answer": "no",
+                  "why": "Restatements and reading are the next stage. This stage is the completion work inside English, not the whole English score."
+                },
+                {
+                  "q": "Name the other two scored domains beside English, verbal first. Type verbal, quantitative.",
+                  "answer": "verbal, quantitative",
+                  "why": "The test scores verbal, quantitative, and English. Completions are one piece of the English domain. There is no essay."
+                }
+              ]
+            },
+            {
+              "id": "psy-ecomp-l1b",
+              "title": "A single blank",
+              "he": "חסר אחד",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "One-blank completions"
+              ],
+              "objectives": [
+                "Predict a plain word from the linker or the definition clue.",
+                "Drop a choice that agrees when the sentence contrasts, or that will not fit the grammar."
+              ],
+              "teach": "A one-blank completion is one hole and one clue. Find the clue before you admire a hard word. Contrast words, such as although, despite, and yet, make the blank oppose the other half. Cause words, such as because, therefore, and so, make the blank follow. A definition clue restates the blank after a colon or after that is.\n\nPredict in easy English, then match a choice. You can eliminate before you know every word. Drop a choice that agrees when the sentence contrasts, and drop a choice whose grammar will not fit. An adjective slot will not take a bare verb.",
+              "rules": [
+                "Find the one clue before you shop for a hard word.",
+                "Contrast linkers make the blank fight the other half.",
+                "A colon or that is often defines the blank.",
+                "Grammar can eliminate a choice whose part of speech will not fit."
+              ],
+              "example": {
+                "prompt": "The notes were ___: messy, unsigned, and missing dates. Type the adjective that the colon defines.",
+                "steps": [
+                  "The colon restates the blank. The clue is the list, not a contrast word.",
+                  "Messy, unsigned, and undated describe something careless.",
+                  "Meticulous would mean the opposite of that list. Slipshod matches the restatement."
+                ],
+                "answer": "slipshod"
+              },
+              "practice": [
+                {
+                  "q": "Although the lecture was brief, it was ___. Type thorough or empty.",
+                  "answer": "thorough",
+                  "why": "Although sets up a contrast with brief. Thorough fights brief. Empty would agree with brief and ignore the linker."
+                },
+                {
+                  "q": "The soil was arid, that is, ___. Type dry or fertile.",
+                  "answer": "dry",
+                  "why": "That is restates the word. Arid means dry. Fertile is the opposite, so the definition clue eliminates it even if arid was new to you."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-ecomp-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-ecomp-l2a",
+              "title": "A pair of blanks",
+              "he": "זוג חסרים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Two-blank completions"
+              ],
+              "objectives": [
+                "Predict how blank one relates to blank two before you touch the choices.",
+                "Reject a pair that gets only the first word right."
+              ],
+              "teach": "Two blanks are one relationship, filled twice. The sentence tells you whether the blanks contrast, agree, or follow as cause and result. Predict a pair of easy words in order. Then find the choice pair that matches both. A choice that gets the first word right and the second word backward is wrong. Half a pair is a miss.\n\nCheck the pair together before you commit. Although requires a fight across the two blanks, as in nervous against calmly. A pair that agrees fails that linker. If you know only one word in a choice, test it on its own clue and reject the pair when that word already breaks.",
+              "rules": [
+                "Name the relationship between the blanks before you look.",
+                "Both words have to fit, in order. Half a pair is a miss.",
+                "Although needs a fight across the pair. Because needs a result.",
+                "Test a known word against its own clue and reject the pair if it breaks."
+              ],
+              "example": {
+                "prompt": "Although the evidence was ___, the claim was ___. Type the pair that contrasts: meager, sweeping",
+                "steps": [
+                  "Although requires a contrast between the evidence and the claim.",
+                  "An easy prediction is weak evidence, then an oversized claim. The pair must fight.",
+                  "Meager then modest would agree. Ample then sweeping does not use the weakness although needs. Meager then sweeping contrasts."
+                ],
+                "answer": "meager, sweeping"
+              },
+              "practice": [
+                {
+                  "q": "The drug was ___ to stop the pain yet ___ to the stomach. Type strong enough, harsh or strong enough, gentle.",
+                  "answer": "strong enough, harsh",
+                  "why": "Yet requires contrast. Helping the pain and hurting the stomach fight each other. Gentle would agree with a good result and waste the yet."
+                },
+                {
+                  "q": "Because the road was ___, the bus arrived ___. Type blocked, late or blocked, early.",
+                  "answer": "blocked, late",
+                  "why": "Because requires a result that follows. A blocked road makes the bus late. Early contradicts the cause. Both blanks must honor the same linker."
+                }
+              ]
+            },
+            {
+              "id": "psy-ecomp-l2b",
+              "title": "Families, not a dictionary",
+              "he": "משפחות, לא מילון",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Vocabulary you can learn in families"
+              ],
+              "objectives": [
+                "Sort a new word into a small family you can review.",
+                "Store the opposite beside the family so contrast clues have a partner."
+              ],
+              "teach": "You will not finish the dictionary before the test. Learn families: one head word and a few cousins. Around cut, store sever, trim, and curtail. Around praise, store laud, extol, and commend. Around harm, store detrimental and adverse. When a blank wants cut short, a cousin in that family is recognizable even if you have never said it aloud.\n\nStore the opposite on the same card: benign beside harmful, scarce beside abundant, candid beside evasive. Contrast clues ask you to tell a family from its opposite. If you only remember a Hebrew gloss and not the partner, although will still beat you.",
+              "rules": [
+                "Learn a head word and a few cousins, not a lonely gloss.",
+                "Cut, praise, and harm are families worth storing.",
+                "Put the opposite on the same card.",
+                "A Hebrew gloss without the contrast partner will lose to although."
+              ],
+              "example": {
+                "prompt": "The council will curtail the budget. Curtail belongs to which family: cut, praise, or wander?",
+                "steps": [
+                  "Curtail means to cut back or reduce. The head word is cut, not praise.",
+                  "Laud and extol would be the praise family. They do not reduce anything.",
+                  "Store curtail beside sever and trim, and store its direction: less, not more."
+                ],
+                "answer": "cut"
+              },
+              "practice": [
+                {
+                  "q": "Laud belongs with praise or with harm? Type praise or harm.",
+                  "answer": "praise",
+                  "why": "Laud, extol, and commend are the praise family. Detrimental and adverse are the harm family. A contrast clue will ask you to tell those families apart."
+                },
+                {
+                  "q": "Is benign in the harm family, or the opposite of harm? Type opposite of harm or harm.",
+                  "answer": "opposite of harm",
+                  "why": "Benign means kindly or not harmful. It is stored as the opposite of the harm family, which is what an although sentence needs."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-ecomp-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-ecomp-l3a",
+              "title": "Cut on grammar and tone",
+              "he": "פסילה לפי דקדוק וטון",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Eliminating on grammar and tone, not only on a hard word"
+              ],
+              "objectives": [
+                "Eliminate a choice whose part of speech cannot fill the blank.",
+                "Eliminate a choice whose degree is louder than the clue."
+              ],
+              "teach": "You can eliminate before you know the hardest word. Grammar first. If the blank needs a noun, an adverb cannot go there. A blank after a and before of wants a noun. Tone means the degree already written. A mild clue such as somewhat will not take catastrophic. A solemn line will not take a joking word.\n\nTone is not mood music. Slightly delayed will not pair with ruined. Refused in anger will not pair with politely accepted, unless a contrast linker forces the fight. Cross out what grammar rejects and what degree exaggerates. Then use the clue on what remains.",
+              "rules": [
+                "Eliminate on part of speech before meaning.",
+                "Tone here means the degree already written, not a mood you prefer.",
+                "A mild clue will not take an extreme word.",
+                "Use the clue only on the choices that survive the cut."
+              ],
+              "example": {
+                "prompt": "The blank is an adjective in a ___ delay. Choices: briefly, slight, catastrophe. Type the one that fits.",
+                "steps": [
+                  "Briefly is an adverb. It cannot sit in a blank delay. Grammar removes it.",
+                  "Catastrophe is a noun, and the degree is also far too large for an ordinary delay.",
+                  "Slight is an adjective and a mild degree. It fits a slight delay."
+                ],
+                "answer": "slight"
+              },
+              "practice": [
+                {
+                  "q": "The sentence says a mildly ___ remark. Choices: devastating, critical, utterly. Which fits the degree and the slot?",
+                  "answer": "critical",
+                  "why": "Mildly blocks devastating, which is too strong, and utterly, which is not an adjective here. Critical can be mild. Grammar and degree both cut."
+                },
+                {
+                  "q": "She spoke with ___. The blank is a noun. Type candor or candid.",
+                  "answer": "candor",
+                  "why": "With takes a noun. Candor is the noun. Candid is the adjective in the same family, and grammar eliminates it before you need a fuller definition."
+                }
+              ]
+            },
+            {
+              "id": "psy-ecomp-l3b",
+              "title": "Four completions, timed",
+              "he": "ארבע השלמות בזמן",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A timed completion set"
+              ],
+              "objectives": [
+                "Finish a one-blank, a definition, a two-blank pair, and a tone cut on the clock.",
+                "Remember that this set is not the rest of the English score."
+              ],
+              "teach": "A timed completion set is the same clue work under a clock: one blank, a definition restatement, a two-blank pair, and a cut you can make on grammar or degree. Predict before you shop among hard words. If a word is unknown and the other choices already break the linker, you do not need the unknown word.\n\nThese four are not the whole English section. Restatements and reading come next, and the booklet, not this road, sets the count. Type exactly the short answer the question names. When a pair is required, both halves have to be right. Half a pair is still a miss when the clock is running.",
+              "rules": [
+                "Predict from the clue, then match.",
+                "A definition after that is is the meaning.",
+                "Both halves of a two-blank pair must be right.",
+                "Restatements and reading are still ahead. This set is not the whole English score."
+              ],
+              "example": {
+                "prompt": "The plan looked costly; nevertheless it was ___. Type adopted or rejected.",
+                "steps": [
+                  "Nevertheless is a contrast linker.",
+                  "Costly would suggest rejection, so the blank has to fight that.",
+                  "Adopted is the contrast. You do not need a rare synonym when the clue is this clear."
+                ],
+                "answer": "adopted"
+              },
+              "practice": [
+                {
+                  "q": "The plan looked costly; nevertheless it was ___. Type adopted or rejected.",
+                  "answer": "adopted",
+                  "why": "Nevertheless contrasts with costly, which points toward rejection. Adopted is the fight. Rejected would agree with costly and ignore the linker."
+                },
+                {
+                  "q": "The path was arduous, that is, very hard. Does arduous mean hard or easy?",
+                  "answer": "hard",
+                  "why": "That is restates the word. Arduous is defined in the sentence as very hard. Easy would contradict the definition clue."
+                },
+                {
+                  "q": "Although the start was ___, the ending was ___. Type shaky, strong or shaky, weak.",
+                  "answer": "shaky, strong",
+                  "why": "Although needs a contrast across the two blanks. A shaky start and a strong ending fight. Weak would agree with shaky and ignore although."
+                },
+                {
+                  "q": "The note was a tiny, ___ apology. Type brief or catastrophic.",
+                  "answer": "brief",
+                  "why": "Tiny degree rejects catastrophic. Brief matches both the adjective slot and the mild tone. You can cut on degree without a rare synonym."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-eread",
+      "index": 11,
+      "title": "Restatements and English reading",
+      "he": "ניסוח מחדש וקריאה באנגלית",
+      "topic": "Restatements and English reading",
+      "thesis": "A restatement keeps the logical shape of a sentence, and an English passage is read for questions, not for literature class.",
+      "syllabus": [
+        "What a restatement must preserve",
+        "Changes that look small and are not: negatives, scope, degree",
+        "Reading passages on the English section",
+        "Vocabulary in context",
+        "Speed: the passage is not literature class",
+        "A mixed English set"
+      ],
+      "levels": [
+        {
+          "id": "psy-eread-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-eread-l1a",
+              "title": "Negation, scope, and degree",
+              "he": "שלילה, היקף ודרגה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "What a restatement must preserve"
+              ],
+              "objectives": [
+                "Check a restatement for negation, scope, and degree before style.",
+                "Reject a paraphrase that moves any one of those three."
+              ],
+              "teach": "A restatement says the same claim in other words. It must keep negation, scope, and degree. Negation is the not or the never. Scope is who is covered: some, many, most, or all. Degree is how strong the link is: may, can, or must. If any of the three moves, the choice is a new claim.\n\nYou are not hunting the fanciest paraphrase. Mark not-words, quantifiers, and modals in the original, then mark them in the choice. Some routes may close does not become All routes will close. The first is partial and possible. The second is total and certain. The restatement is the choice whose marks match.",
+              "rules": [
+                "A restatement keeps the not.",
+                "Some, many, most, and all are scope. Do not trade them.",
+                "May, can, and must are degree. Do not trade them.",
+                "Familiar nouns do not rescue a moved mark."
+              ],
+              "example": {
+                "prompt": "Original: Some of the trails may be closed. Which holds? Type a few trails might close or every trail will close.",
+                "steps": [
+                  "Scope in the original is some, not every. A few keeps that partial scope.",
+                  "Degree is may, a possibility. Might keeps it. Will would make it certain.",
+                  "Every trail will close moves both scope and degree. A few trails might close keeps both."
+                ],
+                "answer": "a few trails might close"
+              },
+              "practice": [
+                {
+                  "q": "Original: All tickets must be shown. Does Some tickets may be shown preserve it? Type yes or no.",
+                  "answer": "no",
+                  "why": "All became some, and must became may. Both scope and degree moved. A restatement has to keep both."
+                },
+                {
+                  "q": "Original: The well is not dry. A choice drops the not and says the well is dry. Type preserve or fail.",
+                  "answer": "fail",
+                  "why": "Dropping not reverses the claim. Familiar words do not save a restatement that flips the negation."
+                }
+              ]
+            },
+            {
+              "id": "psy-eread-l1b",
+              "title": "The small edit",
+              "he": "העריכה הקטנה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Changes that look small and are not: negatives, scope, degree"
+              ],
+              "objectives": [
+                "Underline only the word that changed and name it negative, scope, or degree.",
+                "Call the restatement a fail as soon as one of those three moves."
+              ],
+              "teach": "Small edits are the whole trap. Dropping a not flips the claim. Changing some to all, or all to some, changes who is included. Changing may to must, or must to may, changes whether the result is required or only possible. The sentence can keep every content word and still be wrong, because one of those three moved.\n\nRead the trap as a difference, not as a story. Underline only what changed. If that change is a negative, a quantifier, or a modal, it is a fail, even when the new sentence sounds smoother. Some becoming all, or may becoming will, is never a small edit.",
+              "rules": [
+                "Underline only the word that changed.",
+                "A dropped not flips the claim.",
+                "Some to all, or all to some, changes scope.",
+                "May to must, or must to may, changes degree. Smoother English is not a match."
+              ],
+              "example": {
+                "prompt": "Original: Some bridges may not be safe. Trap: All bridges are unsafe. What moved? Type scope and degree or only style.",
+                "steps": [
+                  "Some became all. That is scope.",
+                  "May became a flat are, which is certain. That is degree.",
+                  "The negative idea survived in unsafe, so not was not the piece that saved it. The trap still fails because scope and degree moved."
+                ],
+                "answer": "scope and degree"
+              },
+              "practice": [
+                {
+                  "q": "Not all rooms are locked, versus All rooms are unlocked. Type same or changed.",
+                  "answer": "changed",
+                  "why": "Not all are locked still allows some locked rooms. All are unlocked says every room is open. Moving not changes the scope. It is not the same claim."
+                },
+                {
+                  "q": "Visitors must sign in, versus Visitors may sign in. What moved? Type degree or scope.",
+                  "answer": "degree",
+                  "why": "Must means required. May means allowed. The people stayed visitors, so scope held, and no not was added. The strength of the rule is what moved."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-eread-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-eread-l2a",
+              "title": "A passage with hedges",
+              "he": "קטע עם סייגים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Reading passages on the English section"
+              ],
+              "objectives": [
+                "Read an English passage for claim, support, and turn, including hedges.",
+                "Keep this passage in the English domain, separate from Hebrew verbal reading."
+              ],
+              "teach": "An English-section passage is a source of questions in a slightly more academic register. You still map claim, support, and turn. A hedge such as suggests or is consistent with is doing logical work, and a definition may sit inside a relative clause. Read once for the map, then go to the questions and return to lines.\n\nThis is not the Hebrew verbal section. That paper is Hebrew; this passage is English-domain work. Swapping some for all, or lifting a finding into a must, is the same trap as a bad restatement. The original is just longer. Do not upgrade its degree.",
+              "rules": [
+                "Map claim, support, and turn, including hedges such as consistent with.",
+                "Do not upgrade a hedge into proves or must.",
+                "English passages are the English domain. Live verbal reading is Hebrew.",
+                "Scope and degree traps are the same as in a one-sentence restatement."
+              ],
+              "example": {
+                "prompt": "The sample is consistent with the idea that sleep loss impairs recall, but the design does not isolate sleep from stress. What may you not conclude?",
+                "steps": [
+                  "Consistent with is a hedge. It fits the idea. It does not prove it.",
+                  "The support is the sample, not a named mechanism that separates sleep from stress.",
+                  "The turn is but: the design does not isolate sleep from stress. You cannot leave with sleep loss must be the cause."
+                ],
+                "answer": "cause not isolated"
+              },
+              "practice": [
+                {
+                  "q": "A passage says a result is consistent with a theory. May you restate that as proves the theory? Type yes or no.",
+                  "answer": "no",
+                  "why": "Consistent with keeps a weaker degree than proves. Upgrading the hedge invents a stronger claim than the English passage made."
+                },
+                {
+                  "q": "Is an English-section passage the same booklet section as Hebrew verbal reading? Type yes or no.",
+                  "answer": "no",
+                  "why": "Verbal reading on the live paper is Hebrew. English passages belong to the English domain, beside restatements and completions. The mapping skill transfers. The section does not."
+                }
+              ]
+            },
+            {
+              "id": "psy-eread-l2b",
+              "title": "The sentence is the dictionary",
+              "he": "המשפט הוא המילון",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Vocabulary in context"
+              ],
+              "objectives": [
+                "Guess a word from the clause and the contrast beside it.",
+                "Reject a famous sense that does not fit the grammar slot."
+              ],
+              "teach": "Vocabulary in context means the sentence is the dictionary. A known word may be narrower here, and an unknown word sits next to a definition, an example, or a contrast. Read that clause and the turn beside it. Try a plain guess. If the guess fights the contrast word, flip it.\n\nDo not import the exciting sense. Grave beside danger means serious, not a burial. Check the grammar slot too. A noun slot will not take an adjective sense you remember from a word family. Context is the completion clue, pointed at one word in a passage.",
+              "rules": [
+                "Guess from the clause and the contrast beside the word.",
+                "If the guess fights the contrast, flip the guess.",
+                "A famous sense that misses the grammar slot is wrong.",
+                "Context is the completion clue pointed at one word."
+              ],
+              "example": {
+                "prompt": "The decline was grave, though not irreversible. What does grave mean here?",
+                "steps": [
+                  "The topic is a decline, not a cemetery. Burial is the wrong family.",
+                  "Though not irreversible contrasts with grave: the decline is serious, and it can still be turned around.",
+                  "Grave here means serious. If it meant buried, the though clause would have nothing to contrast."
+                ],
+                "answer": "serious"
+              },
+              "practice": [
+                {
+                  "q": "The minister's grave tone quieted the room. Type serious or burial.",
+                  "answer": "serious",
+                  "why": "A tone cannot be a burial. The sentence uses grave as serious. The familiar noun sense is a trap because it ignores the slot."
+                },
+                {
+                  "q": "Unlike her tacit ally, he stated his support. Does tacit mean said aloud or unsaid?",
+                  "answer": "unsaid",
+                  "why": "Unlike sets tacit against stated. Stated means said aloud, so tacit is the unsaid side. The contrast is the definition."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-eread-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-eread-l3a",
+              "title": "Not literature class",
+              "he": "לא שיעור ספרות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Speed: the passage is not literature class"
+              ],
+              "objectives": [
+                "Scan an English passage for the question's job, not for a theme.",
+                "Slow down only on not, some, all, may, must, and however."
+              ],
+              "teach": "Speed comes from refusing literature class. You are not scoring a symbol or a theme. You are answering for claim, support, turn, logical shape, and a word in its sentence. Know the question's job, then scan for that job.\n\nBe slow only on not, some, all, may, must, and however. Those are the words items change. Skipping them for a gist is how a stronger true sentence wins. A full reread is a backup, not a ritual. The booklet sets the length. This road does not invent it.",
+              "rules": [
+                "Answer for claim, support, turn, shape, and a word in its sentence.",
+                "Do not score a symbol or a theme.",
+                "Be slow on not, some, all, may, must, and however.",
+                "The booklet sets the length. A full reread is a backup, not a ritual."
+              ],
+              "example": {
+                "prompt": "You have a paragraph and four questions. What do you skip? Type literary theme or the however.",
+                "steps": [
+                  "Literature class would hunt a theme, a symbol, or the mood of a closing image. That is not the task.",
+                  "The questions turn on claim, detail, a word in context, and logical shape.",
+                  "You skip the literary theme. You do not skip the however, because that word is the turn."
+                ],
+                "answer": "literary theme"
+              },
+              "practice": [
+                {
+                  "q": "A choice praises the haunting image and never matches a claim. Is it safe on a main-idea item? Type yes or no.",
+                  "answer": "no",
+                  "why": "Haunting is a literature-class reaction. Main idea asks for the claim after the turn. A mood word is not a logical shape you can check."
+                },
+                {
+                  "q": "Which marks deserve the slow second look? Type not some may or adjectives.",
+                  "answer": "not some may",
+                  "why": "Negation, scope, and degree are where restatements and passage traps move. Ordinary adjectives rarely decide the item. Speed means being slow only there."
+                }
+              ]
+            },
+            {
+              "id": "psy-eread-l3b",
+              "title": "Restate and read",
+              "he": "ניסוח מחדש וקריאה",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A mixed English set"
+              ],
+              "objectives": [
+                "Keep negation, scope, and degree in a one-sentence restatement.",
+                "Keep the same shape when the original is a short academic passage."
+              ],
+              "teach": "A mixed English set puts restatements beside a short academic passage. The passage is in the worked example below. For a restatement, match negation, scope, and degree before you admire the style. For a passage question, use the map and refuse an upgrade from may to must or from most to all. The two tasks are the same shape check at two sizes.\n\nThis is English-domain work, not literature class and not the Hebrew verbal paper. The authors hedge on purpose. Keep the hedge. These four items are a drill, and the booklet decides the real count.",
+              "rules": [
+                "Match negation, scope, and degree before you admire the style.",
+                "Refuse an upgrade from may to must or from most to all.",
+                "The academic passage is English-domain work, not literature class.",
+                "This drill does not set the live count of restatements or passages."
+              ],
+              "example": {
+                "prompt": "A coastal study tracked salt marshes for a decade after a single restoration. Native grasses returned on most, but not all, of the treated plots, and bird counts rose where the grasses returned. The authors do not claim that restoration must succeed on every shore. Storm years, grazing, and upstream dams differed across sites, and the paper says only that recovery is possible when those pressures are modest. A final note warns planners: a short grant can start regrowth, yet it cannot guarantee that the marsh will still be there when the funding cycle ends.",
+                "steps": [
+                  "Claim, hedged: recovery is possible when pressures are modest. Not: restoration must work everywhere.",
+                  "Support: grasses returned on most plots, not all, and birds rose where grasses returned. Scope stays most.",
+                  "Turn: a short grant can start regrowth and still cannot guarantee the marsh will remain. Can is not must."
+                ],
+                "answer": "possible, not guaranteed"
+              },
+              "practice": [
+                {
+                  "q": "Which preserves Some routes may flood? Type some routes might flood or all routes will flood.",
+                  "answer": "some routes might flood",
+                  "why": "Some stays some, and may stays a possibility in might. All and will move scope and degree. The nouns did not need to change for the trap to be wrong."
+                },
+                {
+                  "q": "Original: The paper does not claim success is certain. Choice: The paper claims success is certain. Type preserve or fail.",
+                  "answer": "fail",
+                  "why": "The choice drops does not and therefore flips the negation. A restatement that removes not is a different claim."
+                },
+                {
+                  "q": "In the worked-example passage, do the authors say restoration must succeed on every shore? Type yes or no.",
+                  "answer": "no",
+                  "why": "They do not claim it must succeed everywhere. Must and every would upgrade degree and scope. The printed claim is possibility when pressures are modest."
+                },
+                {
+                  "q": "A short grant can start regrowth. Does the passage say the grant guarantees the marsh will remain? Type yes or no.",
+                  "answer": "no",
+                  "why": "The final note contrasts can start with cannot guarantee. Reading that as a promise swaps a possible start for a must. It is the degree trap inside the passage."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psy-sim",
+      "index": 12,
+      "title": "Simulation and the last month",
+      "he": "סימולציה והחודש האחרון",
+      "topic": "Simulation and the last month",
+      "thesis": "The end of the road is a sitting you can reproduce, an error log by type, and a last week that does not invent new topics.",
+      "syllabus": [
+        "Building a full sitting from these nodes",
+        "Section order and personal pacing",
+        "The error log: type, not mood",
+        "Review cycles between simulations",
+        "The week before",
+        "Test morning and what done means"
+      ],
+      "levels": [
+        {
+          "id": "psy-sim-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "psy-sim-l1a",
+              "title": "A sitting you can rerun",
+              "he": "ישיבה שאפשר לחזור עליה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Building a full sitting from these nodes"
+              ],
+              "objectives": [
+                "Build a timed sitting from nodes already on this road.",
+                "Treat unmarked pilot sections as if they count."
+              ],
+              "teach": "A full sitting is a block you can run again from nodes you already have: quantitative work from earlier on this road, analogies, logic, verbal reading, and the English tasks. Use a clock. There is no essay. The real scale runs from 200 to 800. A home sitting is practice, not an official score.\n\nPilots are unscored and unmarked, so you answer every section as if it counts. Do not invent a section count or a fixed order. Build blocks from topics this road taught, and write down the time you used so the next sitting is the same kind of task.",
+              "rules": [
+                "Build the sitting from nodes you already have, including quantitative work from earlier.",
+                "There is no essay. The real scale runs from 200 to 800.",
+                "A home number is not an official score.",
+                "Pilots are unmarked. Answer every section as if it counts. Do not invent a section count."
+              ],
+              "example": {
+                "prompt": "You are building tomorrow's sitting. Do you add a brand-new topic the road never taught? Type yes or no.",
+                "steps": [
+                  "A sitting you can reproduce uses nodes you can already name.",
+                  "A new topic makes the next sitting a different test, so you cannot compare it.",
+                  "The answer is no. Quantitative, verbal, and English blocks you have studied are enough to fill the clock."
+                ],
+                "answer": "no"
+              },
+              "practice": [
+                {
+                  "q": "A home sitting produces a number. Is that number an official scaled score? Type yes or no.",
+                  "answer": "no",
+                  "why": "The real test scales from 200 to 800. A sitting at your desk is practice. It is useful only if you can run the same kind of block again."
+                },
+                {
+                  "q": "An unmarked section might be a pilot. Do you skip it? Type yes or no.",
+                  "answer": "no",
+                  "why": "Pilots are unmarked, so you cannot know. You answer every section as if it counts. This road does not invent which sections those are."
+                }
+              ]
+            },
+            {
+              "id": "psy-sim-l1b",
+              "title": "The booklet sets the order",
+              "he": "החוברת קובעת את הסדר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Section order and personal pacing"
+              ],
+              "objectives": [
+                "Follow the order printed in the booklet you are given.",
+                "Check the clock at the halfway item of the section you are in."
+              ],
+              "teach": "There is no section order to memorize as if NITE had published one fixed sequence. The booklet order is the order you get that day. Pilot sections are unmarked, so you cannot skip a section you suspect is experimental. Start where the booklet starts. Finish the section you are in before you rehearse the next one in your head.\n\nPersonal pacing is a check at the halfway item of whatever section you are in. If half the time is gone, you are on pace. If more is gone, answer every remaining item. Do not leave early to stew. Sections differ, so the halfway item moves. The rule does not.",
+              "rules": [
+                "There is no single section order to memorize.",
+                "The booklet order is the order you get. Pilots are unmarked.",
+                "Check the clock at the halfway item of the section you are in.",
+                "If you are behind, answer the rest. Do not leave early to stew."
+              ],
+              "example": {
+                "prompt": "You are halfway through the items of the section in front of you, and more than half the time is gone. What do you do with the rest? Type answer each or reread the first.",
+                "steps": [
+                  "The pace check uses the halfway item of this section, not a memorized section order.",
+                  "More than half the time is already gone, so rereading the opening will not create minutes.",
+                  "You answer each remaining item. Leaving early to stew does not help the next section."
+                ],
+                "answer": "answer each"
+              },
+              "practice": [
+                {
+                  "q": "Should you memorize one official section order for every test date? Type yes or no.",
+                  "answer": "no",
+                  "why": "The booklet order is the order you get. This road does not pretend NITE printed one fixed sequence for you to recite."
+                },
+                {
+                  "q": "Where is the pace check? Type halfway item or last item.",
+                  "answer": "halfway item",
+                  "why": "At the middle item of whatever section you are in, compare items done with time gone. The last item is too late to change how you spend the section."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-sim-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "psy-sim-l2a",
+              "title": "Label the miss",
+              "he": "לתת שם לפספוס",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "The error log: type, not mood"
+              ],
+              "objectives": [
+                "Write the type of a miss in a few words.",
+                "Leave mood out of the label that decides the next drill."
+              ],
+              "teach": "An error log records the type of miss, not the mood. Tired does not name tomorrow's drill. Reversed bridge, some changed to all, sufficient called necessary, or a true detail chosen as the main idea does. Label each miss with one type from this road. If you cannot name it, you do not yet know what was tested.\n\nCount types, not regrets. The type that shows up three times is the next review, even if the items felt unlucky. A single odd miss can wait. Do not open a new topic because a sitting felt bad. The log keeps the last month inside the syllabus you already built.",
+              "rules": [
+                "The log records a type, not a mood.",
+                "Two words are enough if they name the bridge, the quantifier, or the swap.",
+                "A type that repeats is the next review.",
+                "Do not open a new topic because a sitting felt bad."
+              ],
+              "example": {
+                "prompt": "You missed עט : כתיבה :: מכחול : ?, choosing צבע (the paint) instead of ציור. What do you write in the log?",
+                "steps": [
+                  "Hebrew is hard is a mood. Do not make that the label.",
+                  "The bridge was instrument to activity, and the choice was the material, a same-topic trap.",
+                  "The type is topic not bridge. That sends you back to the analogy nodes, not to a new subject."
+                ],
+                "answer": "topic not bridge"
+              },
+              "practice": [
+                {
+                  "q": "You called rain necessary for wet ground in If it rains, the ground is wet. Type necessary swapped or tired.",
+                  "answer": "necessary swapped",
+                  "why": "In that claim rain is sufficient, not necessary. A sprinkler also wets the ground. The log names the swap. Tired does not pick the next drill."
+                },
+                {
+                  "q": "A restatement changed may to must. Type degree or bad mood.",
+                  "answer": "degree",
+                  "why": "May versus must is degree. The log should say degree so the next review is restatement shape, not a general feeling about English."
+                }
+              ]
+            },
+            {
+              "id": "psy-sim-l2b",
+              "title": "Sit, log, drill, sit",
+              "he": "ישיבה, יומן, תרגול, ישיבה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Review cycles between simulations"
+              ],
+              "objectives": [
+                "Review repeated error types before you start another full sitting.",
+                "Redo a few correct items of the same type, not only the misses."
+              ],
+              "teach": "Between simulations, drill the types the log repeats. A clean node can wait. A missed node comes back sooner. The loop is sit, log, drill, sit again. Do not start another sitting while the log is unread. A score without types is only a mood.\n\nKeep a cycle short. Redo the misses, then redo a few items of the same type that you got right, so you are not only rehearsing failure. Stop when you can say the bridge, the quantifier, or the clue without looking. Then leave enough time before the next sitting for the review to stick. Two simulations in one day copy the same misses.",
+              "rules": [
+                "Do not start the next sitting while the log is unread.",
+                "Drill the type that repeats. A single odd miss can wait.",
+                "Redo a few items you got right, of that same type.",
+                "Two simulations in one day copy the same misses."
+              ],
+              "example": {
+                "prompt": "You finished a sitting and have not labeled the misses. Do you start a second sitting tonight? Type yes or no.",
+                "steps": [
+                  "The loop puts the log between sittings. An unread log means the next sitting will copy the same misses.",
+                  "Label the types first. That is the drill list.",
+                  "Tonight's second sitting is a no. Review, then schedule the next one after the labels have had time to stick."
+                ],
+                "answer": "no"
+              },
+              "practice": [
+                {
+                  "q": "The log shows three reversed bridges and one odd geometry miss. What do you drill next? Type reversed bridge or the odd miss.",
+                  "answer": "reversed bridge",
+                  "why": "The type that repeats is the assignment. A single odd miss can wait. Do not open a new topic to escape a type you can already name."
+                },
+                {
+                  "q": "In the review, do you redo only the items you missed? Type yes or no.",
+                  "answer": "no",
+                  "why": "Redo the misses, then a few correct items of the same type. Otherwise you only rehearse the failure and never check that the bridge is stable."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "psy-sim-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "psy-sim-l3a",
+              "title": "No new topic",
+              "he": "בלי נושא חדש",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The week before"
+              ],
+              "objectives": [
+                "Spend the week before on known types, sleep, and one short mixed set.",
+                "Refuse a new field offered the week of the test."
+              ],
+              "teach": "The week before adds no new topic. Drill messy types on shapes you already know. Do not open a fresh field because a rumor said it might appear. Sleep is part of the plan. Keep your usual wake time, including the two nights before, so the morning is not a shock to your attention.\n\nRun one short mixed set: an analogy, a completion, a restatement, one passage question, and one quantitative item from earlier on the road. Check the clock at the halfway item. Then stop. There is no second booklet to be sure, and no essay practice, because the test has no essay.",
+              "rules": [
+                "The week before adds no new field.",
+                "Sleep, including a usual wake time, is part of the plan.",
+                "Run one short mixed set and check the halfway item. Then stop.",
+                "There is no essay practice, because the test has no essay."
+              ],
+              "example": {
+                "prompt": "It is six days before the test. A list of brand-new word roots arrives. Do you start them? Type yes or no.",
+                "steps": [
+                  "The week-before rule is no new topic. New roots are a new field.",
+                  "Sleep and one short mixed set are the plan already written.",
+                  "You do not start them. Messy types you can already name are the only drill that still pays."
+                ],
+                "answer": "no"
+              },
+              "practice": [
+                {
+                  "q": "How many mixed sets does the week plan ask for after the halfway check? Type one or a stack.",
+                  "answer": "one",
+                  "why": "One short mixed set, then stop. A second booklet to be sure is how the week grows a new syllabus and steals sleep."
+                },
+                {
+                  "q": "Does the week include essay practice? Type yes or no.",
+                  "answer": "no",
+                  "why": "The test has no essay. The week keeps analogy, completion, restatement, a passage question, and one quantitative item familiar. It does not add a writing task."
+                }
+              ]
+            },
+            {
+              "id": "psy-sim-l3b",
+              "title": "Morning, and what done means",
+              "he": "הבוקר, ומהו סיום",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Test morning and what done means"
+              ],
+              "objectives": [
+                "Run test morning as arrival, a full answer to every item, and no early exit to stew.",
+                "Call the road done when the simulation loop has been run, not when a score is promised."
+              ],
+              "teach": "Test morning is a routine, not a new plan. Arrive early and begin with the booklet you are given. Answer every item: a blank cannot score, and a guess might. Do not leave a section early to stew. There is no calculator and no essay. The week before was already set: no new topic, enough sleep, and one short mixed set.\n\nDone does not mean a score was promised. The scale runs from 200 to 800 across verbal, quantitative, and English. Done means the loop ran: repeatable sittings, a log by type, review between them, and a last week with no new topic.",
+              "rules": [
+                "Arrive early and take the booklet order you are given.",
+                "Answer every item. A blank cannot score.",
+                "Do not leave a section early to stew. There is no calculator and no essay.",
+                "Done means the loop ran, not that a score from 200 to 800 was promised."
+              ],
+              "example": {
+                "prompt": "It is the night before. A friend sends a brand-new topic. What do you do with it? Type leave it closed or study it now.",
+                "steps": [
+                  "The week-before rule is no new topic. A new field will not be learned cleanly overnight.",
+                  "Sleep and the short mixed set are the plan already written.",
+                  "You leave the new topic closed. Morning is for the booklet, not for a first reading."
+                ],
+                "answer": "leave it closed"
+              },
+              "practice": [
+                {
+                  "q": "The scaled score runs from what to what? Type it as 200-800.",
+                  "answer": "200-800",
+                  "why": "The real test is scaled from 200 to 800. A home sitting does not issue that score. Done is the loop, not a promised number."
+                },
+                {
+                  "q": "Name the three scored domains in this order. Type verbal, quantitative, English.",
+                  "answer": "verbal, quantitative, English",
+                  "why": "Those are the three scored domains. Pilots are extra and unmarked. There is no essay domain to add."
+                },
+                {
+                  "q": "Is a calculator allowed? Type yes or no.",
+                  "answer": "no",
+                  "why": "No calculator. You do not spend the morning hunting for one, and you do not leave a quantitative item blank because a machine is missing."
+                },
+                {
+                  "q": "You do not know an item and time is short. Leave it blank or answer it? Type answer it or leave it blank.",
+                  "answer": "answer it",
+                  "why": "A blank cannot score. Put an answer, then move. Do not leave the section early to stew over the item outside the clock."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

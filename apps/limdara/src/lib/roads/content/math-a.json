@@ -1,0 +1,1834 @@
+{
+  "stages": [
+    {
+      "id": "math-fn",
+      "index": 1,
+      "title": "Functions and graphs",
+      "he": "פונקציות וגרפים",
+      "topic": "Functions and graphs",
+      "thesis": "A function is a rule with a domain, and every later topic on this road is a family of functions.",
+      "syllabus": [
+        "Function, domain, and range",
+        "Increase, decrease, and reading a graph",
+        "Linear models and slope",
+        "Quadratics, vertex, and discriminant",
+        "Transformations of graphs",
+        "Absolute value and piecewise functions"
+      ],
+      "levels": [
+        {
+          "id": "math-fn-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-fn-l1a",
+              "title": "Function, domain, and range",
+              "he": "פונקציה, תחום וטווח",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Function, domain, and range"
+              ],
+              "objectives": [
+                "State the domain and the range from a formula or a graph.",
+                "Reject inputs that make a root negative or a denominator zero."
+              ],
+              "teach": "A function sends each allowed input to exactly one output. The domain is the set of legal inputs, and the range is the set of outputs that occur. On the real numbers, a square root needs a nonnegative radicand and a fraction needs a nonzero denominator.\n\nFor f(x) = sqrt(x - 2)/(x - 5), the radicand forces x - 2 >= 0, so x >= 2. The denominator forces x ≠ 5. The domain is x >= 2 and x ≠ 5. The endpoint x = 2 stays in, because the root is zero there. The input x = 5 stays out, because division by zero is undefined.",
+              "rules": [
+                "A function gives one output for each input in its domain.",
+                "sqrt(u) is defined only when u >= 0.",
+                "A denominator must not be zero.",
+                "The range is the set of values the function actually takes."
+              ],
+              "example": {
+                "prompt": "Find the domain of f(x) = sqrt(x - 2)/(x - 5).",
+                "steps": [
+                  "Require the radicand x - 2 >= 0, so x >= 2.",
+                  "Require the denominator x - 5 ≠ 0, so x ≠ 5.",
+                  "Keep both conditions: x >= 2 and x ≠ 5."
+                ],
+                "answer": "x >= 2, x ≠ 5"
+              },
+              "practice": [
+                {
+                  "q": "Find the domain of g(x) = sqrt(x + 1).",
+                  "answer": "x >= -1",
+                  "why": "The radicand x + 1 must be at least 0, so x >= -1. There is no denominator."
+                },
+                {
+                  "q": "Find the domain of h(x) = 1/(x - 3).",
+                  "answer": "x != 3",
+                  "why": "Division by zero is undefined, so x - 3 != 0 and x != 3. Every other real x is allowed."
+                }
+              ]
+            },
+            {
+              "id": "math-fn-l1b",
+              "title": "Increase, decrease, and reading a graph",
+              "he": "עלייה, ירידה וקריאת גרף",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Increase, decrease, and reading a graph"
+              ],
+              "objectives": [
+                "Read intervals of increase and decrease from left to right.",
+                "Read a function value and a zero from the axes."
+              ],
+              "teach": "A graph rises on an interval when a larger input gives a larger output. It falls when a larger input gives a smaller output. Read that motion from left to right. A zero is an x-intercept: the graph meets the x-axis and the output is 0.\n\nSuppose f falls from x = 0 to x = 2 and then rises from x = 2 to x = 5. Then f is decreasing on [0, 2] and increasing on [2, 5]. If the graph crosses the x-axis at x = 4, then f(4) = 0. The lowest point on that sketch is a local minimum at x = 2.",
+              "rules": [
+                "Read increase and decrease from left to right.",
+                "On an increasing interval, x1 < x2 implies f(x1) < f(x2).",
+                "A zero is an x-intercept: f(a) = 0.",
+                "A local minimum is lower than the nearby points on the graph."
+              ],
+              "example": {
+                "prompt": "The graph of f falls on [0, 2], rises on [2, 5], and crosses the x-axis at x = 4. Where is f decreasing, and where is the zero?",
+                "steps": [
+                  "From left to right the graph goes down on [0, 2], so f is decreasing there.",
+                  "It goes up on [2, 5], so that interval is increasing.",
+                  "The crossing at x = 4 is a zero: f(4) = 0."
+                ],
+                "answer": "decreasing on [0, 2], zero at x = 4"
+              },
+              "practice": [
+                {
+                  "q": "f increases on [1, 4] and f(1) = 2. Which is larger, f(1) or f(4)?",
+                  "answer": "f(4)",
+                  "why": "On an increasing interval a larger input has a larger output. Since 4 > 1, f(4) > f(1)."
+                },
+                {
+                  "q": "The graph meets the x-axis only at x = -3. What is f(-3)?",
+                  "answer": "0",
+                  "why": "An x-intercept is a zero of the function, so f(-3) = 0."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-fn-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-fn-l2a",
+              "title": "Linear models and slope",
+              "he": "מודלים קוויים ושיפוע",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Linear models and slope"
+              ],
+              "objectives": [
+                "Compute the slope through two points.",
+                "Write the line in the form y = mx + b."
+              ],
+              "teach": "A linear function has the form y = mx + b. The slope m is the change in y divided by the change in x. Through two points with different x-coordinates, m = (y2 - y1)/(x2 - x1). A positive slope rises, a negative slope falls, and slope 0 is horizontal.\n\nOnce m is known, substitute one point and solve for b. The line through (1, -2) and (4, 4) has m = (4 - (-2))/(4 - 1) = 6/3 = 2. Then -2 = 2(1) + b, so b = -4. The equation is y = 2x - 4.",
+              "rules": [
+                "m = (y2 - y1)/(x2 - x1).",
+                "y = mx + b has slope m and y-intercept b.",
+                "A vertical line has no finite slope and is not a function of x.",
+                "After the slope is known, substitute a point to find b."
+              ],
+              "example": {
+                "prompt": "Find the slope and the equation of the line through (1, -2) and (4, 4).",
+                "steps": [
+                  "m = (4 - (-2))/(4 - 1) = 6/3 = 2.",
+                  "Use y = 2x + b with the point (1, -2).",
+                  "-2 = 2(1) + b, so b = -4.",
+                  "The equation is y = 2x - 4."
+                ],
+                "answer": "slope 2, y = 2x - 4"
+              },
+              "practice": [
+                {
+                  "q": "Find the slope of the line through (0, 1) and (3, 7).",
+                  "answer": "2",
+                  "why": "m = (7 - 1)/(3 - 0) = 6/3 = 2."
+                },
+                {
+                  "q": "A line has slope -1 and passes through (2, 5). Find b in y = -x + b.",
+                  "answer": "7",
+                  "why": "Substitute x = 2 and y = 5: 5 = -2 + b, so b = 7."
+                }
+              ]
+            },
+            {
+              "id": "math-fn-l2b",
+              "title": "Quadratics, vertex, and discriminant",
+              "he": "פרבולה ריבועית, קודקוד ודיסקרימיננטה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Quadratics, vertex, and discriminant"
+              ],
+              "objectives": [
+                "Factor a quadratic and read its roots.",
+                "Find the vertex and use the discriminant to count roots."
+              ],
+              "teach": "A quadratic y = ax^2 + bx + c is a parabola. It opens upward when a > 0 and downward when a < 0. The vertex has x-coordinate -b/(2a). The discriminant D = b^2 - 4ac is positive for two real roots, zero for one, and negative for none.\n\nTake y = x^2 - 4x + 3. Factoring gives (x - 1)(x - 3), and the roots are 1 and 3. The vertex x-coordinate is 4/2 = 2. Then y = 4 - 8 + 3 = -1, so the vertex is (2, -1). Also D = 16 - 12 = 4.",
+              "rules": [
+                "The vertex x-coordinate is x = -b/(2a).",
+                "D = b^2 - 4ac: two real roots if D > 0, one if D = 0, none if D < 0.",
+                "If a > 0 the parabola opens upward and the vertex is a minimum.",
+                "The roots of (x - r)(x - s) are r and s."
+              ],
+              "example": {
+                "prompt": "For y = x^2 - 4x + 3, factor, name the roots, and give the vertex.",
+                "steps": [
+                  "Factor: x^2 - 4x + 3 = (x - 1)(x - 3).",
+                  "The roots are x = 1 and x = 3.",
+                  "The vertex x-coordinate is -b/(2a) = 4/2 = 2.",
+                  "y(2) = 4 - 8 + 3 = -1, so the vertex is (2, -1)."
+                ],
+                "answer": "(x-1)(x-3), vertex (2, -1)"
+              },
+              "practice": [
+                {
+                  "q": "How many real roots does x^2 + 2x + 5 = 0 have?",
+                  "answer": "0",
+                  "why": "D = 4 - 20 = -16 < 0, so there are no real roots."
+                },
+                {
+                  "q": "Find the vertex of y = x^2 - 6x + 5.",
+                  "answer": "(3, -4)",
+                  "why": "x = -(-6)/2 = 3. Then y = 9 - 18 + 5 = -4, so the vertex is (3, -4)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-fn-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-fn-l3a",
+              "title": "Transformations of graphs",
+              "he": "הזזות, מתיחות ושיקופים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Transformations of graphs"
+              ],
+              "objectives": [
+                "Read a reflection, a stretch, and a shift from vertex form.",
+                "State the vertex of y = a(x - h)^2 + k."
+              ],
+              "teach": "Start from y = x^2. A negative multiplier reflects the graph in the x-axis, and an absolute value greater than 1 stretches it vertically. Replacing x by x - h shifts the graph right by h when h is positive. Adding k shifts the graph up by k.\n\nThe form y = a(x - h)^2 + k has vertex (h, k). In y = -2(x - 1)^2 + 3, the factor -2 reflects the graph in the x-axis and stretches it by 2. The term (x - 1) shifts it right by 1, and +3 shifts it up by 3. The vertex is (1, 3), and the parabola opens downward.",
+              "rules": [
+                "y = a(x - h)^2 + k has vertex (h, k).",
+                "a < 0 reflects the graph in the x-axis.",
+                "|a| > 1 is a vertical stretch, and 0 < |a| < 1 is a vertical compression.",
+                "(x - h) shifts right by h, and (x + h) shifts left by h."
+              ],
+              "example": {
+                "prompt": "Describe how y = x^2 becomes y = -2(x - 1)^2 + 3, and name the vertex.",
+                "steps": [
+                  "The factor -2 reflects the graph in the x-axis and stretches it vertically by 2.",
+                  "(x - 1) shifts the graph right by 1.",
+                  "+3 shifts the graph up by 3.",
+                  "The vertex is (1, 3)."
+                ],
+                "answer": "reflect in x-axis, stretch 2, right 1, up 3"
+              },
+              "practice": [
+                {
+                  "q": "What is the vertex of y = (x + 4)^2 - 7?",
+                  "answer": "(-4, -7)",
+                  "why": "Write x + 4 as x - (-4). Then h = -4 and k = -7, so the vertex is (-4, -7)."
+                },
+                {
+                  "q": "Does y = -3(x - 2)^2 + 1 open upward or downward?",
+                  "answer": "downward",
+                  "why": "The leading coefficient is -3, which is negative, so the parabola opens downward."
+                }
+              ]
+            },
+            {
+              "id": "math-fn-l3b",
+              "title": "Absolute value and piecewise functions",
+              "he": "ערך מוחלט ופונקציה למקוטעין",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Absolute value and piecewise functions"
+              ],
+              "objectives": [
+                "Rewrite an absolute value as two linear pieces.",
+                "Evaluate a piecewise function on the correct piece."
+              ],
+              "teach": "The absolute value |u| equals u when u >= 0 and equals -u when u < 0. That split turns |x - a| into two linear pieces meeting at x = a. The graph is a V with its corner at (a, 0) before any vertical shift.\n\nA piecewise function uses a different formula on each part of the domain. Decide which condition holds, then use only that formula. If f(x) = x + 1 for x < 0 and f(x) = 2x for x >= 0, then -3 uses the first piece and 4 uses the second. At a boundary, follow the inequality that includes equality.",
+              "rules": [
+                "|u| = u when u >= 0, and |u| = -u when u < 0.",
+                "The corner of y = |x - a| is at x = a.",
+                "Use only the piece whose condition contains the input.",
+                "At a boundary, follow the inequality that includes equality."
+              ],
+              "example": {
+                "prompt": "Write y = |x - 2| as a piecewise function.",
+                "steps": [
+                  "The inside changes sign at x = 2.",
+                  "If x >= 2, then |x - 2| = x - 2.",
+                  "If x < 2, then |x - 2| = 2 - x."
+                ],
+                "answer": "x - 2 when x >= 2; 2 - x when x < 2"
+              },
+              "practice": [
+                {
+                  "q": "Evaluate |3 - 7|.",
+                  "answer": "4",
+                  "why": "3 - 7 = -4, and the absolute value of -4 is 4."
+                },
+                {
+                  "q": "Let f(x) = x + 2 when x < 1, and f(x) = 3x when x >= 1. Find f(1).",
+                  "answer": "3",
+                  "why": "The input 1 satisfies x >= 1, so use 3x. Then f(1) = 3."
+                },
+                {
+                  "q": "For the same f, find f(0).",
+                  "answer": "2",
+                  "why": "The input 0 satisfies x < 1, so use x + 2. Then f(0) = 2."
+                },
+                {
+                  "q": "Where is the corner of y = |x + 5|?",
+                  "answer": "x = -5",
+                  "why": "The inside is zero when x + 5 = 0, so the corner is at x = -5."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-poly",
+      "index": 2,
+      "title": "Polynomials and rational functions",
+      "he": "פולינומים ופונקציות רציונליות",
+      "topic": "Polynomials and rational functions",
+      "thesis": "Polynomials and rational functions are the graphs you can justify from factors and asymptotes.",
+      "syllabus": [
+        "Degree, end behavior, and roots",
+        "Factor and remainder theorems",
+        "Factoring polynomials over the reals",
+        "Multiplicity and how a graph crosses or touches",
+        "Holes, vertical asymptotes, and domain of a rational function",
+        "Horizontal and oblique asymptotes and sketching"
+      ],
+      "levels": [
+        {
+          "id": "math-poly-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-poly-l1a",
+              "title": "Degree, end behavior, and roots",
+              "he": "מעלה, התנהגות בקצוות ושורשים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Degree, end behavior, and roots"
+              ],
+              "objectives": [
+                "Read the degree and the leading coefficient of a polynomial.",
+                "State the end behavior and list the real roots from a factorization."
+              ],
+              "teach": "The degree is the highest power with a nonzero coefficient. The leading coefficient sits in front of that power. Even degree and a positive leading coefficient make both ends rise. Even degree and a negative leading coefficient make both ends fall. Odd degree sends the two ends in opposite directions.\n\nA root makes the polynomial equal 0. If p(x) = (x - 1)(x - 2)(x - 3), the degree is 3 and the roots are 1, 2, and 3. Expanding gives x^3 - 6x^2 + 11x - 6. Then p(1) = 1 - 6 + 11 - 6 = 0, so (x - 1) is a factor.",
+              "rules": [
+                "Degree is the highest power with a nonzero coefficient.",
+                "Even degree and a positive leading coefficient: both ends rise.",
+                "Odd degree and a positive leading coefficient: down on the left, up on the right.",
+                "If (x - r) is a factor, then r is a root and p(r) = 0."
+              ],
+              "example": {
+                "prompt": "Given p(1) = 0 for p(x) = x^3 - 6x^2 + 11x - 6, factor p and list the roots.",
+                "steps": [
+                  "p(1) = 1 - 6 + 11 - 6 = 0, so (x - 1) is a factor.",
+                  "The full factorization is (x - 1)(x - 2)(x - 3).",
+                  "The roots are 1, 2, and 3."
+                ],
+                "answer": "(x-1)(x-2)(x-3)"
+              },
+              "practice": [
+                {
+                  "q": "What is the degree of 4x^5 - x^2 + 7?",
+                  "answer": "5",
+                  "why": "The highest power with a nonzero coefficient is x^5, so the degree is 5."
+                },
+                {
+                  "q": "For p(x) = -x^2 + 3x, do the ends rise or fall?",
+                  "answer": "both fall",
+                  "why": "The degree 2 is even and the leading coefficient is -1, so both ends fall."
+                }
+              ]
+            },
+            {
+              "id": "math-poly-l1b",
+              "title": "Factor and remainder theorems",
+              "he": "משפטי הגורם והשארית",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Factor and remainder theorems"
+              ],
+              "objectives": [
+                "Find a remainder by evaluating p at the root of the divisor.",
+                "Test whether (x - c) is a factor."
+              ],
+              "teach": "Dividing p by (x - c) gives p(x) = (x - c)q(x) + r, with r constant. Substituting x = c yields p(c) = r. The remainder theorem says the remainder is p(c). Full division is unnecessary when only that remainder is required.\n\nThe factor theorem is the case r = 0: (x - c) is a factor exactly when p(c) = 0. For p(x) = x^3 - 6x^2 + 11x - 6, p(1) = 0, so (x - 1) is a factor. The remainder on division by (x - 2) is p(2). For this polynomial that remainder is 0, since 2 is also a root.",
+              "rules": [
+                "The remainder when p is divided by (x - c) is p(c).",
+                "(x - c) is a factor of p exactly when p(c) = 0.",
+                "A zero remainder means the divisor divides p exactly.",
+                "Substitute c with its sign, then simplify the powers."
+              ],
+              "example": {
+                "prompt": "State the remainder when a polynomial p is divided by (x - 2).",
+                "steps": [
+                  "The remainder theorem says division by (x - c) leaves remainder p(c).",
+                  "Here the divisor is x - 2, so c = 2.",
+                  "The remainder is p(2)."
+                ],
+                "answer": "p(2)"
+              },
+              "practice": [
+                {
+                  "q": "Find the remainder when p(x) = x^2 + 3x + 1 is divided by (x - 2).",
+                  "answer": "11",
+                  "why": "By the remainder theorem the remainder is p(2) = 4 + 6 + 1 = 11."
+                },
+                {
+                  "q": "Is (x - 1) a factor of x^3 - 1?",
+                  "answer": "yes",
+                  "why": "Substitute x = 1: 1 - 1 = 0. The factor theorem says (x - 1) is a factor."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-poly-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-poly-l2a",
+              "title": "Factoring over the reals",
+              "he": "פירוק פולינום מעל הממשיים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Factoring polynomials over the reals"
+              ],
+              "objectives": [
+                "Factor a cubic once a rational root is known.",
+                "Leave an irreducible quadratic factor unfactored over the reals."
+              ],
+              "teach": "Over the real numbers, every polynomial factors into linear factors and quadratic factors that have no real roots. A rational root, in lowest terms p/q, has p dividing the constant term and q dividing the leading coefficient. Test those candidates with the factor theorem, then divide.\n\nFor p(x) = x^3 - 6x^2 + 11x - 6, the constant term -6 suggests integer candidates such as 1, 2, and 3. Since p(1) = 0, the factor (x - 1) divides p. Division leaves the quadratic x^2 - 5x + 6, which factors as (x - 2)(x - 3). Thus p(x) = (x - 1)(x - 2)(x - 3).",
+              "rules": [
+                "A rational root p/q in lowest terms has p dividing the constant term and q dividing the leading coefficient.",
+                "If p(c) = 0, then (x - c) is a factor.",
+                "After dividing out (x - c), factor the quotient if it factors.",
+                "A quadratic with negative discriminant stays irreducible over the reals."
+              ],
+              "example": {
+                "prompt": "Factor p(x) = x^3 - 6x^2 + 11x - 6 completely over the reals.",
+                "steps": [
+                  "p(1) = 0, so (x - 1) is a factor.",
+                  "Division gives (x - 1)(x^2 - 5x + 6).",
+                  "x^2 - 5x + 6 = (x - 2)(x - 3).",
+                  "Therefore p(x) = (x - 1)(x - 2)(x - 3)."
+                ],
+                "answer": "(x-1)(x-2)(x-3)"
+              },
+              "practice": [
+                {
+                  "q": "One root of x^3 - 4x^2 + x + 6 is x = -1. Give the quotient after dividing by (x + 1).",
+                  "answer": "x^2 - 5x + 6",
+                  "why": "Synthetic division by -1 on coefficients 1, -4, 1, 6 produces 1, -5, 6 with remainder 0."
+                },
+                {
+                  "q": "Does x^2 + 1 factor into real linear factors?",
+                  "answer": "no",
+                  "why": "The discriminant is 0 - 4 = -4 < 0, so x^2 + 1 has no real roots and does not factor over the reals."
+                }
+              ]
+            },
+            {
+              "id": "math-poly-l2b",
+              "title": "Multiplicity and crossing or touching",
+              "he": "ריבוי שורש ומגע בציר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Multiplicity and how a graph crosses or touches"
+              ],
+              "objectives": [
+                "Read the multiplicity of a root from the exponent of its factor.",
+                "Decide whether the graph crosses or touches the x-axis there."
+              ],
+              "teach": "If (x - r) appears exactly m times, the root r has multiplicity m. When m is odd, the graph crosses the x-axis at x = r. When m is even, the graph touches the axis and turns back, so the sign does not change there.\n\nFor y = (x - 1)^2 (x - 4), the root 1 has multiplicity 2 and the root 4 has multiplicity 1. Near x = 1 the graph touches and stays on one side. At x = 4 it crosses. The degree is 3. With a positive leading coefficient, the right end rises and the left end falls.",
+              "rules": [
+                "Multiplicity is the exponent of the factor (x - r).",
+                "Odd multiplicity: the graph crosses the x-axis.",
+                "Even multiplicity: the graph touches the x-axis and turns back.",
+                "Counting complex roots as well, the multiplicities add up to the degree."
+              ],
+              "example": {
+                "prompt": "For y = (x - 1)^2 (x - 4), give the multiplicity of each real root and say whether the graph crosses or touches.",
+                "steps": [
+                  "(x - 1) has exponent 2, so x = 1 has multiplicity 2 and the graph touches.",
+                  "(x - 4) has exponent 1, so x = 4 has multiplicity 1.",
+                  "Odd multiplicity means the graph crosses at x = 4."
+                ],
+                "answer": "touch at x=1, cross at x=4"
+              },
+              "practice": [
+                {
+                  "q": "Does y = (x + 2)^3 cross or touch the x-axis at x = -2?",
+                  "answer": "cross",
+                  "why": "The multiplicity is 3, which is odd, so the graph crosses at x = -2."
+                },
+                {
+                  "q": "What is the multiplicity of x = 5 in y = (x - 5)^4 (x + 1)?",
+                  "answer": "4",
+                  "why": "The factor (x - 5) has exponent 4, so the multiplicity is 4 and the graph touches there."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-poly-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-poly-l3a",
+              "title": "Holes and vertical asymptotes",
+              "he": "חורים ואסימפטוטות אנכיות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Holes, vertical asymptotes, and domain of a rational function"
+              ],
+              "objectives": [
+                "Cancel a common factor and locate the hole.",
+                "Find vertical asymptotes from factors that remain in the denominator."
+              ],
+              "teach": "A rational function is a quotient of polynomials. The domain excludes every root of the denominator. A factor (x - c) that divides both top and bottom cancels, and it leaves a hole at x = c. Off that hole, the simplified function equals the original.\n\nA factor that remains in the denominator gives the vertical asymptote x = c. For (x^2 - 1)/(x - 1), factor the top as (x - 1)(x + 1). Cancel (x - 1) to get x + 1, but x = 1 stays excluded. There is a hole at x = 1, and elsewhere the function equals x + 1. No vertical asymptote remains.",
+              "rules": [
+                "The domain excludes roots of the denominator.",
+                "A common factor that cancels produces a hole, not an asymptote.",
+                "A factor that remains in the denominator produces a vertical asymptote.",
+                "After canceling, the simplified expression equals the original function only off the hole."
+              ],
+              "example": {
+                "prompt": "Describe (x^2 - 1)/(x - 1): the hole, the simplified form, and any vertical asymptote.",
+                "steps": [
+                  "Factor the numerator: x^2 - 1 = (x - 1)(x + 1).",
+                  "Cancel (x - 1) to get x + 1, for every x other than 1.",
+                  "x = 1 is a hole. Nothing remains in the denominator, so there is no vertical asymptote."
+                ],
+                "answer": "hole at x=1, equals x+1 elsewhere"
+              },
+              "practice": [
+                {
+                  "q": "Where is the hole of (x^2 - 4)/(x - 2)?",
+                  "answer": "x = 2",
+                  "why": "x^2 - 4 = (x - 2)(x + 2). The factor (x - 2) cancels, leaving a hole at x = 2. Elsewhere the function equals x + 2."
+                },
+                {
+                  "q": "Give the vertical asymptote of 1/(x + 3).",
+                  "answer": "x = -3",
+                  "why": "The denominator is zero at x = -3 and nothing cancels, so x = -3 is a vertical asymptote."
+                }
+              ]
+            },
+            {
+              "id": "math-poly-l3b",
+              "title": "Horizontal and oblique asymptotes",
+              "he": "אסימפטוטות אופקיות ומשופעות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Horizontal and oblique asymptotes and sketching"
+              ],
+              "objectives": [
+                "Choose a horizontal or oblique asymptote by comparing degrees.",
+                "Find an oblique asymptote by polynomial division."
+              ],
+              "teach": "Let n be the degree of the numerator and d the degree of the denominator. If n < d, the horizontal asymptote is y = 0. If n = d, it is the ratio of the leading coefficients. If n = d + 1, divide: the linear quotient is an oblique asymptote.\n\nDividing 2x^2 + 1 by x - 1 gives quotient 2x + 2 and remainder 3. So (2x^2 + 1)/(x - 1) = 2x + 2 + 3/(x - 1). The oblique asymptote is y = 2x + 2. At x = 1 the numerator is 3, not 0, so the vertical asymptote is x = 1.",
+              "rules": [
+                "If the numerator degree is smaller, the horizontal asymptote is y = 0.",
+                "If the degrees are equal, y equals the ratio of the leading coefficients.",
+                "If the numerator degree is one more, divide to get an oblique asymptote.",
+                "A vertical asymptote can occur together with a horizontal or oblique asymptote."
+              ],
+              "example": {
+                "prompt": "Rewrite (2x^2 + 1)/(x - 1) by division and name the oblique asymptote.",
+                "steps": [
+                  "Divide 2x^2 + 1 by x - 1.",
+                  "The quotient is 2x + 2 and the remainder is 3.",
+                  "(2x^2 + 1)/(x - 1) = 2x + 2 + 3/(x - 1).",
+                  "The oblique asymptote is y = 2x + 2."
+                ],
+                "answer": "y = 2x + 2"
+              },
+              "practice": [
+                {
+                  "q": "What is the horizontal asymptote of (3x^2 + 1)/(x^2 - 4)?",
+                  "answer": "y = 3",
+                  "why": "The degrees are equal, and the ratio of the leading coefficients is 3/1 = 3."
+                },
+                {
+                  "q": "What is the horizontal asymptote of (x + 1)/(x^2 + 4)?",
+                  "answer": "y = 0",
+                  "why": "The numerator has degree 1 and the denominator has degree 2, so the horizontal asymptote is y = 0."
+                },
+                {
+                  "q": "Give the oblique asymptote of (2x^2 + 1)/(x - 1).",
+                  "answer": "y = 2x + 2",
+                  "why": "Division gives 2x + 2 + 3/(x - 1). The linear part is the oblique asymptote y = 2x + 2."
+                },
+                {
+                  "q": "Give the vertical asymptote of (2x^2 + 1)/(x - 1).",
+                  "answer": "x = 1",
+                  "why": "The denominator is zero at x = 1 and the numerator 2 + 1 = 3 is not zero, so x = 1 is a vertical asymptote."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-explog",
+      "index": 3,
+      "title": "Exponents and logarithms",
+      "he": "חזקות ולוגריתמים",
+      "topic": "Exponents and logarithms",
+      "thesis": "Exponents and logarithms are inverse languages for growth and for equations algebra cannot unwind alone.",
+      "syllabus": [
+        "Exponent laws and rational exponents",
+        "Exponential functions and models",
+        "Logarithm definition and inverse relationship",
+        "Logarithm laws and change of base",
+        "Exponential and logarithmic equations",
+        "Graphs of exp and ln"
+      ],
+      "levels": [
+        {
+          "id": "math-explog-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-explog-l1a",
+              "title": "Exponent laws and rational exponents",
+              "he": "חוקי חזקות וחזקות שבר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Exponent laws and rational exponents"
+              ],
+              "objectives": [
+                "Apply the product, quotient, and power laws.",
+                "Rewrite a rational exponent as a root and a power."
+              ],
+              "teach": "For a positive base, a^m a^n = a^(m+n) and a^m / a^n = a^(m-n). Also (a^m)^n = a^(mn) and (ab)^n = a^n b^n. A zero exponent gives a^0 = 1 when a is not 0. A negative exponent flips the factor: a^(-n) = 1/a^n.\n\nA rational exponent mixes a power and a root. By definition a^(1/n) is the nth root of a, and a^(m/n) means the nth root of a, raised to the power m. So 8^(2/3) is the cube root of 8, which is 2, then squared, which is 4. The same value is the cube root of 8^2. Keep the base positive when the root index is even.",
+              "rules": [
+                "a^m a^n = a^(m+n), and a^m / a^n = a^(m-n).",
+                "(a^m)^n = a^(mn).",
+                "a^0 = 1 for a not equal to 0, and a^(-n) = 1/a^n.",
+                "a^(1/n) is the nth root of a, and a^(m/n) = (a^(1/n))^m."
+              ],
+              "example": {
+                "prompt": "Evaluate 8^(2/3).",
+                "steps": [
+                  "Write 8^(2/3) as (8^(1/3))^2.",
+                  "The cube root of 8 is 2.",
+                  "Then 2 squared is 4."
+                ],
+                "answer": "4"
+              },
+              "practice": [
+                {
+                  "q": "Simplify 2^5 * 2^3 as a single power of 2.",
+                  "answer": "2^8",
+                  "why": "Add the exponents: 5 + 3 = 8, so 2^5 * 2^3 = 2^8."
+                },
+                {
+                  "q": "Evaluate 16^(1/2).",
+                  "answer": "4",
+                  "why": "16^(1/2) is the square root of 16, which is 4."
+                }
+              ]
+            },
+            {
+              "id": "math-explog-l1b",
+              "title": "Exponential functions and models",
+              "he": "פונקציות מעריכיות ומודלים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Exponential functions and models"
+              ],
+              "objectives": [
+                "Evaluate an exponential model at a given time.",
+                "Read growth or decay from the base."
+              ],
+              "teach": "An exponential function puts the variable in the exponent: f(x) = a b^x, with a not 0, b > 0, and b not 1. If b > 1 the outputs grow. If 0 < b < 1 they decay. At x = 0 the value is a, because b^0 = 1.\n\nDoubling every T time units is A = A0 * 2^(t/T). A population starting at 100 and doubling every 3 hours is A = 100 * 2^(t/3). After 6 hours the exponent is 2, so A = 100 * 4 = 400. The base is greater than 1, so the model grows.",
+              "rules": [
+                "f(x) = a b^x has value a when x = 0.",
+                "b > 1 means growth, and 0 < b < 1 means decay.",
+                "Doubling every T units of time is modeled by 2^(t/T).",
+                "Evaluate the exponent before multiplying by the starting amount."
+              ],
+              "example": {
+                "prompt": "A population starts at 100 and doubles every 3 hours. How large is it after 6 hours?",
+                "steps": [
+                  "Write A = 100 * 2^(t/3).",
+                  "At t = 6 the exponent is 6/3 = 2.",
+                  "A = 100 * 2^2 = 100 * 4 = 400."
+                ],
+                "answer": "400"
+              },
+              "practice": [
+                {
+                  "q": "f(x) = 5 * 3^x. Find f(2).",
+                  "answer": "45",
+                  "why": "3^2 = 9, and 5 * 9 = 45."
+                },
+                {
+                  "q": "Does y = (1/2)^x model growth or decay?",
+                  "answer": "decay",
+                  "why": "The base 1/2 is between 0 and 1, so the outputs shrink as x increases."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-explog-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-explog-l2a",
+              "title": "Logarithm definition and inverse",
+              "he": "לוגריתם כהפכי של חזקה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Logarithm definition and inverse relationship"
+              ],
+              "objectives": [
+                "Rewrite a logarithm as an exponential statement.",
+                "Evaluate ln of a power of e."
+              ],
+              "teach": "The logarithm is the inverse of the exponential. The statement log_b(a) = c means b^c = a, where b > 0, b is not 1, and a > 0. In words, the log is the exponent you put on b to obtain a. So log_2(8) = 3 because 2^3 = 8. Natural log means base e.\n\nThe two functions undo each other: log_b(b^x) = x, and b^(log_b x) = x when x > 0. In particular ln(e^3) = 3, and e^(ln 5) = 5. The domain of a logarithm is the positive reals. Zero and negative inputs are not allowed.",
+              "rules": [
+                "log_b(a) = c means b^c = a.",
+                "log_b(b^x) = x, and b^(log_b x) = x for x > 0.",
+                "ln(e^x) = x.",
+                "The input of a logarithm must be positive."
+              ],
+              "example": {
+                "prompt": "Evaluate ln(e^3).",
+                "steps": [
+                  "ln means logarithm base e.",
+                  "ln(e^3) asks for the exponent on e that produces e^3.",
+                  "That exponent is 3."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "Evaluate log_2(32).",
+                  "answer": "5",
+                  "why": "2^5 = 32, so log_2(32) = 5."
+                },
+                {
+                  "q": "Rewrite log_3(81) = 4 as an exponential equation.",
+                  "answer": "3^4 = 81",
+                  "why": "log_b(a) = c means b^c = a. Here the base is 3, the result is 81, and the exponent is 4."
+                }
+              ]
+            },
+            {
+              "id": "math-explog-l2b",
+              "title": "Logarithm laws and change of base",
+              "he": "חוקי הלוג והחלפת בסיס",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Logarithm laws and change of base"
+              ],
+              "objectives": [
+                "Expand or condense a logarithm with the product, quotient, and power laws.",
+                "Rewrite a logarithm in the natural base."
+              ],
+              "teach": "Logarithm laws turn products into sums. For positive u and v, log_b(uv) = log_b u + log_b v, and log_b(u/v) = log_b u - log_b v. A power comes out as a coefficient: log_b(u^k) = k log_b u. These laws hold in any one fixed base, including ln.\n\nChange of base rewrites a log in a base you already know. The identity is log_b(a) = ln a / ln b. In particular log_3(7) = ln 7 / ln 3. That quotient is the exact value. It is not an integer, and it does not need a new base built by hand.",
+              "rules": [
+                "log_b(uv) = log_b u + log_b v, for positive u and v.",
+                "log_b(u/v) = log_b u - log_b v.",
+                "log_b(u^k) = k log_b u.",
+                "log_b(a) = ln a / ln b."
+              ],
+              "example": {
+                "prompt": "Write log_3(7) using natural logarithms.",
+                "steps": [
+                  "Use the change-of-base identity with the natural log.",
+                  "log_3(7) = ln 7 / ln 3.",
+                  "Leave the value as that quotient."
+                ],
+                "answer": "ln7/ln3"
+              },
+              "practice": [
+                {
+                  "q": "Expand log_2(8x) as a sum. Assume x > 0.",
+                  "answer": "3 + log2(x)",
+                  "why": "log_2(8x) = log_2(8) + log_2(x) = 3 + log_2(x), because 2^3 = 8."
+                },
+                {
+                  "q": "Condense 2 ln x - ln y into one logarithm. Assume x > 0 and y > 0.",
+                  "answer": "ln(x^2/y)",
+                  "why": "2 ln x = ln(x^2), and ln(x^2) - ln y = ln(x^2/y)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-explog-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-explog-l3a",
+              "title": "Exponential and logarithmic equations",
+              "he": "משוואות מעריכיות ולוגריתמיות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Exponential and logarithmic equations"
+              ],
+              "objectives": [
+                "Solve an exponential equation by matching bases.",
+                "Solve a log equation and reject values outside the domain."
+              ],
+              "teach": "Equal powers of the same base, with that base positive and not 1, have equal exponents. For 2^(x+1) = 32, write 32 = 2^5. Then x + 1 = 5, so x = 4. The check is 2^5 = 32.\n\nA log equation still needs a domain check. From log_2(x) + log_2(x - 2) = 3, get log_2(x(x - 2)) = 3, so x(x - 2) = 8. Then x^2 - 2x - 8 = 0, or (x - 4)(x + 2) = 0. The candidates are 4 and -2. Only x = 4 makes both inputs positive, so reject x = -2.",
+              "rules": [
+                "If b^u = b^v with b > 0 and b not 1, then u = v.",
+                "log_b A + log_b B = log_b(AB), when A > 0 and B > 0.",
+                "log_b(A) = c means A = b^c.",
+                "Reject any candidate that makes a logarithm input zero or negative."
+              ],
+              "example": {
+                "prompt": "Solve 2^(x+1) = 32.",
+                "steps": [
+                  "Write 32 as a power of 2: 32 = 2^5.",
+                  "Then 2^(x+1) = 2^5, so x + 1 = 5.",
+                  "x = 4. Check: 2^5 = 32."
+                ],
+                "answer": "4"
+              },
+              "practice": [
+                {
+                  "q": "Solve log_2(x) + log_2(x - 2) = 3.",
+                  "answer": "4",
+                  "why": "Combine the logs: log_2(x(x-2)) = 3, so x(x-2) = 8 and x^2 - 2x - 8 = 0. The roots are 4 and -2. Reject -2 because the logs are undefined. The solution is x = 4."
+                },
+                {
+                  "q": "Solve 5^x = 125.",
+                  "answer": "3",
+                  "why": "125 = 5^3, so 5^x = 5^3 and x = 3."
+                }
+              ]
+            },
+            {
+              "id": "math-explog-l3b",
+              "title": "Graphs of exp and ln",
+              "he": "גרפי האקספוננט והלוגריתם הטבעי",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Graphs of exp and ln"
+              ],
+              "objectives": [
+                "Name the intercept and the asymptote of y = e^x and of y = ln x.",
+                "Match a point on one graph with its inverse point on the other."
+              ],
+              "teach": "The graph of y = e^x is always positive, passes through (0, 1), and rises. The line y = 0 is a horizontal asymptote on the left. The graph of y = ln x exists only for x > 0, passes through (1, 0), and has vertical asymptote x = 0.\n\nThese graphs are reflections across y = x, because ln and the exponential are inverses. If e^a = b, then ln b = a. The point (0, 1) on y = e^x matches (1, 0) on y = ln x. Adding 1, as in ln x + 1, moves the intercept and leaves the asymptote x = 0.",
+              "rules": [
+                "y = e^x passes through (0, 1) and has horizontal asymptote y = 0.",
+                "y = ln x passes through (1, 0) and has vertical asymptote x = 0.",
+                "The domain of ln x is x > 0.",
+                "The graphs of y = e^x and y = ln x are reflections across y = x."
+              ],
+              "example": {
+                "prompt": "Name the x-intercept of y = ln x and name its vertical asymptote.",
+                "steps": [
+                  "ln x = 0 when x = e^0 = 1, so the intercept is (1, 0).",
+                  "ln x is undefined for x <= 0.",
+                  "The vertical asymptote is x = 0."
+                ],
+                "answer": "(1, 0), asymptote x = 0"
+              },
+              "practice": [
+                {
+                  "q": "What is e^0?",
+                  "answer": "1",
+                  "why": "Any nonzero number to the power 0 is 1, so e^0 = 1. The graph passes through (0, 1)."
+                },
+                {
+                  "q": "What is ln 1?",
+                  "answer": "0",
+                  "why": "ln 1 is the exponent on e that gives 1, and e^0 = 1, so ln 1 = 0."
+                },
+                {
+                  "q": "Does y = e^x have an x-intercept?",
+                  "answer": "no",
+                  "why": "e^x is always positive, so the graph never meets the x-axis. The line y = 0 is only an asymptote."
+                },
+                {
+                  "q": "If e^2 = a, what is ln a?",
+                  "answer": "2",
+                  "why": "ln and the exponential are inverses, so ln(e^2) = 2."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-seq",
+      "index": 4,
+      "title": "Sequences, series, and induction",
+      "he": "סדרות, טורים ואינדוקציה",
+      "topic": "Sequences, series, and induction",
+      "thesis": "Sequences are functions on the positive integers, and induction is how a pattern becomes a proof.",
+      "syllabus": [
+        "Arithmetic sequences and series",
+        "Geometric sequences and finite series",
+        "Infinite geometric series",
+        "Recursive sequences",
+        "Sigma notation",
+        "Proof by mathematical induction"
+      ],
+      "levels": [
+        {
+          "id": "math-seq-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-seq-l1a",
+              "title": "Arithmetic sequences and series",
+              "he": "סדרה חשבונית וסכום חלקי",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Arithmetic sequences and series"
+              ],
+              "objectives": [
+                "Find the nth term of an arithmetic sequence.",
+                "Sum the first n terms with the arithmetic-series formula."
+              ],
+              "teach": "An arithmetic sequence adds the same difference d each step. The nth term is a_n = a1 + (n - 1)d. If a1 = 3 and d = 4, then a10 = 3 + 9*4 = 39. The jump from term 1 to term 10 is nine steps, not ten.\n\nThe sum of the first n terms is S_n = n/2 * (a1 + a_n). For this sequence, S_10 = 10/2 * (3 + 39) = 5 * 42 = 210. There are 10 terms from a1 through a10. Use that count of terms, not the number of steps between the ends.",
+              "rules": [
+                "a_n = a1 + (n - 1)d.",
+                "S_n = n/2 * (a1 + a_n).",
+                "S_n = n/2 * (2 a1 + (n - 1)d).",
+                "The number of terms from a1 through a_n is n."
+              ],
+              "example": {
+                "prompt": "An arithmetic sequence has a1 = 3 and d = 4. Find a10 and the sum of the first 10 terms.",
+                "steps": [
+                  "a10 = 3 + (10 - 1)*4 = 3 + 36 = 39.",
+                  "S_10 = 10/2 * (3 + 39) = 5 * 42.",
+                  "S_10 = 210."
+                ],
+                "answer": "a10=39, sum=210"
+              },
+              "practice": [
+                {
+                  "q": "Arithmetic: a1 = 5 and d = 2. Find a6.",
+                  "answer": "15",
+                  "why": "a6 = 5 + (6 - 1)*2 = 5 + 10 = 15."
+                },
+                {
+                  "q": "Arithmetic: a1 = 4 and a5 = 16. Find the sum of the first 5 terms.",
+                  "answer": "50",
+                  "why": "S_5 = 5/2 * (4 + 16) = 5/2 * 20 = 50."
+                }
+              ]
+            },
+            {
+              "id": "math-seq-l1b",
+              "title": "Geometric sequences and finite sums",
+              "he": "סדרה הנדסית וסכום סופי",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Geometric sequences and finite series"
+              ],
+              "objectives": [
+                "Find the nth term of a geometric sequence.",
+                "Sum a finite geometric series when the ratio is not 1."
+              ],
+              "teach": "A geometric sequence multiplies by a fixed ratio r, so a_n = a1 * r^(n - 1). If a1 = 5 and r = 1/2, the terms begin 5, 5/2, 5/4, 5/8. The fourth term uses exponent 3: a4 = 5 * (1/2)^3 = 5/8.\n\nWhen r is not 1, S_n = a1 (1 - r^n)/(1 - r). For a1 = 5, r = 1/2, and n = 3, S_3 = 5 (1 - 1/8)/(1/2) = 35/4. If r = 1, every term equals a1 and the sum is n * a1.",
+              "rules": [
+                "a_n = a1 * r^(n - 1).",
+                "If r is not 1, S_n = a1 (1 - r^n)/(1 - r).",
+                "If r = 1, then S_n = n * a1.",
+                "The exponent on r for the nth term is n - 1, not n."
+              ],
+              "example": {
+                "prompt": "A geometric sequence has a1 = 5 and r = 1/2. Find a4.",
+                "steps": [
+                  "Use a_n = a1 * r^(n - 1).",
+                  "a4 = 5 * (1/2)^3.",
+                  "a4 = 5/8."
+                ],
+                "answer": "5/8"
+              },
+              "practice": [
+                {
+                  "q": "Geometric: a1 = 3 and r = 2. Find a5.",
+                  "answer": "48",
+                  "why": "a5 = 3 * 2^(5 - 1) = 3 * 16 = 48."
+                },
+                {
+                  "q": "Geometric: a1 = 2 and r = 3. Find the sum of the first 3 terms.",
+                  "answer": "26",
+                  "why": "S_3 = 2 * (1 - 27)/(1 - 3) = 2 * (-26)/(-2) = 26. The terms 2 + 6 + 18 also add to 26."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-seq-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-seq-l2a",
+              "title": "Infinite geometric series",
+              "he": "טור הנדסי אינסופי",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Infinite geometric series"
+              ],
+              "objectives": [
+                "Decide whether an infinite geometric series converges.",
+                "Compute the sum when the absolute value of the ratio is less than 1."
+              ],
+              "teach": "An infinite geometric series a1 + a1 r + a1 r^2 + ... has a finite sum only when |r| < 1. The sum is then S = a1 / (1 - r). If |r| >= 1, the series diverges, and that formula does not apply.\n\nFor a1 = 5 and r = 1/2, |r| < 1, so the series converges. S = 5 / (1 - 1/2) = 10. The partial sums 5, 15/2, 35/4, and 75/8 increase toward 10 and stay below it. The ratio r = 2 gives a divergent series.",
+              "rules": [
+                "The infinite sum exists only when |r| < 1.",
+                "Then S = a1 / (1 - r).",
+                "If |r| >= 1, the infinite series diverges.",
+                "Do not use the infinite-sum formula on a finite series."
+              ],
+              "example": {
+                "prompt": "Find the sum of the infinite geometric series with a1 = 5 and r = 1/2.",
+                "steps": [
+                  "Check |1/2| < 1, so the series converges.",
+                  "S = 5 / (1 - 1/2).",
+                  "S = 5 / (1/2) = 10."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "Find the infinite sum for a1 = 8 and r = 1/4.",
+                  "answer": "32/3",
+                  "why": "|1/4| < 1, so S = 8 / (1 - 1/4) = 8 / (3/4) = 32/3."
+                },
+                {
+                  "q": "Does the infinite series with a1 = 3 and r = 2 converge?",
+                  "answer": "no",
+                  "why": "|r| = 2 is not less than 1, so the series diverges. The formula a1/(1 - r) does not apply."
+                }
+              ]
+            },
+            {
+              "id": "math-seq-l2b",
+              "title": "Recursive sequences",
+              "he": "סדרה המוגדרת בנסיגה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Recursive sequences"
+              ],
+              "objectives": [
+                "Compute the next terms from a first term and a recursive rule.",
+                "Recognize an arithmetic or geometric sequence inside a recursion."
+              ],
+              "teach": "A recursion states a first term and a rule for each later term. Compute terms one step at a time unless a checked closed form is available.\n\nIf a1 = 2 and a_n = a_(n-1) + 5, the sequence is arithmetic with difference 5. The first four terms are 2, 7, 12, and 17, and a_n = 2 + (n - 1)*5. If a1 = 3 and a_n = 2 a_(n-1), it is geometric with ratio 2, so a_n = 3 * 2^(n-1). The rule a_n = 2 a_(n-1) + 1 is neither pure type.",
+              "rules": [
+                "A recursion needs at least one starting value.",
+                "a_n = a_(n-1) + d is arithmetic with difference d.",
+                "a_n = r * a_(n-1) is geometric with ratio r.",
+                "Compute early terms in order. Do not skip a step."
+              ],
+              "example": {
+                "prompt": "a1 = 2 and a_n = a_(n-1) + 5. Find a4.",
+                "steps": [
+                  "a2 = 2 + 5 = 7.",
+                  "a3 = 7 + 5 = 12.",
+                  "a4 = 12 + 5 = 17."
+                ],
+                "answer": "17"
+              },
+              "practice": [
+                {
+                  "q": "a1 = 3 and a_n = 2 a_(n-1). Find a4.",
+                  "answer": "24",
+                  "why": "a2 = 6, a3 = 12, and a4 = 24. This is geometric with ratio 2, and 3 * 2^3 = 24."
+                },
+                {
+                  "q": "a1 = 10 and a_n = a_(n-1) - 4. Find a4.",
+                  "answer": "-2",
+                  "why": "a2 = 6, a3 = 2, and a4 = -2."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-seq-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-seq-l3a",
+              "title": "Sigma notation",
+              "he": "סימון סכום בסיגמא",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Sigma notation"
+              ],
+              "objectives": [
+                "Expand a short sigma sum into ordinary addition.",
+                "Count the terms in a sigma from the limits."
+              ],
+              "teach": "Sigma notation packs a sum into an index. Summing a_k from k = m to k = n adds every integer index from m through n. The number of terms is n - m + 1. Renaming the index does not change the value.\n\nThe sum of k from 1 to 4 is 1 + 2 + 3 + 4 = 10. The formula n(n+1)/2 agrees: 4*5/2 = 10. A constant factor can leave the sum. The sum of 2k from 1 to 5 is 2 + 4 + 6 + 8 + 10 = 30, which is twice 15.",
+              "rules": [
+                "The sigma from k = m to k = n adds a_k for every integer k from m through n.",
+                "The number of terms is n - m + 1.",
+                "The sum of the first n positive integers is n(n+1)/2.",
+                "A constant factor can leave the sigma."
+              ],
+              "example": {
+                "prompt": "Evaluate the sum of k from k = 1 to k = 4.",
+                "steps": [
+                  "Expand the sum: 1 + 2 + 3 + 4.",
+                  "The total is 10.",
+                  "The formula n(n+1)/2 gives 4*5/2 = 10."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "Evaluate the sum of (2k + 1) from k = 1 to k = 3.",
+                  "answer": "15",
+                  "why": "The terms are 3, 5, and 7. Their sum is 15."
+                },
+                {
+                  "q": "How many terms are in the sum of k^2 from k = 3 to k = 7?",
+                  "answer": "5",
+                  "why": "The index runs through 3, 4, 5, 6, and 7. The count is 7 - 3 + 1 = 5."
+                }
+              ]
+            },
+            {
+              "id": "math-seq-l3b",
+              "title": "Proof by mathematical induction",
+              "he": "הוכחה באינדוקציה מתמטית",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Proof by mathematical induction"
+              ],
+              "objectives": [
+                "Write the base case and the inductive hypothesis.",
+                "Carry out the inductive step for the sum of the first n positives."
+              ],
+              "teach": "Induction proves P(n) for every integer n from a start value on. The base case checks the smallest n directly. The inductive step assumes P(k) and proves P(k+1). That assumption is the inductive hypothesis, and it is only the case n = k.\n\nFor 1 + ... + n = n(n+1)/2, the base n = 1 says 1 = 1*2/2. Assume the formula at k, and add the next term: k(k+1)/2 + (k+1) = (k+1)(k+2)/2. With the letter n, the same step is n(n+1)/2 + (n+1) = (n+1)(n+2)/2. Base plus step covers every integer n >= 1.",
+              "rules": [
+                "Prove the base case by direct substitution of the smallest n.",
+                "The inductive hypothesis assumes the claim only at n = k.",
+                "The inductive step must reach the claim at n = k + 1.",
+                "A true base and a valid step prove the claim for every later integer."
+              ],
+              "example": {
+                "prompt": "In the inductive step for 1 + ... + n = n(n+1)/2, simplify n(n+1)/2 + (n+1).",
+                "steps": [
+                  "Factor (n+1) from both terms.",
+                  "n(n+1)/2 + (n+1) = (n+1) (n/2 + 1).",
+                  "n/2 + 1 = (n + 2)/2, so the product is (n+1)(n+2)/2."
+                ],
+                "answer": "(n+1)(n+2)/2"
+              },
+              "practice": [
+                {
+                  "q": "Evaluate n(n+1)/2 at n = 1.",
+                  "answer": "1",
+                  "why": "1*2/2 = 1, which matches the single term on the left side of the sum formula."
+                },
+                {
+                  "q": "Simplify n(n+1)/2 + (n+1).",
+                  "answer": "(n+1)(n+2)/2",
+                  "why": "Common denominator: [n(n+1) + 2(n+1)]/2 = (n+1)(n+2)/2."
+                },
+                {
+                  "q": "For 2^n >= n + 1 with n >= 1, is the base case n = 1 true?",
+                  "answer": "yes",
+                  "why": "2^1 = 2 and n + 1 = 2. The two sides are equal, so the inequality holds."
+                },
+                {
+                  "q": "If the inductive hypothesis is 2^k >= k + 1, which inequality must the step prove?",
+                  "answer": "2^(k+1) >= k + 2",
+                  "why": "The step must prove the same claim at n = k + 1, namely 2^(k+1) >= (k+1) + 1."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-trig",
+      "index": 5,
+      "title": "Trigonometry",
+      "he": "טריגונומטריה",
+      "topic": "Trigonometry",
+      "thesis": "Trigonometry is the circle, the graph, the identity, and the triangle, and the exam uses all four.",
+      "syllabus": [
+        "Radians, the unit circle, and exact values",
+        "Graphs of sine, cosine, and tangent",
+        "Identities and the double-angle",
+        "Solving trigonometric equations",
+        "Law of sines and law of cosines",
+        "Area and inverse trigonometric functions"
+      ],
+      "levels": [
+        {
+          "id": "math-trig-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-trig-l1a",
+              "title": "Radians and exact values",
+              "he": "רדיאנים וערכים על מעגל היחידה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Radians, the unit circle, and exact values"
+              ],
+              "objectives": [
+                "Convert a standard angle between degrees and radians.",
+                "Read sine and cosine from the unit circle, including signs."
+              ],
+              "teach": "A full turn is 360 degrees, or 2 pi radians, so pi radians = 180 degrees. Multiply degrees by pi/180 to convert. Thus 150 degrees = 5 pi/6. On the unit circle the point at angle theta is (cos theta, sin theta): cosine is x and sine is y.\n\nThe angle 150 degrees is in quadrant II, so x is negative and y is positive. The reference angle is 30 degrees, where sine is 1/2 and cosine is sqrt(3)/2. Therefore sin 150 degrees = 1/2 and cos 150 degrees = -sqrt(3)/2. Keep the minus sign.",
+              "rules": [
+                "pi radians = 180 degrees.",
+                "On the unit circle, cosine is the x-coordinate and sine is the y-coordinate.",
+                "In quadrant II, sine is positive and cosine is negative.",
+                "sin 150 degrees = 1/2 and cos 150 degrees = -sqrt(3)/2."
+              ],
+              "example": {
+                "prompt": "Give the exact values of sin 150 degrees and cos 150 degrees.",
+                "steps": [
+                  "150 degrees is in quadrant II, with reference angle 30 degrees.",
+                  "Sine of 30 degrees is 1/2, and sine stays positive, so sin 150 degrees = 1/2.",
+                  "Cosine of 30 degrees is sqrt(3)/2, and cosine is negative, so cos 150 degrees = -sqrt(3)/2."
+                ],
+                "answer": "1/2, -sqrt(3)/2"
+              },
+              "practice": [
+                {
+                  "q": "Convert 90 degrees to radians.",
+                  "answer": "pi/2",
+                  "why": "90 * pi/180 = pi/2."
+                },
+                {
+                  "q": "What is sin(pi/6)?",
+                  "answer": "1/2",
+                  "why": "pi/6 radians is 30 degrees, and sin 30 degrees = 1/2."
+                }
+              ]
+            },
+            {
+              "id": "math-trig-l1b",
+              "title": "Sine, cosine, and tangent graphs",
+              "he": "גרפי סינוס, קוסינוס וטנגנס",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Graphs of sine, cosine, and tangent"
+              ],
+              "objectives": [
+                "State the period and amplitude of y = A sin(bx).",
+                "Name the period of tangent and one of its asymptotes."
+              ],
+              "teach": "The graph of y = sin x has amplitude 1 and period 2 pi. Cosine has the same amplitude and period, but cos 0 = 1 while sin 0 = 0. One sine cycle runs from 0 up to 1, down through 0 to -1, and back to 0.\n\nFor y = A sin(bx), with A and b positive, the amplitude is A and the period is 2 pi/b. Thus y = 3 sin(2x) has amplitude 3 and period pi. Tangent has period pi. It is undefined where cosine is 0, including the asymptotes x = pi/2 and x = -pi/2.",
+              "rules": [
+                "y = sin x and y = cos x have period 2 pi and amplitude 1.",
+                "For y = A sin(bx), the amplitude is |A| and the period is 2 pi/|b|.",
+                "y = tan x has period pi.",
+                "tan x is undefined where cos x = 0."
+              ],
+              "example": {
+                "prompt": "State the amplitude and the period of y = 3 sin(2x).",
+                "steps": [
+                  "The coefficient of sine is 3, so the amplitude is 3.",
+                  "The coefficient of x is 2, so the period is 2 pi/2.",
+                  "The period is pi."
+                ],
+                "answer": "amplitude 3, period pi"
+              },
+              "practice": [
+                {
+                  "q": "What is the period of y = cos(x/2)?",
+                  "answer": "4pi",
+                  "why": "Here b = 1/2, so the period is 2 pi / (1/2) = 4 pi."
+                },
+                {
+                  "q": "Where is the vertical asymptote of y = tan x in the open interval (0, pi)?",
+                  "answer": "x = pi/2",
+                  "why": "cos x = 0 at x = pi/2 inside (0, pi), so tan x is undefined there."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-trig-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-trig-l2a",
+              "title": "Identities and the double-angle",
+              "he": "זהויות ונוסחת הזווית הכפולה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Identities and the double-angle"
+              ],
+              "objectives": [
+                "Apply the Pythagorean identity and choose the correct sign.",
+                "Use the double-angle formula for sine."
+              ],
+              "teach": "An identity is true for every allowed angle. The Pythagorean identity says sin^2 theta + cos^2 theta = 1. Knowing one of sine or cosine, and the quadrant, determines the other, including the sign.\n\nThe double-angle formula is sin(2x) = 2 sin x cos x, so that product equals sin(2x). Also cos(2x) = cos^2 x - sin^2 x = 2 cos^2 x - 1 = 1 - 2 sin^2 x. Use the form that matches the expression you already have.",
+              "rules": [
+                "sin^2 theta + cos^2 theta = 1.",
+                "sin(2x) = 2 sin x cos x.",
+                "cos(2x) = cos^2 x - sin^2 x = 2 cos^2 x - 1 = 1 - 2 sin^2 x.",
+                "Use the quadrant to choose the sign after a square root."
+              ],
+              "example": {
+                "prompt": "Simplify 2 sin x cos x.",
+                "steps": [
+                  "Match the product with the double-angle formula for sine.",
+                  "sin(2x) = 2 sin x cos x.",
+                  "Therefore 2 sin x cos x = sin(2x)."
+                ],
+                "answer": "sin(2x)"
+              },
+              "practice": [
+                {
+                  "q": "If sin theta = 3/5 and theta is in quadrant I, what is cos theta?",
+                  "answer": "4/5",
+                  "why": "cos^2 theta = 1 - 9/25 = 16/25. In quadrant I cosine is positive, so cos theta = 4/5."
+                },
+                {
+                  "q": "Write cos(2x) using only sin x.",
+                  "answer": "1 - 2sin^2(x)",
+                  "why": "One double-angle form is cos(2x) = 1 - 2 sin^2 x."
+                }
+              ]
+            },
+            {
+              "id": "math-trig-l2b",
+              "title": "Solving trigonometric equations",
+              "he": "פתרון משוואות טריגונומטריות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Solving trigonometric equations"
+              ],
+              "objectives": [
+                "Solve a sine equation on a stated interval.",
+                "List every solution in the interval, not only the reference angle."
+              ],
+              "teach": "Sine, cosine, and tangent repeat, so an equation usually has many solutions. Keep only the solutions inside the given interval. On one full turn, sin x = k with -1 < k < 1 has two solutions, sharing a reference angle.\n\nSolve 2 sin x = 1 on [0, 2 pi). Then sin x = 1/2, and the reference angle is pi/6. Sine is positive in quadrants I and II, so x = pi/6 and x = 5 pi/6. Both lie in the interval. Adding 2 pi leaves the interval, so the list stops there.",
+              "rules": [
+                "Isolate the trigonometric function before inverting it.",
+                "sin x = 1/2 gives x = pi/6 and x = 5 pi/6 on [0, 2 pi).",
+                "Add the period only when the new angle still lies in the required interval.",
+                "A squared equation can add extra roots, so check them."
+              ],
+              "example": {
+                "prompt": "Solve 2 sin x = 1 on [0, 2 pi).",
+                "steps": [
+                  "Divide by 2: sin x = 1/2.",
+                  "The solutions in one full turn are x = pi/6 and x = 5 pi/6.",
+                  "Both lie in [0, 2 pi), and adding 2 pi leaves the interval."
+                ],
+                "answer": "pi/6 or 5pi/6"
+              },
+              "practice": [
+                {
+                  "q": "Solve sin x = 0 on [0, 2 pi).",
+                  "answer": "0 or pi",
+                  "why": "Sine is zero at 0 and at pi inside [0, 2 pi). The angle 2 pi is not included, because the interval is open at the right end."
+                },
+                {
+                  "q": "Solve cos x = 1 on [0, 2 pi).",
+                  "answer": "0",
+                  "why": "cos x = 1 at x = 0 inside the interval. The next point is x = 2 pi, which is not included."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-trig-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-trig-l3a",
+              "title": "Law of sines and law of cosines",
+              "he": "משפט הסינוסים ומשפט הקוסינוסים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Law of sines and law of cosines"
+              ],
+              "objectives": [
+                "Use the law of cosines when two sides and the included angle are known.",
+                "Use the law of sines when a side and its opposite angle are known."
+              ],
+              "teach": "Side a is opposite angle A, and likewise for b, B and c, C. The law of sines says a/sin A = b/sin B = c/sin C. It fits when one side and its opposite angle are known. An acute angle with a short opposite side can allow two triangles.\n\nThe law of cosines says c^2 = a^2 + b^2 - 2ab cos C, with C between sides a and b. For sides 7 and 8 enclosing 60 degrees, x^2 = 49 + 64 - 2*7*8*(1/2). The product term is 56, so x^2 = 113 - 56 = 57 and x = sqrt(57).",
+              "rules": [
+                "a/sin A = b/sin B = c/sin C.",
+                "c^2 = a^2 + b^2 - 2ab cos C, with C between sides a and b.",
+                "cos 60 degrees = 1/2.",
+                "Use the law of cosines for two sides and the included angle. Use the law of sines when an opposite pair is known."
+              ],
+              "example": {
+                "prompt": "Two sides of a triangle are 7 and 8, and the included angle is 60 degrees. Find the third side.",
+                "steps": [
+                  "x^2 = 7^2 + 8^2 - 2*7*8*cos 60 degrees.",
+                  "cos 60 degrees = 1/2, so 2*7*8*(1/2) = 56.",
+                  "x^2 = 49 + 64 - 56 = 57.",
+                  "x = sqrt(57), taking the positive length."
+                ],
+                "answer": "sqrt(57)"
+              },
+              "practice": [
+                {
+                  "q": "In a triangle, A = 30 degrees, a = 4, and B = 45 degrees. Find side b. Use sin 30 degrees = 1/2 and sin 45 degrees = sqrt(2)/2.",
+                  "answer": "4sqrt(2)",
+                  "why": "b = 4 * sin 45 degrees / sin 30 degrees = 4 * (sqrt(2)/2) / (1/2) = 4 sqrt(2)."
+                },
+                {
+                  "q": "A right triangle has legs 3 and 4. The included angle is 90 degrees. Use the law of cosines to find the hypotenuse.",
+                  "answer": "5",
+                  "why": "c^2 = 9 + 16 - 2*3*4*cos 90 degrees = 25, because cos 90 degrees = 0. Thus c = 5."
+                }
+              ]
+            },
+            {
+              "id": "math-trig-l3b",
+              "title": "Area and inverse trigonometric functions",
+              "he": "שטח ופונקציות טריגונומטריות הפוכות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Area and inverse trigonometric functions"
+              ],
+              "objectives": [
+                "Compute a triangle area from two sides and the included angle.",
+                "Evaluate a standard inverse sine, cosine, or tangent."
+              ],
+              "teach": "With two sides and the included angle, the area is (1/2) ab sin C. For sides 7 and 8 with included angle 60 degrees, the area is (1/2)*7*8*sin 60 degrees. Since sin 60 degrees = sqrt(3)/2, the area is 28 * sqrt(3)/2 = 14 sqrt(3).\n\nInverse sine returns an angle in [-pi/2, pi/2]. Thus arcsin(1/2) = pi/6, not 5 pi/6. Inverse cosine returns an angle in [0, pi], so arccos(1/2) = pi/3. Inverse tangent returns an angle in (-pi/2, pi/2). Those ranges belong to the definitions.",
+              "rules": [
+                "Area = (1/2) ab sin C, with C the included angle.",
+                "sin 60 degrees = sqrt(3)/2.",
+                "arcsin(1/2) = pi/6, inside [-pi/2, pi/2].",
+                "arccos(1/2) = pi/3, inside [0, pi]."
+              ],
+              "example": {
+                "prompt": "Find the area of a triangle with sides 7 and 8 and included angle 60 degrees.",
+                "steps": [
+                  "Area = (1/2)*7*8*sin 60 degrees.",
+                  "sin 60 degrees = sqrt(3)/2.",
+                  "(1/2)*56*sqrt(3)/2 = 14 sqrt(3)."
+                ],
+                "answer": "14sqrt(3)"
+              },
+              "practice": [
+                {
+                  "q": "Find the area of a triangle with sides 6 and 10 and included angle 30 degrees. Use sin 30 degrees = 1/2.",
+                  "answer": "15",
+                  "why": "Area = (1/2)*6*10*(1/2) = 15."
+                },
+                {
+                  "q": "Evaluate arcsin(1/2) in radians.",
+                  "answer": "pi/6",
+                  "why": "sin(pi/6) = 1/2, and pi/6 lies in [-pi/2, pi/2]."
+                },
+                {
+                  "q": "Evaluate arccos(0).",
+                  "answer": "pi/2",
+                  "why": "cos(pi/2) = 0, and pi/2 lies in [0, pi]."
+                },
+                {
+                  "q": "Evaluate arctan(1).",
+                  "answer": "pi/4",
+                  "why": "tan(pi/4) = 1, and pi/4 lies in (-pi/2, pi/2)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-ag",
+      "index": 6,
+      "title": "Analytic geometry",
+      "he": "גאומטריה אנליטית",
+      "topic": "Analytic geometry",
+      "thesis": "Lines and conics become equations, and intersections become systems you can solve.",
+      "syllabus": [
+        "Distance, midpoint, and the line",
+        "The circle and completing the square",
+        "The parabola",
+        "The ellipse",
+        "The hyperbola",
+        "Intersections and locus problems"
+      ],
+      "levels": [
+        {
+          "id": "math-ag-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-ag-l1a",
+              "title": "Distance, midpoint, and the line",
+              "he": "מרחק, אמצע ומשוואת ישר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Distance, midpoint, and the line"
+              ],
+              "objectives": [
+                "Compute the distance and the midpoint between two points.",
+                "Write the slope of the line through those points."
+              ],
+              "teach": "Distance between two points is the square root of (x2 - x1)^2 + (y2 - y1)^2. The midpoint is ((x1 + x2)/2, (y1 + y2)/2). From (1, 2) to (4, 6) the changes are 3 and 4, so the distance is sqrt(9 + 16) = 5. The midpoint is (5/2, 4).\n\nThe slope of that segment is (6 - 2)/(4 - 1) = 4/3. Point-slope form through (1, 2) is y - 2 = (4/3)(x - 1). Subtract the coordinates in the same order in the numerator and the denominator, or the slope changes sign.",
+              "rules": [
+                "Distance = sqrt( (x2 - x1)^2 + (y2 - y1)^2 ).",
+                "Midpoint = ( (x1 + x2)/2, (y1 + y2)/2 ).",
+                "Slope m = (y2 - y1)/(x2 - x1).",
+                "Point-slope form is y - y1 = m(x - x1)."
+              ],
+              "example": {
+                "prompt": "Find the distance from (1, 2) to (4, 6).",
+                "steps": [
+                  "The differences are 4 - 1 = 3 and 6 - 2 = 4.",
+                  "Square and add: 9 + 16 = 25.",
+                  "The distance is sqrt(25) = 5."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "Find the midpoint of (1, 2) and (4, 6).",
+                  "answer": "(5/2, 4)",
+                  "why": "Average the coordinates: x = (1 + 4)/2 = 5/2 and y = (2 + 6)/2 = 4."
+                },
+                {
+                  "q": "Find the slope of the line through (1, 2) and (4, 6).",
+                  "answer": "4/3",
+                  "why": "m = (6 - 2)/(4 - 1) = 4/3."
+                }
+              ]
+            },
+            {
+              "id": "math-ag-l1b",
+              "title": "The circle and completing the square",
+              "he": "מעגל והשלמה לריבוע",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "The circle and completing the square"
+              ],
+              "objectives": [
+                "Read the center and radius from (x - h)^2 + (y - k)^2 = r^2.",
+                "Complete the square to reach that form."
+              ],
+              "teach": "A circle of radius r about (h, k) has equation (x - h)^2 + (y - k)^2 = r^2. The expanded equation hides the center. Complete the square in x and in y to recover it.\n\nFrom x^2 + y^2 - 4x + 6y - 3 = 0, move the constant: x^2 - 4x + y^2 + 6y = 3. Add 4 and 9, the squares of half the linear coefficients. Then (x - 2)^2 + (y + 3)^2 = 16. The center is (2, -3) and the radius is 4. The term y + 3 means the y-coordinate is -3.",
+              "rules": [
+                "(x - h)^2 + (y - k)^2 = r^2 has center (h, k) and radius r.",
+                "To complete the square, add the square of half the linear coefficient.",
+                "Add that same number to both sides.",
+                "(y + 3)^2 means the center has y-coordinate -3."
+              ],
+              "example": {
+                "prompt": "Find the center and radius of x^2 + y^2 - 4x + 6y - 3 = 0.",
+                "steps": [
+                  "Rewrite as x^2 - 4x + y^2 + 6y = 3.",
+                  "Complete the square: (x - 2)^2 + (y + 3)^2 = 3 + 4 + 9 = 16.",
+                  "The center is (2, -3) and the radius is 4."
+                ],
+                "answer": "center (2, -3), radius 4"
+              },
+              "practice": [
+                {
+                  "q": "What is the radius of (x - 1)^2 + (y + 2)^2 = 9?",
+                  "answer": "3",
+                  "why": "The right side is r^2 = 9, so r = 3. The center is (1, -2)."
+                },
+                {
+                  "q": "What is the center of (x + 5)^2 + (y - 1)^2 = 4?",
+                  "answer": "(-5, 1)",
+                  "why": "x + 5 = x - (-5), so the x-coordinate is -5. The y-coordinate is 1. The center is (-5, 1)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-ag-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-ag-l2a",
+              "title": "The parabola",
+              "he": "פרבולה, מוקד ומדריך",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "The parabola"
+              ],
+              "objectives": [
+                "Find the focus of a parabola y^2 = 4px.",
+                "State the directrix that matches that focus."
+              ],
+              "teach": "A parabola is the set of points equidistant from a focus and a directrix. With vertex at the origin and opening right, y^2 = 4px for p > 0. The focus is (p, 0) and the directrix is x = -p. Divide the coefficient of x by 4 to read p.\n\nFor y^2 = 8x, 4p = 8, so p = 2. The focus is (2, 0) and the directrix is x = -2. A positive coefficient opens the parabola to the right. The vertical form x^2 = 4py has focus (0, p).",
+              "rules": [
+                "y^2 = 4px opens horizontally, with focus (p, 0) and directrix x = -p.",
+                "Read p by dividing the coefficient of x by 4.",
+                "y^2 = 8x has focus (2, 0).",
+                "x^2 = 4py opens vertically, with focus (0, p)."
+              ],
+              "example": {
+                "prompt": "Find the focus of y^2 = 8x.",
+                "steps": [
+                  "Write 8x as 4px, so 4p = 8.",
+                  "Then p = 2.",
+                  "The focus of y^2 = 4px is (p, 0) = (2, 0)."
+                ],
+                "answer": "(2, 0)"
+              },
+              "practice": [
+                {
+                  "q": "What is the directrix of y^2 = 8x?",
+                  "answer": "x = -2",
+                  "why": "Here p = 2, and the directrix of y^2 = 4px is x = -p = -2."
+                },
+                {
+                  "q": "Find the focus of x^2 = 12y.",
+                  "answer": "(0, 3)",
+                  "why": "4p = 12, so p = 3. For x^2 = 4py the focus is (0, p) = (0, 3)."
+                }
+              ]
+            },
+            {
+              "id": "math-ag-l2b",
+              "title": "The ellipse",
+              "he": "אליפסה ומוקדיה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "The ellipse"
+              ],
+              "objectives": [
+                "Read a and b from the standard ellipse equation.",
+                "Locate the foci with c^2 = a^2 - b^2."
+              ],
+              "teach": "For x^2/a^2 + y^2/b^2 = 1 with a > b > 0, the major axis is horizontal. The ellipse meets the axes at (a, 0), (-a, 0), (0, b), and (0, -b). The foci are (c, 0) and (-c, 0), where c^2 = a^2 - b^2. Here a comes from the larger denominator.\n\nIn x^2/25 + y^2/9 = 1, a^2 = 25 and b^2 = 9, so a = 5 and b = 3. Then c^2 = 16 and c = 4. The foci are (4, 0) and (-4, 0). If instead the larger denominator is under y^2, the foci lie on the y-axis.",
+              "rules": [
+                "For x^2/a^2 + y^2/b^2 = 1 with a > b, the major axis is horizontal.",
+                "c^2 = a^2 - b^2, and the foci are (c, 0) and (-c, 0).",
+                "The vertices on the major axis are a units from the center.",
+                "a is the larger of the two semi-axes."
+              ],
+              "example": {
+                "prompt": "Find the foci of x^2/25 + y^2/9 = 1.",
+                "steps": [
+                  "a^2 = 25 and b^2 = 9, so a = 5 and b = 3.",
+                  "c^2 = 25 - 9 = 16, so c = 4.",
+                  "The foci are (4, 0) and (-4, 0)."
+                ],
+                "answer": "(4, 0) and (-4, 0)"
+              },
+              "practice": [
+                {
+                  "q": "For x^2/25 + y^2/9 = 1, what is a?",
+                  "answer": "5",
+                  "why": "The larger denominator is 25, under x^2, so a^2 = 25 and a = 5."
+                },
+                {
+                  "q": "Find c for the ellipse x^2/25 + y^2/16 = 1.",
+                  "answer": "3",
+                  "why": "a^2 = 25 and b^2 = 16, so c^2 = 9 and c = 3."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-ag-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-ag-l3a",
+              "title": "The hyperbola",
+              "he": "היפרבולה ואסימפטוטות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The hyperbola"
+              ],
+              "objectives": [
+                "Read a and b from x^2/a^2 - y^2/b^2 = 1.",
+                "Write the asymptotes y = ±(b/a)x."
+              ],
+              "teach": "The hyperbola x^2/a^2 - y^2/b^2 = 1 opens left and right. Its vertices are (a, 0) and (-a, 0). The foci are (c, 0) and (-c, 0), where c^2 = a^2 + b^2. Unlike the ellipse, the relation adds a^2 and b^2.\n\nThe asymptotes are y = ±(b/a)x. For x^2/9 - y^2/16 = 1, a = 3 and b = 4. Then c^2 = 25, so c = 5, and the asymptotes are y = ±(4/3)x. The branches approach those lines and do not cross them.",
+              "rules": [
+                "x^2/a^2 - y^2/b^2 = 1 opens horizontally.",
+                "c^2 = a^2 + b^2, and the foci are (c, 0) and (-c, 0).",
+                "The asymptotes are y = ±(b/a)x.",
+                "The vertices are (a, 0) and (-a, 0)."
+              ],
+              "example": {
+                "prompt": "For x^2/9 - y^2/16 = 1, give a, b, and the asymptotes.",
+                "steps": [
+                  "a^2 = 9, so a = 3. b^2 = 16, so b = 4.",
+                  "The asymptotes of x^2/a^2 - y^2/b^2 = 1 are y = ±(b/a)x.",
+                  "Here y = ±(4/3)x."
+                ],
+                "answer": "a=3, b=4, y=±(4/3)x"
+              },
+              "practice": [
+                {
+                  "q": "Find c for x^2/9 - y^2/16 = 1.",
+                  "answer": "5",
+                  "why": "c^2 = a^2 + b^2 = 9 + 16 = 25, so c = 5."
+                },
+                {
+                  "q": "Write the asymptotes of x^2/4 - y^2/9 = 1.",
+                  "answer": "y=±(3/2)x",
+                  "why": "a = 2 and b = 3, so the asymptotes are y = ±(b/a)x = ±(3/2)x."
+                }
+              ]
+            },
+            {
+              "id": "math-ag-l3b",
+              "title": "Intersections and locus problems",
+              "he": "חיתוך ומקום גאומטרי",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Intersections and locus problems"
+              ],
+              "objectives": [
+                "Solve a line-and-circle system and count the intersections.",
+                "Name the locus of points equidistant from a focus and a directrix."
+              ],
+              "teach": "A shared point of two graphs satisfies both equations. Substitute, solve the resulting equation, and recover the second coordinate. Two, one, or zero real solutions mean two intersections, a tangent, or no meeting.\n\nThe circle x^2 + y^2 = 25 and the line y = 3 meet where x^2 + 9 = 25, so x = 4 or x = -4. The points are (4, 3) and (-4, 3). A locus is a set of points with a stated property. Points equidistant from a focus and a directrix form a parabola. Focus (2, 0) and directrix x = -2 give y^2 = 8x.",
+              "rules": [
+                "Substitute one equation into the other to find intersections.",
+                "Two, one, or zero real solutions mean two points, a tangent, or no meeting.",
+                "A parabola is the locus of points equidistant from a focus and a directrix.",
+                "For focus (p, 0) and directrix x = -p, the equation is y^2 = 4px."
+              ],
+              "example": {
+                "prompt": "Find the intersection points of x^2 + y^2 = 25 and y = 3.",
+                "steps": [
+                  "Substitute y = 3: x^2 + 9 = 25.",
+                  "x^2 = 16, so x = 4 or x = -4.",
+                  "The points are (4, 3) and (-4, 3)."
+                ],
+                "answer": "(4, 3) and (-4, 3)"
+              },
+              "practice": [
+                {
+                  "q": "How many intersection points do x^2 + y^2 = 25 and y = 3 have?",
+                  "answer": "2",
+                  "why": "Substitution gives x^2 = 16, two real values of x, so two points."
+                },
+                {
+                  "q": "How many intersection points do x^2 + y^2 = 25 and x = 5 have?",
+                  "answer": "1",
+                  "why": "Substitution gives 25 + y^2 = 25, so y = 0. There is one point, (5, 0), and the line is tangent."
+                },
+                {
+                  "q": "What curve is the set of points equidistant from a focus and a directrix?",
+                  "answer": "a parabola",
+                  "why": "That equidistance condition is the definition of a parabola."
+                },
+                {
+                  "q": "The focus is (2, 0) and the directrix is x = -2. What is the equation of the locus?",
+                  "answer": "y^2 = 8x",
+                  "why": "Here p = 2, so 4p = 8 and the right-opening parabola is y^2 = 8x."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

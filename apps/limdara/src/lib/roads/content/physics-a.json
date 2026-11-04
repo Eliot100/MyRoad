@@ -1,0 +1,1836 @@
+{
+  "stages": [
+    {
+      "id": "phys-meas",
+      "index": 1,
+      "title": "Measurement and vectors",
+      "he": "מדידה ווקטורים",
+      "topic": "Measurement and vectors",
+      "thesis": "Every later number on this road sits on a unit, an uncertainty, and often a vector component.",
+      "syllabus": [
+        "SI units and dimensional sense",
+        "Uncertainty and significant figures",
+        "Scalars and vectors",
+        "Components and vector addition",
+        "Experimental graphs and line of best fit",
+        "What a physics answer must show"
+      ],
+      "levels": [
+        {
+          "id": "phys-meas-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-meas-l1a",
+              "title": "SI units that mechanics uses",
+              "he": "יחידות SI במכניקה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "SI units and dimensional sense"
+              ],
+              "objectives": [
+                "State the SI unit of a mechanics quantity before substituting a number.",
+                "Reject an equation whose two sides do not have the same dimensions."
+              ],
+              "teach": "Mechanics uses the metre, the kilogram, and the second. Speed is m/s and acceleration is m/s^2. One newton is 1 kg m/s^2, the unit of mass times acceleration. One joule is 1 N m. Convert before you substitute: multiply km/h by 5/18, so 72 km/h is 20 m/s.\n\nDimensions are the second check. Both sides of an equation need the same mix of mass, length, and time. Mass times velocity is kg m/s, which is momentum, not force. If the sides disagree, a quantity is missing or the relation is wrong.",
+              "rules": [
+                "Use metres, kilograms, and seconds. Convert every other unit before you substitute.",
+                "One newton is 1 kg m/s^2. One joule is 1 N m.",
+                "72 km/h equals 20 m/s, because 1000/3600 reduces to 5/18.",
+                "If the dimensions of the two sides differ, do not trust the number."
+              ],
+              "example": {
+                "prompt": "How many metres per second is 72 km/h?",
+                "steps": [
+                  "1 km = 1000 m and 1 h = 3600 s, so the factor is 1000/3600 = 5/18.",
+                  "72 km/h = 72 times 5/18 m/s.",
+                  "72/18 = 4, and 4 times 5 = 20."
+                ],
+                "answer": "20"
+              },
+              "practice": [
+                {
+                  "q": "A force of 3 kg m/s^2 acts on a body. What is that force in newtons?",
+                  "answer": "3",
+                  "why": "The newton is defined as 1 kg m/s^2, so the number does not change."
+                },
+                {
+                  "q": "A cart moves at a steady 15 m/s for 4 s. What distance, in metres, does it cover?",
+                  "answer": "60",
+                  "why": "Distance = speed times time = 15 times 4 = 60 m. The seconds cancel: m/s times s is m."
+                }
+              ]
+            },
+            {
+              "id": "phys-meas-l1b",
+              "title": "Uncertainty on a reading",
+              "he": "אי-ודאות בקריאה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Uncertainty and significant figures"
+              ],
+              "objectives": [
+                "Quote a scale reading with an absolute uncertainty of half a division.",
+                "Combine absolute uncertainties for a sum and percentage uncertainties for a product."
+              ],
+              "teach": "A reading is a value plus an uncertainty, in the same unit. On an analogue scale, take half the smallest division. Marks every 2 mm mean an uncertainty of 1 mm. Percentage uncertainty is the absolute uncertainty divided by the value, times 100. A length of 40 cm ± 2 cm is uncertain by 5 percent.\n\nAdd absolute uncertainties when you add or subtract. The times 12 s ± 2 s and 9 s ± 3 s sum to 21 s ± 5 s. For a product or a quotient, add the percentage uncertainties instead. Do not keep figures past the place where the uncertainty lives.",
+              "rules": [
+                "Write a measurement as value ± uncertainty, both in the same unit.",
+                "A fair absolute uncertainty on an analogue scale is half the smallest division.",
+                "Add absolute uncertainties for a sum or a difference.",
+                "Add percentage uncertainties for a product or a quotient.",
+                "The last figure you keep should sit in the same decimal place as the uncertainty."
+              ],
+              "example": {
+                "prompt": "A length is 40 cm ± 2 cm. What is the percentage uncertainty?",
+                "steps": [
+                  "Percentage uncertainty = (absolute uncertainty / value) times 100.",
+                  "Substitute: (2 / 40) times 100.",
+                  "2/40 = 1/20, and 100/20 = 5."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "A scale is marked every 2 mm and you can judge halfway. What absolute uncertainty, in mm, should you quote?",
+                  "answer": "1",
+                  "why": "Half of one 2 mm division is 1 mm."
+                },
+                {
+                  "q": "Two times are 12 s ± 2 s and 9 s ± 3 s. What is the absolute uncertainty of their sum, in seconds?",
+                  "answer": "5",
+                  "why": "Absolute uncertainties add: 2 + 3 = 5 s. The central sum is 21 s, but the question asks only for the uncertainty."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-meas-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-meas-l2a",
+              "title": "Scalars against vectors",
+              "he": "סקלר מול וקטור",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Scalars and vectors"
+              ],
+              "objectives": [
+                "Classify a mechanics quantity as a scalar or a vector.",
+                "Add or subtract collinear vectors with a stated positive direction."
+              ],
+              "teach": "A scalar has a magnitude and a unit, but no direction. Mass, time, speed, distance, and energy are scalars. A vector also needs a direction. Displacement, velocity, acceleration, force, and momentum are vectors. Speed is only the size of velocity. Cars at 20 m/s north and 20 m/s south share a speed, not a velocity.\n\nAdd collinear vectors with a sign. Take east as positive: 8 m east then 3 m west is a displacement of 5 m east. The path length, 11 m, is the scalar distance. You cannot add a scalar to a vector.",
+              "rules": [
+                "A scalar has no direction. A vector needs a magnitude and a direction.",
+                "Speed is the magnitude of velocity. Distance is not displacement.",
+                "On one line, add magnitudes that share a direction and subtract those that oppose it.",
+                "Do not add a scalar to a vector, even when the units look similar."
+              ],
+              "example": {
+                "prompt": "A walker goes 8 m east, then 3 m west. Take east as positive. What is the displacement, in metres?",
+                "steps": [
+                  "East is positive, so the legs are +8 m and −3 m.",
+                  "Displacement = 8 + (−3) = 5 m.",
+                  "The sign is positive, so the displacement is 5 m east. The path length 11 m is not the answer."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "Take north as positive. Velocity changes from 12 m/s north to 12 m/s south. What is the change in the northward component, in m/s?",
+                  "answer": "-24",
+                  "why": "Final component −12 m/s minus initial +12 m/s is −24 m/s. The speed never changed, but the vector did."
+                },
+                {
+                  "q": "The same walker goes 8 m east and then 3 m west. What distance, in metres, is walked?",
+                  "answer": "11",
+                  "why": "Distance is the scalar path length: 8 + 3 = 11 m. Direction is ignored."
+                }
+              ]
+            },
+            {
+              "id": "phys-meas-l2b",
+              "title": "Adding by components",
+              "he": "חיבור לפי רכיבים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Components and vector addition"
+              ],
+              "objectives": [
+                "Resolve a vector into perpendicular components with sine and cosine.",
+                "Add components and find the magnitude of the resultant."
+              ],
+              "teach": "Vectors that are not on one line are added by components. If the angle is measured from the positive x-axis, the x-component is A cos θ and the y-component is A sin θ. Add x-components only to x-components. The resultant magnitude is the square root of Rx squared plus Ry squared.\n\nPerpendicular forces are the clean case. A 3 N force east and a 4 N force north give a resultant of 5 N, because 3 squared plus 4 squared is 25. A negative component points along the negative axis. Do not add raw magnitudes unless the vectors are parallel.",
+              "rules": [
+                "Resolve first. Add x-components only to x-components.",
+                "With θ from the positive x-axis, Ax = A cos θ and Ay = A sin θ.",
+                "The resultant magnitude is sqrt(Rx^2 + Ry^2).",
+                "A negative component means the opposite direction along that axis."
+              ],
+              "example": {
+                "prompt": "Forces of 3 N east and 4 N north act at a point. What is the magnitude of the resultant, in newtons?",
+                "steps": [
+                  "The forces are perpendicular, so Rx = 3 N and Ry = 4 N.",
+                  "R = sqrt(3^2 + 4^2) = sqrt(9 + 16) = sqrt(25).",
+                  "R = 5 N."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "A displacement of 10 m is at 60° to the positive x-axis. Use cos 60° = 1/2. What is the x-component, in metres?",
+                  "answer": "5",
+                  "why": "Ax = 10 times cos 60° = 10 times 1/2 = 5 m."
+                },
+                {
+                  "q": "Two displacements have components (5 m, 0) and (0, 12 m). What is the magnitude of their sum, in metres?",
+                  "answer": "13",
+                  "why": "Rx = 5 and Ry = 12. R = sqrt(25 + 144) = sqrt(169) = 13 m."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-meas-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-meas-l3a",
+              "title": "A line through the points",
+              "he": "קו דרך הנקודות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Experimental graphs and line of best fit"
+              ],
+              "objectives": [
+                "Plot the independent variable on the x-axis and draw a best-fit line, not a polyline.",
+                "Read a gradient from two points on the line, with units."
+              ],
+              "teach": "Put the independent variable on the x-axis, and label both axes with the quantity and the unit. A best-fit line follows the trend. It is not a polyline through every point, and it need not pass through the origin. Keep an outlier on the graph unless the notes record a blunder.\n\nThe gradient is rise over run, taken from two points on the line. Keep the unit of y over the unit of x. A velocity–time line from (0, 20 m/s) to (5 s, 0) has gradient (0 − 20)/5, which is −4 m/s^2. That gradient is the acceleration.",
+              "rules": [
+                "The independent variable goes on the x-axis. Name the quantity and the unit on both axes.",
+                "Draw one straight best-fit line through the trend. Do not connect the points with segments.",
+                "Gradient = Δy/Δx from two points on the line. The unit is the unit of y over the unit of x.",
+                "Keep an outlier on the graph unless a recorded blunder explains it."
+              ],
+              "example": {
+                "prompt": "A best-fit line passes through (0, 2.0 m) and (3.0 s, 8.0 m). What is the gradient, in m/s?",
+                "steps": [
+                  "Gradient = Δy / Δx, using points on the line.",
+                  "Δy = 8.0 − 2.0 = 6.0 m and Δx = 3.0 − 0 = 3.0 s.",
+                  "Gradient = 6.0 / 3.0 = 2 m/s."
+                ],
+                "answer": "2"
+              },
+              "practice": [
+                {
+                  "q": "A best-fit line passes through (0, 1 m) and (4 s, 9 m). What is the gradient, in m/s?",
+                  "answer": "2",
+                  "why": "(9 − 1)/(4 − 0) = 8/4 = 2 m/s."
+                },
+                {
+                  "q": "A velocity–time best-fit line passes through (0, 20 m/s) and (5 s, 0). What is the acceleration, in m/s^2?",
+                  "answer": "-4",
+                  "why": "Acceleration is the gradient: (0 − 20)/5 = −4 m/s^2. The negative sign means the velocity is decreasing."
+                }
+              ]
+            },
+            {
+              "id": "phys-meas-l3b",
+              "title": "What the answer must show",
+              "he": "מה שהתשובה חייבת להראות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "What a physics answer must show"
+              ],
+              "objectives": [
+                "Show a named relation, a substitution with units, and a final value.",
+                "Attach a direction or a sign when the quantity is a vector."
+              ],
+              "teach": "A physics answer shows a named relation, a substitution with units, and a result in the unit the question asks for. Take g as 10 m/s^2 when weight or free fall appears. Round only at the end. If you ignored friction or air resistance, say so in one clause.\n\nA vector needs a sign or a direction, not only a size. On a graph, use the gradient or the area and say which. Absolute uncertainties add for a sum or a difference. Each check below asks for the final number only, because the question already names the unit.",
+              "rules": [
+                "Start from a named relation, substitute with units, then state the result.",
+                "A vector answer needs a direction or a signed component.",
+                "Take g as 10 m/s^2 on this road and say so when weight or free fall is used.",
+                "Round only at the end. Do not invent extra significant figures.",
+                "If you neglected friction or air resistance, say that in one clause."
+              ],
+              "example": {
+                "prompt": "A net force of 6 N east acts on a 2 kg box. What is the magnitude of the acceleration, in m/s^2?",
+                "steps": [
+                  "Name the relation: a = F_net / m, and the acceleration is east, with the net force.",
+                  "Substitute: a = 6 N / 2 kg.",
+                  "a = 3 m/s^2. The question asks for the magnitude."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "Convert 72 km/h to m/s. What is the speed?",
+                  "answer": "20",
+                  "why": "72 times 5/18 = 20 m/s. Show the conversion factor, not only the 20."
+                },
+                {
+                  "q": "A vector of magnitude 10 m makes 30° with the x-axis. Use sin 30° = 1/2. What is the y-component, in metres?",
+                  "answer": "5",
+                  "why": "Ay = 10 times sin 30° = 10 times 1/2 = 5 m."
+                },
+                {
+                  "q": "Times 12.0 s ± 2 s and 8.0 s ± 3 s are subtracted. What is the absolute uncertainty of the difference, in seconds?",
+                  "answer": "5",
+                  "why": "Absolute uncertainties still add for a difference: 2 + 3 = 5 s. They do not cancel."
+                },
+                {
+                  "q": "On a velocity–time best-fit line, the points (1 s, 6 m/s) and (4 s, 18 m/s) lie on the line. What is the acceleration, in m/s^2?",
+                  "answer": "4",
+                  "why": "Gradient = (18 − 6)/(4 − 1) = 12/3 = 4 m/s^2. Use points on the line and keep the unit."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-kin",
+      "index": 2,
+      "title": "Kinematics",
+      "he": "קינמטיקה",
+      "topic": "Kinematics",
+      "thesis": "Kinematics describes motion before it asks why, and the three constant-acceleration equations are the whole toolkit.",
+      "syllabus": [
+        "Constant velocity",
+        "Constant acceleration in one dimension",
+        "The three constant-acceleration equations",
+        "Free fall with g = 10",
+        "Two-dimensional motion and projectiles",
+        "Reading motion graphs"
+      ],
+      "levels": [
+        {
+          "id": "phys-kin-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-kin-l1a",
+              "title": "Steady velocity",
+              "he": "מהירות קבועה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Constant velocity"
+              ],
+              "objectives": [
+                "Use displacement = velocity times time when acceleration is zero.",
+                "Distinguish a steady velocity from a steady speed that changes direction."
+              ],
+              "teach": "Constant velocity means a fixed speed and a fixed direction, so the acceleration is zero. Displacement is then velocity times time. A cart at 12 m/s for 5 s moves 60 m. The velocity–time graph is a horizontal line, and the rectangle under it is the displacement. The slope of a position–time line is the velocity.\n\nIf the direction changes, the velocity is not constant even when the speed is. Distance is the path length. Displacement is the signed change of position. Read which of those the question wants before you calculate.",
+              "rules": [
+                "Constant velocity means a = 0. Then Δx = v Δt.",
+                "Choose a positive direction and keep it for the whole problem.",
+                "Average velocity is displacement over time. Average speed is distance over time.",
+                "A horizontal velocity–time graph means the velocity is constant, not that the object is still, unless the line is on the time axis."
+              ],
+              "example": {
+                "prompt": "A cart moves at a steady 12 m/s for 5 s. How far, in metres, does it go?",
+                "steps": [
+                  "The velocity is constant, so a = 0 and Δx = v Δt.",
+                  "Substitute: Δx = 12 m/s times 5 s.",
+                  "Δx = 60 m."
+                ],
+                "answer": "60"
+              },
+              "practice": [
+                {
+                  "q": "An object moves 150 m east at constant velocity in 10 s. What is the speed, in m/s?",
+                  "answer": "15",
+                  "why": "v = Δx/Δt = 150/10 = 15 m/s. Direction is steady, so speed and the magnitude of velocity match."
+                },
+                {
+                  "q": "A boat holds a steady 8 m/s for 7 s. What distance, in metres, does it travel?",
+                  "answer": "56",
+                  "why": "Distance = 8 times 7 = 56 m because the velocity does not change."
+                }
+              ]
+            },
+            {
+              "id": "phys-kin-l1b",
+              "title": "One steady acceleration",
+              "he": "תאוצה קבועה אחת",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Constant acceleration in one dimension"
+              ],
+              "objectives": [
+                "Compute acceleration as the change of velocity divided by time.",
+                "Use a negative acceleration when the chosen positive direction is opposed."
+              ],
+              "teach": "When acceleration is constant, a = (v − u)/t. It is a vector. Speeding up along the positive axis gives a positive value. Braking while the velocity is positive gives a negative value. A car at 20 m/s that brakes at 4 m/s^2 has acceleration −4 m/s^2.\n\nThe same definition rearranges to v = u + at. Stopping means 0 = 20 − 4t, so the time is 5 s. A change from 30 m/s to 10 m/s in 4 s has a = (10 − 30)/4 = −5 m/s^2. Keep that sign in the answer.",
+              "rules": [
+                "a = (v − u)/t when acceleration is constant. The unit is m/s^2.",
+                "The sign of a follows the chosen positive direction.",
+                "Braking while moving forward is a negative acceleration, not a negative speed.",
+                "v = u + at is the same definition, rearranged."
+              ],
+              "example": {
+                "prompt": "A car at 20 m/s brakes at 4 m/s^2. Take the initial velocity as positive. How many seconds pass until it stops?",
+                "steps": [
+                  "Stopping means v = 0. The acceleration is −4 m/s^2.",
+                  "Use v = u + at: 0 = 20 + (−4)t.",
+                  "4t = 20, so t = 5 s."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "A bike starts from rest and accelerates at 3 m/s^2 for 4 s. What is its final speed, in m/s?",
+                  "answer": "12",
+                  "why": "v = u + at = 0 + 3 times 4 = 12 m/s."
+                },
+                {
+                  "q": "Speed falls from 30 m/s to 10 m/s in 4 s, with the initial direction positive. What is the acceleration, in m/s^2?",
+                  "answer": "-5",
+                  "why": "a = (v − u)/t = (10 − 30)/4 = −20/4 = −5 m/s^2."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-kin-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-kin-l2a",
+              "title": "The three equations",
+              "he": "שלוש המשוואות",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "The three constant-acceleration equations"
+              ],
+              "objectives": [
+                "Choose among v = u + at, s = ut + (1/2)at^2, and v^2 = u^2 + 2as by what is missing.",
+                "Solve a stopping-distance problem without using a time you were not given."
+              ],
+              "teach": "Constant acceleration has three equations: v = u + at, s = ut + (1/2)at^2, and v^2 = u^2 + 2as. The first leaves out displacement, the second leaves out final velocity, and the third leaves out time. Mark what you know, then pick the equation that still contains the unknown.\n\nThe braking car has u = 20 m/s, v = 0, and a = −4 m/s^2. Time is not required, so 0 = 400 − 8s and the stopping distance is 50 m. The average-velocity form s = (u + v)t/2 is only a shortcut, not a fourth independent law.",
+              "rules": [
+                "v = u + at leaves out displacement. Use it when time is known and s is not asked.",
+                "s = ut + (1/2)at^2 leaves out final velocity.",
+                "v^2 = u^2 + 2as leaves out time. Use it for a stopping distance.",
+                "Keep the sign of a inside 2as. A brake is negative if forward is positive.",
+                "s = (u + v)t/2 is only a shortcut for constant acceleration."
+              ],
+              "example": {
+                "prompt": "A car at 20 m/s brakes at 4 m/s^2 until it stops. Take forward as positive. What is the stopping distance, in metres?",
+                "steps": [
+                  "Known: u = 20 m/s, v = 0, a = −4 m/s^2. Time is not given, so use v^2 = u^2 + 2as.",
+                  "0 = 400 + 2(−4)s = 400 − 8s.",
+                  "8s = 400, so s = 50 m."
+                ],
+                "answer": "50"
+              },
+              "practice": [
+                {
+                  "q": "An object starts from rest with a = 2 m/s^2 for 5 s. What is the displacement, in metres?",
+                  "answer": "25",
+                  "why": "Final velocity is not needed. s = 0 times 5 + (1/2) times 2 times 25 = 25 m."
+                },
+                {
+                  "q": "u = 6 m/s, v = 10 m/s, and a = 2 m/s^2. What is the displacement, in metres?",
+                  "answer": "16",
+                  "why": "Time is missing, so v^2 = u^2 + 2as: 100 = 36 + 4s, 64 = 4s, s = 16 m."
+                }
+              ]
+            },
+            {
+              "id": "phys-kin-l2b",
+              "title": "Free fall, g = 10",
+              "he": "נפילה חופשית",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Free fall with g = 10"
+              ],
+              "objectives": [
+                "Treat free fall as constant acceleration of magnitude 10 m/s^2, with air resistance ignored.",
+                "Choose the sign of g to match an upward or a downward positive direction."
+              ],
+              "teach": "With air resistance ignored, free fall has acceleration 10 m/s^2 downward, and mass does not appear. For a drop, take downward as positive, so u = 0 and s = 5 t^2. A drop of 45 m gives 45 = 5 t^2, so t = 3 s. After 5 m from rest, v^2 = 100 and the speed is 10 m/s.\n\nFor a throw upward, take upward as positive and set a = −10. Thrown at 20 m/s, the object reaches the top when 0 = 20 − 10t, so t = 2 s. The height is 20 m, from 0 = 400 − 20h.",
+              "rules": [
+                "Take g as 10 m/s^2 downward. Ignore air resistance unless the question puts it back.",
+                "For a drop, downward positive is simplest: u = 0, a = +10, s = 5 t^2.",
+                "For a throw upward, upward positive means a = −10.",
+                "Free-fall acceleration does not depend on mass."
+              ],
+              "example": {
+                "prompt": "An object is dropped from rest. Take downward as positive and g = 10. How many seconds does it take to fall 45 m?",
+                "steps": [
+                  "u = 0 and a = 10, so s = (1/2) times 10 times t^2 = 5 t^2.",
+                  "45 = 5 t^2, so t^2 = 9.",
+                  "t = 3 s. The negative root is not a time after release."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "An object is dropped from rest. Take downward as positive and g = 10. How far, in metres, does it fall in 2 s?",
+                  "answer": "20",
+                  "why": "s = 5 t^2 = 5 times 4 = 20 m."
+                },
+                {
+                  "q": "An object is dropped from rest through 5 m. Take downward as positive and g = 10. What is its speed, in m/s?",
+                  "answer": "10",
+                  "why": "v^2 = u^2 + 2as = 0 + 2 times 10 times 5 = 100, so v = 10 m/s."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-kin-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-kin-l3a",
+              "title": "Motion in a plane",
+              "he": "תנועה במישור",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Two-dimensional motion and projectiles"
+              ],
+              "objectives": [
+                "Split a projectile into a constant horizontal velocity and a vertical free-fall motion.",
+                "Get the time of flight from the vertical equation, then the range from the horizontal velocity."
+              ],
+              "teach": "With no air resistance, horizontal acceleration is zero and vertical motion is free fall at 10 m/s^2. Get the time from the vertical equation, then multiply by the horizontal velocity. A stone thrown horizontally at 30 m/s from 45 m has 45 = 5 t^2, so t = 3 s and the range is 90 m.\n\nAn angled launch splits the same way. The initial components are u cos θ horizontally and u sin θ upward. A 20 m/s launch at 30° has an upward component of 10 m/s, because sin 30° = 1/2. Do not mix the two axes inside one equation.",
+              "rules": [
+                "Ignore air resistance here. Horizontal acceleration is zero.",
+                "Vertical motion uses g = 10 m/s^2. Time comes from the vertical equation.",
+                "For a horizontal launch, range = horizontal speed times time of flight.",
+                "For an angled launch, ux = u cos θ and uy = u sin θ. Do not add the axes."
+              ],
+              "example": {
+                "prompt": "A stone is thrown horizontally at 30 m/s from a height of 45 m. Take g = 10 downward and ignore air resistance. What is the horizontal range, in metres?",
+                "steps": [
+                  "Vertical: 45 = (1/2) times 10 times t^2 = 5 t^2, so t^2 = 9 and t = 3 s.",
+                  "Horizontal velocity stays 30 m/s.",
+                  "Range = 30 times 3 = 90 m."
+                ],
+                "answer": "90"
+              },
+              "practice": [
+                {
+                  "q": "A ball is launched horizontally at 20 m/s from a 20 m cliff. g = 10 downward. How long is it in the air, in seconds?",
+                  "answer": "2",
+                  "why": "20 = 5 t^2, so t^2 = 4 and t = 2 s. The 20 m/s does not enter the vertical equation."
+                },
+                {
+                  "q": "A projectile is fired at 20 m/s at 30° above the horizontal. Use sin 30° = 1/2. What is the initial upward component of velocity, in m/s?",
+                  "answer": "10",
+                  "why": "uy = 20 times sin 30° = 20 times 1/2 = 10 m/s."
+                }
+              ]
+            },
+            {
+              "id": "phys-kin-l3b",
+              "title": "Slope and area",
+              "he": "שיפוע ושטח",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Reading motion graphs"
+              ],
+              "objectives": [
+                "Read velocity as the slope of a position–time graph and acceleration as the slope of a velocity–time graph.",
+                "Read displacement as the signed area under a velocity–time graph."
+              ],
+              "teach": "On a position–time graph the slope is velocity. On a velocity–time graph the slope is acceleration, and the signed area is displacement. The braking line from (0, 20 m/s) to (5 s, 0) has slope −4 m/s^2. Its triangular area is (1/2) times 5 times 20, which is 50 m.\n\nArea below the time axis is a negative displacement. A rectangle at 12 m/s lasting 3 s has area 36 m. Say whether you used a slope or an area, and do not quote a bare coordinate when the question asks for a gradient.",
+              "rules": [
+                "Slope of position against time is velocity.",
+                "Slope of velocity against time is acceleration.",
+                "Signed area under a velocity–time graph is displacement.",
+                "A straight velocity–time line means constant acceleration. A horizontal one means a = 0.",
+                "Say whether you used a slope or an area before you state the number."
+              ],
+              "example": {
+                "prompt": "A velocity–time graph is a straight line from (0, 20 m/s) to (5 s, 0). What is the displacement, in metres?",
+                "steps": [
+                  "Displacement is the signed area under the velocity–time line.",
+                  "The shape is a triangle: area = (1/2) times base times height.",
+                  "Area = (1/2) times 5 times 20 = 50 m, in the positive direction."
+                ],
+                "answer": "50"
+              },
+              "practice": [
+                {
+                  "q": "A position–time graph is a straight line. The object moves 40 m in 8 s at constant velocity. What is the velocity, in m/s?",
+                  "answer": "5",
+                  "why": "Velocity is the slope: 40/8 = 5 m/s."
+                },
+                {
+                  "q": "A velocity–time graph is a horizontal line at 12 m/s from t = 0 to t = 3 s. What is the displacement, in metres?",
+                  "answer": "36",
+                  "why": "Area of the rectangle = 12 times 3 = 36 m. The slope is zero, so the acceleration is zero, but that is not the displacement."
+                },
+                {
+                  "q": "A velocity–time line goes from 20 m/s at t = 0 to 0 at t = 5 s. What is the acceleration, in m/s^2?",
+                  "answer": "-4",
+                  "why": "Slope = (0 − 20)/5 = −4 m/s^2."
+                },
+                {
+                  "q": "A velocity–time graph is a triangle from (0, 0) to (4 s, 10 m/s). What is the displacement, in metres?",
+                  "answer": "20",
+                  "why": "Area = (1/2) times 4 times 10 = 20 m."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-force",
+      "index": 3,
+      "title": "Forces",
+      "he": "כוחות",
+      "topic": "Forces",
+      "thesis": "A free-body diagram plus Newton's second law is the method; the rest is naming the forces honestly.",
+      "syllabus": [
+        "Newton's first and third laws",
+        "Newton's second law",
+        "Weight, normal, tension, friction",
+        "Connected bodies and elevators",
+        "Inclined planes",
+        "Free-body diagrams as the method"
+      ],
+      "levels": [
+        {
+          "id": "phys-force-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-force-l1a",
+              "title": "Inertia and action pairs",
+              "he": "התמדה וזוגות פעולה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Newton's first and third laws"
+              ],
+              "objectives": [
+                "Use zero net force to conclude that velocity is constant, including rest.",
+                "Place the two members of a third-law pair on two different bodies."
+              ],
+              "teach": "If the net force on a body is zero, its velocity stays constant. Rest is the special case of velocity zero. A 2 kg book on a table weighs 20 N, and the normal force is 20 N upward. Those two forces cancel. A puck at 4 m/s on frictionless ice keeps moving at 4 m/s.\n\nThird-law forces are equal, opposite, and on two different bodies. You push a wall with 30 N, and the wall pushes you with 30 N. Do not draw both members on one diagram. The book's weight and the normal force are not a third-law pair: both act on the book.",
+              "rules": [
+                "Zero net force means constant velocity, not 'no forces at all'.",
+                "A third-law pair is equal, opposite, and on two different bodies.",
+                "Do not draw both members of a third-law pair on one free-body diagram.",
+                "Weight downward and normal force upward on the same book are not a third-law pair."
+              ],
+              "example": {
+                "prompt": "A 2 kg book rests on a level table. g = 10. What is the normal force on the book, in newtons?",
+                "steps": [
+                  "Weight = mg = 2 times 10 = 20 N downward.",
+                  "The book is at rest, so the net force is zero by the first law.",
+                  "Normal force upward = 20 N."
+                ],
+                "answer": "20"
+              },
+              "practice": [
+                {
+                  "q": "A puck slides at 4 m/s on frictionless ice, so the net horizontal force is zero. What is its speed, in m/s, after 3 s?",
+                  "answer": "4",
+                  "why": "Zero net force means the velocity does not change. The speed stays 4 m/s."
+                },
+                {
+                  "q": "You push a wall with 30 N. What is the magnitude of the force of the wall on you, in newtons?",
+                  "answer": "30",
+                  "why": "The third-law partner has the same magnitude, 30 N, and it acts on you, not on the wall."
+                }
+              ]
+            },
+            {
+              "id": "phys-force-l1b",
+              "title": "Net force and mass",
+              "he": "כוח שקול ומסה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Newton's second law"
+              ],
+              "objectives": [
+                "Use F_net = ma with force in newtons, mass in kilograms, and acceleration in m/s^2.",
+                "Point the acceleration in the direction of the net force."
+              ],
+              "teach": "Newton's second law says the net force equals mass times acceleration. Use kilograms, m/s^2, and newtons. A net force of 8 N on a 2 kg box gives an acceleration of 4 m/s^2, in the direction of that net force. Only the leftover after cancellation goes into the law.\n\nRead the equation the other way when the question asks. A 5 kg body at 3 m/s^2 needs a net force of 15 N. A 20 N net force that produces 4 m/s^2 belongs to a mass of 5 kg. Do not insert one force unless you have shown it is the net force.",
+              "rules": [
+                "F_net = ma. The direction of a is the direction of the net force.",
+                "Use kilograms, m/s^2, and newtons together. Convert first.",
+                "Only the net force goes into the second law, not every force on the diagram.",
+                "m = F_net / a and a = F_net / m are the same law."
+              ],
+              "example": {
+                "prompt": "The net force on a 2 kg box is 8 N. What is the magnitude of the acceleration, in m/s^2?",
+                "steps": [
+                  "The second law says a = F_net / m.",
+                  "Substitute: a = 8 N / 2 kg.",
+                  "a = 4 m/s^2, in the direction of the net force."
+                ],
+                "answer": "4"
+              },
+              "practice": [
+                {
+                  "q": "A 5 kg crate accelerates at 3 m/s^2. What is the magnitude of the net force, in newtons?",
+                  "answer": "15",
+                  "why": "F_net = ma = 5 times 3 = 15 N."
+                },
+                {
+                  "q": "A net force of 20 N produces an acceleration of 4 m/s^2. What is the mass, in kilograms?",
+                  "answer": "5",
+                  "why": "m = F_net / a = 20 / 4 = 5 kg."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-force-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-force-l2a",
+              "title": "Four forces you must name",
+              "he": "ארבעה כוחות שצריך לזהות",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Weight, normal, tension, friction"
+              ],
+              "objectives": [
+                "Compute weight as mg with g = 10, and set the normal force from the perpendicular equation.",
+                "Use kinetic friction as μ_k N, opposing the slide, and tension along the rope, away from the body."
+              ],
+              "teach": "Weight is mg with g = 10, always downward. A 2 kg object weighs 20 N, and a 70 kg person weighs 700 N. The normal force is perpendicular to the surface. On level ground with no vertical acceleration it equals the weight. Tension pulls along the rope, away from the body. A 3 kg mass hanging at rest needs a tension of 30 N.\n\nKinetic friction has magnitude μ_k times the normal force, and it opposes the slide. For the 2 kg block, the normal force is 20 N. If the coefficient is 1/2, friction is 10 N. Name the force before you give it a symbol.",
+              "rules": [
+                "Weight = mg with g = 10. It is downward, not along the surface.",
+                "The normal force is perpendicular to the surface. It equals mg only on level ground with a_y = 0.",
+                "Tension pulls along the rope, away from the body on the diagram.",
+                "Kinetic friction has magnitude μ_k N and opposes the velocity."
+              ],
+              "example": {
+                "prompt": "A 2 kg block slides on a level floor. g = 10 and μ_k = 1/2. What is the friction force, in newtons?",
+                "steps": [
+                  "Weight = 2 times 10 = 20 N. The floor is level and a_y = 0, so N = 20 N.",
+                  "Kinetic friction f = μ_k N = (1/2) times 20.",
+                  "f = 10 N, opposing the slide."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "A person has mass 70 kg. Take g = 10. What is the person's weight, in newtons?",
+                  "answer": "700",
+                  "why": "Weight = mg = 70 times 10 = 700 N, downward."
+                },
+                {
+                  "q": "A 3 kg mass hangs at rest from a light string. g = 10. What is the tension, in newtons?",
+                  "answer": "30",
+                  "why": "At rest the net force is zero, so tension upward equals weight downward: 3 times 10 = 30 N."
+                }
+              ]
+            },
+            {
+              "id": "phys-force-l2b",
+              "title": "Elevators and a light string",
+              "he": "מעלית וחוט קל",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Connected bodies and elevators"
+              ],
+              "objectives": [
+                "Find the normal force in an elevator from N − mg = ma with a signed acceleration.",
+                "Find the acceleration of two masses over a light frictionless pulley from the difference of their weights."
+              ],
+              "teach": "In an elevator, draw weight down and the normal force up. Take upward as positive, so N − mg = ma. A 70 kg person weighs 700 N. Upward acceleration of 2 m/s^2 gives a normal force of 840 N. Downward acceleration of 2 m/s^2 gives 560 N. At rest, the normal force is 700 N.\n\nTwo masses on a light frictionless pulley share one acceleration. For 3 kg and 1 kg, the weight difference is 20 N and the total mass is 4 kg, so the acceleration is 5 m/s^2. On the lighter mass, T − 10 = 5, so the tension is 15 N.",
+              "rules": [
+                "In an elevator, take upward as positive: N − mg = ma.",
+                "Upward acceleration makes N greater than mg. Downward acceleration makes N smaller.",
+                "For two masses on a light frictionless pulley, a = (m1 − m2)g / (m1 + m2), with m1 the heavier.",
+                "The string tension is the same throughout a light string, and it is not equal to either weight while the masses accelerate."
+              ],
+              "example": {
+                "prompt": "A 70 kg person stands in an elevator that accelerates upward at 2 m/s^2. g = 10. What is the normal force, in newtons?",
+                "steps": [
+                  "Weight = 70 times 10 = 700 N downward. Take upward as positive.",
+                  "N − 700 = 70 times 2 = 140.",
+                  "N = 840 N."
+                ],
+                "answer": "840"
+              },
+              "practice": [
+                {
+                  "q": "Masses of 3 kg and 1 kg hang from a light string over a frictionless pulley. g = 10. What is the magnitude of the acceleration, in m/s^2?",
+                  "answer": "5",
+                  "why": "a = (3 − 1) times 10 / (3 + 1) = 20/4 = 5 m/s^2 toward the heavier mass going down."
+                },
+                {
+                  "q": "The 70 kg person is now in an elevator accelerating downward at 2 m/s^2. g = 10. What is the normal force, in newtons?",
+                  "answer": "560",
+                  "why": "N = m(g − a) = 70 times (10 − 2) = 560 N. Upward was positive, so this a is negative and N is below the weight."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-force-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-force-l3a",
+              "title": "The incline axes",
+              "he": "צירים על מישור משופע",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Inclined planes"
+              ],
+              "objectives": [
+                "Resolve weight into mg sin θ down the incline and mg cos θ into the surface.",
+                "Find the acceleration of a frictionless block as g sin θ."
+              ],
+              "teach": "On an incline, take x down the slope and y perpendicular to the surface. The angle is with the horizontal. Weight still points straight down. Its downhill component is mg sin θ, and its component into the surface is mg cos θ.\n\nA 2 kg block on a frictionless 30° incline has sin 30° = 1/2, so the downhill force is 10 N and the acceleration is 5 m/s^2. That acceleration is g sin θ, so the mass cancels. A 4 kg block on the same slope has a downhill component of 20 N and the same acceleration, 5 m/s^2.",
+              "rules": [
+                "Align x down the incline and y perpendicular to it. θ is with the horizontal.",
+                "The downhill component of weight is mg sin θ. The into-the-surface component is mg cos θ.",
+                "On a frictionless incline, a = g sin θ. Mass cancels.",
+                "With kinetic friction, the downhill net force is mg sin θ − μ_k N, and N = mg cos θ."
+              ],
+              "example": {
+                "prompt": "A 2 kg block is on a frictionless incline at 30° to the horizontal. g = 10 and sin 30° = 1/2. What is the acceleration down the incline, in m/s^2?",
+                "steps": [
+                  "Downhill component = mg sin 30° = 2 times 10 times 1/2 = 10 N.",
+                  "There is no friction, so this 10 N is the net force down the incline.",
+                  "a = F_net / m = 10 / 2 = 5 m/s^2. Equivalently a = g sin 30° = 5 m/s^2."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "The same 2 kg block is on the frictionless 30° incline. g = 10 and sin 30° = 1/2. What is the downhill component of the weight, in newtons?",
+                  "answer": "10",
+                  "why": "mg sin 30° = 2 times 10 times 1/2 = 10 N."
+                },
+                {
+                  "q": "A 4 kg block is on a frictionless 30° incline. g = 10 and sin 30° = 1/2. What is the downhill component of the weight, in newtons?",
+                  "answer": "20",
+                  "why": "mg sin 30° = 4 times 10 times 1/2 = 20 N. The acceleration is still 5 m/s^2, because a = g sin θ."
+                }
+              ]
+            },
+            {
+              "id": "phys-force-l3b",
+              "title": "Draw the diagram, then write the law",
+              "he": "מציירים תרשים ואז כותבים את החוק",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Free-body diagrams as the method"
+              ],
+              "objectives": [
+                "Isolate one body and draw only the forces acting on it.",
+                "Write ΣF = ma on the chosen axes and solve for the unknown force or acceleration."
+              ],
+              "teach": "Isolate one body and draw only the forces on it: weight, normal, tension, friction, or a push. Choose axes, then set the signed sum on each axis equal to ma. Do not draw third-law partners. Do not add an extra arrow that is only a name for the net force.\n\nA 2 kg block pulled by 10 N against 4 N of friction has a net force of 6 N and an acceleration of 3 m/s^2. A 2 kg mass pulled upward at 3 m/s^2 has T − 20 = 6, so the tension is 26 N. Use g = 10 when weight appears. The diagram fixes the signs.",
+              "rules": [
+                "Draw one body and only the forces on it.",
+                "Choose axes before writing equations. State the positive direction.",
+                "On each axis, the signed sum of forces equals ma.",
+                "Use g = 10 when weight appears.",
+                "Do not add a force that is only the name of the net force."
+              ],
+              "example": {
+                "prompt": "A 2 kg block on a level floor is pulled horizontally by 10 N. Friction opposes the motion with 4 N. What is the acceleration, in m/s^2?",
+                "steps": [
+                  "Forces along the motion: 10 N forward and 4 N backward. Vertical forces cancel on the level floor.",
+                  "Net force = 10 − 4 = 6 N forward.",
+                  "a = F_net / m = 6 / 2 = 3 m/s^2 forward."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "A 70 kg person stands in an elevator accelerating upward at 2 m/s^2. g = 10. What is the normal force, in newtons?",
+                  "answer": "840",
+                  "why": "N − mg = ma gives N = 70 times (10 + 2) = 840 N."
+                },
+                {
+                  "q": "A 2 kg block is released on a frictionless 30° incline. g = 10 and sin 30° = 1/2. What is the acceleration down the incline, in m/s^2?",
+                  "answer": "5",
+                  "why": "Net force downhill = mg sin 30° = 10 N, so a = 10/2 = 5 m/s^2."
+                },
+                {
+                  "q": "A string pulls a 2 kg mass upward with acceleration 3 m/s^2. g = 10. What is the tension, in newtons?",
+                  "answer": "26",
+                  "why": "T − mg = ma, so T = m(g + a) = 2 times (10 + 3) = 26 N."
+                },
+                {
+                  "q": "The net force on a 3 kg body is 12 N. What is the magnitude of the acceleration, in m/s^2?",
+                  "answer": "4",
+                  "why": "a = F_net / m = 12 / 3 = 4 m/s^2, in the direction of the net force."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-energy",
+      "index": 4,
+      "title": "Work and energy",
+      "he": "עבודה ואנרגיה",
+      "topic": "Work and energy",
+      "thesis": "Energy is the shortcut when you care about speed and height more than time.",
+      "syllabus": [
+        "Work and the dot product",
+        "Kinetic energy and the work-energy theorem",
+        "Potential energy and conservative forces",
+        "Mechanical energy conservation",
+        "Power",
+        "Energy when friction is present"
+      ],
+      "levels": [
+        {
+          "id": "phys-energy-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-energy-l1a",
+              "title": "Work from force and displacement",
+              "he": "עבודה מכוח והעתק",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Work and the dot product"
+              ],
+              "objectives": [
+                "Compute work as F d cos θ, with θ between the force and the displacement.",
+                "Recognise zero work when the force is perpendicular to the motion, and negative work when it opposes the motion."
+              ],
+              "teach": "Work by a constant force is F d cos θ, where θ is the angle between the force and the displacement. The unit is the joule, and 1 J = 1 N m. A 10 N force through 4 m in its own direction does 40 J, because the cosine of 0° is 1.\n\nA force perpendicular to the displacement does no work, because the cosine of 90° is 0. A force that opposes the displacement does negative work. An 8 N force opposing a 3 m move does −24 J. Negative work means that force is removing mechanical energy.",
+              "rules": [
+                "W = F d cos θ. θ is between the force and the displacement.",
+                "θ = 0° gives W = Fd. θ = 90° gives W = 0. θ = 180° gives W = −Fd.",
+                "The unit of work is the joule: 1 J = 1 N m.",
+                "A force does work only through the displacement of its point of application."
+              ],
+              "example": {
+                "prompt": "A constant force of 10 N moves an object 4 m in the direction of the force. What is the work, in joules?",
+                "steps": [
+                  "θ = 0°, so cos θ = 1 and W = Fd.",
+                  "W = 10 N times 4 m.",
+                  "W = 40 J."
+                ],
+                "answer": "40"
+              },
+              "practice": [
+                {
+                  "q": "A force of 6 N is perpendicular to a 5 m displacement. What is the work done by that force, in joules?",
+                  "answer": "0",
+                  "why": "θ = 90° and cos 90° = 0, so W = 0. Perpendicular forces do no work."
+                },
+                {
+                  "q": "A force of 8 N opposes a 3 m displacement. What is the work done by that force, in joules?",
+                  "answer": "-24",
+                  "why": "θ = 180° and cos θ = −1, so W = −8 times 3 = −24 J."
+                }
+              ]
+            },
+            {
+              "id": "phys-energy-l1b",
+              "title": "Kinetic energy changes by net work",
+              "he": "שינוי באנרגיה הקינטית",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Kinetic energy and the work-energy theorem"
+              ],
+              "objectives": [
+                "Compute kinetic energy as (1/2)mv^2.",
+                "Set the net work equal to the change in kinetic energy."
+              ],
+              "teach": "Kinetic energy is (1/2) m v^2. A 2 kg object at 10 m/s has 100 J. A 3 kg object at 4 m/s has 24 J. The speed is squared, so the direction does not matter, and doubling the speed multiplies the kinetic energy by four.\n\nThe work–energy theorem says the net work equals the change in kinetic energy. A 2 kg body that speeds from 3 m/s to 5 m/s gains (1/2) times 2 times (25 − 9), which is 16 J. That gain is the net work done on the body.",
+              "rules": [
+                "KE = (1/2) m v^2. It is never negative.",
+                "W_net = ΔKE = (1/2)mv^2 − (1/2)mu^2.",
+                "Use the speed in m/s. Direction does not enter the kinetic energy.",
+                "A gain of kinetic energy means positive net work. A loss means negative net work."
+              ],
+              "example": {
+                "prompt": "A 2 kg object starts from rest and reaches 10 m/s. What is the gain in kinetic energy, in joules?",
+                "steps": [
+                  "Initial KE = 0. Final KE = (1/2) m v^2.",
+                  "Final KE = (1/2) times 2 times 10^2 = 100 J.",
+                  "The gain is 100 J, so the net work was 100 J."
+                ],
+                "answer": "100"
+              },
+              "practice": [
+                {
+                  "q": "A 3 kg object moves at 4 m/s. What is its kinetic energy, in joules?",
+                  "answer": "24",
+                  "why": "KE = (1/2) times 3 times 4^2 = (1/2) times 3 times 16 = 24 J."
+                },
+                {
+                  "q": "A 2 kg object speeds up from 3 m/s to 5 m/s. What is the gain in kinetic energy, in joules?",
+                  "answer": "16",
+                  "why": "ΔKE = (1/2) times 2 times (25 − 9) = 16 J. That gain equals the net work."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-energy-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-energy-l2a",
+              "title": "Stored energy and path",
+              "he": "אנרגיה אגורה ומסלול",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Potential energy and conservative forces"
+              ],
+              "objectives": [
+                "Compute a change in gravitational potential energy as mgΔh with g = 10.",
+                "Treat gravity as conservative: the change depends on the height difference, not the path."
+              ],
+              "teach": "Near Earth, the change in gravitational potential energy is mg times the change in height, with g = 10. A 2 kg object that drops 5 m loses 100 J. A 3 kg object raised by 2 m gains 60 J. Say whether you mean a loss or a gain, so the sign is not ambiguous.\n\nGravity is conservative: only the vertical difference matters, not the path. Lifting a 10 N weight through 2 m stores 20 J on a straight lift or on a ramp. Friction is not conservative, because a longer path dissipates more energy.",
+              "rules": [
+                "ΔPE_grav = mgΔh with g = 10. State which height is zero if you quote PE itself.",
+                "A rise stores potential energy. A drop releases it.",
+                "Gravity is conservative: only the vertical difference matters.",
+                "Friction is not conservative. Its work depends on the path length."
+              ],
+              "example": {
+                "prompt": "A 2 kg object is lowered by 5 m. g = 10. What is the loss of gravitational potential energy, in joules?",
+                "steps": [
+                  "Loss of PE = mg times the drop in height.",
+                  "Substitute: 2 times 10 times 5.",
+                  "The loss is 100 J."
+                ],
+                "answer": "100"
+              },
+              "practice": [
+                {
+                  "q": "A 3 kg object is raised by 2 m. g = 10. What is the gain in gravitational potential energy, in joules?",
+                  "answer": "60",
+                  "why": "Gain = mgh = 3 times 10 times 2 = 60 J."
+                },
+                {
+                  "q": "A weight of 10 N is lifted through a vertical height of 2 m along any path. What gravitational potential energy, in joules, is stored?",
+                  "answer": "20",
+                  "why": "Stored energy = weight times vertical rise = 10 times 2 = 20 J. The path shape does not matter."
+                }
+              ]
+            },
+            {
+              "id": "phys-energy-l2b",
+              "title": "Mechanical energy stays put",
+              "he": "האנרגיה המכנית נשמרת",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Mechanical energy conservation"
+              ],
+              "objectives": [
+                "Set loss of potential energy equal to gain of kinetic energy when friction and air resistance do no work.",
+                "Solve for speed or height without using time."
+              ],
+              "teach": "Mechanical energy is kinetic energy plus potential energy. It stays constant when friction and air resistance do no work. A 2 kg object dropped 5 m from rest loses 100 J of potential energy and gains 100 J of kinetic energy, so its speed is 10 m/s. A 4 kg object through the same drop also reaches 10 m/s.\n\nRun the account backward to find a height. The 2 kg object at 10 m/s has 100 J of kinetic energy. On a frictionless slope that becomes mgh, so 100 = 20 h and the height is 5 m. Once friction does work, do not conserve mechanical energy.",
+              "rules": [
+                "With no friction and no air resistance, KE + PE is constant.",
+                "Loss of PE = gain of KE when the object starts from rest, or more generally ΔKE = −ΔPE.",
+                "From rest, v^2 = 2gh. Mass cancels.",
+                "Do not use mechanical-energy conservation once friction does work."
+              ],
+              "example": {
+                "prompt": "A 2 kg object is dropped from rest through 5 m. Ignore air resistance and take g = 10. What is its speed, in m/s?",
+                "steps": [
+                  "Loss of PE = mgh = 2 times 10 times 5 = 100 J.",
+                  "That loss becomes KE: (1/2) times 2 times v^2 = 100, so v^2 = 100.",
+                  "v = 10 m/s. The same result is v^2 = 2gh."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "A 2 kg object moves at 10 m/s and coasts up a frictionless slope. g = 10. What vertical height, in metres, does it reach?",
+                  "answer": "5",
+                  "why": "KE = (1/2) times 2 times 100 = 100 J = mgh = 20 h, so h = 5 m."
+                },
+                {
+                  "q": "A 4 kg stone falls 5 m from rest. Ignore air resistance and take g = 10. What is its speed, in m/s?",
+                  "answer": "10",
+                  "why": "v^2 = 2gh = 2 times 10 times 5 = 100, so v = 10 m/s. Mass does not appear."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-energy-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-energy-l3a",
+              "title": "How fast work is done",
+              "he": "קצב ביצוע העבודה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Power"
+              ],
+              "objectives": [
+                "Compute power as work divided by time, in watts.",
+                "Use P = Fv when a constant force is parallel to a constant velocity."
+              ],
+              "teach": "Power is the rate of doing work. Divide the work by the time: one watt is one joule per second. A motor that does 200 J in 4 s has a power of 50 W. If the power is steady, the work is power times time.\n\nWhen a constant force is parallel to a constant velocity, power is force times speed. A 20 N force at a steady 3 m/s delivers 60 W. A transfer of 100 J in 5 s is 20 W. Use work over time when energy and time are given, and force times speed when they are not.",
+              "rules": [
+                "P = W/t. The unit is the watt, and 1 W = 1 J/s.",
+                "W = Pt recovers the work when the power is steady.",
+                "For a constant force parallel to a constant velocity, P = Fv.",
+                "Use the component of force along the velocity if they are not parallel."
+              ],
+              "example": {
+                "prompt": "A motor does 200 J of work in 4 s. What is the power, in watts?",
+                "steps": [
+                  "Power = work / time.",
+                  "P = 200 J / 4 s.",
+                  "P = 50 W."
+                ],
+                "answer": "50"
+              },
+              "practice": [
+                {
+                  "q": "A constant force of 20 N pushes an object at a steady 3 m/s in the direction of the force. What is the power, in watts?",
+                  "answer": "60",
+                  "why": "P = Fv = 20 times 3 = 60 W."
+                },
+                {
+                  "q": "A machine transfers 100 J in 5 s. What is the power, in watts?",
+                  "answer": "20",
+                  "why": "P = W/t = 100/5 = 20 W."
+                }
+              ]
+            },
+            {
+              "id": "phys-energy-l3b",
+              "title": "Friction spends mechanical energy",
+              "he": "חיכוך מוציא אנרגיה מכנית",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Energy when friction is present"
+              ],
+              "objectives": [
+                "Set the work by kinetic friction equal to −f d when friction opposes the whole displacement.",
+                "Track the mechanical energy that remains after that negative work."
+              ],
+              "teach": "Kinetic friction that opposes a displacement does negative work, so mechanical energy is not conserved. A 2 kg block at 10 m/s has 100 J of kinetic energy. Friction of 20 N stops it after 5 m, because 20 times that distance accounts for the 100 J.\n\nIf potential energy falls by 100 J and friction does −20 J, the kinetic-energy gain from rest is 80 J. At constant speed the push does positive work and friction does the matching negative work. A 10 N friction force over 4 m is 40 J each way, and in 2 s the pusher's power is 20 W.",
+              "rules": [
+                "Work by kinetic friction opposing the motion is −f d.",
+                "The loss of mechanical energy equals f d, the thermal energy produced.",
+                "ΔKE = W_net, including the negative work of friction.",
+                "At constant speed against friction, the pushing force does +f d and friction does −f d.",
+                "Do not set KE + PE constant once friction acts along the path."
+              ],
+              "example": {
+                "prompt": "A 2 kg block slides on a level floor at 10 m/s. Kinetic friction is 20 N. How far, in metres, does it slide before stopping?",
+                "steps": [
+                  "Initial KE = (1/2) times 2 times 10^2 = 100 J. Final KE = 0.",
+                  "Work by friction = −20 d, and that equals the change in KE.",
+                  "−20 d = −100, so d = 5 m."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "A 3 kg block slides at 4 m/s on a level floor. Kinetic friction is 6 N. How far, in metres, does it slide before stopping?",
+                  "answer": "4",
+                  "why": "KE = (1/2) times 3 times 16 = 24 J. Then 6 d = 24, so d = 4 m."
+                },
+                {
+                  "q": "An object loses 100 J of potential energy while friction does −20 J. It starts from rest. What is its kinetic energy gain, in joules?",
+                  "answer": "80",
+                  "why": "The 100 J released by the drop is reduced by 20 J of thermal loss, so KE gains 80 J."
+                },
+                {
+                  "q": "Kinetic friction of 10 N opposes a 4 m displacement. What is the work done by friction, in joules?",
+                  "answer": "-40",
+                  "why": "W = −f d = −10 times 4 = −40 J."
+                },
+                {
+                  "q": "A person pushes at constant speed against 10 N of friction for 4 m, and the push takes 2 s. What is the power of the push, in watts?",
+                  "answer": "20",
+                  "why": "At constant speed the push equals 10 N and does 40 J. Power = 40/2 = 20 W."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-mom",
+      "index": 5,
+      "title": "Momentum",
+      "he": "תנע",
+      "topic": "Momentum",
+      "thesis": "Momentum is what stays conserved in a collision when mechanical energy often does not.",
+      "syllabus": [
+        "Momentum and impulse",
+        "Conservation of momentum",
+        "Elastic and inelastic collisions in one dimension",
+        "Recoil and explosions",
+        "Impulse from a force-time graph",
+        "Choosing momentum versus energy"
+      ],
+      "levels": [
+        {
+          "id": "phys-mom-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-mom-l1a",
+              "title": "Momentum is mass times velocity",
+              "he": "תנע הוא מסה כפול מהירות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Momentum and impulse"
+              ],
+              "objectives": [
+                "Compute momentum as mv with a sign for direction.",
+                "Set impulse equal to the change in momentum, and to FΔt when the force is constant."
+              ],
+              "teach": "Momentum is mass times velocity, and it is a vector. A 3 kg mass at 4 m/s has momentum 12 kg m/s in that direction. The unit kg m/s is the same as the newton second. Unlike kinetic energy, momentum keeps its sign, so two equal opposite momenta add to zero.\n\nImpulse is the change in momentum. For a constant force it is also force times time. A force of 8 N for 3 s delivers an impulse of 24 N s. A 2 kg object that goes from rest to 5 m/s gains 10 kg m/s. That gain is the impulse, whether or not the force was stated.",
+              "rules": [
+                "p = mv. Choose a positive direction and keep the sign.",
+                "The unit kg m/s is the same as N s.",
+                "Impulse = Δp. For a constant force, impulse = F Δt.",
+                "Impulse is a vector. It points with the net force."
+              ],
+              "example": {
+                "prompt": "A 3 kg object moves at 4 m/s. Take that direction as positive. What is its momentum, in kg m/s?",
+                "steps": [
+                  "Momentum = mass times velocity.",
+                  "p = 3 times 4.",
+                  "p = 12 kg m/s in the positive direction."
+                ],
+                "answer": "12"
+              },
+              "practice": [
+                {
+                  "q": "A constant force of 8 N acts for 3 s. What is the impulse, in N s?",
+                  "answer": "24",
+                  "why": "Impulse = F Δt = 8 times 3 = 24 N s, in the direction of the force."
+                },
+                {
+                  "q": "A 2 kg object speeds up from rest to 5 m/s. What is the change in momentum, in kg m/s?",
+                  "answer": "10",
+                  "why": "Δp = m v − 0 = 2 times 5 = 10 kg m/s. That change equals the impulse."
+                }
+              ]
+            },
+            {
+              "id": "phys-mom-l1b",
+              "title": "An isolated collision",
+              "he": "התנגשות מבודדת",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Conservation of momentum"
+              ],
+              "objectives": [
+                "Conserve total momentum when the net external impulse during the event is zero.",
+                "Solve a one-dimensional sticking collision for the common velocity."
+              ],
+              "teach": "During a quick collision the internal forces cancel in third-law pairs. If the outside impulse is negligible, the total momentum of the system stays constant. A 3 kg mass at 4 m/s that hits a 1 kg mass at rest and sticks has 12 = 4v, so the common speed is 3 m/s.\n\nThe same rule fixes other sticking cases. A 2 kg mass at 6 m/s hitting an equal mass at rest gives a common speed of 3 m/s. Equal masses that approach at 2 m/s each and stick have total momentum zero, so they stop. Write every velocity with a sign.",
+              "rules": [
+                "Total momentum is conserved when the net external impulse on the system is zero.",
+                "Internal collision forces cancel in pairs and do not change the total momentum.",
+                "If the bodies stick, they share one velocity after the collision.",
+                "Write m1 u1 + m2 u2 = m1 v1 + m2 v2 with signs."
+              ],
+              "example": {
+                "prompt": "A 3 kg mass at 4 m/s hits a 1 kg mass at rest and they stick. What is their common speed, in m/s?",
+                "steps": [
+                  "External impulse is taken as zero, so momentum is conserved.",
+                  "3 times 4 + 1 times 0 = (3 + 1) v.",
+                  "12 = 4 v, so v = 3 m/s."
+                ],
+                "answer": "3"
+              },
+              "practice": [
+                {
+                  "q": "A 2 kg mass at 6 m/s hits a 2 kg mass at rest and they stick. What is their common speed, in m/s?",
+                  "answer": "3",
+                  "why": "2 times 6 = (2 + 2) v, so 12 = 4 v and v = 3 m/s."
+                },
+                {
+                  "q": "Two 5 kg masses approach each other at 2 m/s each and stick. What is their common speed, in m/s?",
+                  "answer": "0",
+                  "why": "Momenta are +10 and −10 kg m/s. The total is zero, so the stuck pair is at rest."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-mom-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-mom-l2a",
+              "title": "Stick, or bounce without loss",
+              "he": "נדבקים או מתנגשים בלי איבוד",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Elastic and inelastic collisions in one dimension"
+              ],
+              "objectives": [
+                "Treat a sticking collision as perfectly inelastic: momentum is conserved and kinetic energy is not.",
+                "Use conservation of both momentum and kinetic energy for a one-dimensional elastic collision."
+              ],
+              "teach": "An isolated collision conserves momentum whether or not it conserves kinetic energy. If 3 kg at 4 m/s hits 1 kg at rest and the masses stick, the common speed is 3 m/s. The kinetic energy falls from 24 J to 18 J, so 6 J is lost. That sticking case is perfectly inelastic.\n\nAn elastic collision conserves kinetic energy as well. In one dimension, equal masses with the target at rest exchange velocities. A 4 kg mass at 5 m/s stops, and the equal target leaves at 5 m/s. If the masses differ, you need both conservation laws, not the exchange shortcut.",
+              "rules": [
+                "Isolated collisions conserve momentum whether or not they conserve kinetic energy.",
+                "Perfectly inelastic means the bodies stick. Expect a loss of kinetic energy.",
+                "Elastic means kinetic energy is conserved as well as momentum.",
+                "Equal masses, one at rest, elastic and one-dimensional: the velocities are exchanged."
+              ],
+              "example": {
+                "prompt": "A 3 kg mass at 4 m/s hits a 1 kg mass at rest and they stick. What is the kinetic energy after the collision, in joules?",
+                "steps": [
+                  "Momentum: 3 times 4 = 4 v, so the common speed is 3 m/s.",
+                  "KE after = (1/2) times 4 times 3^2.",
+                  "KE after = 2 times 9 = 18 J. It is below the 24 J the 3 kg mass had before."
+                ],
+                "answer": "18"
+              },
+              "practice": [
+                {
+                  "q": "Before that same collision, the 1 kg mass is at rest and the 3 kg mass moves at 4 m/s. What is the kinetic energy before impact, in joules?",
+                  "answer": "24",
+                  "why": "Only the 3 kg mass is moving: KE = (1/2) times 3 times 16 = 24 J."
+                },
+                {
+                  "q": "A 4 kg mass at 5 m/s hits a 4 kg mass at rest in a one-dimensional elastic collision. What is the speed of the target afterward, in m/s?",
+                  "answer": "5",
+                  "why": "Equal masses exchange velocities in a one-dimensional elastic collision with the target at rest. The target leaves at 5 m/s and the first mass stops."
+                }
+              ]
+            },
+            {
+              "id": "phys-mom-l2b",
+              "title": "Things fly apart",
+              "he": "גופים שנפרדים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Recoil and explosions"
+              ],
+              "objectives": [
+                "Set the total momentum after an explosion from rest equal to zero.",
+                "Solve a recoil problem by equating the magnitudes of the two momenta."
+              ],
+              "teach": "An explosion or a throw from rest keeps the total momentum at zero. The pieces move so that their momenta cancel. If a resting object splits and the 1 kg piece leaves at 6 m/s, the remaining 3 kg piece moves the other way at 2 m/s. Kinetic energy can increase, because stored energy was released.\n\nRecoil is the same pattern. A 4 kg rifle fires a 0.02 kg bullet at 400 m/s. The bullet's momentum is 8 kg m/s, so the rifle recoils at 2 m/s. A 6 kg skater at rest who throws a 2 kg bag at 3 m/s relative to the ground recoils at 1 m/s.",
+              "rules": [
+                "From rest, the vector total of momentum after the separation is still zero.",
+                "The lighter piece gets the higher speed. The momenta have equal magnitude.",
+                "Kinetic energy can increase in an explosion. The energy comes from inside the system.",
+                "Use velocities relative to the ground when you write m1 v1 = m2 v2."
+              ],
+              "example": {
+                "prompt": "A 4 kg rifle, initially at rest, fires a 0.02 kg bullet at 400 m/s. What is the recoil speed of the rifle, in m/s?",
+                "steps": [
+                  "The bullet's momentum is 0.02 times 400 = 8 kg m/s.",
+                  "The rifle was at rest, so its momentum is 8 kg m/s in the opposite direction.",
+                  "Rifle speed = 8 / 4 = 2 m/s."
+                ],
+                "answer": "2"
+              },
+              "practice": [
+                {
+                  "q": "A 4 kg object at rest splits into a 3 kg piece and a 1 kg piece. The 1 kg piece moves at 6 m/s. What is the speed of the 3 kg piece, in m/s?",
+                  "answer": "2",
+                  "why": "Momenta cancel: 3 v = 1 times 6, so v = 2 m/s, opposite the light piece."
+                },
+                {
+                  "q": "A 6 kg skater at rest on frictionless ice throws a 2 kg bag at 3 m/s relative to the ground. What is the skater's recoil speed, in m/s?",
+                  "answer": "1",
+                  "why": "2 times 3 = 6 v, so v = 1 m/s, opposite the bag."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-mom-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-mom-l3a",
+              "title": "Area under force against time",
+              "he": "שטח מתחת לכוח כנגד זמן",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Impulse from a force-time graph"
+              ],
+              "objectives": [
+                "Read impulse as the area under a force–time graph.",
+                "Divide that impulse by mass to get the change in velocity."
+              ],
+              "teach": "When the force varies, impulse is the area under the force–time graph. A rectangle 8 N high lasting 5 s has area 40 N s. A triangle that rises from 0 to 12 N in 3 s has area (1/2) times 3 times 12, which is 18 N s.\n\nThat area equals the change in momentum. A 3 kg object at rest that receives the 18 N s impulse reaches 6 m/s. A 4 kg object that receives the 40 N s impulse from rest reaches 10 m/s. Do not multiply the peak force by the whole time unless the graph really is a rectangle.",
+              "rules": [
+                "Impulse equals the signed area under a force–time graph.",
+                "A triangular pulse has area (1/2) times base times height.",
+                "A rectangular pulse has area force times time.",
+                "Δv = impulse / mass when you know the mass and the initial velocity."
+              ],
+              "example": {
+                "prompt": "A force–time graph is a triangle rising linearly from 0 to 12 N in 3 s. The force then stops. A 3 kg object starts from rest. What is its final speed, in m/s?",
+                "steps": [
+                  "Impulse is the area: (1/2) times 3 times 12 = 18 N s.",
+                  "Impulse = Δp = m v − 0.",
+                  "v = 18 / 3 = 6 m/s."
+                ],
+                "answer": "6"
+              },
+              "practice": [
+                {
+                  "q": "A force–time graph is a rectangle of 8 N lasting 5 s. What is the impulse, in N s?",
+                  "answer": "40",
+                  "why": "Area = 8 times 5 = 40 N s."
+                },
+                {
+                  "q": "That 40 N s impulse acts on a 4 kg object that starts from rest. What is the final speed, in m/s?",
+                  "answer": "10",
+                  "why": "v = impulse / m = 40 / 4 = 10 m/s."
+                }
+              ]
+            },
+            {
+              "id": "phys-mom-l3b",
+              "title": "Pick the conserved quantity",
+              "he": "בוחרים את הגודל שנשמר",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Choosing momentum versus energy"
+              ],
+              "objectives": [
+                "Use momentum for an isolated collision or explosion, and energy for a height or a frictionless ramp.",
+                "Compute the kinetic-energy loss after a sticking collision instead of assuming it is zero."
+              ],
+              "teach": "Use momentum for a quick collision or explosion with negligible outside impulse. If the bodies stick, one momentum equation gives the common velocity. For 3 kg at 4 m/s hitting 1 kg at rest, that speed is 3 m/s, and the kinetic energy falls from 24 J to 18 J, a loss of 6 J.\n\nUse energy when the question gives heights and speeds and friction is absent. A 2 kg object dropped 5 m reaches 10 m/s. Momentum is not conserved for that object alone, because gravity is an outside force. A force over a distance wants work. A force over a time wants impulse.",
+              "rules": [
+                "Isolated collision or explosion: conserve momentum first.",
+                "Sticking collision: do not conserve kinetic energy. Compute the loss afterward if it is asked.",
+                "Elastic collision: conserve momentum and kinetic energy.",
+                "Height, a ramp, or free fall with no friction: use energy. Gravity is an external force.",
+                "A force over a distance wants work. A force over a time wants impulse."
+              ],
+              "example": {
+                "prompt": "A 3 kg mass at 4 m/s hits a 1 kg mass at rest and they stick. How many joules of kinetic energy are lost?",
+                "steps": [
+                  "Momentum: 3 times 4 = 4 v, so v = 3 m/s.",
+                  "KE before = (1/2) times 3 times 16 = 24 J. KE after = (1/2) times 4 times 9 = 18 J.",
+                  "Loss = 24 − 18 = 6 J. Momentum was conserved. Mechanical energy was not."
+                ],
+                "answer": "6"
+              },
+              "practice": [
+                {
+                  "q": "A 3 kg mass at 4 m/s hits a 1 kg mass at rest and they stick. What is the common speed, in m/s?",
+                  "answer": "3",
+                  "why": "Momentum gives 12 = 4 v, so v = 3 m/s. Energy is not the tool for the common speed."
+                },
+                {
+                  "q": "A 2 kg block at 6 m/s hits an identical block at rest in a one-dimensional elastic collision. What is the speed of the target afterward, in m/s?",
+                  "answer": "6",
+                  "why": "Equal masses exchange velocities. Both momentum and kinetic energy are conserved, and the target leaves at 6 m/s."
+                },
+                {
+                  "q": "A rifle at rest fires a bullet. The bullet's momentum is 8 kg m/s. What is the magnitude of the rifle's momentum just after firing, in kg m/s?",
+                  "answer": "8",
+                  "why": "Total momentum stays zero, so the rifle's momentum has magnitude 8 kg m/s, opposite the bullet."
+                },
+                {
+                  "q": "A 2 kg object is dropped from rest through 5 m. Ignore air resistance and take g = 10. What is its speed, in m/s?",
+                  "answer": "10",
+                  "why": "Use energy, not momentum: mgh = 100 J = (1/2) times 2 times v^2, so v = 10 m/s. Gravity is an external force."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phys-circ",
+      "index": 6,
+      "title": "Circles and gravity",
+      "he": "תנועה מעגלית וכבידה",
+      "topic": "Circles and gravity",
+      "thesis": "Centripetal force is the net force toward the center, not a new force you add to the diagram.",
+      "syllabus": [
+        "Uniform circular motion kinematics",
+        "Centripetal force is not a new force",
+        "Vertical circles",
+        "Newton's law of gravitation",
+        "g and orbital speed, at the school level",
+        "Banked and conical situations, lightly"
+      ],
+      "levels": [
+        {
+          "id": "phys-circ-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "phys-circ-l1a",
+              "title": "Speed, period, and centripetal acceleration",
+              "he": "מהירות, זמן מחזור ותאוצה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Uniform circular motion kinematics"
+              ],
+              "objectives": [
+                "Relate speed, radius, and angular speed by v = ωr.",
+                "Compute the centripetal acceleration v^2/r toward the centre."
+              ],
+              "teach": "Uniform circular motion has constant speed on a fixed circle, but the velocity changes because the direction turns. The acceleration has magnitude v squared over r and points toward the centre. At 4 m/s on a radius of 0.5 m, that acceleration is 16/0.5, which is 32 m/s^2. The same acceleration is ω squared times r, and v = ω r.\n\nAn angular speed of 5 rad/s at radius 2 m means a linear speed of 10 m/s. The period is the time for one lap, and speed is also 2πr/T. In the uniform case this centreward acceleration changes direction, not speed.",
+              "rules": [
+                "Uniform circular motion has constant speed and a changing direction.",
+                "Centripetal acceleration has magnitude v^2/r = ω^2 r and points toward the centre.",
+                "v = ω r. The angular speed is in rad/s.",
+                "v = 2πr/T when the period is the given information."
+              ],
+              "example": {
+                "prompt": "An object moves at 4 m/s on a circle of radius 0.5 m. What is the centripetal acceleration, in m/s^2?",
+                "steps": [
+                  "a = v^2 / r.",
+                  "v^2 = 16 and r = 0.5, so a = 16 / 0.5.",
+                  "a = 32 m/s^2, toward the centre."
+                ],
+                "answer": "32"
+              },
+              "practice": [
+                {
+                  "q": "An object moves at 6 m/s on a circle of radius 2 m. What is the centripetal acceleration, in m/s^2?",
+                  "answer": "18",
+                  "why": "a = v^2/r = 36/2 = 18 m/s^2, toward the centre."
+                },
+                {
+                  "q": "An object has angular speed 5 rad/s on a circle of radius 2 m. What is its linear speed, in m/s?",
+                  "answer": "10",
+                  "why": "v = ω r = 5 times 2 = 10 m/s."
+                }
+              ]
+            },
+            {
+              "id": "phys-circ-l1b",
+              "title": "Name the real force toward the center",
+              "he": "הכוח האמיתי לכיוון המרכז",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Centripetal force is not a new force"
+              ],
+              "objectives": [
+                "Compute the required centreward net force as m v^2/r.",
+                "Identify which real force, or which component, supplies that net force."
+              ],
+              "teach": "The required centreward net force is mass times v squared over r. It is not a new arrow beside the real forces. For 2 kg at 4 m/s on a 0.5 m radius, the acceleration is 32 m/s^2 and the net force is 64 N toward the centre. On a smooth table, the string tension is that 64 N.\n\nDrawing the tension and also a separate centripetal force counts the cause twice. The same 2 kg at 4 m/s on a 2 m radius needs only 16 N. Name the real force that supplies the requirement, and do not draw that force a second time.",
+              "rules": [
+                "The required centreward net force is m v^2/r. It is not an extra force on the diagram.",
+                "Tension, friction, gravity, or a component of the normal force can supply it.",
+                "Do not draw both the real force and a separate centripetal force.",
+                "If the real centreward force is less than m v^2/r, the object cannot stay on that circle."
+              ],
+              "example": {
+                "prompt": "A 2 kg mass moves at 4 m/s on a circle of radius 0.5 m. What net force toward the centre is required, in newtons?",
+                "steps": [
+                  "a = v^2/r = 16/0.5 = 32 m/s^2 toward the centre.",
+                  "F_net = m a = 2 times 32.",
+                  "F_net = 64 N toward the centre. Equivalently m v^2/r = 64 N."
+                ],
+                "answer": "64"
+              },
+              "practice": [
+                {
+                  "q": "A 3 kg mass moves at 2 m/s on a circle of radius 1 m. What net force toward the centre is required, in newtons?",
+                  "answer": "12",
+                  "why": "F = m v^2/r = 3 times 4 / 1 = 12 N toward the centre."
+                },
+                {
+                  "q": "A 2 kg mass on a smooth table moves in a circle of radius 2 m at 4 m/s. The string is the only horizontal force. What is the tension, in newtons?",
+                  "answer": "16",
+                  "why": "Tension supplies m v^2/r = 2 times 16 / 2 = 16 N. There is no extra centripetal force to add."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-circ-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "phys-circ-l2a",
+              "title": "Top and bottom of a circle",
+              "he": "הנקודה העליונה והתחתונה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Vertical circles"
+              ],
+              "objectives": [
+                "Write T − mg = m v^2/r at the bottom and T + mg = m v^2/r at the top of a string circle.",
+                "Find the minimum speed at the top from mg = m v^2/r when the tension is zero."
+              ],
+              "teach": "At the top and the bottom, the centreward net force is mass times v squared over r, using the speed at that point. For 2 kg on a 0.5 m string at 4 m/s, the motion demands 64 N toward the centre, and the weight is 20 N.\n\nAt the bottom, T − 20 = 64, so the tension is 84 N. At the top both forces point toward the centre, so T + 20 = 64 and the tension is 44 N. With the tension just zero, v squared = g r. For r = 0.4 m the minimum speed is 2 m/s.",
+              "rules": [
+                "At the bottom of a string circle, T − mg = m v^2/r.",
+                "At the top, T + mg = m v^2/r. Both forces point toward the centre.",
+                "The minimum speed at the top on a string is the speed with T = 0: v^2 = g r.",
+                "Use the speed at that point. Energy can connect the top speed to the bottom speed when friction is absent."
+              ],
+              "example": {
+                "prompt": "A 2 kg mass on a string moves in a vertical circle of radius 0.5 m. At the bottom its speed is 4 m/s. g = 10. What is the tension, in newtons?",
+                "steps": [
+                  "Required net force toward the centre: m v^2/r = 2 times 16 / 0.5 = 64 N, upward at the bottom.",
+                  "Weight is 20 N downward, away from the centre, so T − 20 = 64.",
+                  "T = 84 N."
+                ],
+                "answer": "84"
+              },
+              "practice": [
+                {
+                  "q": "The same 2 kg mass on the 0.5 m string moves at 4 m/s at the top. g = 10. What is the tension, in newtons?",
+                  "answer": "44",
+                  "why": "At the top, T + mg = m v^2/r, so T + 20 = 64 and T = 44 N."
+                },
+                {
+                  "q": "A mass on a string moves in a vertical circle of radius 0.4 m. g = 10. What is the minimum speed at the top, in m/s, if the string is just taut?",
+                  "answer": "2",
+                  "why": "T = 0 gives mg = m v^2/r, so v^2 = g r = 10 times 0.4 = 4 and v = 2 m/s."
+                }
+              ]
+            },
+            {
+              "id": "phys-circ-l2b",
+              "title": "The inverse-square attraction",
+              "he": "משיכה ביחס הפוך לריבוע",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Newton's law of gravitation"
+              ],
+              "objectives": [
+                "Write the gravitational force as GMm/r^2 and keep the answer symbolic in G when no value is needed.",
+                "Scale the force by the inverse square when the separation changes and the masses do not."
+              ],
+              "teach": "Newton's law of gravitation says F = G M m / r squared, along the line joining the centres. The distance is centre to centre, not the gap between the surfaces. Leave G as a symbol. This road does not invent a numerical value for it.\n\nThe force follows the inverse square. If the separation becomes three times larger, the force falls by a factor of nine, so 36 N becomes 4 N. If the separation doubles, 80 N becomes 20 N. If one mass doubles and the separation stays fixed, the force doubles. The two pulls are a third-law pair.",
+              "rules": [
+                "F = G M m / r^2, along the line of centres. r is centre to centre.",
+                "Prefer a symbolic answer in G. Do not invent a numerical value of G.",
+                "If r is multiplied by k and the masses stay fixed, F is divided by k^2.",
+                "The two gravitational forces are a third-law pair: equal magnitude, opposite direction."
+              ],
+              "example": {
+                "prompt": "Two masses attract with 36 N at separation r. The masses stay the same and the separation becomes 3r. What is the new force, in newtons?",
+                "steps": [
+                  "F is proportional to 1/r^2.",
+                  "The separation factor is 3, so the force factor is 1/9.",
+                  "New force = 36 / 9 = 4 N."
+                ],
+                "answer": "4"
+              },
+              "practice": [
+                {
+                  "q": "Two masses attract with 80 N at separation d. The separation becomes 2d and the masses stay the same. What is the new force, in newtons?",
+                  "answer": "20",
+                  "why": "Doubling r divides the force by 4: 80/4 = 20 N."
+                },
+                {
+                  "q": "The gravitational force between two masses is F. One mass is doubled and the separation is unchanged. What multiple of F is the new force?",
+                  "answer": "2",
+                  "why": "F = G M m / r^2 is proportional to each mass. Doubling one mass doubles the force."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "phys-circ-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "phys-circ-l3a",
+              "title": "g and a circular orbit",
+              "he": "g ומסלול מעגלי",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "g and orbital speed, at the school level"
+              ],
+              "objectives": [
+                "Write surface g as GM/R^2 and scale it when mass or radius changes.",
+                "Derive the circular-orbit speed v = sqrt(GM/r) by equating gravity to the required centripetal force."
+              ],
+              "teach": "At the surface of a spherical planet, weight mg equals G M m / R squared, so g = G M / R squared. Near Earth this road uses g = 10 m/s^2. A planet with twice Earth's mass and the same radius has surface g = 20 m/s^2. Keep G symbolic.\n\nFor a circular orbit, gravity supplies the centreward force: G M m / r squared equals m v squared / r. Cancel m and v = sqrt(G M / r). The orbiting mass cancels, and a larger orbit is slower. If the radius grows by a factor of four, 8 km/s becomes 4 km/s.",
+              "rules": [
+                "At the surface, g = GM/R^2. Weight is mg with that g.",
+                "Near Earth on this road, take g = 10 m/s^2.",
+                "For a circular orbit, GMm/r^2 = m v^2/r, so v = sqrt(GM/r).",
+                "Orbital speed does not depend on the satellite's mass. It falls as the orbital radius grows."
+              ],
+              "example": {
+                "prompt": "A satellite orbits at radius r with speed 8 km/s. A second satellite orbits the same planet at radius 4r. Use v = sqrt(GM/r). What is the outer speed, in km/s?",
+                "steps": [
+                  "v is proportional to 1/sqrt(r).",
+                  "The radius factor is 4, so the speed factor is 1/2.",
+                  "Outer speed = 8/2 = 4 km/s."
+                ],
+                "answer": "4"
+              },
+              "practice": [
+                {
+                  "q": "Near Earth, g = 10 m/s^2. A planet has twice Earth's mass and the same radius. What is its surface gravitational field strength, in m/s^2?",
+                  "answer": "20",
+                  "why": "g = GM/R^2, so twice the mass at the same radius doubles g: 2 times 10 = 20 m/s^2."
+                },
+                {
+                  "q": "An orbit at radius r has speed 6 km/s. Use v = sqrt(GM/r). What is the speed, in km/s, at radius 9r around the same planet?",
+                  "answer": "2",
+                  "why": "Radius factor 9 divides the speed by sqrt(9) = 3. Speed = 6/3 = 2 km/s."
+                }
+              ]
+            },
+            {
+              "id": "phys-circ-l3b",
+              "title": "A bank and a conical pendulum",
+              "he": "הטיה ומטוטלת חרוטית",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Banked and conical situations, lightly"
+              ],
+              "objectives": [
+                "Resolve the normal force on a frictionless bank, or the tension of a conical pendulum, into vertical balance and a centreward net force.",
+                "Combine that resolution with v^2/r, orbital speed, and a vertical circle when the question asks for more than one idea."
+              ],
+              "teach": "On a frictionless bank, the angle is from the horizontal. The normal force balances the weight vertically and supplies the centreward force horizontally, so tan θ = v squared over (r g). For radius 20 m, g = 10, and tan θ = 1/2, v squared = 100 and the design speed is 10 m/s.\n\nA conical pendulum measures its angle from the vertical. Then T cos θ = mg and T sin θ = m v squared / r. A 2 kg bob with cos θ = 1/2 has tension 40 N. Do not add a separate centripetal force.",
+              "rules": [
+                "On a frictionless bank, tan θ = v^2/(r g), with θ measured from the horizontal.",
+                "For a conical pendulum, θ is from the vertical: T cos θ = mg and T sin θ = m v^2/r.",
+                "The horizontal component is the centripetal requirement. Do not add another centreward force.",
+                "v = sqrt(GM/r) is the orbit rule. It is not the bank rule.",
+                "At the top of a string circle, the minimum speed still satisfies v^2 = g r."
+              ],
+              "example": {
+                "prompt": "A frictionless banked curve has radius 20 m and tan θ = 1/2, with θ from the horizontal. g = 10. What is the design speed, in m/s?",
+                "steps": [
+                  "Resolve the normal force: tan θ = v^2/(r g).",
+                  "v^2 = r g tan θ = 20 times 10 times 1/2 = 100.",
+                  "v = 10 m/s."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "A 2 kg mass moves at 4 m/s on a circle of radius 0.5 m. What is the centripetal acceleration, in m/s^2?",
+                  "answer": "32",
+                  "why": "a = v^2/r = 16/0.5 = 32 m/s^2 toward the centre."
+                },
+                {
+                  "q": "A conical pendulum has a 2 kg bob. The string makes an angle with the vertical whose cosine is 1/2. g = 10. What is the tension, in newtons?",
+                  "answer": "40",
+                  "why": "T cos θ = mg, so T times 1/2 = 20 and T = 40 N."
+                },
+                {
+                  "q": "A satellite orbits at radius r with speed 8 km/s. Use v = sqrt(GM/r). What is the speed, in km/s, of a satellite of the same planet at radius 4r?",
+                  "answer": "4",
+                  "why": "v is proportional to 1/sqrt(r). Radius times 4 divides the speed by 2: 8/2 = 4 km/s."
+                },
+                {
+                  "q": "A mass on a string moves in a vertical circle of radius 0.4 m. g = 10. What is the minimum speed at the top, in m/s?",
+                  "answer": "2",
+                  "why": "At the limit, T = 0 and mg = m v^2/r, so v^2 = 10 times 0.4 = 4 and v = 2 m/s."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

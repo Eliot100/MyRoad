@@ -1,0 +1,1524 @@
+{
+  "stages": [
+    {
+      "id": "ar-script",
+      "index": 1,
+      "title": "Script, sound, and root",
+      "he": "כתב, צליל ושורש",
+      "topic": "Script, sound, and root",
+      "thesis": "Arabic on this exam is a root-and-pattern language in a joining script.",
+      "syllabus": [
+        "The alphabet and joining letters",
+        "Short vowels and the absence of a vowel",
+        "Long vowels and common traps for Hebrew speakers",
+        "Sun and moon letters, and the definite article",
+        "The three-letter root",
+        "Patterns as meaning families"
+      ],
+      "levels": [
+        {
+          "id": "ar-script-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-script-l1a",
+              "title": "Joining shapes of the alphabet",
+              "he": "צורות החיבור באלפבית",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The alphabet and joining letters"
+              ],
+              "objectives": [
+                "Identify the letters that never join the following letter.",
+                "Name the shape of each letter inside a joined word such as كتب."
+              ],
+              "teach": "Arabic is written from right to left. Most letters join the next letter and use an isolated, initial, medial, or final shape. Six letters never join forward: ا د ذ ر ز و. After any of them, the next letter starts again. In كتب the three letters join: initial kaf, medial ta, final ba.\n\nHebrew readers mix ح with خ and both with ه. ح is a tight h, خ is a raspy kh, and ه is a plain h. ع has no Hebrew twin: it stays a voiced throat sound. Do not replace ع with a silent alef.",
+              "rules": [
+                "Write Arabic from right to left. Most letters join the letter that follows.",
+                "The six non-joining letters are ا د ذ ر ز و. The next letter starts again after them.",
+                "In كتب the shapes are initial kaf, medial ta, and final ba.",
+                "ح is a deep h, خ is kh, and ع is a voiced pharyngeal. Do not merge them with ه."
+              ],
+              "example": {
+                "prompt": "In the word ورد, which letters do not join the letter that follows?",
+                "steps": [
+                  "Read the consonants from the right: waw, then ra, then dal.",
+                  "و and ر are both on the non-joining list ا د ذ ر ز و.",
+                  "The breaks inside the word fall after و and after ر."
+                ],
+                "answer": "و and ر"
+              },
+              "practice": [
+                {
+                  "q": "List the six letters that never join forward.",
+                  "answer": "ا د ذ ر ز و",
+                  "why": "Alif, dal, dhal, ra, zay, and waw stop the line. The following letter must begin in a fresh shape."
+                },
+                {
+                  "q": "In كتب, what shape does the middle letter take?",
+                  "answer": "medial",
+                  "why": "Ta stands between kaf and ba and joins on both sides, so it uses the medial shape."
+                }
+              ]
+            },
+            {
+              "id": "ar-script-l1b",
+              "title": "Short vowels and sukun",
+              "he": "תנועות קצרות וסוכון",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Short vowels and the absence of a vowel"
+              ],
+              "objectives": [
+                "Name fatha, kasra, and damma and the short vowel each one writes.",
+                "Read sukun as no vowel and shadda as a doubled consonant."
+              ],
+              "teach": "Short vowels are signs, not full letters. Fatha is a short a above the letter, kasra a short i below it, and damma a short u above it. The verb كَتَبَ is ka-ta-ba, he wrote. Hebrew can be read without points. Arabic changes the word if the short vowel changes.\n\nSukun is a small circle and means no vowel. In مَكْتَب the kaf has sukun, so the word is mak-tab, office. Shadda doubles the letter it sits on. If a vowel sign is printed, sound it.",
+              "rules": [
+                "Fatha is a short a above the letter, kasra is a short i below it, and damma is a short u above it.",
+                "كَتَبَ is ka-ta-ba and means he wrote.",
+                "Sukun means no vowel. In مَكْتَب the kaf has sukun, so read mak-tab.",
+                "Shadda doubles the consonant under it. Do not ignore a printed short vowel."
+              ],
+              "example": {
+                "prompt": "What are the three short vowels of كَتَبَ, and what does the word mean?",
+                "steps": [
+                  "Fatha on kaf, fatha on ta, and fatha on ba give ka-ta-ba.",
+                  "No sukun appears, so none of the three consonants is vowelless.",
+                  "On the root k-t-b this pattern means he wrote."
+                ],
+                "answer": "ka-ta-ba; he wrote"
+              },
+              "practice": [
+                {
+                  "q": "Which short vowel is written under the letter?",
+                  "answer": "kasra",
+                  "why": "Kasra sits below the consonant and is the short vowel i. Fatha and damma sit above."
+                },
+                {
+                  "q": "In مَكْتَب, which consonant has no vowel of its own?",
+                  "answer": "ك",
+                  "why": "The sukun is on kaf. The word is mak-tab, office, not ma-ka-tab."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-script-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-script-l2a",
+              "title": "Long vowels and Hebrew traps",
+              "he": "תנועות ארוכות ומלכודות מעברית",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Long vowels and common traps for Hebrew speakers"
+              ],
+              "objectives": [
+                "Spell long a, long u, and long i with the correct full letter.",
+                "Keep ح, خ, and ع apart from the Hebrew sounds they resemble."
+              ],
+              "teach": "Long a is alif, long u is waw, and long i is ya. In كِتَاب, book, the alif after ta makes the a long. A long vowel is a short vowel plus a full letter. Hebrew writes long a with no extra letter, so speakers drop the alif. Keep it.\n\nHebrew has no match for ح, خ, or ع. ح is a tight h, خ is raspy kh, and ع is a voiced throat sound, as in عين, eye. Hamza ء is only a glottal catch. Never swap ع for ء or for silence.",
+              "rules": [
+                "Long a is ا, long u is و, and long i is ي. كِتَاب means book.",
+                "Some words end in long a written ى, as in عَلَى.",
+                "ح is a tight h and خ is kh. They are not the same letter.",
+                "ع is a voiced pharyngeal, as in عين. Hamza ء is only a glottal stop."
+              ],
+              "example": {
+                "prompt": "Why is the a in كِتَاب long, and what is the English gloss?",
+                "steps": [
+                  "The ta has fatha, and an alif is written right after it.",
+                  "Fatha plus alif is the long vowel aa, not a short a.",
+                  "The word means book. The alif is not optional."
+                ],
+                "answer": "alif; book"
+              },
+              "practice": [
+                {
+                  "q": "Which letter lengthens the u in رَسُول?",
+                  "answer": "و",
+                  "why": "Damma plus waw is long u. رسول means messenger. A short damma alone would not need the waw."
+                },
+                {
+                  "q": "A student replaces the first letter of عين with a glottal stop. Which letter was lost?",
+                  "answer": "ع",
+                  "why": "عين, eye, begins with ع, a voiced pharyngeal. Hamza is a different consonant."
+                }
+              ]
+            },
+            {
+              "id": "ar-script-l2b",
+              "title": "Sun letters and moon letters",
+              "he": "אותיות שמש ואותיות ירח",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Sun and moon letters, and the definite article"
+              ],
+              "objectives": [
+                "Pronounce ال before a moon letter with the lam heard.",
+                "Assimilate the lam to a sun letter and double that letter."
+              ],
+              "teach": "The definite article is ال, and it is always written. Before a moon letter the lam is heard: القَمَر is al-qamar, the moon, because ق is moon. Before a sun letter the lam is silent and that letter doubles. الشَّمْس is ash-shams, the sun, with shadda on ش.\n\nThe sun letters are ت ث د ذ ر ز س ش ص ض ط ظ ل ن. Every other letter is a moon letter, including ق and the ب of كتاب. Hebrew has no sun-letter rule, so do not drop the lam by habit.",
+              "rules": [
+                "The article is always written ال. Definiteness does not change its spelling.",
+                "Moon letter: say the lam, as in القَمَر al-qamar, the moon.",
+                "Sun letter: silence the lam and double the letter, as in الشَّمْس ash-shams, the sun.",
+                "Sun letters are ت ث د ذ ر ز س ش ص ض ط ظ ل ن. ق is a moon letter."
+              ],
+              "example": {
+                "prompt": "How is ال pronounced in الشمس and in القمر?",
+                "steps": [
+                  "ش is a sun letter, so the lam is assimilated and ش is doubled: ash-shams.",
+                  "ق is a moon letter, so the lam stays audible: al-qamar.",
+                  "Both nouns are definite. Only the sound of the lam changes."
+                ],
+                "answer": "ash-shams; al-qamar"
+              },
+              "practice": [
+                {
+                  "q": "Is the lam pronounced in الشمس?",
+                  "answer": "no",
+                  "why": "ش is a sun letter. You write ال but say ash-shams, with shadda on the shin."
+                },
+                {
+                  "q": "Pronounce القمر.",
+                  "answer": "al-qamar",
+                  "why": "ق is a moon letter, so the lam of the article is heard."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-script-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-script-l3a",
+              "title": "Three radicals, one idea",
+              "he": "שלושה רדיקלים, רעיון אחד",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The three-letter root"
+              ],
+              "objectives": [
+                "Pull the three radicals out of a regular word from the writing family.",
+                "Keep the root meaning while the vowels and prefixes change."
+              ],
+              "teach": "Most words on this exam come from three root letters with one core idea. The root ك ت ب is about writing. كَتَبَ means he wrote, كِتَاب means book, and مَكْتَب means office. Extra letters and vowels change the job of the word. The three radicals stay in the same order.\n\nTo find a root, strip ال, long-vowel letters, and a place prefix such as م. From الكتاب remove ال and the alif, and ك ت ب remains. A Hebrew root is a fair start, but do not count a pattern letter as a radical.",
+              "rules": [
+                "The root ك ت ب carries the idea of writing. Keep the three letters in order.",
+                "كَتَبَ means he wrote, كِتَاب means book, and مَكْتَب means office.",
+                "Strip ال, long-vowel letters, and the place prefix م before you name the radicals.",
+                "A pattern letter is not a radical. The root is what stays across the family."
+              ],
+              "example": {
+                "prompt": "What is the root of الكِتَاب, and what does the word mean?",
+                "steps": [
+                  "Remove the definite article ال, leaving كِتَاب.",
+                  "The alif is the long vowel, not a radical, so remove it too.",
+                  "The radicals are ك ت ب, and الكِتَاب means the book."
+                ],
+                "answer": "ك ت ب; the book"
+              },
+              "practice": [
+                {
+                  "q": "What is the root of مَكْتَب?",
+                  "answer": "ك ت ب",
+                  "why": "The opening mim is the place prefix. Office still belongs to the writing root kaf, ta, ba."
+                },
+                {
+                  "q": "What English idea is shared by كَتَبَ and كِتَاب?",
+                  "answer": "writing",
+                  "why": "Both are built on ك ت ب. The verb means he wrote and the noun means book."
+                }
+              ]
+            },
+            {
+              "id": "ar-script-l3b",
+              "title": "Patterns as meaning families",
+              "he": "משקלים כמשפחות משמעות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Patterns as meaning families"
+              ],
+              "objectives": [
+                "Separate root from pattern in a word you can already read.",
+                "Use the pattern to predict the kind of meaning, then apply the article."
+              ],
+              "teach": "A pattern is the vowel frame and any extra letters around a root. It groups words into meaning families. On ك ت ب, the pattern of كَتَبَ means he wrote, and the pattern of كِتَاب means book. The place pattern gives مَكْتَب, office. The same place idea on د ر س gives مَدْرَسَة, school.\n\nName the root first, then the pattern. Sun and moon rules still apply to the finished word: القَمَر is al-qamar, and الشَّمْس is ash-shams. Do not let the article hide the radicals. A pattern is a family of meaning, not a decoration.",
+              "rules": [
+                "The pattern is the frame of vowels and extra letters. The root is the three radicals inside it.",
+                "On ك ت ب, كَتَبَ means he wrote and كِتَاب means book.",
+                "A leading م often marks a place: مَكْتَب office, مَدْرَسَة school.",
+                "After the word is built, sun and moon rules still apply: الشَّمْس versus القَمَر."
+              ],
+              "example": {
+                "prompt": "Separate root and pattern in مَكْتَب and gloss the word.",
+                "steps": [
+                  "The leading م belongs to the place pattern, not to the root.",
+                  "The consonants that remain, in order, are ك ت ب.",
+                  "The place pattern on the writing root means office or desk."
+                ],
+                "answer": "ك ت ب; office"
+              },
+              "practice": [
+                {
+                  "q": "What is the root of مَدْرَسَة?",
+                  "answer": "د ر س",
+                  "why": "Mim and ta marbuta belong to the place pattern. The radicals of school are dal, ra, and sin."
+                },
+                {
+                  "q": "Which root is shared by كَتَبَ and كِتَاب?",
+                  "answer": "ك ت ب",
+                  "why": "The pattern makes one a past verb and the other a noun. The writing root does not change."
+                },
+                {
+                  "q": "Pronounce الشَّمْس.",
+                  "answer": "ash-shams",
+                  "why": "Shin is a sun letter, so the lam of ال is assimilated and the shin is doubled."
+                },
+                {
+                  "q": "In عين, which sound is the trap for a Hebrew speaker, ع or a silent alef?",
+                  "answer": "ع",
+                  "why": "ع is a voiced pharyngeal. It is not hamza, and it is not left silent."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-noun",
+      "index": 2,
+      "title": "Nouns",
+      "he": "שמות עצם",
+      "topic": "Nouns",
+      "thesis": "Gender, number, idafa, and attached pronouns carry the noun phrase.",
+      "syllabus": [
+        "Gender",
+        "Sound plurals and broken plurals at a working set",
+        "The idafa",
+        "Personal pronouns and possessive suffixes",
+        "Demonstratives",
+        "Adjectives and agreement"
+      ],
+      "levels": [
+        {
+          "id": "ar-noun-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-noun-l1a",
+              "title": "Masculine and feminine nouns",
+              "he": "שמות בזכר ובנקבה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Gender"
+              ],
+              "objectives": [
+                "Classify a noun as masculine or feminine from its ending or a known meaning.",
+                "Match a feminine noun with a feminine adjective."
+              ],
+              "teach": "Every Arabic noun is masculine or feminine. Ta marbuta is the usual feminine sign: مَدْرَسَة means school. A noun with no such sign is masculine unless you have learned otherwise: كِتَاب means book, and طَالِب means a male student. A few feminine nouns have no ending, such as شَمْس, sun.\n\nGender controls agreement. الطَّالِبُ المُجْتَهِدُ is the diligent male student. The feminine pair is الطَّالِبَةُ المُجْتَهِدَةُ, with ة on both words. Hebrew also marks gender, but Arabic shows it on the noun and again on the adjective.",
+              "rules": [
+                "Ta marbuta ة marks most feminine nouns, as in مَدْرَسَة, school.",
+                "كِتَاب, book, and طَالِب, a male student, are masculine.",
+                "A few nouns are feminine with no ending. شَمْس, sun, is one of them.",
+                "الطَّالِبُ المُجْتَهِدُ is masculine. الطَّالِبَةُ المُجْتَهِدَةُ is the feminine pair."
+              ],
+              "example": {
+                "prompt": "What is the gender of مَدْرَسَة, and which ending shows it?",
+                "steps": [
+                  "Look at the end of the noun, not at a Hebrew translation.",
+                  "The ending is ta marbuta, ة.",
+                  "Ta marbuta is the usual feminine sign, so school is feminine."
+                ],
+                "answer": "feminine; ة"
+              },
+              "practice": [
+                {
+                  "q": "What is the gender of كِتَاب?",
+                  "answer": "masculine",
+                  "why": "Book has no ta marbuta, and it is not one of the nouns that are feminine by meaning."
+                },
+                {
+                  "q": "Give the feminine phrase for the diligent student.",
+                  "answer": "الطالبة المجتهدة",
+                  "why": "Both the noun and the adjective take ة, and both take ال. The masculine model is الطالب المجتهد."
+                }
+              ]
+            },
+            {
+              "id": "ar-noun-l1b",
+              "title": "Sound plurals and broken plurals",
+              "he": "ריבוי שלם וריבוי שבור",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Sound plurals and broken plurals at a working set"
+              ],
+              "objectives": [
+                "Form a sound plural with the right ending for people.",
+                "Recognize كتاب / كتب and a few other broken pairs."
+              ],
+              "teach": "Sound plurals add an ending and leave the singular visible. Masculine people take ـون in the nominative and ـين in the accusative and genitive: مُدَرِّسُون means teachers. Feminine sound plurals take ـات: طَالِبَات means female students. The ending changes for case, but the stem stays.\n\nBroken plurals change the inside of the word. كِتَاب becomes كُتُب, books, and طَالِب becomes طُلَّاب, male students. Learn each pair, because the pattern is not one ending. A non-human plural such as كُتُب usually takes a feminine singular adjective.",
+              "rules": [
+                "Masculine sound plural: ـون in the nominative, ـين in the accusative and genitive. Example: مُدَرِّسُون.",
+                "Feminine sound plural uses ـات, as in طَالِبَات.",
+                "Broken pairs to know: كِتَاب / كُتُب and طَالِب / طُلَّاب.",
+                "A non-human plural such as كُتُب usually takes a feminine singular adjective."
+              ],
+              "example": {
+                "prompt": "What is the broken plural of كِتَاب, and what does it mean?",
+                "steps": [
+                  "كِتَاب is book. Its plural is not made by adding a sound ending.",
+                  "The inside of the word changes to كُتُب.",
+                  "كُتُب means books. Do not add ـات to this noun."
+                ],
+                "answer": "كتب; books"
+              },
+              "practice": [
+                {
+                  "q": "What ending does a feminine sound plural add?",
+                  "answer": "ات",
+                  "why": "Female students are طالبات. The singular stem stays visible, and ـات is the plural ending."
+                },
+                {
+                  "q": "Give the usual plural of طَالِب for male students.",
+                  "answer": "طلاب",
+                  "why": "طالب uses the broken plural طلاب in ordinary MSA, not a sound ـون plural."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-noun-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-noun-l2a",
+              "title": "The idafa construction",
+              "he": "צירוף הסמיכות",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "The idafa"
+              ],
+              "objectives": [
+                "Build an idafa in which the second noun is the possessor.",
+                "Contrast كتاب الطالب with the adjective phrase الطالب المجتهد."
+              ],
+              "teach": "The idafa joins two nouns into one phrase of possession. كِتَابُ الطَّالِبِ means the student's book, literally the book of the student. The first noun has no ال and no tanwin. The second noun is in the genitive and carries the definiteness. Nothing may stand between the two nouns.\n\nDo not confuse this with an adjective phrase. الطَّالِبُ المُجْتَهِدُ is the diligent student: both words take ال, and the second describes the first. In كِتَابُ الطَّالِبِ the second noun owns the first. An adjective of the book comes after the whole idafa.",
+              "rules": [
+                "In an idafa the first noun has no ال and no tanwin. كِتَابُ الطَّالِبِ means the student's book.",
+                "The second noun is genitive and decides whether the whole phrase is definite.",
+                "Nothing, including an adjective, may stand between the two nouns.",
+                "الطالب المجتهد is not an idafa. Both words take ال because the second describes the first."
+              ],
+              "example": {
+                "prompt": "What does كِتَابُ الطَّالِبِ mean, and why is there no ال on كتاب?",
+                "steps": [
+                  "The two nouns are an idafa: the book of the student.",
+                  "The first noun refuses ال and tanwin. Definiteness comes from الطالب.",
+                  "The English is the student's book, not the diligent student."
+                ],
+                "answer": "the student's book"
+              },
+              "practice": [
+                {
+                  "q": "Translate كتاب الطالب.",
+                  "answer": "the student's book",
+                  "why": "This is an idafa. The second noun, the student, possesses the book. كتاب has no article of its own."
+                },
+                {
+                  "q": "Is الطالب المجتهد an idafa? Answer yes or no.",
+                  "answer": "no",
+                  "why": "Both words are definite, and the second is an adjective agreeing with the first. In an idafa the first noun would not take ال."
+                }
+              ]
+            },
+            {
+              "id": "ar-noun-l2b",
+              "title": "Pronouns and possessive suffixes",
+              "he": "כינויי גוף וכינויי קניין",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Personal pronouns and possessive suffixes"
+              ],
+              "objectives": [
+                "Match an independent pronoun to its person.",
+                "Attach the correct possessive suffix to a noun such as كتاب."
+              ],
+              "teach": "The independent pronouns are أَنَا, أَنْتَ, أَنْتِ, هُوَ, هِيَ, نَحْنُ, أَنْتُمْ, أَنْتُنَّ, هُمْ, and هُنَّ. They can stand as a subject: هُوَ طَالِبٌ means he is a student. Attached pronouns cannot stand alone. They stick to a noun and mark the owner.\n\nOn كِتَاب the suffixes are ـي, ـكَ, ـكِ, ـهُ, ـها, ـنا, ـكم, ـكن, ـهم, and ـهن. كِتَابِي means my book, and كِتَابُهَا means her book. The vowel on kaf tells you masculine ـكَ from feminine ـكِ. Ta marbuta becomes ordinary ta before a suffix: مَدْرَسَتُهُ means his school.",
+              "rules": [
+                "Independent pronouns: أنا، أنتَ، أنتِ، هو، هي، نحن، أنتم، أنتن، هم، هن.",
+                "Possessive suffixes on كتاب: ـي ـكَ ـكِ ـهُ ـها ـنا ـكم ـكن ـهم ـهن.",
+                "كِتَابِي means my book. كِتَابُهَا means her book. The vowel distinguishes ـكَ from ـكِ.",
+                "Before a suffix, ta marbuta becomes ta: مَدْرَسَتُهُ means his school."
+              ],
+              "example": {
+                "prompt": "What does كِتَابُهَا mean, and which suffix marks the owner?",
+                "steps": [
+                  "The noun is كتاب, book.",
+                  "The ending ها is the feminine singular possessor.",
+                  "The phrase means her book, not she is a book."
+                ],
+                "answer": "her book"
+              },
+              "practice": [
+                {
+                  "q": "What is the suffix for my on كتاب?",
+                  "answer": "ي",
+                  "why": "كتابي means my book. The independent pronoun أنا is not glued on in place of ـي."
+                },
+                {
+                  "q": "What does مدرسته mean?",
+                  "answer": "his school",
+                  "why": "Ta marbuta opens to ordinary ta before the suffix ه. مدرسة alone means school."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-noun-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-noun-l3a",
+              "title": "Demonstratives",
+              "he": "שמות רמז",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Demonstratives"
+              ],
+              "objectives": [
+                "Choose هذا, هذه, ذلك, or تلك from gender and distance.",
+                "Use هؤلاء for people and هذه for a non-human plural such as كتب."
+              ],
+              "teach": "Demonstratives point and they agree with the noun. Near and masculine singular is هَذَا, near feminine is هَذِهِ, far masculine is ذَلِكَ, and far feminine is تِلْكَ. هَذَا الطَّالِبُ means this student, and هَذِهِ الطَّالِبَةُ means this female student. The noun after a demonstrative usually takes ال.\n\nPlural people use هَؤُلَاءِ for near and أُولَئِكَ for far, for both genders in ordinary exam prose. هَؤُلَاءِ الطُّلَّابُ means these students. Do not put a singular هَذَا before the plural كُتُب. For non-human plurals, Arabic often uses the feminine singular: هَذِهِ الكُتُبُ means these books.",
+              "rules": [
+                "Near: هَذَا masculine, هَذِهِ feminine. Far: ذَلِكَ masculine, تِلْكَ feminine.",
+                "هَذَا الطَّالِبُ means this student. The noun after the demonstrative usually takes ال.",
+                "People, near: هَؤُلَاءِ. People, far: أُولَئِكَ. These two do not change for gender.",
+                "Non-human plurals take the feminine singular: هَذِهِ الكُتُبُ means these books."
+              ],
+              "example": {
+                "prompt": "Which demonstrative fits الطَّالِبَةُ if she is near the speaker?",
+                "steps": [
+                  "The noun is feminine singular, so هذا and ذلك are the wrong gender.",
+                  "She is near, so the far form تلك is not the one.",
+                  "Near feminine is هذه. The phrase is هذه الطالبة."
+                ],
+                "answer": "هذه"
+              },
+              "practice": [
+                {
+                  "q": "Give the demonstrative for these books.",
+                  "answer": "هذه",
+                  "why": "كتب is a non-human plural, so Arabic uses feminine singular هذه الكتب, not هذا and not هؤلاء."
+                },
+                {
+                  "q": "Which word means those people, at a distance?",
+                  "answer": "أولئك",
+                  "why": "أولئك is the far demonstrative for people. هؤلاء is the near one."
+                }
+              ]
+            },
+            {
+              "id": "ar-noun-l3b",
+              "title": "Adjectives that agree",
+              "he": "תארים שמסכימים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Adjectives and agreement"
+              ],
+              "objectives": [
+                "Make an adjective agree in gender, number, and definiteness.",
+                "Place an adjective after an idafa without splitting the two nouns."
+              ],
+              "teach": "An adjective follows its noun and agrees in gender, number, definiteness, and case. الطَّالِبُ المُجْتَهِدُ means the diligent student: both words are definite and masculine. An indefinite pair is طَالِبٌ مُجْتَهِدٌ, with no ال on either word. Never put ال on only one of them.\n\nHuman plurals agree in the plural: الطُّلَّابُ المُجْتَهِدُونَ. A non-human plural usually takes a feminine singular adjective: الكُتُبُ الجَدِيدَةُ means the new books. After an idafa, the adjective comes last. كِتَابُ الطَّالِبِ الجَدِيدُ, with a masculine adjective, is the student's new book.",
+              "rules": [
+                "The adjective follows the noun and repeats its definiteness: الطالب المجتهد, or طالب مجتهد with no ال.",
+                "Human plural agreement is plural: الطُّلَّابُ المُجْتَهِدُونَ.",
+                "Non-human plural agreement is usually feminine singular: الكُتُبُ الجَدِيدَةُ means the new books.",
+                "كِتَابُ الطَّالِبِ الجَدِيدُ, with nominative جديد, is the student's new book. The adjective follows the idafa."
+              ],
+              "example": {
+                "prompt": "Why do both words in الطَّالِبُ المُجْتَهِدُ carry ال?",
+                "steps": [
+                  "مجتهد describes الطالب, so it is an adjective, not a possessor.",
+                  "An adjective agrees in definiteness. The noun is definite, so the adjective is definite too.",
+                  "The masculine singular ending matches the masculine singular noun."
+                ],
+                "answer": "definiteness agreement"
+              },
+              "practice": [
+                {
+                  "q": "The noun is definite in الطالب مجتهد. Give the corrected adjective, with ال.",
+                  "answer": "المجتهد",
+                  "why": "If the noun has ال, the adjective needs ال too. The full phrase is الطالب المجتهد."
+                },
+                {
+                  "q": "What adjective agrees with الكتب for new?",
+                  "answer": "الجديدة",
+                  "why": "كتب is a non-human plural. The adjective is feminine singular: الكتب الجديدة, the new books."
+                },
+                {
+                  "q": "Where does الجديد go in the student's new book?",
+                  "answer": "after الطالب",
+                  "why": "The idafa كتاب الطالب cannot be split. Nominative الجديد after it agrees with كتاب."
+                },
+                {
+                  "q": "Give the indefinite phrase for a diligent male student.",
+                  "answer": "طالب مجتهد",
+                  "why": "Both words are indefinite. Do not add ال to either one, and keep masculine singular."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-past",
+      "index": 3,
+      "title": "The past tense",
+      "he": "הזמן העבר",
+      "topic": "The past tense",
+      "thesis": "The past tense is one stem plus a person suffix.",
+      "syllabus": [
+        "The past-tense skeleton",
+        "Suffixes for all persons",
+        "Common weak spots: hamza roots, lightly",
+        "Negating the past with lam and ma",
+        "Object suffixes on the verb",
+        "Reading a past-tense sentence aloud from print"
+      ],
+      "levels": [
+        {
+          "id": "ar-past-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-past-l1a",
+              "title": "Stem plus a person suffix",
+              "he": "גזע ועליו סיומת גוף",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The past-tense skeleton"
+              ],
+              "objectives": [
+                "State the past as one stem plus a person suffix.",
+                "Drop the middle vowel of كتب when the suffix begins with a consonant."
+              ],
+              "teach": "The past tense is one stem plus a person suffix. For the sound root ك ت ب the stem is كَتَب. The third person masculine singular has no extra suffix: كَتَبَ means he wrote. You read the three radicals with fatha, fatha, fatha. That one form is the base the other persons modify.\n\nWhen the suffix starts with a consonant, the middle vowel drops and the middle radical takes sukun. كَتَبْتُ means I wrote, not katabatu. She is كَتَبَتْ, the stem plus تْ. Spot the stem first, then read only the ending that marks the person.",
+              "rules": [
+                "كَتَبَ means he wrote. For this verb the three vowels are fatha, fatha, fatha.",
+                "A consonant-initial suffix puts sukun on the middle radical: كَتَبْتُ means I wrote.",
+                "كَتَبَتْ means she wrote. That feminine suffix does not delete the middle fatha.",
+                "Another root may use a different middle vowel, as شَرِبَ, he drank, but the suffixes stay the same."
+              ],
+              "example": {
+                "prompt": "Why does كَتَبْتُ have sukun on the middle letter?",
+                "steps": [
+                  "The past stem is كتب, and the suffix تُ means I.",
+                  "A suffix that starts with a consonant removes the middle vowel.",
+                  "The reading is katabtu, I wrote, not ka-ta-ba-tu."
+                ],
+                "answer": "the suffix starts with a consonant"
+              },
+              "practice": [
+                {
+                  "q": "What does كتبَ mean?",
+                  "answer": "he wrote",
+                  "why": "Third person masculine singular is the stem with no extra person suffix. The final vowel is fatha."
+                },
+                {
+                  "q": "What does كتبتُ mean?",
+                  "answer": "I wrote",
+                  "why": "The suffix تُ is I. The middle radical takes sukun: katabtu."
+                }
+              ]
+            },
+            {
+              "id": "ar-past-l1b",
+              "title": "The ten person endings",
+              "he": "עשר סיומות הגוף",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Suffixes for all persons"
+              ],
+              "objectives": [
+                "Assign every suffix of كتب to the right person.",
+                "Keep كتبنا, we, distinct from كتبن, they feminine."
+              ],
+              "teach": "Learn the ten endings on كَتَب as one set. كَتَبْتُ is I, كَتَبْتَ is you masculine, and كَتَبْتِ is you feminine. كَتَبَ is he, and كَتَبَتْ is she. The consonant-suffix forms put sukun on the middle ب. The vowel on the final ta is what separates I, you masculine, and you feminine.\n\nThe plurals continue the same stem. كَتَبْنَا is we, كَتَبْتُمْ is you masculine plural, and كَتَبْتُنَّ is you feminine plural. كَتَبُوا is they masculine, and كَتَبْنَ is they feminine. They masculine keeps a vowel before و. Do not invent a separate stem for the plural.",
+              "rules": [
+                "Singular set: كتبتُ كتبتَ كتبتِ كتبَ كتبتْ.",
+                "Plural set: كتبنا كتبتم كتبتن كتبوا كتبن.",
+                "The vowel on ت separates I, you masculine, and you feminine: u, a, and i.",
+                "كَتَبْنَا with alif is we. كَتَبْنَ with no alif is they feminine. In كتبوا the final alif is silent."
+              ],
+              "example": {
+                "prompt": "Who is the subject of كَتَبْتِ?",
+                "steps": [
+                  "The stem is the past of كتب.",
+                  "The suffix is ta with kasra, تِ, not damma and not fatha.",
+                  "Kasra on that ta marks you feminine singular."
+                ],
+                "answer": "you feminine singular"
+              },
+              "practice": [
+                {
+                  "q": "What does كتبوا mean?",
+                  "answer": "they wrote",
+                  "why": "The suffix وا marks they masculine. The alif after waw is not pronounced: katabuu."
+                },
+                {
+                  "q": "Which form means we wrote, كتبنا or كتبن?",
+                  "answer": "كتبنا",
+                  "why": "كتبنا ends in a long alif and means we. كتبن has no alif and means they feminine."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-past-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-past-l2a",
+              "title": "Hamza roots, lightly",
+              "he": "שורשי המזה, בקצרה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Common weak spots: hamza roots, lightly"
+              ],
+              "objectives": [
+                "Treat hamza as a real radical in the past stem.",
+                "Attach the ordinary past suffixes to a hamza root."
+              ],
+              "teach": "A hamza root is still a past stem plus a suffix. In سَأَلَ the middle radical is ء, and سَأَلَ means he asked. أَخَذَ means he took, with hamza as the first radical, and أَكَلَ means he ate. Treat ء as a consonant in the root, not as a vowel letter and not as ع.\n\nThe ordinary suffixes still attach. سَأَلْتُ means I asked, سَأَلَتْ means she asked, and سَأَلُوا means they asked. Hebrew speakers may drop the hamza because alef often feels silent. Here it holds a root slot, so the three radicals stay three.",
+              "rules": [
+                "سَأَلَ means he asked, أَخَذَ means he took, and أَكَلَ means he ate.",
+                "Hamza ء fills a root slot. It is not a long vowel and it is not ع.",
+                "The same suffixes attach: سَأَلْتُ I asked, سَأَلَتْ she asked, سَأَلُوا they asked.",
+                "Do not drop the hamza just because a Hebrew alef is often silent."
+              ],
+              "example": {
+                "prompt": "What does سَأَلْتُ mean, and where is the hamza?",
+                "steps": [
+                  "The root is س أ ل, with hamza as the middle radical.",
+                  "The suffix تُ is the past ending for I, and the middle vowel drops before it.",
+                  "The word means I asked. The hamza is still the second radical."
+                ],
+                "answer": "I asked"
+              },
+              "practice": [
+                {
+                  "q": "What does أخذَ mean?",
+                  "answer": "he took",
+                  "why": "The root is أ خ ذ. Hamza is the first radical, and the past third-person masculine form is أخذ."
+                },
+                {
+                  "q": "What does سألتُ mean?",
+                  "answer": "I asked",
+                  "why": "The past suffix تُ is I, on the hamza root سأل. The hamza is a real consonant, not a silent alef."
+                }
+              ]
+            },
+            {
+              "id": "ar-past-l2b",
+              "title": "lam and ma for the past",
+              "he": "למ ומא לשלילת העבר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Negating the past with lam and ma"
+              ],
+              "objectives": [
+                "Negate a past verb with ما plus the past.",
+                "Negate a past meaning with لم plus the jussive, never with لا."
+              ],
+              "teach": "Arabic does not negate the past with لا. Two correct tools are لَمْ and مَا. مَا sits before the past itself: مَا كَتَبَ means he did not write. The verb keeps the past suffixes, so مَا كَتَبْتُ means I did not write. This is the easy pattern if you already know the past.\n\nلَمْ also means did not, but it takes the jussive, which looks like the present without its final vowel. لَمْ يَكْتُبْ means he did not write. Do not write لَمْ كَتَبَ, and do not write لَا كَتَبَ. Choose مَا plus past, or لَمْ plus jussive.",
+              "rules": [
+                "ما كتب means he did not write. The verb stays in the past.",
+                "لم يكتب means he did not write. لم takes the jussive, not the past stem.",
+                "Do not write لم كتب and do not write لا كتب.",
+                "ما كتبتُ means I did not write. The person suffix stays on the past verb."
+              ],
+              "example": {
+                "prompt": "Which two phrases correctly say he did not write?",
+                "steps": [
+                  "ما can stand directly before the past: ما كتب.",
+                  "لم needs the jussive of the present stem: لم يكتب.",
+                  "لا كتب and لم كتب are both illegal for this meaning."
+                ],
+                "answer": "ما كتب; لم يكتب"
+              },
+              "practice": [
+                {
+                  "q": "Give the لم negation of he wrote.",
+                  "answer": "لم يكتب",
+                  "why": "لم is followed by the jussive يكتبْ, not by the past كتب."
+                },
+                {
+                  "q": "Give the ما negation of I wrote.",
+                  "answer": "ما كتبت",
+                  "why": "ما keeps the past form, including the suffix تُ for I."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-past-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-past-l3a",
+              "title": "Object suffixes on the verb",
+              "he": "כינויי מושא על הפועל",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Object suffixes on the verb"
+              ],
+              "objectives": [
+                "Split a verb ending into a person suffix and an object suffix.",
+                "Read كتبتُها as I wrote it, feminine."
+              ],
+              "teach": "An object suffix attaches after the person suffix. كَتَبْتُهَا means I wrote it, and the ها is feminine. The تُ is still the I of the past. كَتَبَهُ means he wrote it masculine, and كَتَبَهَا means he wrote it feminine. Read the subject ending first, then the object.\n\nThe object set is ـهُ, ـها, ـكَ, ـكِ, ـني, ـنا, ـكم, ـهم, and ـهن. كَتَبْنَاهُ means we wrote it. A Hebrew speaker may hear one long ending and guess the person. Split it: person suffix, then object suffix. The feminine it in كَتَبْتُهَا is only the final ها.",
+              "rules": [
+                "The object suffix comes after the subject suffix. كتبتُها means I wrote it (feminine).",
+                "ها is feminine it. ه is masculine it. كتبه means he wrote it.",
+                "Other object endings include ني، كَ، كِ، نا، كم، هم.",
+                "Split the ending before you translate. The person of the verb is not the final ها."
+              ],
+              "example": {
+                "prompt": "What does كَتَبْتُهَا mean?",
+                "steps": [
+                  "The past suffix تُ marks I.",
+                  "The object suffix ها marks a feminine it.",
+                  "Read the subject first and the object second: I wrote it."
+                ],
+                "answer": "I wrote it (f)"
+              },
+              "practice": [
+                {
+                  "q": "In كتبتُها, what does ها mean?",
+                  "answer": "it (f)",
+                  "why": "ها is the feminine object. The تُ before it is still the subject I. The whole word means I wrote it."
+                },
+                {
+                  "q": "What does كتبناه mean?",
+                  "answer": "we wrote it",
+                  "why": "نا is the subject we, and the final ه is a masculine object. Person first, object second."
+                }
+              ]
+            },
+            {
+              "id": "ar-past-l3b",
+              "title": "Reading a past sentence aloud",
+              "he": "קריאת משפט עבר בקול",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Reading a past-tense sentence aloud from print"
+              ],
+              "objectives": [
+                "Voice a printed past sentence with the right verb ending and article.",
+                "Decide from the print whether the subject is he, she, or a negation."
+              ],
+              "teach": "Reading a past sentence aloud means three decisions: the vowels of the verb, the subject ending, and the sun or moon article on the nouns. كَتَبَ الطَّالِبُ الدَّرْسَ means the student wrote the lesson. كَتَبَ is he wrote. الطَّالِبُ is the subject, with the lam of ال heard, because ط is a moon letter.\n\nIn الدَّرْسَ the dal is a sun letter, so you say ad-darsa, not al-darsa, and the object ends in accusative a. If the print shows كَتَبَتْ, the subject is she. مَا كَتَبَ keeps the past, while لَمْ يَكْتُبْ uses the jussive.",
+              "rules": [
+                "كَتَبَ الطَّالِبُ الدَّرْسَ means the student wrote the lesson.",
+                "ط is a moon letter, so الطالب is al-taalib. د is a sun letter, so الدرس is ad-dars.",
+                "Before a noun subject, كتبت الطالبة is she, not I. كتب الطالب is he.",
+                "ما كتب keeps the past. لم يكتب uses the jussive for a past meaning."
+              ],
+              "example": {
+                "prompt": "What does كَتَبَ الطَّالِبُ الدَّرْسَ mean?",
+                "steps": [
+                  "كتبَ is kataba, he wrote. الطالب is al-taalibu, because ط is a moon letter.",
+                  "The object الدرس has sun dal, so say ad-darsa, accusative a and no tanwin.",
+                  "The sentence means the student wrote the lesson."
+                ],
+                "answer": "the student wrote the lesson"
+              },
+              "practice": [
+                {
+                  "q": "Pronounce the article in الطالب.",
+                  "answer": "al",
+                  "why": "ط is a moon letter, so the lam is heard: al-taalib. Do not assimilate it."
+                },
+                {
+                  "q": "Pronounce the article in الدرس.",
+                  "answer": "ad",
+                  "why": "د is a sun letter. The lam is assimilated and dal is doubled: ad-dars."
+                },
+                {
+                  "q": "In كتبت الطالبة الدرس, who wrote?",
+                  "answer": "she",
+                  "why": "Before the noun subject الطالبة, the ت of كتبت marks feminine she. It agrees with the female student."
+                },
+                {
+                  "q": "Which negation keeps the past stem, ما كتب or لم يكتب?",
+                  "answer": "ما كتب",
+                  "why": "ما is followed by the past itself. لم is followed by the jussive يكتب, even though the meaning is past."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-present",
+      "index": 4,
+      "title": "Present, future, and patterns",
+      "he": "הווה, עתיד ומשקלים",
+      "topic": "Present, future, and patterns",
+      "thesis": "The present adds a prefix, the future adds sa or sawfa, and derived forms are recognized as families.",
+      "syllabus": [
+        "The present prefix and suffix",
+        "Future with sin and sawfa",
+        "The imperative",
+        "Form I versus derived forms II, III, IV, V, VIII, X at recognition level",
+        "Masdar as the idea of the verb",
+        "Choosing a pattern from context"
+      ],
+      "levels": [
+        {
+          "id": "ar-present-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-present-l1a",
+              "title": "Prefix, stem, and suffix",
+              "he": "תחילית, גזע וסופית",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The present prefix and suffix"
+              ],
+              "objectives": [
+                "Add the correct present prefix to the stem of كتب.",
+                "Add the present suffix when the person needs one."
+              ],
+              "teach": "The present of كَتَبَ keeps the stem كْتُب and adds a prefix for the person. يَكْتُبُ means he writes, تَكْتُبُ means she writes or you masculine, أَكْتُبُ means I write, and نَكْتُبُ means we write. The prefix is the first clue. The vowel on the middle radical of this verb is u.\n\nSome persons also take a suffix. تَكْتُبِينَ is you feminine, يَكْتُبُونَ is they masculine, and يَكْتُبْنَ is they feminine. You masculine plural is تَكْتُبُونَ. Read prefix, then stem, then suffix. Do not reuse the past ending تُ for I in the present.",
+              "rules": [
+                "Prefixes: أكتب I, نكتب we, يكتب he, تكتب she or you masculine.",
+                "يَكْتُبُ means he writes. The middle vowel of this verb is u, and kaf has sukun.",
+                "Suffixes: تكتبين you feminine, تكتبون you masculine plural, يكتبون they masculine, يكتبن they feminine.",
+                "Do not reuse the past تُ for I. Present I is the prefix أ."
+              ],
+              "example": {
+                "prompt": "How is he writes built from the stem of كتب?",
+                "steps": [
+                  "The present stem is ktub, with sukun on kaf and damma on ta.",
+                  "He takes the prefix ya, written ي.",
+                  "The indicative ending is damma, so يَكْتُبُ means he writes."
+                ],
+                "answer": "يكتب"
+              },
+              "practice": [
+                {
+                  "q": "What does أكتب mean?",
+                  "answer": "I write",
+                  "why": "The prefix أ marks I in the present. Past I is كتبتُ, a suffix, not a prefix."
+                },
+                {
+                  "q": "What does يكتبون mean?",
+                  "answer": "they write",
+                  "why": "The prefix ي is third person, and the suffix ون is masculine plural. The nun is pronounced."
+                }
+              ]
+            },
+            {
+              "id": "ar-present-l1b",
+              "title": "sin and sawfa for the future",
+              "he": "סין וסופא לעתיד",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Future with sin and sawfa"
+              ],
+              "objectives": [
+                "Form the future with a joined س or with سوف.",
+                "Keep the present prefixes after the future marker."
+              ],
+              "teach": "The future does not need a new stem. Put سَ or سَوْفَ before the present. سَيَكْتُبُ means he will write, and سَوْفَ يَكْتُبُ means the same with a separate particle. سَأَكْتُبُ means I will write. The present prefixes stay in place after سَ.\n\nسَ is written joined to the verb. سَوْفَ is written as its own word and is a little more formal or distant, but both are future. Do not add سَ to a past verb. سَكَتَبَ is not a future. Negate a future with لَنْ plus the subjunctive: لَنْ يَكْتُبَ means he will not write.",
+              "rules": [
+                "سيكتب means he will write. The س is joined to the present.",
+                "سوف يكتب means he will write, with سوف written as a separate word.",
+                "سأكتب means I will write. The present prefix stays after س.",
+                "Do not attach س to a past verb. A future negative is لن يكتب, not لا سيكتب."
+              ],
+              "example": {
+                "prompt": "Give two correct futures of يكتب, he writes.",
+                "steps": [
+                  "Join س to the present: سيكتب.",
+                  "Or place سوف before the same present: سوف يكتب.",
+                  "Both mean he will write. The stem does not become the past كتب."
+                ],
+                "answer": "سيكتب; سوف يكتب"
+              },
+              "practice": [
+                {
+                  "q": "What does سيكتب mean?",
+                  "answer": "he will write",
+                  "why": "س marks the future and يكتب is he writes. The س is written joined to the verb."
+                },
+                {
+                  "q": "Which future marker is a separate word, س or سوف?",
+                  "answer": "سوف",
+                  "why": "سوف stands before the present as its own word. س is only a prefixed letter."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-present-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-present-l2a",
+              "title": "The imperative",
+              "he": "צורת הציווי",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "The imperative"
+              ],
+              "objectives": [
+                "Form the masculine singular imperative of كتب.",
+                "Add the feminine and plural endings for the other you-forms."
+              ],
+              "teach": "The imperative gives a command to you. For this verb the masculine singular is اُكْتُبْ, write. It is built from the present تَكْتُبُ: drop the prefix, drop the final vowel, and add a helping alif because the stem starts with two consonants. You do not use the imperative for he or for I.\n\nThe other you-forms add endings. اُكْتُبِي is you feminine singular, اُكْتُبُوا is you masculine plural, and اُكْتُبْنَ is you feminine plural. A polite written request may use the present instead, but the command form itself is اُكْتُبْ. Do not put سَ on an imperative.",
+              "rules": [
+                "The masculine singular command is اكتب, pronounced اُكْتُبْ, write.",
+                "Build it from تكتب: drop the prefix and the final vowel, then add a helping alif.",
+                "اُكْتُبِي is you feminine, اُكْتُبُوا is you masculine plural, and اُكْتُبْنَ is you feminine plural.",
+                "The imperative addresses you. Do not put س on it, and do not use it for he."
+              ],
+              "example": {
+                "prompt": "Why does the command اكتب begin with alif?",
+                "steps": [
+                  "The present stem ktub starts with two consonants once the prefix is gone.",
+                  "Arabic needs a helping vowel, written as alif: uktub.",
+                  "The final vowel of the present is dropped, so the form is اُكْتُبْ."
+                ],
+                "answer": "helping alif"
+              },
+              "practice": [
+                {
+                  "q": "Give the masculine singular command of كتب.",
+                  "answer": "اكتب",
+                  "why": "Drop the prefix of تكتب, drop the final vowel, and add the helping alif. اكتب means write."
+                },
+                {
+                  "q": "Which command is addressed to you feminine singular?",
+                  "answer": "اكتبي",
+                  "why": "The ending ي marks feminine singular you. Masculine singular has no extra ending: اكتب."
+                }
+              ]
+            },
+            {
+              "id": "ar-present-l2b",
+              "title": "Derived forms at a glance",
+              "he": "בניינים נגזרים במבט",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Form I versus derived forms II, III, IV, V, VIII, X at recognition level"
+              ],
+              "objectives": [
+                "Recognize Form I كتب against the derived forms in the set.",
+                "Name the visible mark of Forms II, III, IV, V, VIII, and X."
+              ],
+              "teach": "Form I is the plain root pattern, as كَتَبَ, he wrote. Derived forms add a mark you can see. II doubles the middle letter: دَرَّسَ means he taught. III inserts alif: شَاهَدَ means he watched. IV adds a prefix alif: أَكْرَمَ means he honored. At recognition level, the extra mark tells you the family.\n\nV adds ت and a shadda: تَعَلَّمَ means he learned. VIII inserts ت: اِجْتَمَعَ means he met. X begins with است: اِسْتَخْدَمَ means he used. You need not produce every form. Do not call دَرَّسَ Form I, because the shadda changes the meaning.",
+              "rules": [
+                "I كتب means he wrote. II درس is دَرَّسَ, he taught, not plain دَرَسَ, he studied.",
+                "III شاهد means he watched. IV أكرم means he honored.",
+                "V تعلم means he learned. VIII اجتمع means he met. X استخدم means he used.",
+                "Recognition marks: shadda, an extra alif, a prefixed alif, prefixed ت, infixed ت, and است."
+              ],
+              "example": {
+                "prompt": "A printed verb is درّس, with shadda. Which form is it, and what does it mean?",
+                "steps": [
+                  "Form I of this root is دَرَسَ, he studied, with no shadda.",
+                  "A doubled middle radical is the mark of Form II.",
+                  "دَرَّسَ means he taught. Do not translate it as he studied."
+                ],
+                "answer": "II; he taught"
+              },
+              "practice": [
+                {
+                  "q": "What does استخدم mean, and which form is it?",
+                  "answer": "he used; X",
+                  "why": "The prefix است is the mark of Form X. استخدم means he used."
+                },
+                {
+                  "q": "شاهد has an alif after the first radical. Which form is that?",
+                  "answer": "III",
+                  "why": "Form III inserts alif between the first and second radicals. شاهد means he watched."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-present-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-present-l3a",
+              "title": "The masdar",
+              "he": "שם הפעולה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Masdar as the idea of the verb"
+              ],
+              "objectives": [
+                "Identify كتابة as the masdar of كتب, not as a past verb.",
+                "Treat a masdar as a noun that can take ال and an adjective."
+              ],
+              "teach": "The masdar is the noun of the action, the idea of the verb with no tense and no person. From كَتَبَ the masdar is كِتَابَة, writing. It can be a subject or an object: الكِتَابَةُ مُفِيدَةٌ means writing is useful. Do not translate كِتَابَة as he wrote. That is the past كَتَبَ.\n\nDerived forms have their own masdar shapes. Form II often uses تَفْعِيل, as تَدْرِيس, teaching. You recognize these more often than you build them. A masdar takes ال like a noun. It is not a present verb and does not take سَ.",
+              "rules": [
+                "كتابة is the masdar of كتب. It means writing, the idea of the verb.",
+                "الكتابة مفيدة means writing is useful. The masdar is feminine because of ة.",
+                "Do not translate كتابة as he wrote. That is the past كتب.",
+                "Form II often makes a masdar on تفعيل, as تدريس, teaching. A masdar does not take س."
+              ],
+              "example": {
+                "prompt": "What is the masdar of كَتَبَ, and why is it not a verb?",
+                "steps": [
+                  "The noun of the action from this root is كتابة.",
+                  "It names writing as an idea. It has no person suffix and no tense.",
+                  "He wrote is the past كتب. He will write is سيكتب."
+                ],
+                "answer": "كتابة; no tense"
+              },
+              "practice": [
+                {
+                  "q": "What is the masdar of كتب?",
+                  "answer": "كتابة",
+                  "why": "كتابة names the act of writing. It is a noun, feminine by ta marbuta, not the past tense."
+                },
+                {
+                  "q": "Does الكتابة take an adjective like a noun, or a past suffix like a verb?",
+                  "answer": "like a noun",
+                  "why": "A masdar behaves as a noun. الكتابة المفيدة is legal. It does not take the past suffix تُ."
+                }
+              ]
+            },
+            {
+              "id": "ar-present-l3b",
+              "title": "Pattern from context",
+              "he": "משקל מתוך ההקשר",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Choosing a pattern from context"
+              ],
+              "objectives": [
+                "Choose Form I, II, V, or X from the meaning in the sentence.",
+                "Then choose past, present, future, imperative, or masdar from the time."
+              ],
+              "teach": "Context chooses the pattern. If someone taught a lesson, use Form II: دَرَّسَ المُعَلِّمُ. If the student learned it, use Form V: تَعَلَّمَ الطَّالِبُ. Plain writing stays Form I, كَتَبَ. Using a tool is Form X, اِسْتَخْدَمَ. Watch the shadda, the extra alif, or است.\n\nTense is a second choice, not a third stem. Past is the suffix form, present adds the prefix, and future is سَيَكْتُبُ or سَوْفَ يَكْتُبُ. A command is اُكْتُبْ. The masdar كِتَابَة names the idea only. Pick the family from the meaning, then the tense from the time.",
+              "rules": [
+                "Meaning picks the family: كتب he wrote, درس with shadda he taught, تعلم he learned, استخدم he used.",
+                "III شاهد he watched, IV أكرم he honored, VIII اجتمع he met.",
+                "Time is separate: past suffix, present prefix, future سيكتب or سوف يكتب, command اكتب.",
+                "كتابة is the masdar, the idea only. It is not a tense of كتب."
+              ],
+              "example": {
+                "prompt": "The teacher taught and the student learned. Which two forms are required?",
+                "steps": [
+                  "Taught is causative Form II: دَرَّسَ.",
+                  "Learned, of the student himself, is Form V: تَعَلَّمَ.",
+                  "Neither meaning is plain Form I كتب, and neither is the masdar كتابة."
+                ],
+                "answer": "II and V"
+              },
+              "practice": [
+                {
+                  "q": "Which form means he used?",
+                  "answer": "X",
+                  "why": "استخدم begins with است, the Form X mark. The meaning is he used."
+                },
+                {
+                  "q": "Give the future of يكتب.",
+                  "answer": "سيكتب",
+                  "why": "Future adds س to the present, or uses سوف يكتب. It does not go back to the past stem."
+                },
+                {
+                  "q": "Someone is told write, masculine singular. Which form?",
+                  "answer": "اكتب",
+                  "why": "The imperative of كتب for you masculine singular is اكتب. It is not سيكتب and not كتب."
+                },
+                {
+                  "q": "Which word names writing with no person and no tense?",
+                  "answer": "كتابة",
+                  "why": "كتابة is the masdar. كتب means he wrote, and يكتب means he writes."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-particle",
+      "index": 5,
+      "title": "Particles",
+      "he": "מילות קישור ומבנה",
+      "topic": "Particles",
+      "thesis": "Particles decide negation, questions, and relations.",
+      "syllabus": [
+        "Prepositions and the pronouns that attach to them",
+        "Question words",
+        "Negation map: la, lam, lan, laysa, ma",
+        "Because, but, and inna at a usable level",
+        "The relative alladhi and its siblings",
+        "Numbers in simple noun phrases"
+      ],
+      "levels": [
+        {
+          "id": "ar-particle-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-particle-l1a",
+              "title": "Prepositions with pronouns",
+              "he": "מילות יחס עם כינויים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Prepositions and the pronouns that attach to them"
+              ],
+              "objectives": [
+                "Attach a pronoun suffix to a common preposition.",
+                "Keep له distinct from the definite article."
+              ],
+              "teach": "Common prepositions are فِي, عَلَى, إِلَى, مِنْ, لِ, بِ, and مَعَ. They pull a pronoun onto themselves. فِي الكِتَابِ means in the book. With a pronoun, فِيهِ means in it masculine, and فِيهَا means in it feminine. عَلَيْهِ means on him, and لَهَا means for her.\n\nThe suffix vowels match the possessive set you already know. مِنِّي means from me, مَعِي means with me, and إِلَيْكَ means to you masculine. Hebrew בְּ and לְ feel similar, but Arabic writes the pronoun as a real suffix, not as a separate word. Keep لَهُ, for him, distinct from the article ال.",
+              "rules": [
+                "Core prepositions: في، على، إلى، من، لِ، بِ، مع.",
+                "فيه means in it masculine, فيها in it feminine, عليه on him, لها for her.",
+                "مني means from me, معي with me, إليك to you masculine.",
+                "Before a suffix, لِ is usually la-: له، لها، لك. Do not confuse له with ال."
+              ],
+              "example": {
+                "prompt": "What does فِيهَا mean?",
+                "steps": [
+                  "في means in. The following noun is replaced by a suffix.",
+                  "ها is feminine singular.",
+                  "فيها means in it, feminine, or in her, according to the noun it resumes."
+                ],
+                "answer": "in it (f)"
+              },
+              "practice": [
+                {
+                  "q": "What does عليه mean?",
+                  "answer": "on him",
+                  "why": "على plus the masculine suffix ه becomes عليه. The pronoun is attached, not written as a separate هو."
+                },
+                {
+                  "q": "What does لها mean?",
+                  "answer": "for her",
+                  "why": "The preposition ل takes the suffix ها, and the vowel is a: laha. It is not the article ال."
+                }
+              ]
+            },
+            {
+              "id": "ar-particle-l1b",
+              "title": "Question words",
+              "he": "מילות שאלה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Question words"
+              ],
+              "objectives": [
+                "Choose the question word for who, what, where, when, why, and how.",
+                "Form a yes-no question with هل and no helper verb."
+              ],
+              "teach": "Question words usually stand first. مَنْ asks who, مَا and مَاذَا ask what, أَيْنَ asks where, مَتَى asks when, لِمَاذَا asks why, and كَيْفَ asks how. مَنْ كَتَبَ؟ means who wrote? مَاذَا كَتَبَ؟ means what did he write? أَيْنَ الكِتَابُ؟ means where is the book?\n\nهَلْ makes a yes-or-no question. هَلْ كَتَبَ الطَّالِبُ؟ means did the student write? Answer with نَعَمْ or لَا. Do not add a helper verb such as do. The Arabic verb already shows the person, so who wrote is simply مَنْ كَتَبَ.",
+              "rules": [
+                "The set is من، ما، ماذا، أين، متى، لماذا، كيف، هل.",
+                "من كتب؟ means who wrote? ماذا كتب؟ means what did he write? أين الكتاب؟ means where is the book?",
+                "هل كتب الطالب؟ means did the student write? Answer نعم or لا.",
+                "Do not add a helper verb. The Arabic verb already shows person and tense."
+              ],
+              "example": {
+                "prompt": "Which question word asks who in who wrote?",
+                "steps": [
+                  "Who asks for a person, so the word is من, not ما.",
+                  "The verb stays كتب. Arabic does not add do or did.",
+                  "من كتب؟ is the question."
+                ],
+                "answer": "من"
+              },
+              "practice": [
+                {
+                  "q": "Which word asks where?",
+                  "answer": "أين",
+                  "why": "أين means where. متى means when, and لماذا means why."
+                },
+                {
+                  "q": "Turn كتب الطالب into a yes-no question.",
+                  "answer": "هل كتب الطالب؟",
+                  "why": "هل in front of the statement asks did the student write? No helper verb is added."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-particle-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-particle-l2a",
+              "title": "The negation map",
+              "he": "מפת השלילה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Negation map: la, lam, lan, laysa, ma"
+              ],
+              "objectives": [
+                "Match لا, لم, لن, ما, and ليس to the right time and verb form.",
+                "Put the predicate of ليس in the accusative."
+              ],
+              "teach": "Each negator picks a verb form. لَا يَكْتُبُ means he does not write, present. لَمْ يَكْتُبْ means he did not write, jussive. لَنْ يَكْتُبَ means he will not write, subjunctive. The English word not is not one Arabic word. Time chooses the particle.\n\nمَا كَتَبَ means he did not write, and the verb stays past. لَيْسَ is the negator of a nominal sentence: لَيْسَ طَالِبًا means he is not a student, with the predicate in the accusative. Do not use لَا before كَتَبَ. Match the five: لَا, لَمْ, لَنْ, لَيْسَ, and مَا.",
+              "rules": [
+                "The map is لا يكتب, لم يكتب, لن يكتب, ليس طالبًا, ما كتب.",
+                "لا takes the present: he does not write. لن takes the subjunctive: he will not write.",
+                "لم takes the jussive for a past meaning. ما takes the past itself.",
+                "ليس طالبًا means he is not a student, predicate accusative. With a noun subject: ليس الطالبُ مجتهدًا."
+              ],
+              "example": {
+                "prompt": "Which particle negates a future write, and what verb form follows it?",
+                "steps": [
+                  "Future negation is لن, not لا and not a past verb.",
+                  "لن is followed by the subjunctive, which ends in fatha: يكتبَ.",
+                  "لن يكتب means he will not write."
+                ],
+                "answer": "لن يكتب"
+              },
+              "practice": [
+                {
+                  "q": "Which phrase means he does not write, now or as a habit?",
+                  "answer": "لا يكتب",
+                  "why": "لا plus the present negates a present or habitual action. It is not the past and not the future."
+                },
+                {
+                  "q": "What case is طالبًا in ليس طالبًا?",
+                  "answer": "accusative",
+                  "why": "ليس takes an accusative predicate. The tanwin fatha and the final alif spell that case."
+                }
+              ]
+            },
+            {
+              "id": "ar-particle-l2b",
+              "title": "Because, but, and inna",
+              "he": "כי, אבל, ואִנַּ",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Because, but, and inna at a usable level"
+              ],
+              "objectives": [
+                "Use لأنّ for because with an accusative subject.",
+                "Recognize إنّ and لكنّ as particles that govern the next noun."
+              ],
+              "teach": "إِنَّ, أَنَّ, and لَكِنَّ are sisters. They put the following noun or pronoun in the accusative. إِنَّ الطَّالِبَ مُجْتَهِدٌ means indeed the student is diligent. لِأَنَّ means because and works the same way: لِأَنَّهُ كَتَبَ means because he wrote. The pronoun is attached and is accusative.\n\nلَكِنَّ means but and also takes the accusative. الطَّالِبُ صَغِيرٌ لَكِنَّهُ مُجْتَهِدٌ means the student is young but he is diligent. The light forms لَكِنْ and أَنْ are different and do not take this accusative by themselves. On the exam, a shadda on إِنَّ or لَكِنَّ is your signal.",
+              "rules": [
+                "إنّ الطالبَ مجتهدٌ means indeed the student is diligent. The noun after إنّ is accusative, and the predicate is nominative.",
+                "لأنّ means because: لأنه كتب means because he wrote.",
+                "لكنّ means but: الطالب صغير لكنه مجتهد means the student is young but he is diligent.",
+                "لكنْ and أنْ without shadda do not govern this accusative. The shadda is the signal."
+              ],
+              "example": {
+                "prompt": "In إِنَّ الطَّالِبَ مُجْتَهِدٌ, why is الطالب accusative?",
+                "steps": [
+                  "إنّ is one of the sisters that govern a following nominal sentence.",
+                  "Its noun goes into the accusative: الطالبَ.",
+                  "The predicate مجتهدٌ stays nominative. The sense is indeed the student is diligent."
+                ],
+                "answer": "إنّ governs it"
+              },
+              "practice": [
+                {
+                  "q": "What does لأنه كتب mean?",
+                  "answer": "because he wrote",
+                  "why": "لأنّ means because, and the attached pronoun is its accusative subject. The verb كتب stays past."
+                },
+                {
+                  "q": "Which but takes an accusative, لكنْ or لكنّ?",
+                  "answer": "لكنّ",
+                  "why": "The shadda marks the sister of إنّ. لكنّه مجتهد means but he is diligent, with an accusative pronoun."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-particle-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-particle-l3a",
+              "title": "The relative pronouns",
+              "he": "כינויי זיקה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The relative alladhi and its siblings"
+              ],
+              "objectives": [
+                "Choose الذي, التي, or الذين to match a definite noun.",
+                "Keep the resumptive pronoun when the relative is not the subject."
+              ],
+              "teach": "The relative pronoun matches the noun it follows, and that noun is definite. الَّذِي is masculine singular, الَّتِي is feminine singular, and الَّذِينَ is masculine plural. الطَّالِبُ الَّذِي كَتَبَ means the student who wrote. الطَّالِبَةُ الَّتِي كَتَبَتْ means the female student who wrote.\n\nIf the relative is not the subject, Arabic keeps a resumptive pronoun. الكِتَابُ الَّذِي كَتَبْتُهُ means the book that I wrote, and the final ـهُ points back to the book. Hebrew often has no such pronoun. Do not drop it. After الَّذِينَ the verb is plural: كَتَبُوا.",
+              "rules": [
+                "الذي is masculine singular, التي is feminine singular, and الذين is masculine plural.",
+                "الطالب الذي كتب means the student who wrote. الطالبة التي كتبت means the female student who wrote.",
+                "If the relative is the object, keep a pronoun: الكتاب الذي كتبته means the book that I wrote.",
+                "A feminine plural sibling is اللاتي. Do not drop the resumptive pronoun."
+              ],
+              "example": {
+                "prompt": "Why is there a final ه in الكِتَابُ الَّذِي كَتَبْتُهُ?",
+                "steps": [
+                  "الذي refers to الكتاب, a definite masculine singular noun.",
+                  "كتبتُ already has its subject, I, so الذي is not the subject of the verb.",
+                  "The object pronoun ه resumes الكتاب. The sense is the book that I wrote."
+                ],
+                "answer": "resumptive object"
+              },
+              "practice": [
+                {
+                  "q": "Which relative follows الطالبة?",
+                  "answer": "التي",
+                  "why": "الطالبة is feminine singular, so the relative is التي, not الذي and not الذين."
+                },
+                {
+                  "q": "In الكتاب الذي كتبتُه, what does the final ه refer to?",
+                  "answer": "the book",
+                  "why": "The relative is the object of wrote, so Arabic keeps a pronoun that points back to الكتاب."
+                }
+              ]
+            },
+            {
+              "id": "ar-particle-l3b",
+              "title": "Numbers with nouns",
+              "he": "מספרים עם שמות עצם",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Numbers in simple noun phrases"
+              ],
+              "objectives": [
+                "Use واحد after the noun, and the dual for two.",
+                "Apply the opposite-gender rule from three to ten with a genitive plural."
+              ],
+              "teach": "For one, the number follows and agrees: كِتَابٌ وَاحِدٌ means one book. Two is usually the dual: كِتَابَانِ means two books. From three to ten the number takes the opposite gender, and the noun is genitive plural. ثَلَاثَةُ كُتُبٍ means three books, because كُتُب is masculine so the number is the feminine form.\n\nA feminine counted noun flips the number. ثَلَاثُ طَالِبَاتٍ means three female students, using ثلاث with no ta marbuta. عَشَرَةُ طُلَّابٍ means ten male students. Read the whole phrase as one unit. Do not copy Hebrew agreement and write ثلاث كتب.",
+              "rules": [
+                "One follows and agrees: كتاب واحد, طالبة واحدة.",
+                "Two is usually the dual: كتابان means two books.",
+                "From three to ten, the number takes the opposite gender and the noun is genitive plural: ثلاثة كتب, ثلاث طالبات.",
+                "عشرة طلاب means ten male students. Do not write ثلاث كتب, because كتب is masculine and needs ثلاثة."
+              ],
+              "example": {
+                "prompt": "How do you say three books, and why is the number feminine in form?",
+                "steps": [
+                  "The counted noun كتب is a masculine plural.",
+                  "From three to ten the number takes the opposite gender, so use ثلاثة, with ة.",
+                  "The noun is genitive plural: ثلاثة كتب."
+                ],
+                "answer": "ثلاثة كتب"
+              },
+              "practice": [
+                {
+                  "q": "How do you say one book?",
+                  "answer": "كتاب واحد",
+                  "why": "The number one follows the noun and agrees with it. Masculine book takes واحد, not واحدة."
+                },
+                {
+                  "q": "How do you say two books?",
+                  "answer": "كتابان",
+                  "why": "Two is normally the dual ending. In the nominative that is كتابان."
+                },
+                {
+                  "q": "How do you say three female students?",
+                  "answer": "ثلاث طالبات",
+                  "why": "طالبات is feminine, so three drops the ta marbuta: ثلاث, and the noun is genitive plural."
+                },
+                {
+                  "q": "Why ثلاثة كتب and not ثلاث كتب?",
+                  "answer": "كتب is masculine",
+                  "why": "From three to ten the genders are opposite. A masculine noun takes the feminine form ثلاثة."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

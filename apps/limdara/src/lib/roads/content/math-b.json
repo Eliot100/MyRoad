@@ -1,0 +1,1851 @@
+{
+  "stages": [
+    {
+      "id": "math-vec",
+      "index": 7,
+      "title": "Vectors",
+      "he": "וקטורים",
+      "topic": "Vectors",
+      "thesis": "Vectors turn geometric statements about direction and length into algebra.",
+      "syllabus": [
+        "Components and magnitude",
+        "Addition and scalar multiplication",
+        "Dot product and angle",
+        "Orthogonal vectors and projection",
+        "Vector equation of a line",
+        "Vector proofs in the plane"
+      ],
+      "levels": [
+        {
+          "id": "math-vec-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-vec-l1a",
+              "title": "Components and magnitude",
+              "he": "רכיבים וגודל",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Components and magnitude"
+              ],
+              "objectives": [
+                "Read a vector as components and test when two vectors are equal.",
+                "Compute a magnitude and the unit vector in the same direction."
+              ],
+              "teach": "A plane vector is an ordered pair of real components. Write a = (3, -1): the first entry is the horizontal run and the second is the vertical run. The zero vector is (0, 0). Two vectors are equal exactly when both components are equal.\n\nThe magnitude is the length, |a| = sqrt(x^2 + y^2). For (3, -1) that is sqrt(9 + 1) = sqrt(10). A unit vector in the same direction is a divided by |a|, so each component is divided by sqrt(10). Length is never negative, and |ka| equals |k| times |a|.",
+              "rules": [
+                "a = (x, y) has magnitude |a| = sqrt(x^2 + y^2).",
+                "Magnitude is never negative, and |ka| = |k| |a|.",
+                "The unit vector in the direction of a nonzero a is a/|a|.",
+                "Equal vectors have equal components. The zero vector is (0, 0)."
+              ],
+              "example": {
+                "prompt": "Find the magnitude of a = (3, -1).",
+                "steps": [
+                  "Square the components: 3^2 = 9 and (-1)^2 = 1.",
+                  "Add the squares: 9 + 1 = 10.",
+                  "Take the nonnegative square root: |a| = sqrt(10)."
+                ],
+                "answer": "sqrt(10)"
+              },
+              "practice": [
+                {
+                  "q": "Magnitude of (6, 8).",
+                  "answer": "10",
+                  "why": "sqrt(36 + 64) = sqrt(100) = 10."
+                },
+                {
+                  "q": "Magnitude of (-5, 12).",
+                  "answer": "13",
+                  "why": "sqrt(25 + 144) = sqrt(169) = 13."
+                }
+              ]
+            },
+            {
+              "id": "math-vec-l1b",
+              "title": "Addition and scalar multiplication",
+              "he": "חיבור וכפל בסקלר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Addition and scalar multiplication"
+              ],
+              "objectives": [
+                "Add and subtract vectors component by component.",
+                "Multiply a vector by a scalar and use the distributive laws."
+              ],
+              "teach": "Add vectors component by component. If a = (3, -1) and b = (1, 2), then a + b = (4, 1). Subtraction is the same move: a - b = (3 - 1, -1 - 2) = (2, -3). Order of addition does not matter, and adding (0, 0) leaves a vector unchanged.\n\nA scalar k multiplies both components: k(x, y) = (kx, ky). So 2(3, -1) = (6, -2), and (-1)(3, -1) = (-3, 1). The scalar 0 gives the zero vector. Distributivity holds both ways: k(a + b) = ka + kb, and (k + m)a = ka + ma.",
+              "rules": [
+                "(x1, y1) + (x2, y2) = (x1 + x2, y1 + y2).",
+                "k(x, y) = (kx, ky). A negative k reverses the direction.",
+                "a + b = b + a, and a + (0, 0) = a.",
+                "k(a + b) = ka + kb and (k + m)a = ka + ma."
+              ],
+              "example": {
+                "prompt": "Compute a + b and 2a for a = (3, -1) and b = (1, 2).",
+                "steps": [
+                  "Add components: 3 + 1 = 4 and -1 + 2 = 1, so a + b = (4, 1).",
+                  "Multiply a by 2: 2*3 = 6 and 2*(-1) = -2.",
+                  "So 2a = (6, -2)."
+                ],
+                "answer": "(4, 1) and (6, -2)"
+              },
+              "practice": [
+                {
+                  "q": "Sum of (2, 5) and (4, -1).",
+                  "answer": "(6, 4)",
+                  "why": "2 + 4 = 6 and 5 + (-1) = 4."
+                },
+                {
+                  "q": "Compute 3(1, -2).",
+                  "answer": "(3, -6)",
+                  "why": "Each component is multiplied by 3."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-vec-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-vec-l2a",
+              "title": "Dot product and angle",
+              "he": "מכפלה סקלרית וזווית",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Dot product and angle"
+              ],
+              "objectives": [
+                "Compute a dot product from components.",
+                "Recover the angle between two nonzero vectors from the dot product."
+              ],
+              "teach": "The dot product of a = (a1, a2) and b = (b1, b2) is the number a1*b1 + a2*b2. It is a scalar, not a vector. For a = (3, -1) and b = (1, 2) the product is 3*1 + (-1)*2 = 1. The same value equals |a| |b| cos theta.\n\nThe lengths are |a| = sqrt(10) and |b| = sqrt(5), so cos theta = 1 / sqrt(50). A positive product means an acute angle, and a negative product means an obtuse angle. Find both lengths before you solve for theta. If either vector is zero, no angle is defined.",
+              "rules": [
+                "a·b = a1*b1 + a2*b2 = |a| |b| cos theta.",
+                "For a = (3, -1) and b = (1, 2), a·b = 1, |a| = sqrt(10), and |b| = sqrt(5).",
+                "cos theta = (a·b) / (|a| |b|), for nonzero a and b.",
+                "Positive dot product: acute angle. Negative: obtuse angle."
+              ],
+              "example": {
+                "prompt": "Find a·b for a = (3, -1) and b = (1, 2), and state |a| and |b|.",
+                "steps": [
+                  "a·b = 3*1 + (-1)*2 = 3 - 2 = 1.",
+                  "|a| = sqrt(3^2 + (-1)^2) = sqrt(10).",
+                  "|b| = sqrt(1^2 + 2^2) = sqrt(5).",
+                  "cos theta = 1 / (sqrt(10) * sqrt(5)) = 1 / sqrt(50)."
+                ],
+                "answer": "1"
+              },
+              "practice": [
+                {
+                  "q": "Dot product of (4, 1) and (2, -3).",
+                  "answer": "5",
+                  "why": "4*2 + 1*(-3) = 8 - 3 = 5."
+                },
+                {
+                  "q": "Angle in degrees between (1, 0) and (0, 1).",
+                  "answer": "90",
+                  "why": "The dot product is 0, so the angle is 90 degrees."
+                }
+              ]
+            },
+            {
+              "id": "math-vec-l2b",
+              "title": "Orthogonal vectors and projection",
+              "he": "ניצבות והיטל",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Orthogonal vectors and projection"
+              ],
+              "objectives": [
+                "Test orthogonality with the dot product.",
+                "Compute the projection of one vector onto a nonzero vector."
+              ],
+              "teach": "Two vectors are orthogonal when their dot product is 0, so the angle between them is 90 degrees. Check (2, 3) and (3, -2): 2*3 + 3*(-2) = 0, so they are orthogonal. The zero vector is orthogonal to every vector, because every product with it is 0.\n\nThe projection of a onto a nonzero b is ((a·b) / |b|^2) b. Take a = (3, -1) and b = (1, 2). The dot product is 1 and |b|^2 = 1 + 4 = 5, so the projection of a onto b is (1/5)(1, 2). That vector lies along b.",
+              "rules": [
+                "a and b are orthogonal exactly when a·b = 0.",
+                "The projection of a onto a nonzero b is ((a·b) / |b|^2) b.",
+                "For a = (3, -1) and b = (1, 2), the projection is (1/5)(1, 2).",
+                "Do not divide by |b| alone. The denominator of the scalar is |b|^2."
+              ],
+              "example": {
+                "prompt": "Find the projection of a = (3, -1) onto b = (1, 2).",
+                "steps": [
+                  "a·b = 3*1 + (-1)*2 = 1.",
+                  "|b|^2 = 1^2 + 2^2 = 5.",
+                  "The scalar is (a·b) / |b|^2 = 1/5.",
+                  "Multiply b by that scalar: (1/5)(1, 2)."
+                ],
+                "answer": "(1/5)(1, 2)"
+              },
+              "practice": [
+                {
+                  "q": "Are (2, 3) and (3, -2) orthogonal? Answer yes or no.",
+                  "answer": "yes",
+                  "why": "2*3 + 3*(-2) = 6 - 6 = 0."
+                },
+                {
+                  "q": "Projection of (4, 2) onto (1, 0).",
+                  "answer": "(4, 0)",
+                  "why": "The dot product is 4 and |b|^2 = 1, so the projection is 4(1, 0)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-vec-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-vec-l3a",
+              "title": "Vector equation of a line",
+              "he": "משוואה וקטורית של ישר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Vector equation of a line"
+              ],
+              "objectives": [
+                "Write a line from one point and one direction vector.",
+                "Test whether a given point lies on that line."
+              ],
+              "teach": "A line needs one point and one direction. If the point has position a and the direction is d, a general point is r = a + t d, with t real. Each real t gives one point of the line. Rescaling d changes the parameter but not the set of points.\n\nThe line through (0, 1) with direction (2, 3) is r = (0,1) + t(2,3). In components, x = 2t and y = 1 + 3t. The point (4, 7) lies on the line because t = 2 works in both: 2*2 = 4 and 1 + 3*2 = 7.",
+              "rules": [
+                "A line through point A with direction d has equation r = a + t d.",
+                "The line through (0, 1) with direction (2, 3) is r = (0,1) + t(2,3).",
+                "To test a point, solve one component for t and check the other component.",
+                "A different nonzero multiple of d describes the same line."
+              ],
+              "example": {
+                "prompt": "Write the vector equation of the line through (0, 1) with direction (2, 3).",
+                "steps": [
+                  "Use the given point as the position a = (0, 1).",
+                  "Use the given direction d = (2, 3).",
+                  "The equation is r = a + t d.",
+                  "So r = (0,1) + t(2,3)."
+                ],
+                "answer": "r = (0,1) + t(2,3)"
+              },
+              "practice": [
+                {
+                  "q": "Vector equation of the line through (1, 0) with direction (3, -1).",
+                  "answer": "r = (1,0) + t(3,-1)",
+                  "why": "The point is (1, 0) and the direction is (3, -1)."
+                },
+                {
+                  "q": "On r = (0,1) + t(2,3), which t gives the point (4, 7)?",
+                  "answer": "2",
+                  "why": "2t = 4 gives t = 2, and 1 + 3*2 = 7."
+                }
+              ]
+            },
+            {
+              "id": "math-vec-l3b",
+              "title": "Vector proofs in the plane",
+              "he": "הוכחות וקטוריות במישור",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Vector proofs in the plane"
+              ],
+              "objectives": [
+                "Rewrite a geometric claim as an equality of position vectors.",
+                "Prove a parallelogram or collinearity statement with midpoints or scalar multiples."
+              ],
+              "teach": "A vector proof names points by position vectors and rewrites the claim as algebra. For parallelogram ABCD let A be the origin, B be b, D be d, and C be b + d. The midpoint of diagonal AC is (b + d)/2. The midpoint of diagonal BD is (b + d)/2 as well.\n\nThe midpoints coincide, so the diagonals bisect each other. The same style proves collinearity: C is on line AB when c - a is a scalar multiple of b - a. Write each vector step, name the reason, and end with the geometric sentence the problem asked for.",
+              "rules": [
+                "Place one vertex at the origin when the claim allows a free choice of origin.",
+                "In parallelogram ABCD with A at the origin, C = B + D.",
+                "Diagonals bisect each other because both midpoints equal (b + d)/2.",
+                "Points A, B, C are collinear when c - a = k(b - a) for some scalar k.",
+                "Each line of a proof needs a reason, and the last line is the claim."
+              ],
+              "example": {
+                "prompt": "In parallelogram ABCD with A at the origin, B = b, and D = d, find the common midpoint of the diagonals.",
+                "steps": [
+                  "C = b + d, because AB and DC are equal and AD and BC are equal.",
+                  "Midpoint of AC: (0 + b + d)/2 = (b + d)/2.",
+                  "Midpoint of BD: (b + d)/2.",
+                  "The midpoints are the same point, so the diagonals bisect each other."
+                ],
+                "answer": "(b+d)/2"
+              },
+              "practice": [
+                {
+                  "q": "Midpoint of (1, 2) and (5, 8).",
+                  "answer": "(3, 5)",
+                  "why": "(1+5)/2 = 3 and (2+8)/2 = 5."
+                },
+                {
+                  "q": "Scalar k such that (2, 4) = k(1, 2).",
+                  "answer": "2",
+                  "why": "2 = k*1 and 4 = k*2, so k = 2. The vectors are parallel."
+                },
+                {
+                  "q": "Dot product of (1, -2) and (2, 1).",
+                  "answer": "0",
+                  "why": "1*2 + (-2)*1 = 0, so the vectors are orthogonal."
+                },
+                {
+                  "q": "Magnitude of (3, -4).",
+                  "answer": "5",
+                  "why": "sqrt(9 + 16) = sqrt(25) = 5."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-diff",
+      "index": 8,
+      "title": "Differential calculus",
+      "he": "חשבון דיפרנציאלי",
+      "topic": "Differential calculus",
+      "thesis": "The derivative is a limit that becomes a toolkit for slope, shape, and optimization.",
+      "syllabus": [
+        "Limits and continuity",
+        "Differentiation rules and the chain rule",
+        "Derivatives of exponential, logarithmic, and trigonometric functions",
+        "Tangent lines",
+        "Monotonicity, extrema, and concavity",
+        "Graph investigation and optimization"
+      ],
+      "levels": [
+        {
+          "id": "math-diff-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-diff-l1a",
+              "title": "Limits and continuity",
+              "he": "גבולות ורציפות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Limits and continuity"
+              ],
+              "objectives": [
+                "Evaluate a limit by algebra when a direct substitution fails.",
+                "State the three conditions for continuity at a point."
+              ],
+              "teach": "The limit of f at a is the value f approaches, not necessarily f(a). For (x^2 - 4)/(x - 2), factor the numerator as (x - 2)(x + 2). For x not equal to 2 the quotient equals x + 2, so the limit as x approaches 2 is 4. The function may be undefined at 2 even though the limit exists.\n\nf is continuous at a when the limit exists, f(a) is defined, and those two numbers are equal. Polynomials are continuous on the whole line. A rational function is continuous wherever its denominator is not 0. Defining f(2) = 4 removes the gap in the example above.",
+              "rules": [
+                "A limit describes the values approached, not the value plugged in.",
+                "Cancel a common factor only for x not equal to the root, then take the limit.",
+                "lim x->0 of (sin x)/x = 1.",
+                "Continuity at a needs a limit, a defined value f(a), and equality of the two."
+              ],
+              "example": {
+                "prompt": "Find the limit as x approaches 2 of (x^2 - 4)/(x - 2).",
+                "steps": [
+                  "Factor: x^2 - 4 = (x - 2)(x + 2).",
+                  "For x not equal to 2, the quotient simplifies to x + 2.",
+                  "The limit is 2 + 2 = 4."
+                ],
+                "answer": "4"
+              },
+              "practice": [
+                {
+                  "q": "Limit as x approaches 3 of (x^2 - 9)/(x - 3).",
+                  "answer": "6",
+                  "why": "For x not equal to 3 the quotient is x + 3, which approaches 6."
+                },
+                {
+                  "q": "Limit as x approaches 0 of (sin x)/x.",
+                  "answer": "1",
+                  "why": "The standard sine limit equals 1."
+                }
+              ]
+            },
+            {
+              "id": "math-diff-l1b",
+              "title": "Differentiation rules and the chain rule",
+              "he": "כללי גזירה וכלל השרשרת",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Differentiation rules and the chain rule"
+              ],
+              "objectives": [
+                "Differentiate powers, sums, and constant multiples.",
+                "Differentiate a composition with the chain rule."
+              ],
+              "teach": "The derivative f'(x) is the limit of [f(x + h) - f(x)] / h as h approaches 0, when that limit exists. On a clean expression, use rules. The power rule says the derivative of x^n is n x^(n - 1). Sums and constant multiples may be differentiated term by term.\n\nThe chain rule handles a composition. If y = sin(u) and u = x^2, then dy/dx = cos(u) times du/dx. The derivative of sin(x^2) is cos(x^2) times 2x, which is 2x cos(x^2). Differentiate the outside, keep the inside, then multiply by the derivative of the inside.",
+              "rules": [
+                "The derivative of x^n is n x^(n - 1).",
+                "The derivative of a sum is the sum of the derivatives.",
+                "The chain rule: derivative of f(u(x)) is f'(u(x)) * u'(x).",
+                "The derivative of sin(x^2) is 2x cos(x^2)."
+              ],
+              "example": {
+                "prompt": "Differentiate sin(x^2).",
+                "steps": [
+                  "The outside function is sin(u), whose derivative is cos(u).",
+                  "The inside is u = x^2, whose derivative is 2x.",
+                  "Multiply: cos(x^2) * 2x.",
+                  "Write the product as 2x cos(x^2)."
+                ],
+                "answer": "2x cos(x^2)"
+              },
+              "practice": [
+                {
+                  "q": "Derivative of (x^2 + 1)^5.",
+                  "answer": "10x(x^2+1)^4",
+                  "why": "The chain rule gives 5(x^2+1)^4 * 2x = 10x(x^2+1)^4."
+                },
+                {
+                  "q": "Derivative of (3x - 1)^2.",
+                  "answer": "6(3x-1)",
+                  "why": "2(3x-1) times the inside derivative 3 equals 6(3x-1)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-diff-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-diff-l2a",
+              "title": "Derivatives of exponential, logarithmic, and trigonometric functions",
+              "he": "נגזרות מעריכיות, לוגריתמיות וטריגונומטריות",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Derivatives of exponential, logarithmic, and trigonometric functions"
+              ],
+              "objectives": [
+                "Use the standard derivatives of e^x, ln x, sin x, cos x, and tan x.",
+                "Attach the chain rule when the input is not just x."
+              ],
+              "teach": "Learn the basic derivatives, then apply the chain rule. The derivative of e^x is e^x, and the derivative of ln x is 1/x for x > 0. The derivative of sin x is cos x, the derivative of cos x is -sin x, and the derivative of tan x is 1/cos^2 x.\n\nWith a chain, the derivative of e^(3x) is 3 e^(3x). The derivative of ln(sin x) is cos x / sin x, which is cot x where sin x > 0. The derivative of sin(3x) is 3 cos(3x). For a > 0 with a not equal to 1, the derivative of a^x is a^x ln a.",
+              "rules": [
+                "Derivative of e^x is e^x. Derivative of ln x is 1/x for x > 0.",
+                "Derivative of sin x is cos x. Derivative of cos x is -sin x.",
+                "Derivative of tan x is 1/cos^2 x.",
+                "Derivative of e^(3x) is 3 e^(3x), and derivative of sin(3x) is 3 cos(3x).",
+                "For a > 0 and a not equal to 1, the derivative of a^x is a^x ln a."
+              ],
+              "example": {
+                "prompt": "Differentiate ln(sin x), where sin x > 0.",
+                "steps": [
+                  "The outside derivative of ln u is 1/u.",
+                  "Here u = sin x, so 1/u = 1/sin x.",
+                  "Multiply by the inside derivative cos x.",
+                  "The result is cos x / sin x = cot x."
+                ],
+                "answer": "cot x"
+              },
+              "practice": [
+                {
+                  "q": "Derivative of e^(3x).",
+                  "answer": "3e^(3x)",
+                  "why": "The derivative of e^u is e^u * u', and u' = 3."
+                },
+                {
+                  "q": "Derivative of sin(3x).",
+                  "answer": "3 cos(3x)",
+                  "why": "cos(3x) times the inside derivative 3."
+                }
+              ]
+            },
+            {
+              "id": "math-diff-l2b",
+              "title": "Tangent lines",
+              "he": "משיקים",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Tangent lines"
+              ],
+              "objectives": [
+                "Build a tangent from the point of contact and the derivative.",
+                "Keep the slope in exact form."
+              ],
+              "teach": "The tangent to y = f(x) at x = a has slope m = f'(a) and passes through the point (a, f(a)). Its equation is y - f(a) = m(x - a). Compute the point and the derivative separately, then substitute. A slope by itself is not the equation of the line.\n\nFor y = ln x at x = e, the point is (e, 1), because ln e = 1. The derivative of ln x is 1/x, so the slope is 1/e. Therefore the tangent is y - 1 = (1/e)(x - e). Keep the slope as the exact fraction 1/e.",
+              "rules": [
+                "The tangent at x = a is y - f(a) = f'(a)(x - a).",
+                "You need both the point (a, f(a)) and the slope f'(a).",
+                "For y = ln x at x = e, the slope is 1/e and the point is (e, 1).",
+                "The tangent is y-1 = (1/e)(x-e). Do not replace e by a decimal."
+              ],
+              "example": {
+                "prompt": "Write the tangent to y = ln x at x = e.",
+                "steps": [
+                  "The point of contact is (e, ln e) = (e, 1).",
+                  "The derivative of ln x is 1/x, so the slope at x = e is 1/e.",
+                  "Use y - 1 = (1/e)(x - e)."
+                ],
+                "answer": "y-1 = (1/e)(x-e)"
+              },
+              "practice": [
+                {
+                  "q": "Equation of the tangent to y = x^2 at x = 3.",
+                  "answer": "y-9=6(x-3)",
+                  "why": "The point is (3, 9) and the slope is 2*3 = 6."
+                },
+                {
+                  "q": "Slope of the tangent to y = ln x at x = 1.",
+                  "answer": "1",
+                  "why": "The derivative is 1/x, so at x = 1 the slope is 1."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-diff-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-diff-l3a",
+              "title": "Monotonicity, extrema, and concavity",
+              "he": "מונוטוניות, קיצון וקעירות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Monotonicity, extrema, and concavity"
+              ],
+              "objectives": [
+                "Read increase and decrease from the sign of f'.",
+                "Locate local extrema and an inflection point from f' and f''."
+              ],
+              "teach": "Where f'(x) > 0 the function increases, and where f'(x) < 0 it decreases. A sign change of f' at a critical point gives a local extremum. Let f(x) = x^3 - 3x. Then f'(x) = 3x^2 - 3 = 3(x - 1)(x + 1), so the critical points are x = -1 and x = 1.\n\nNow f(-1) = -1 + 3 = 2, a local maximum at (-1, 2). And f(1) = 1 - 3 = -2, a local minimum at (1, -2). The second derivative is f''(x) = 6x. It changes from negative to positive at x = 0, so (0, 0) is an inflection point.",
+              "rules": [
+                "f' > 0 means increasing. f' < 0 means decreasing.",
+                "For f(x) = x^3 - 3x, f'(x) = 3x^2 - 3 = 3(x-1)(x+1).",
+                "Local maximum at (-1, 2). Local minimum at (1, -2).",
+                "f''(x) = 6x. The concavity changes at x = 0, an inflection point."
+              ],
+              "example": {
+                "prompt": "For f(x) = x^3 - 3x, find the local maximum and local minimum points.",
+                "steps": [
+                  "f'(x) = 3x^2 - 3 = 3(x - 1)(x + 1), so the critical points are x = -1 and x = 1.",
+                  "f(-1) = (-1)^3 - 3*(-1) = -1 + 3 = 2. The sign of f' changes from positive to negative, a local maximum.",
+                  "f(1) = 1 - 3 = -2. The sign of f' changes from negative to positive, a local minimum.",
+                  "The points are (-1, 2) and (1, -2)."
+                ],
+                "answer": "(-1, 2) and (1, -2)"
+              },
+              "practice": [
+                {
+                  "q": "Coordinates of the local minimum of f(x) = x^2 - 4x.",
+                  "answer": "(2, -4)",
+                  "why": "f'(x) = 2x - 4 = 0 at x = 2, and f(2) = 4 - 8 = -4."
+                },
+                {
+                  "q": "x-coordinate of the inflection point of f(x) = x^3.",
+                  "answer": "0",
+                  "why": "f''(x) = 6x changes sign at x = 0."
+                }
+              ]
+            },
+            {
+              "id": "math-diff-l3b",
+              "title": "Graph investigation and optimization",
+              "he": "חקירת גרף ובעיות קיצון",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Graph investigation and optimization"
+              ],
+              "objectives": [
+                "List the features needed for a graph investigation.",
+                "Turn a constraint into a one-variable maximum or minimum."
+              ],
+              "teach": "A graph investigation records the domain, the intercepts, the sign of f', the local extrema, the sign of f'', and the end behavior. For an optimization, name the quantity, use the constraint to leave one free variable, and compare critical values with any endpoints of the domain.\n\nA rectangle of perimeter 40 has side lengths x and 20 - x, because 2(x + y) = 40. The area is A(x) = x(20 - x) = 20x - x^2. Then A'(x) = 20 - 2x = 0 gives x = 10, so the other side is 10. The maximum is the square 10 by 10, and the area is 100.",
+              "rules": [
+                "Record domain, intercepts, sign of f', extrema, sign of f'', and end behavior.",
+                "For a rectangle of perimeter 40, the sides sum in pairs to 20.",
+                "A(x) = x(20 - x). A'(x) = 0 gives x = 10.",
+                "The maximum area is the square 10 by 10, and that area is 100.",
+                "Check A'' or the endpoints before you call a critical value the maximum."
+              ],
+              "example": {
+                "prompt": "A rectangle has perimeter 40. Find its maximum area.",
+                "steps": [
+                  "Write 2(x + y) = 40, so y = 20 - x, with 0 < x < 20.",
+                  "A(x) = x(20 - x) = 20x - x^2.",
+                  "A'(x) = 20 - 2x = 0 gives x = 10, so y = 10.",
+                  "A(10) = 100, and A''(x) = -2 < 0, so this critical value is the maximum."
+                ],
+                "answer": "100"
+              },
+              "practice": [
+                {
+                  "q": "Maximum value of f(x) = 4x - x^2.",
+                  "answer": "4",
+                  "why": "f'(x) = 4 - 2x = 0 at x = 2, and f(2) = 8 - 4 = 4."
+                },
+                {
+                  "q": "A pen against a wall uses 20 m of fence on the other three sides. The two sides perpendicular to the wall have length w, and the side parallel to the wall has length 20 - 2w. Maximum area?",
+                  "answer": "50",
+                  "why": "A = w(20 - 2w) = 20w - 2w^2. A' = 20 - 4w = 0 gives w = 5, so the parallel side is 10 and the area is 50."
+                },
+                {
+                  "q": "Local maximum value of f(x) = x^3 - 3x.",
+                  "answer": "2",
+                  "why": "At x = -1, f(-1) = -1 + 3 = 2, and that critical point is a local maximum."
+                },
+                {
+                  "q": "How many critical points does f(x) = x^3 - 3x have?",
+                  "answer": "2",
+                  "why": "f'(x) = 3(x - 1)(x + 1) = 0 at x = -1 and x = 1 only."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-integ",
+      "index": 9,
+      "title": "Integral calculus",
+      "he": "חשבון אינטגרלי",
+      "topic": "Integral calculus",
+      "thesis": "The integral rebuilds area and accumulation from a rate, and the fundamental theorem ties it to the derivative.",
+      "syllabus": [
+        "Antiderivatives",
+        "Substitution",
+        "Definite integrals and the fundamental theorem",
+        "Area under a curve",
+        "Area between curves",
+        "Volumes of revolution"
+      ],
+      "levels": [
+        {
+          "id": "math-integ-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-integ-l1a",
+              "title": "Antiderivatives",
+              "he": "פונקציות קדומות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Antiderivatives"
+              ],
+              "objectives": [
+                "Recognize an antiderivative as a function whose derivative is the integrand.",
+                "Write the full family, including the constant C."
+              ],
+              "teach": "An antiderivative of f is any function F with F' = f. The indefinite integral is the whole family: the integral of f(x) dx equals F(x) + C. The constant is required, because every constant has derivative 0. On an interval, two antiderivatives of the same function differ by a constant.\n\nReverse the power rule. The integral of x^n is x^(n+1)/(n+1) + C when n is not -1. The integral of 1/x is ln|x| + C. Check by differentiating. The integral of 3x^2 - 4 is x^3 - 4x + C, because the derivative of x^3 - 4x is 3x^2 - 4.",
+              "rules": [
+                "The integral of f(x) dx = F(x) + C whenever F' = f.",
+                "The integral of x^n is x^(n+1)/(n+1) + C for n not equal to -1.",
+                "The integral of 1/x is ln|x| + C.",
+                "The integral of 3x^2 - 4 dx is x^3 - 4x + C."
+              ],
+              "example": {
+                "prompt": "Find the integral of (3x^2 - 4) dx.",
+                "steps": [
+                  "The antiderivative of 3x^2 is x^3.",
+                  "The antiderivative of -4 is -4x.",
+                  "Add the constant: x^3 - 4x + C.",
+                  "Differentiate to check: 3x^2 - 4."
+                ],
+                "answer": "x^3 - 4x + C"
+              },
+              "practice": [
+                {
+                  "q": "Integral of 4x^3 dx.",
+                  "answer": "x^4 + C",
+                  "why": "The derivative of x^4 is 4x^3."
+                },
+                {
+                  "q": "Integral of (2x + 1) dx.",
+                  "answer": "x^2 + x + C",
+                  "why": "The antiderivative of 2x is x^2 and the antiderivative of 1 is x."
+                }
+              ]
+            },
+            {
+              "id": "math-integ-l1b",
+              "title": "Substitution",
+              "he": "הצבה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Substitution"
+              ],
+              "objectives": [
+                "Choose a substitution that matches an inside function and its derivative.",
+                "Return the antiderivative to the original variable."
+              ],
+              "teach": "Substitution reverses the chain rule. If u = g(x), write du = g'(x) dx and rewrite the integral in the variable u alone. After integrating, substitute back. The derivative of sin(x^2) is 2x cos(x^2), so the integral of 2x cos(x^2) should return sin(x^2) + C.\n\nSet u = x^2. Then du = 2x dx, and the integral of 2x cos(x^2) dx becomes the integral of cos u du, which is sin u + C. Back in x, the antiderivative is sin(x^2) + C. If a constant factor is missing from du, scale it out before you integrate. Do not leave the answer written in u.",
+              "rules": [
+                "If u = g(x), then du = g'(x) dx.",
+                "The integral must be rewritten entirely in u before you integrate.",
+                "The integral of 2x cos(x^2) dx is sin(x^2) + C.",
+                "Substitute the original expression back and keep + C."
+              ],
+              "example": {
+                "prompt": "Find the integral of 2x cos(x^2) dx.",
+                "steps": [
+                  "Let u = x^2. Then du = 2x dx.",
+                  "The integral becomes the integral of cos u du.",
+                  "That antiderivative is sin u + C.",
+                  "Substitute back: sin(x^2) + C."
+                ],
+                "answer": "sin(x^2) + C"
+              },
+              "practice": [
+                {
+                  "q": "Integral of 2x (x^2 + 1)^3 dx.",
+                  "answer": "(x^2+1)^4/4 + C",
+                  "why": "Let u = x^2 + 1. Then du = 2x dx, and the integral of u^3 is u^4/4 + C."
+                },
+                {
+                  "q": "Integral of cos(3x) dx.",
+                  "answer": "(1/3) sin(3x) + C",
+                  "why": "Let u = 3x. Then du = 3 dx, so one factor of 1/3 comes out and the integral of cos u is sin u."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-integ-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-integ-l2a",
+              "title": "Definite integrals and the fundamental theorem",
+              "he": "אינטגרל מסוים והמשפט היסודי",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Definite integrals and the fundamental theorem"
+              ],
+              "objectives": [
+                "Evaluate a definite integral with an antiderivative.",
+                "Use both directions of the fundamental theorem."
+              ],
+              "teach": "If F' = f and f is continuous on [a, b], the fundamental theorem says the integral from a to b of f(x) dx equals F(b) - F(a). The constant of integration cancels, so it is not written. The value is a number, not a family of functions.\n\nTake the integral from 0 to 2 of x^2 dx. An antiderivative is x^3/3. Then 2^3/3 - 0 = 8/3. In the other direction, the derivative with respect to x of the integral from a fixed lower bound to x of f is f(x), when f is continuous. Swapping the bounds changes the sign.",
+              "rules": [
+                "The integral from a to b of f equals F(b) - F(a) when F' = f.",
+                "Do not keep + C in a definite integral.",
+                "The integral from 0 to 2 of x^2 dx equals 8/3.",
+                "Swapping the limits multiplies the value by -1."
+              ],
+              "example": {
+                "prompt": "Evaluate the integral from 0 to 2 of x^2 dx.",
+                "steps": [
+                  "An antiderivative of x^2 is x^3/3.",
+                  "Evaluate at the top bound: 2^3/3 = 8/3.",
+                  "Evaluate at the bottom bound: 0.",
+                  "Subtract: 8/3 - 0 = 8/3."
+                ],
+                "answer": "8/3"
+              },
+              "practice": [
+                {
+                  "q": "Integral from 0 to 1 of 3x^2 dx.",
+                  "answer": "1",
+                  "why": "An antiderivative is x^3, and 1^3 - 0^3 = 1."
+                },
+                {
+                  "q": "Integral from 1 to e of (1/x) dx.",
+                  "answer": "1",
+                  "why": "An antiderivative is ln|x|, and ln e - ln 1 = 1 - 0 = 1."
+                }
+              ]
+            },
+            {
+              "id": "math-integ-l2b",
+              "title": "Area under a curve",
+              "he": "שטח מתחת לעקומה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Area under a curve"
+              ],
+              "objectives": [
+                "Match a nonnegative graph to a definite integral.",
+                "Separate geometric area from a signed integral when the graph crosses the axis."
+              ],
+              "teach": "When f(x) is at least 0 on [a, b], the area between the curve and the x-axis equals the integral from a to b of f. If f is negative, that integral counts the region below the axis as negative. For geometric area, split the interval at the zeros and add the absolute contributions.\n\nUnder y = x^2 from 0 to 2 the area is [x^3/3] from 0 to 2 = 8/3. Under y = x from 0 to 4 the integral equals 8, which matches the triangle of base 4 and height 4: (1/2)*4*4 = 8. Use that triangle check when the graph is a straight line.",
+              "rules": [
+                "If f >= 0 on [a, b], area equals the integral from a to b of f.",
+                "A signed integral subtracts area that lies below the x-axis.",
+                "The area under y = x^2 from 0 to 2 is 8/3.",
+                "The area under y = x from 0 to 4 is 8, matching a triangle of area (1/2)*4*4."
+              ],
+              "example": {
+                "prompt": "Find the area under y = x from x = 0 to x = 4.",
+                "steps": [
+                  "The graph is above the x-axis on [0, 4].",
+                  "The integral of x is x^2/2.",
+                  "Evaluate: (16/2) - 0 = 8.",
+                  "The triangle with base 4 and height 4 has area (1/2)*4*4 = 8."
+                ],
+                "answer": "8"
+              },
+              "practice": [
+                {
+                  "q": "Area under y = x^2 from x = 0 to x = 2.",
+                  "answer": "8/3",
+                  "why": "[x^3/3] from 0 to 2 = 8/3, and the curve is nonnegative there."
+                },
+                {
+                  "q": "Area under y = 2x from x = 0 to x = 3.",
+                  "answer": "9",
+                  "why": "An antiderivative is x^2, and 3^2 - 0 = 9. The region is above the axis."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-integ-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-integ-l3a",
+              "title": "Area between curves",
+              "he": "שטח בין עקומות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Area between curves"
+              ],
+              "objectives": [
+                "Identify the upper curve on each piece of the interval.",
+                "Integrate the difference and use intersection points as bounds."
+              ],
+              "teach": "The area between two graphs from x = a to x = b is the integral of the upper curve minus the lower curve. If the curves cross inside the interval, split there, because the upper curve changes.\n\nOn [0, 1], y = x lies above y = x^2, since x - x^2 = x(1 - x) is at least 0. The area is the integral from 0 to 1 of (x - x^2) dx. An antiderivative is x^2/2 - x^3/3. At 1 that equals 1/2 - 1/3 = 1/6, and at 0 it is 0. The area is 1/6.",
+              "rules": [
+                "Area equals the integral of (upper - lower) on each piece.",
+                "On [0, 1], y = x is above y = x^2.",
+                "The integral from 0 to 1 of (x - x^2) dx equals 1/2 - 1/3 = 1/6.",
+                "A negative result means the subtraction was written in the wrong order."
+              ],
+              "example": {
+                "prompt": "Find the area between y = x and y = x^2 on [0, 1].",
+                "steps": [
+                  "On [0, 1], x >= x^2, so the upper curve is y = x.",
+                  "Integrate x - x^2. An antiderivative is x^2/2 - x^3/3.",
+                  "At x = 1 the antiderivative is 1/2 - 1/3 = 1/6.",
+                  "At x = 0 it is 0, so the area is 1/6."
+                ],
+                "answer": "1/6"
+              },
+              "practice": [
+                {
+                  "q": "Area between y = 1 and y = x on [0, 1].",
+                  "answer": "1/2",
+                  "why": "On [0, 1] the line y = 1 is above y = x. The integral of (1 - x) from 0 to 1 is [x - x^2/2] from 0 to 1 = 1 - 1/2 = 1/2."
+                },
+                {
+                  "q": "Area between y = 4 and y = x^2 from x = 0 to x = 2.",
+                  "answer": "16/3",
+                  "why": "[4x - x^3/3] from 0 to 2 = 8 - 8/3 = 16/3. On this interval y = 4 is above y = x^2."
+                }
+              ]
+            },
+            {
+              "id": "math-integ-l3b",
+              "title": "Volumes of revolution",
+              "he": "נפחי גופי סיבוב",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Volumes of revolution"
+              ],
+              "objectives": [
+                "Set up a disk or washer volume about the x-axis.",
+                "Square the radius before integrating, and keep pi in the answer."
+              ],
+              "teach": "Rotating y = R(x) from x = a to x = b about the x-axis gives the disk volume pi times the integral of [R(x)]^2. A slice perpendicular to the axis is a disk of radius R(x). If there is a hole, use a washer: integrate pi times (outer radius squared minus inner radius squared).\n\nRotate y = sqrt(x) from 0 to 4 about the x-axis. Then [R(x)]^2 = x, so the volume is pi times the integral from 0 to 4 of x dx. That integral is [x^2/2] from 0 to 4 = 8. Multiply by pi to get 8π. Square the radius first, then integrate.",
+              "rules": [
+                "Disk volume about the x-axis: pi times the integral of [R(x)]^2.",
+                "Washer volume: pi times the integral of (outer squared minus inner squared).",
+                "For y = sqrt(x) from 0 to 4, [R(x)]^2 = x.",
+                "V = pi times the integral from 0 to 4 of x dx = 8π."
+              ],
+              "example": {
+                "prompt": "The region under y = sqrt(x) from x = 0 to x = 4 is rotated about the x-axis. Find the volume.",
+                "steps": [
+                  "The radius of a disk is R(x) = sqrt(x), so [R(x)]^2 = x.",
+                  "V = pi times the integral from 0 to 4 of x dx.",
+                  "An antiderivative of x is x^2/2. At 4 this is 8, and at 0 it is 0.",
+                  "The volume is 8π."
+                ],
+                "answer": "8π"
+              },
+              "practice": [
+                {
+                  "q": "Volume when y = x from 0 to 2 is rotated about the x-axis.",
+                  "answer": "8π/3",
+                  "why": "V = pi times the integral of x^2 from 0 to 2. That integral is 8/3, so the volume is 8π/3."
+                },
+                {
+                  "q": "Volume when y = 2 from 0 to 3 is rotated about the x-axis.",
+                  "answer": "12π",
+                  "why": "[R(x)]^2 = 4. pi times the integral of 4 from 0 to 3 is pi * 12 = 12π."
+                },
+                {
+                  "q": "Volume when y = sqrt(x) from 0 to 1 is rotated about the x-axis.",
+                  "answer": "π/2",
+                  "why": "V = pi times the integral of x from 0 to 1 = pi * (1/2) = π/2."
+                },
+                {
+                  "q": "Volume when y = sqrt(x) from 0 to 4 is rotated about the x-axis.",
+                  "answer": "8π",
+                  "why": "V = pi times the integral of x from 0 to 4 = pi * 8 = 8π."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-prob",
+      "index": 10,
+      "title": "Probability",
+      "he": "הסתברות",
+      "topic": "Probability",
+      "thesis": "Probability on this road is counting, conditions, and the binomial model, not vague chance.",
+      "syllabus": [
+        "Permutations and combinations",
+        "Classical probability",
+        "Addition rule and inclusion-exclusion",
+        "Conditional probability and independence",
+        "Random variables and expectation",
+        "The binomial distribution"
+      ],
+      "levels": [
+        {
+          "id": "math-prob-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-prob-l1a",
+              "title": "Permutations and combinations",
+              "he": "תמורות וצירופים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Permutations and combinations"
+              ],
+              "objectives": [
+                "Decide whether order matters before you count.",
+                "Compute P(n, k) and C(n, k) by cancellation, not by expanding every factorial."
+              ],
+              "teach": "A permutation is an arrangement, so order matters. The number of ways to choose k ordered items from n is P(n, k) = n! / (n - k)!. A combination ignores order. C(n, k) = n! / (k! (n - k)!) = P(n, k) / k!. Also C(n, k) = C(n, n - k).\n\nCompute C(10, 3) as (10*9*8) / (3*2*1) = 720 / 6 = 120. The factorials of the unused items cancel, so do not expand 10!. For a smaller check, C(5, 2) = (5*4)/2 = 10. If the objects form a set, use combinations. If the objects form a sequence, use permutations.",
+              "rules": [
+                "P(n, k) = n! / (n - k)!. Order matters.",
+                "C(n, k) = n! / (k! (n - k)!). Order does not matter.",
+                "C(10, 3) = (10*9*8)/6 = 120.",
+                "C(n, k) = C(n, n - k), and C(n, k) = P(n, k) / k!."
+              ],
+              "example": {
+                "prompt": "Compute C(10, 3).",
+                "steps": [
+                  "Write the falling product of 3 factors starting at 10: 10*9*8.",
+                  "Divide by 3!: 10*9*8 = 720 and 3*2*1 = 6.",
+                  "720 / 6 = 120."
+                ],
+                "answer": "120"
+              },
+              "practice": [
+                {
+                  "q": "C(5, 2).",
+                  "answer": "10",
+                  "why": "(5*4)/(2*1) = 10."
+                },
+                {
+                  "q": "P(5, 2).",
+                  "answer": "20",
+                  "why": "5*4 = 20 ordered selections."
+                }
+              ]
+            },
+            {
+              "id": "math-prob-l1b",
+              "title": "Classical probability",
+              "he": "הסתברות קלאסית",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Classical probability"
+              ],
+              "objectives": [
+                "Count a finite sample space of equally likely outcomes.",
+                "Reduce the resulting fraction."
+              ],
+              "teach": "When every outcome is equally likely, the probability of an event is the number of favorable outcomes divided by the number of possible outcomes. A fair die has 6 faces, so the probability of an even face is 3/6 = 1/2. Reduce the fraction. Count the sample space before you count the event.\n\nTwo fair dice have 6*6 = 36 outcomes. The pairs that sum to 7 are (1, 6), (2, 5), (3, 4), (4, 3), (5, 2), and (6, 1): six outcomes. The probability is 6/36 = 1/6. Order matters in that sample space, so (1, 6) and (6, 1) are different outcomes even if the dice look alike.",
+              "rules": [
+                "Classical probability is favorable outcomes divided by equally likely outcomes.",
+                "Two dice give 36 outcomes.",
+                "Exactly 6 outcomes sum to 7, so the probability is 6/36 = 1/6.",
+                "Reduce the fraction, and do not treat ordered dice outcomes as the same."
+              ],
+              "example": {
+                "prompt": "Two fair dice are rolled. Find the probability that the sum is 7.",
+                "steps": [
+                  "The sample space has 6*6 = 36 equally likely outcomes.",
+                  "The favorable pairs are (1, 6), (2, 5), (3, 4), (4, 3), (5, 2), and (6, 1).",
+                  "That is 6 outcomes.",
+                  "The probability is 6/36 = 1/6."
+                ],
+                "answer": "1/6"
+              },
+              "practice": [
+                {
+                  "q": "Probability that a fair die shows an even number.",
+                  "answer": "1/2",
+                  "why": "Three even faces out of six gives 3/6 = 1/2."
+                },
+                {
+                  "q": "Probability that two fair coins both show heads.",
+                  "answer": "1/4",
+                  "why": "One favorable outcome, HH, out of four equally likely outcomes."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-prob-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-prob-l2a",
+              "title": "Addition rule and inclusion-exclusion",
+              "he": "כלל החיבור והכלה והדחה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Addition rule and inclusion-exclusion"
+              ],
+              "objectives": [
+                "Add probabilities of events and correct for the overlap.",
+                "Drop the intersection term only when the events are disjoint."
+              ],
+              "teach": "For any events A and B, P(A or B) = P(A) + P(B) - P(A and B). The subtraction removes the overlap that was counted twice. If A and B are disjoint, then P(A and B) = 0 and the rule is a plain sum. Do not add probabilities of overlapping events and skip that correction.\n\nLet P(A) = 0.4, P(B) = 0.5, and P(A and B) = 0.2. Then P(A or B) = 0.4 + 0.5 - 0.2 = 0.7. The same identity solves for a missing piece: P(A and B) = P(A) + P(B) - P(A or B).",
+              "rules": [
+                "P(A or B) = P(A) + P(B) - P(A and B).",
+                "If A and B are disjoint, P(A or B) = P(A) + P(B).",
+                "With P(A) = 0.4, P(B) = 0.5, and P(A and B) = 0.2, the union has probability 0.7.",
+                "For three events, subtract the three pairwise intersections and add the triple intersection."
+              ],
+              "example": {
+                "prompt": "P(A) = 0.4, P(B) = 0.5, and P(A and B) = 0.2. Find P(A or B).",
+                "steps": [
+                  "Use P(A or B) = P(A) + P(B) - P(A and B).",
+                  "Substitute: 0.4 + 0.5 - 0.2.",
+                  "0.9 - 0.2 = 0.7."
+                ],
+                "answer": "0.7"
+              },
+              "practice": [
+                {
+                  "q": "P(A) = 0.3, P(B) = 0.4, and A and B are disjoint. Find P(A or B).",
+                  "answer": "0.7",
+                  "why": "The intersection is empty, so 0.3 + 0.4 = 0.7."
+                },
+                {
+                  "q": "P(A) = 0.6, P(B) = 0.5, and P(A and B) = 0.2. Find P(A or B).",
+                  "answer": "0.9",
+                  "why": "0.6 + 0.5 - 0.2 = 0.9."
+                }
+              ]
+            },
+            {
+              "id": "math-prob-l2b",
+              "title": "Conditional probability and independence",
+              "he": "הסתברות מותנית ואי-תלות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Conditional probability and independence"
+              ],
+              "objectives": [
+                "Compute P(A|B) from the joint probability and P(B).",
+                "Test independence by comparing P(A and B) with P(A)P(B)."
+              ],
+              "teach": "The conditional probability of A given B is P(A|B) = P(A and B) / P(B), provided P(B) is not 0. It is the probability of A inside the outcomes where B has already occurred. Multiplying gives P(A and B) = P(B) P(A|B). The order of the condition matters: P(A|B) and P(B|A) answer different questions.\n\nTake P(A) = 0.4, P(B) = 0.5, and P(A and B) = 0.2. Then P(A|B) = 0.2 / 0.5 = 0.4, which equals P(A). Also P(A) P(B) = 0.4 * 0.5 = 0.2, the same as P(A and B). So A and B are independent. Independence means the condition does not change the probability.",
+              "rules": [
+                "P(A|B) = P(A and B) / P(B) when P(B) is not 0.",
+                "P(A and B) = P(A) P(B|A) = P(B) P(A|B).",
+                "If P(A) = 0.4, P(B) = 0.5, and P(A and B) = 0.2, then P(A|B) = 0.4.",
+                "Those events are independent because P(A and B) = P(A) P(B)."
+              ],
+              "example": {
+                "prompt": "P(A) = 0.4, P(B) = 0.5, and P(A and B) = 0.2. Find P(A|B), and say whether A and B are independent.",
+                "steps": [
+                  "P(A|B) = 0.2 / 0.5 = 0.4.",
+                  "That equals P(A).",
+                  "Also P(A) P(B) = 0.2, which equals P(A and B).",
+                  "A and B are independent, and the conditional probability is 0.4."
+                ],
+                "answer": "0.4"
+              },
+              "practice": [
+                {
+                  "q": "P(A and B) = 1/10 and P(B) = 2/5. Find P(A|B).",
+                  "answer": "1/4",
+                  "why": "(1/10) / (2/5) = (1/10)*(5/2) = 1/4."
+                },
+                {
+                  "q": "P(A) = 1/2, P(B) = 1/5, and A and B are independent. Find P(A and B).",
+                  "answer": "1/10",
+                  "why": "Independent events multiply: (1/2)*(1/5) = 1/10."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-prob-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-prob-l3a",
+              "title": "Random variables and expectation",
+              "he": "משתנים מקריים ותוחלת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Random variables and expectation"
+              ],
+              "objectives": [
+                "Compute an expectation as a weighted sum of values.",
+                "Use linearity without assuming independence."
+              ],
+              "teach": "A random variable X assigns a number to each outcome. Its expectation is E(X) = sum of x P(X = x) over the possible values. For a fair die, E(X) = (1+2+3+4+5+6)/6 = 21/6 = 7/2. The weights are probabilities, and they must sum to 1. Expectation may be a value that X itself never takes.\n\nLinearity always holds: E(aX + b) = a E(X) + b, and E(X + Y) = E(X) + E(Y), even when X and Y are dependent. If a prize is 10 on heads and 0 on tails for a fair coin, E = 10*(1/2) + 0*(1/2) = 5.",
+              "rules": [
+                "E(X) is the sum of value times probability.",
+                "A fair die has expectation (1+2+3+4+5+6)/6 = 7/2.",
+                "E(aX + b) = a E(X) + b.",
+                "E(X + Y) = E(X) + E(Y) even if X and Y are dependent."
+              ],
+              "example": {
+                "prompt": "A fair six-sided die shows X. Find E(X).",
+                "steps": [
+                  "The six faces are equally likely, each with probability 1/6.",
+                  "Add the faces: 1+2+3+4+5+6 = 21.",
+                  "Divide by 6: 21/6 = 7/2."
+                ],
+                "answer": "7/2"
+              },
+              "practice": [
+                {
+                  "q": "X is 0 or 4, each with probability 1/2. Find E(X).",
+                  "answer": "2",
+                  "why": "0*(1/2) + 4*(1/2) = 2."
+                },
+                {
+                  "q": "A fair die has expectation 7/2. Find E(2X + 1).",
+                  "answer": "8",
+                  "why": "E(2X + 1) = 2*(7/2) + 1 = 7 + 1 = 8."
+                }
+              ]
+            },
+            {
+              "id": "math-prob-l3b",
+              "title": "The binomial distribution",
+              "he": "ההתפלגות הבינומית",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "The binomial distribution"
+              ],
+              "objectives": [
+                "Recognize independent trials with a fixed success probability.",
+                "Compute a binomial probability and the binomial expectation."
+              ],
+              "teach": "A binomial count X is the number of successes in n independent trials with the same success probability p. Then P(X = k) = C(n, k) p^k (1 - p)^(n - k), for k = 0, 1, ..., n. The combination counts which trials succeed. The expectation is E(X) = n p, and the variance is n p (1 - p).\n\nFor n = 4 and p = 1/3, P(X = 2) = C(4, 2) (1/3)^2 (2/3)^2. Here C(4, 2) = 6, (1/3)^2 = 1/9, and (2/3)^2 = 4/9. The product is 6 * (1/9) * (4/9) = 24/81 = 8/27. Also E(X) = 4*(1/3) = 4/3.",
+              "rules": [
+                "P(X = k) = C(n, k) p^k (1-p)^(n-k).",
+                "E(X) = n p for a binomial count.",
+                "For n = 4 and p = 1/3, P(X = 2) = 6 * (1/9) * (4/9) = 24/81 = 8/27.",
+                "C(4, 2) = 6, and 24/81 reduces by 3 to 8/27."
+              ],
+              "example": {
+                "prompt": "X is binomial with n = 4 and p = 1/3. Find P(X = 2).",
+                "steps": [
+                  "C(4, 2) = 6.",
+                  "(1/3)^2 = 1/9 and (2/3)^2 = 4/9.",
+                  "Multiply: 6 * (1/9) * (4/9) = 24/81.",
+                  "Reduce 24/81 by dividing numerator and denominator by 3: 8/27."
+                ],
+                "answer": "8/27"
+              },
+              "practice": [
+                {
+                  "q": "C(4, 2).",
+                  "answer": "6",
+                  "why": "(4*3)/2 = 6."
+                },
+                {
+                  "q": "Binomial n = 3, p = 1/2. Find P(X = 3).",
+                  "answer": "1/8",
+                  "why": "C(3, 3) * (1/2)^3 * (1/2)^0 = 1/8."
+                },
+                {
+                  "q": "Binomial n = 4, p = 1/3. Find P(X = 2).",
+                  "answer": "8/27",
+                  "why": "C(4, 2) * (1/3)^2 * (2/3)^2 = 24/81 = 8/27."
+                },
+                {
+                  "q": "Binomial n = 4, p = 1/3. Find E(X).",
+                  "answer": "4/3",
+                  "why": "E(X) = n p = 4*(1/3) = 4/3."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-geom",
+      "index": 11,
+      "title": "Euclidean geometry",
+      "he": "גאומטריה אוקלידית",
+      "topic": "Euclidean geometry",
+      "thesis": "Euclidean geometry here is a proof subject: congruence, circles, and a written argument.",
+      "syllabus": [
+        "Congruence and similarity",
+        "Triangle theorems used in proofs",
+        "Inscribed angle and the angle in a semicircle",
+        "Tangent theorems",
+        "Cyclic quadrilaterals",
+        "Writing a complete proof and area ratios"
+      ],
+      "levels": [
+        {
+          "id": "math-geom-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-geom-l1a",
+              "title": "Congruence and similarity",
+              "he": "חפיפה ודמיון",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Congruence and similarity"
+              ],
+              "objectives": [
+                "Name a congruence test and the matching correspondence.",
+                "Turn a similarity ratio of lengths into a ratio of areas."
+              ],
+              "teach": "Two triangles are congruent when a correspondence matches every side and every angle. The usual tests are SSS, SAS, ASA, and the right-angle hypotenuse-leg test. Corresponding parts of congruent triangles are equal. Mark the correspondence before you name equal pieces, so the letters stay in matching order.\n\nSimilarity needs equal angles and proportional sides. AA is enough for triangles. A similarity ratio 2:3 gives area ratio 4:9, because both parts of the length ratio are squared. A length ratio k becomes an area ratio k^2. Square the ratio only after the correspondence is fixed.",
+              "rules": [
+                "Congruence tests for triangles: SSS, SAS, ASA, and hypotenuse-leg for right triangles.",
+                "AA is enough to prove two triangles similar.",
+                "A similarity ratio 2:3 gives area ratio 4:9.",
+                "Areas scale by the square of the length ratio. Corresponding parts follow the named order of vertices."
+              ],
+              "example": {
+                "prompt": "Two similar triangles have length ratio 2:3, and the smaller area is 8. Find the larger area.",
+                "steps": [
+                  "The area ratio is the square of the length ratio: 4:9.",
+                  "The larger area is the smaller area times 9/4.",
+                  "8 * (9/4) = 18."
+                ],
+                "answer": "18"
+              },
+              "practice": [
+                {
+                  "q": "Similarity ratio of lengths is 3:5. What is the area ratio?",
+                  "answer": "9:25",
+                  "why": "Square both parts of 3:5 to get 9:25."
+                },
+                {
+                  "q": "Corresponding sides are 2 and 6. Area ratio of the smaller triangle to the larger?",
+                  "answer": "1:9",
+                  "why": "The length ratio is 1:3, and 1 squared to 3 squared is 1:9."
+                }
+              ]
+            },
+            {
+              "id": "math-geom-l1b",
+              "title": "Triangle theorems used in proofs",
+              "he": "משפטי משולשים להוכחה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Triangle theorems used in proofs"
+              ],
+              "objectives": [
+                "Use the angle sum, the exterior angle, and the isosceles base angles in a proof.",
+                "Match the longer side with the larger opposite angle."
+              ],
+              "teach": "The interior angles of a triangle sum to 180 degrees. An exterior angle equals the sum of the two remote interior angles. In an isosceles triangle the base angles are equal, and the converse is true: equal base angles give equal opposite sides. The larger side lies opposite the larger angle.\n\nSuppose triangle ABC has AB = AC and angle A = 40 degrees. The base angles at B and C are equal and together make 180 - 40 = 140 degrees, so each is 70 degrees. A midsegment joining the midpoints of two sides is parallel to the third side and half as long.",
+              "rules": [
+                "Interior angles of a triangle sum to 180 degrees.",
+                "An exterior angle equals the sum of the two remote interior angles.",
+                "Base angles of an isosceles triangle are equal, and the converse holds.",
+                "A midsegment is parallel to the third side and half as long."
+              ],
+              "example": {
+                "prompt": "Triangle ABC has AB = AC and angle A = 40 degrees. Find each base angle, in degrees.",
+                "steps": [
+                  "The vertex angle is 40 degrees, so the two base angles sum to 140 degrees.",
+                  "AB = AC, so the base angles are equal.",
+                  "Each base angle is 140/2 = 70 degrees."
+                ],
+                "answer": "70"
+              },
+              "practice": [
+                {
+                  "q": "A triangle has angles 50 degrees and 60 degrees. Find the third angle in degrees.",
+                  "answer": "70",
+                  "why": "180 - 50 - 60 = 70."
+                },
+                {
+                  "q": "An exterior angle is 110 degrees and one remote interior angle is 40 degrees. Find the other remote interior angle in degrees.",
+                  "answer": "70",
+                  "why": "The exterior angle equals the sum of the two remote interior angles, so the other one is 110 - 40 = 70."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-geom-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-geom-l2a",
+              "title": "Inscribed angle and the angle in a semicircle",
+              "he": "זווית היקפית וזווית בחצי מעגל",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Inscribed angle and the angle in a semicircle"
+              ],
+              "objectives": [
+                "Halve a central angle to get the inscribed angle on the same arc.",
+                "Recognize a right angle inscribed in a semicircle."
+              ],
+              "teach": "An inscribed angle has its vertex on the circle and its sides through two other points of the circle. An inscribed angle is half the central angle on the same arc. A central angle of 80 degrees gives an inscribed angle of 40 degrees. Inscribed angles in the same segment are equal.\n\nThe central angle on a diameter is 180 degrees, so the inscribed angle on that arc is 90 degrees. An angle in a semicircle is 90 degrees. If AB is a diameter and C lies on the circle, angle ACB is 90 degrees. Conversely, a right angle at C on the circle means AB is a diameter.",
+              "rules": [
+                "An inscribed angle is half the central angle on the same arc.",
+                "Inscribed angles in the same segment are equal.",
+                "An angle in a semicircle is 90 degrees.",
+                "If angle C of triangle ABC is 90 degrees and C is on the circle through A and B, then AB is a diameter."
+              ],
+              "example": {
+                "prompt": "A central angle is 80 degrees. Find the inscribed angle on the same arc, in degrees.",
+                "steps": [
+                  "The inscribed angle and the central angle stand on the same arc.",
+                  "The inscribed angle is half the central angle.",
+                  "Half of 80 is 40."
+                ],
+                "answer": "40"
+              },
+              "practice": [
+                {
+                  "q": "A central angle is 120 degrees. Find the inscribed angle on the same arc, in degrees.",
+                  "answer": "60",
+                  "why": "An inscribed angle is half the central angle on the same arc: 120/2 = 60."
+                },
+                {
+                  "q": "Angle in a semicircle, in degrees.",
+                  "answer": "90",
+                  "why": "The central angle on a diameter is 180 degrees, and half of 180 is 90."
+                }
+              ]
+            },
+            {
+              "id": "math-geom-l2b",
+              "title": "Tangent theorems",
+              "he": "משפטי משיק",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Tangent theorems"
+              ],
+              "objectives": [
+                "Use the right angle between a radius and a tangent.",
+                "Use equal tangent segments and the alternate segment theorem."
+              ],
+              "teach": "A tangent meets a circle at exactly one point. A tangent is perpendicular to the radius at the point of contact, so that angle is 90 degrees. Two tangent segments drawn from the same external point are equal. The line from the center to that external point bisects the angle between the tangents.\n\nIf the radius to the contact point is 5 and the tangent segment is 12, those lengths are the legs of a right triangle. The distance from the center to the external point is sqrt(5^2 + 12^2) = sqrt(25 + 144) = sqrt(169) = 13. A tangent-chord angle equals the angle in the alternate segment.",
+              "rules": [
+                "A tangent is perpendicular to the radius at the point of contact.",
+                "Tangent segments from one external point are equal.",
+                "A radius 5 and a tangent segment 12 give a distance 13 from the center to the external point.",
+                "The angle between a tangent and a chord equals the angle in the alternate segment."
+              ],
+              "example": {
+                "prompt": "A radius to the point of contact is 5, and the tangent segment from an external point is 12. Find the distance from the center to that external point.",
+                "steps": [
+                  "The radius is perpendicular to the tangent, so the triangle is right-angled.",
+                  "The legs are 5 and 12.",
+                  "The hypotenuse is sqrt(25 + 144) = sqrt(169) = 13."
+                ],
+                "answer": "13"
+              },
+              "practice": [
+                {
+                  "q": "Angle in degrees between a tangent and the radius at the point of contact.",
+                  "answer": "90",
+                  "why": "A tangent is perpendicular to the radius at the point of contact."
+                },
+                {
+                  "q": "Two tangents leave one external point. One has length 7. Find the other length.",
+                  "answer": "7",
+                  "why": "Tangent segments from the same external point are equal."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-geom-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-geom-l3a",
+              "title": "Cyclic quadrilaterals",
+              "he": "מרובעים חסומים",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Cyclic quadrilaterals"
+              ],
+              "objectives": [
+                "Test a quadrilateral for a circumcircle by its opposite angles.",
+                "Use the exterior angle of a cyclic quadrilateral."
+              ],
+              "teach": "A quadrilateral is cyclic when all four vertices lie on one circle. Opposite angles of a cyclic quadrilateral sum to 180 degrees, and this test works in both directions. If one angle is 70 degrees, the opposite angle is 110 degrees. The four interior angles of any quadrilateral still sum to 360 degrees.\n\nAn exterior angle of a cyclic quadrilateral equals the opposite interior angle. Equal angles on the same chord, or a pair of opposite angles that already sum to 180 degrees, are the usual reasons for proving four points concyclic. Name which pair is opposite before you claim the sum.",
+              "rules": [
+                "Opposite angles of a cyclic quadrilateral sum to 180 degrees.",
+                "If both pairs of opposite angles sum to 180 degrees, the quadrilateral is cyclic.",
+                "An exterior angle equals the opposite interior angle.",
+                "The four interior angles of any quadrilateral sum to 360 degrees."
+              ],
+              "example": {
+                "prompt": "One angle of a cyclic quadrilateral is 70 degrees. Find the opposite angle, in degrees.",
+                "steps": [
+                  "Opposite angles of a cyclic quadrilateral sum to 180 degrees.",
+                  "Subtract the given angle from 180.",
+                  "180 - 70 = 110."
+                ],
+                "answer": "110"
+              },
+              "practice": [
+                {
+                  "q": "One angle of a cyclic quadrilateral is 65 degrees. Find the opposite angle in degrees.",
+                  "answer": "115",
+                  "why": "Opposite angles sum to 180 degrees, so 180 - 65 = 115."
+                },
+                {
+                  "q": "One angle of a cyclic quadrilateral is 100 degrees. Find the opposite angle in degrees.",
+                  "answer": "80",
+                  "why": "180 - 100 = 80."
+                }
+              ]
+            },
+            {
+              "id": "math-geom-l3b",
+              "title": "Writing a complete proof and area ratios",
+              "he": "כתיבת הוכחה ויחסי שטחים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Writing a complete proof and area ratios"
+              ],
+              "objectives": [
+                "Write a proof as claims with reasons, including any construction.",
+                "Apply an area ratio only after similarity is established."
+              ],
+              "teach": "A complete proof has a given, a statement to prove, and a chain of claims, each with a reason. Reasons are definitions, earlier lines, or named theorems, not a sketch. Keep the correspondence of vertices visible. If you add a radius or another auxiliary line, say so before you use it.\n\nArea ratios come after the proof that the triangles are similar. A similarity ratio 2:3 gives area ratio 4:9, because areas scale by the square of the lengths. If the smaller area is 8, the larger area is 8 * (9/4) = 18. Do not apply 4:9 until the similarity and the matching vertices are written.",
+              "rules": [
+                "A proof lists a given, a goal, and a reason for every claim.",
+                "State a construction before you use the new line.",
+                "A similarity ratio 2:3 gives area ratio 4:9.",
+                "If the smaller area is 8 under the ratio 2:3, the larger area is 18."
+              ],
+              "example": {
+                "prompt": "Similar triangles have length ratio 2:3, and the smaller area is 8. Find the larger area, after naming the area ratio.",
+                "steps": [
+                  "Similarity is given, with length ratio 2:3.",
+                  "The area ratio is 2^2:3^2 = 4:9.",
+                  "The larger area is 8 * (9/4).",
+                  "8 * 9 / 4 = 18."
+                ],
+                "answer": "18"
+              },
+              "practice": [
+                {
+                  "q": "Area ratio for a similarity ratio 2:3.",
+                  "answer": "4:9",
+                  "why": "Square the length ratio: 4:9."
+                },
+                {
+                  "q": "Angle in a semicircle, in degrees.",
+                  "answer": "90",
+                  "why": "An angle inscribed in a semicircle is a right angle."
+                },
+                {
+                  "q": "Opposite angle, in degrees, to a 40 degree angle in a cyclic quadrilateral.",
+                  "answer": "140",
+                  "why": "Opposite angles sum to 180 degrees, so 180 - 40 = 140."
+                },
+                {
+                  "q": "Angle in degrees between a tangent and the radius at the point of contact.",
+                  "answer": "90",
+                  "why": "A tangent is perpendicular to the radius at the point of contact."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "math-syn",
+      "index": 12,
+      "title": "Bagrut synthesis",
+      "he": "סינתזה לבגרות",
+      "topic": "Bagrut synthesis",
+      "thesis": "The paper is a timed mixture, and exact form matters as much as the idea.",
+      "syllabus": [
+        "Time, order, and the shape of a 5-unit paper",
+        "Exact form, show that, and calculator discipline",
+        "Mixed calculus with trigonometry",
+        "Mixed sequences with induction",
+        "Mixed analytic geometry with parameters",
+        "A six-item checkpoint across the road"
+      ],
+      "levels": [
+        {
+          "id": "math-syn-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "math-syn-l1a",
+              "title": "Time, order, and the shape of a 5-unit paper",
+              "he": "זמן, סדר ומבנה שאלון חמש יחידות",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Time, order, and the shape of a 5-unit paper"
+              ],
+              "objectives": [
+                "Order the work on a timed mixed paper without memorizing a form code.",
+                "Protect time for a long argument after the short items are secure."
+              ],
+              "teach": "A 5-unit paper is a timed mixture of short items and longer proofs. It is often split across questionnaires whose numbers change, so the skill is mixing topics under a clock, not memorizing a form. Read the whole paper first, mark the items you can finish cleanly, and do those before the long arguments.\n\nGive a multi-step calculus or geometry item a quiet block of time, and leave a few minutes to check exact form. If a show-that result is given, you may use it in a later part even when your proof is unfinished, and you should mark that gap. The order of work is part of the method.",
+              "rules": [
+                "The paper is often split across questionnaires whose numbers change.",
+                "Do the clean short items before you settle into a long proof.",
+                "A personal equal split is only a budget. It is not an official layout.",
+                "Leave time at the end to check exact form."
+              ],
+              "example": {
+                "prompt": "A personal drill has 6 items and 90 minutes. How many minutes is an equal share for one item?",
+                "steps": [
+                  "This is a personal budget, not an official paper layout.",
+                  "Divide the time by the number of items: 90/6.",
+                  "90/6 = 15."
+                ],
+                "answer": "15"
+              },
+              "practice": [
+                {
+                  "q": "A personal set has 6 items and 90 minutes. Equal minutes per item?",
+                  "answer": "15",
+                  "why": "90/6 = 15. This is a personal budget, not a form code."
+                },
+                {
+                  "q": "Four short items take 8 minutes each. How many minutes do they cost?",
+                  "answer": "32",
+                  "why": "4*8 = 32, which you can finish before a long proof."
+                }
+              ]
+            },
+            {
+              "id": "math-syn-l1b",
+              "title": "Exact form, show that, and calculator discipline",
+              "he": "צורה מדויקת, הוכח כי, ומשמעת מחשבון",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Exact form, show that, and calculator discipline"
+              ],
+              "objectives": [
+                "Leave fractions, roots, and multiples of pi in exact form.",
+                "Treat a show-that target as a destination the algebra must reach."
+              ],
+              "teach": "An exact answer stays a fraction, a radical, or a multiple of pi. Write 1/2, not 0.5, unless the question asks for a decimal. Simplify sqrt(50)/5 as follows: sqrt(50) = 5 sqrt(2), so the quotient is sqrt(2). A calculator may check a product. It does not replace the written line.\n\nA show-that item gives the target, so the work must arrive there in exact steps. Do not replace a radical by a decimal and call the line finished. If you use a calculator, use it to check a product or a sign, then write the exact expression you checked. The marked answer is that exact form.",
+              "rules": [
+                "Prefer 1/2, sqrt(2), and multiples of pi over rounded decimals.",
+                "sqrt(50)/5 = sqrt(2).",
+                "In a show-that item, the given target must be reached by exact steps.",
+                "A calculator checks arithmetic. The written line is still exact."
+              ],
+              "example": {
+                "prompt": "Simplify sqrt(50)/5.",
+                "steps": [
+                  "sqrt(50) = sqrt(25*2) = 5 sqrt(2).",
+                  "Divide by 5: (5 sqrt(2))/5.",
+                  "The 5 cancels, leaving sqrt(2)."
+                ],
+                "answer": "sqrt(2)"
+              },
+              "practice": [
+                {
+                  "q": "Simplify 8/12.",
+                  "answer": "2/3",
+                  "why": "Divide the numerator and the denominator by 4."
+                },
+                {
+                  "q": "Exact value of sin(pi/6).",
+                  "answer": "1/2",
+                  "why": "The standard exact value is 1/2, not a rounded decimal."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-syn-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "math-syn-l2a",
+              "title": "Mixed calculus with trigonometry",
+              "he": "חשבון דיפרנציאלי עם טריגונומטריה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Mixed calculus with trigonometry"
+              ],
+              "objectives": [
+                "Differentiate a trigonometric composition with the chain rule.",
+                "Evaluate a short definite integral of sine or cosine in radians."
+              ],
+              "teach": "A mixed item can stack a trigonometric function with a derivative or an integral. Differentiate the outside and multiply by the derivative of the inside. The derivative of sin(x^2) is cos(x^2) times 2x, so it is 2x cos(x^2). The same chain runs backward: the integral of 2x cos(x^2) dx is sin(x^2) + C.\n\nA definite check is the integral from 0 to pi/2 of cos x dx. An antiderivative is sin x, and sin(pi/2) - sin(0) = 1 - 0 = 1. Keep the angle in radians whenever you differentiate or integrate sin or cos. A decimal degree mode will not save an exact line.",
+              "rules": [
+                "The derivative of sin(x^2) is 2x cos(x^2).",
+                "The derivative of cos(x^2) is -2x sin(x^2).",
+                "The integral of 2x cos(x^2) dx is sin(x^2) + C.",
+                "The integral from 0 to pi/2 of cos x dx equals 1."
+              ],
+              "example": {
+                "prompt": "Differentiate sin(x^2).",
+                "steps": [
+                  "The outside derivative of sin(u) is cos(u).",
+                  "The inside is u = x^2, with derivative 2x.",
+                  "Multiply: cos(x^2) * 2x = 2x cos(x^2)."
+                ],
+                "answer": "2x cos(x^2)"
+              },
+              "practice": [
+                {
+                  "q": "Derivative of cos(x^2).",
+                  "answer": "-2x sin(x^2)",
+                  "why": "The derivative of cos(u) is -sin(u), and u' = 2x, so the product is -2x sin(x^2)."
+                },
+                {
+                  "q": "Integral from 0 to pi/2 of cos x dx.",
+                  "answer": "1",
+                  "why": "sin(pi/2) - sin(0) = 1 - 0 = 1."
+                }
+              ]
+            },
+            {
+              "id": "math-syn-l2b",
+              "title": "Mixed sequences with induction",
+              "he": "סדרות עם אינדוקציה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Mixed sequences with induction"
+              ],
+              "objectives": [
+                "Sum an infinite geometric series when the ratio is strictly between -1 and 1.",
+                "Write both the base case and the inductive step of a short proof."
+              ],
+              "teach": "For an infinite geometric series, if the first term is a and the ratio r satisfies |r| < 1, the sum is a/(1 - r). The series 5 + 5/2 + 5/4 + ... has a = 5 and r = 1/2, so the sum is 5/(1/2) = 10. If |r| is at least 1, do not quote that formula.\n\nInduction has two moves. Check the claim at the first integer, often n = 1. Assume it for n = k, then prove it for n = k + 1. The sum of the first n positive integers is n(n + 1)/2. The base and the step are both required.",
+              "rules": [
+                "If |r| < 1, the infinite geometric sum is a/(1 - r).",
+                "5 + 5/2 + 5/4 + ... sums to 10.",
+                "If |r| >= 1, the infinite-sum formula does not apply.",
+                "Induction needs a base case and a step from n = k to n = k + 1.",
+                "The sum of the first n positive integers is n(n+1)/2."
+              ],
+              "example": {
+                "prompt": "Find the sum of 5 + 5/2 + 5/4 + ... forever.",
+                "steps": [
+                  "The first term is a = 5 and the ratio is r = 1/2.",
+                  "|r| < 1, so the infinite sum is a/(1 - r).",
+                  "1 - 1/2 = 1/2, and 5 / (1/2) = 10."
+                ],
+                "answer": "10"
+              },
+              "practice": [
+                {
+                  "q": "Sum of 3 + 3/2 + 3/4 + ... forever.",
+                  "answer": "6",
+                  "why": "a = 3 and r = 1/2, so the sum is 3/(1/2) = 6."
+                },
+                {
+                  "q": "Sum of the first 5 positive integers.",
+                  "answer": "15",
+                  "why": "5*6/2 = 15, which matches 1+2+3+4+5."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "math-syn-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "math-syn-l3a",
+              "title": "Mixed analytic geometry with parameters",
+              "he": "גאומטריה אנליטית עם פרמטר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Mixed analytic geometry with parameters"
+              ],
+              "objectives": [
+                "Compute a distance and a midpoint from coordinates.",
+                "Solve a parameter in a vector equation of a line."
+              ],
+              "teach": "Distance in the plane is a Pythagorean length. From (1, 2) to (4, 6) the changes are 4 - 1 = 3 and 6 - 2 = 4, so the distance is sqrt(9 + 16) = 5. The midpoint is ((1+4)/2, (2+6)/2) = (5/2, 4). A parameter in a line is an unknown to solve for from a stated condition.\n\nThe line through (0, 1) with direction (2, 3) is r = (0,1) + t(2,3). For the point (4, 7), the equation 2t = 4 gives t = 2, and the other component 1 + 6 = 7 matches, so the point is on the line.",
+              "rules": [
+                "Distance from (x1, y1) to (x2, y2) is sqrt((x2-x1)^2 + (y2-y1)^2).",
+                "The distance from (1, 2) to (4, 6) is 5.",
+                "The midpoint averages the coordinates.",
+                "The line through (0, 1) with direction (2, 3) is r = (0,1) + t(2,3)."
+              ],
+              "example": {
+                "prompt": "Find the distance from (1, 2) to (4, 6).",
+                "steps": [
+                  "The horizontal change is 4 - 1 = 3.",
+                  "The vertical change is 6 - 2 = 4.",
+                  "sqrt(3^2 + 4^2) = sqrt(9 + 16) = sqrt(25) = 5."
+                ],
+                "answer": "5"
+              },
+              "practice": [
+                {
+                  "q": "Distance from (0, 0) to (3, 4).",
+                  "answer": "5",
+                  "why": "sqrt(3^2 + 4^2) = sqrt(9 + 16) = sqrt(25) = 5."
+                },
+                {
+                  "q": "Midpoint of (1, 2) and (4, 6).",
+                  "answer": "(5/2, 4)",
+                  "why": "((1+4)/2, (2+6)/2) = (5/2, 4)."
+                }
+              ]
+            },
+            {
+              "id": "math-syn-l3b",
+              "title": "A six-item checkpoint across the road",
+              "he": "נקודת ביקורת של שישה סעיפים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A six-item checkpoint across the road"
+              ],
+              "objectives": [
+                "Mix a derivative, a series, a distance, and a combination under a clock.",
+                "Add a tangent line and a conditional probability to make a personal six-item set."
+              ],
+              "teach": "A personal checkpoint is six items, drawn from different stages and worked under a clock. The four checks here are a derivative, a geometric sum, a distance, and a combination. Add two further items yourself: a tangent line, and a conditional probability. Six items is a personal set, not an official paper.\n\nThe paper is often split across questionnaires whose numbers change, so the skill is mixing topics under a clock, not memorizing a form. For the derivative of sin(x^2), write 2x cos(x^2). The series 5 + 5/2 + 5/4 + ... sums to 10. The distance from (1, 2) to (4, 6) is 5, and C(5, 2) = 10.",
+              "rules": [
+                "A personal checkpoint is six items. The four written checks are not a full official paper.",
+                "Add a tangent line and a conditional probability yourself.",
+                "The derivative of sin(x^2) is 2x cos(x^2), and the infinite sum 5 + 5/2 + 5/4 + ... is 10.",
+                "The distance from (1, 2) to (4, 6) is 5, and C(5, 2) = 10.",
+                "Questionnaire numbers change. Do not memorize a form."
+              ],
+              "example": {
+                "prompt": "Write the tangent to y = ln x at x = e. This is one extra item a six-item personal checkpoint should include.",
+                "steps": [
+                  "The point is (e, ln e) = (e, 1).",
+                  "The derivative of ln x is 1/x, so the slope at x = e is 1/e.",
+                  "The tangent is y - 1 = (1/e)(x - e)."
+                ],
+                "answer": "y-1 = (1/e)(x-e)"
+              },
+              "practice": [
+                {
+                  "q": "Derivative of sin(x^2).",
+                  "answer": "2x cos(x^2)",
+                  "why": "The chain rule multiplies cos(x^2) by the derivative of x^2, which is 2x."
+                },
+                {
+                  "q": "Sum of 5 + 5/2 + 5/4 + ... forever.",
+                  "answer": "10",
+                  "why": "The first term is 5 and the ratio is 1/2, so the sum is 5/(1/2) = 10."
+                },
+                {
+                  "q": "Distance from (1, 2) to (4, 6).",
+                  "answer": "5",
+                  "why": "sqrt((4-1)^2 + (6-2)^2) = sqrt(9 + 16) = 5."
+                },
+                {
+                  "q": "C(5,2).",
+                  "answer": "10",
+                  "why": "(5*4)/2 = 10."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

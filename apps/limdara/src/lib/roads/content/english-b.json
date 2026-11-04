@@ -1,0 +1,1553 @@
+{
+  "stages": [
+    {
+      "id": "eng-para",
+      "index": 6,
+      "title": "From sentence to paragraph",
+      "he": "ממשפט לפסקה",
+      "topic": "From sentence to paragraph",
+      "thesis": "A paragraph is a claim with support that returns, and most weak writing fails before the essay does.",
+      "syllabus": [
+        "Sentence control: fragment, run-on, comma splice",
+        "The paragraph's job: claim, support, return",
+        "Connectors that are precise",
+        "Register: spoken versus written",
+        "Editing a paragraph you wrote",
+        "A 120-word shape you can repeat"
+      ],
+      "levels": [
+        {
+          "id": "eng-para-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-para-l1a",
+              "title": "Sentence control",
+              "he": "שליטה במשפט",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Sentence control: fragment, run-on, comma splice"
+              ],
+              "objectives": [
+                "Name a fragment, a run-on, and a comma splice.",
+                "Join two clauses with a period, a semicolon, or a real connector."
+              ],
+              "teach": "A sentence needs a subject and a finite verb, and it ends where that idea ends. \"Because the bus was late.\" is a fragment: the because-clause never reaches a main clause. \"The bus was late I missed the test.\" is a run-on: two independent clauses with nothing between them. \"The bus was late, I missed the test.\" is a comma splice. A comma is a pause, not a join.\n\nRepair a splice with a period, a semicolon, or a connector that names the link, such as because or so. In a 5-unit paragraph, one splice is enough to make a marker distrust the sentences around it.",
+              "rules": [
+                "A fragment is missing a main clause, even if the line looks long.",
+                "A run-on stacks independent clauses with no punctuation and no connector.",
+                "A comma splice uses only a comma between independent clauses.",
+                "Fix with a period, a semicolon, or a connector such as because, so, or but.",
+                "Do not repair a fragment by adding a comma."
+              ],
+              "example": {
+                "prompt": "Label this, then repair it: The essay was clear, the ending was rushed.",
+                "steps": [
+                  "Two finite verbs sit in it: was, and was again.",
+                  "Only a comma stands between those clauses, so the error is a comma splice.",
+                  "The relation is contrast, so but is the honest join."
+                ],
+                "answer": "comma splice; The essay was clear, but the ending was rushed."
+              },
+              "practice": [
+                {
+                  "q": "Label: Because the room was noisy.",
+                  "answer": "fragment",
+                  "why": "Because opens a dependent clause, and no main clause follows it."
+                },
+                {
+                  "q": "Legal repair for 'I was tired, I left': a period, or a comma plus however?",
+                  "answer": "a period",
+                  "why": "However after a comma is still a splice. Use a period, or a semicolon before however."
+                }
+              ]
+            },
+            {
+              "id": "eng-para-l1b",
+              "title": "Claim, support, return",
+              "he": "טענה, תמיכה וחזרה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "The paragraph's job: claim, support, return"
+              ],
+              "objectives": [
+                "Mark the claim, the support, and the return in a paragraph.",
+                "Write a return that restates the claim in new words."
+              ],
+              "teach": "A paragraph on this paper is one job, not a pile of true sentences. The claim is the sentence a marker could disagree with. Support is the fact, example, or reason that makes the claim harder to dismiss. The return is the last sentence, and it points back to that claim instead of opening a new one.\n\nIf you delete the first sentence and nothing in the paragraph is arguable, you never had a claim. If the last sentence could start the next paragraph, it is not a return. Use one claim, two supports, and a return.",
+              "rules": [
+                "The claim is arguable. A fact everyone already grants is not a claim.",
+                "Support answers why a reader should believe the claim.",
+                "The return uses fresh wording. Do not copy the claim sentence.",
+                "One paragraph holds one claim. A second claim starts a new paragraph."
+              ],
+              "example": {
+                "prompt": "Label the jobs in order: School should start later. Teenagers lose sleep when the bell is early, and tired students remember less. A later start would protect the learning the timetable is for.",
+                "steps": [
+                  "Sentence 1 can be disagreed with, so it is the claim.",
+                  "Sentence 2 gives a reason and a result, so it is support.",
+                  "Sentence 3 names learning again without copying sentence 1, so it is the return."
+                ],
+                "answer": "claim; support; return"
+              },
+              "practice": [
+                {
+                  "q": "Which is only a fact, not a claim: 'The bell rings at 07:40.' or 'The bell is too early.'?",
+                  "answer": "The bell rings at 07:40.",
+                  "why": "A clock time cannot be argued. 'Too early' can."
+                },
+                {
+                  "q": "The last sentence introduces uniforms. Is it a return? yes or no",
+                  "answer": "no",
+                  "why": "A return closes the claim already made. A new topic belongs in a new paragraph."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-para-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-para-l2a",
+              "title": "Precise connectors",
+              "he": "מחברים מדויקים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Connectors that are precise"
+              ],
+              "objectives": [
+                "Choose a connector that names the real relation between two sentences.",
+                "Reject a connector that sounds formal but points the wrong way."
+              ],
+              "teach": "A connector labels the gap between sentences. Because names a cause. So and therefore name a result. But, however, and yet name a contrast. For example introduces an instance of the claim you just made, not a second claim. Also only adds a point of the same kind.\n\nThe wrong connector is worse than none. \"The bus was late. Therefore I arrived early.\" is fluent and false, because therefore promised a result the facts do not give. Name the relation in your own words first, then pick the word.",
+              "rules": [
+                "Because and since point back to a cause. So and therefore point forward to a result.",
+                "However and but mark contrast, not addition.",
+                "For example must be an instance of the sentence before it.",
+                "Do not stack two connectors. 'But however' is noise.",
+                "A semicolon can join clauses. It does not name the relation by itself."
+              ],
+              "example": {
+                "prompt": "The relation is contrast. Fill the gap with one word: Maya revised the essay twice. ____ the ending was still rushed.",
+                "steps": [
+                  "Name the relation before you shop for a fancy word: the second fact goes against the first.",
+                  "Contrast words that fit here include but, yet, and however.",
+                  "After a period, however is the one that fits, followed by a comma."
+                ],
+                "answer": "However"
+              },
+              "practice": [
+                {
+                  "q": "The lab was closed. ____ we could not finish. Cause leads to result. One word.",
+                  "answer": "Therefore",
+                  "why": "The closed lab is the cause. Therefore marks the result. Because would need the cause after it."
+                },
+                {
+                  "q": "Connector for an instance, not a new claim: for example, or however?",
+                  "answer": "for example",
+                  "why": "For example introduces an instance of the previous sentence. However would announce a contrast."
+                }
+              ]
+            },
+            {
+              "id": "eng-para-l2b",
+              "title": "Spoken versus written",
+              "he": "דיבור מול כתיבה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Register: spoken versus written"
+              ],
+              "objectives": [
+                "Swap spoken fillers for written wording without changing the claim.",
+                "Keep slang and needless contractions out of a formal paragraph."
+              ],
+              "teach": "Register is how formal the situation is, not how rare your vocabulary is. Speech can say \"kids are gonna freak out if the test is, like, impossible.\" A written paragraph for this paper says \"Students will panic if the test is unreasonably hard.\" The claim stays. Cut the fillers and the slang.\n\nThe word you is risky, because the marker did not join your argument. Prefer students, a candidate, or people, unless the prompt tells you to address the reader. When you are unsure about a contraction such as don't, expand it.",
+              "rules": [
+                "Cut gonna, wanna, kinda, and like when they are fillers.",
+                "Replace a vague get with a precise verb: receive, become, or arrive.",
+                "Avoid you unless the task is a letter to a named reader.",
+                "Expand contractions in a formal email or letter.",
+                "Do not inflate register into thesaurus words you cannot control."
+              ],
+              "example": {
+                "prompt": "Rewrite into written register, one sentence: Kids are gonna get mad if the rules are, like, unfair.",
+                "steps": [
+                  "Keep the claim: unfair rules cause anger.",
+                  "Swap kids, gonna, get mad, and the filler like.",
+                  "Use students, will become angry, and drop the filler."
+                ],
+                "answer": "Students will become angry if the rules are unfair."
+              },
+              "practice": [
+                {
+                  "q": "Is 'you know' a written connector? yes or no",
+                  "answer": "no",
+                  "why": "It is a spoken filler. It does not name cause, contrast, or example."
+                },
+                {
+                  "q": "In a formal email, type don't or do not?",
+                  "answer": "do not",
+                  "why": "A formal letter expands contractions so the tone stays written."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-para-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-para-l3a",
+              "title": "Edit a paragraph you wrote",
+              "he": "עריכת פסקה שכתבת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Editing a paragraph you wrote"
+              ],
+              "objectives": [
+                "Run a fixed edit pass: claim, then sentences, then connectors.",
+                "Cut a sentence that does not serve the claim."
+              ],
+              "teach": "Editing starts only after a draft exists. Read once for the claim: underline it, and cut any sentence that does not support it or return to it. Read again only for boundaries: fragment, run-on, comma splice. Read a third time for connectors and for spoken words that should not be on the page.\n\nDo not do all three reads at once. Change one thing per read. A sentence can be interesting and still fail the first pass if it answers a different question. Correct English does not save it.",
+              "rules": [
+                "Pass 1: the claim is present, and every other sentence serves it.",
+                "Pass 2: no fragment, run-on, or comma splice remains.",
+                "Pass 3: each connector names the real relation, and the register is written.",
+                "The return is last, and it does not open a new claim.",
+                "Delete before you decorate. A shorter true paragraph beats a longer decorated one."
+              ],
+              "example": {
+                "prompt": "Draft: Homework should be shorter. Teachers are nice. Because students need sleep. Which sentence fails pass 1?",
+                "steps": [
+                  "Underline the claim: homework should be shorter.",
+                  "Test each other sentence against that claim.",
+                  "'Teachers are nice' does not support shorter homework, so it is the cut."
+                ],
+                "answer": "Teachers are nice."
+              },
+              "practice": [
+                {
+                  "q": "Which pass catches 'I finished, I checked'? Type pass 1 or pass 2.",
+                  "answer": "pass 2",
+                  "why": "The comma splice is a sentence-boundary error, not a missing claim."
+                },
+                {
+                  "q": "A correct sentence about weekend plans sits in a paragraph on exams. keep or cut?",
+                  "answer": "cut",
+                  "why": "Pass 1 removes anything that does not serve the claim, even if the grammar is clean."
+                }
+              ]
+            },
+            {
+              "id": "eng-para-l3b",
+              "title": "A 120-word shape",
+              "he": "תבנית של 120 מילים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A 120-word shape you can repeat"
+              ],
+              "objectives": [
+                "Lay out one claim, two supports, and a return in about 120 words.",
+                "Hold sentence control, true connectors, and written register inside that shape."
+              ],
+              "teach": "The shape you can repeat is small enough to finish under exam pressure. Open with one claim. Give two supports, each a sentence or two, joined by a connector that is actually true. Close with a return that names the claim again in new words. About 120 words is the target, not a second essay.\n\nUse the last minute on the three passes: claim, sentence boundaries, then connectors and register. A 120-word paragraph with one splice and a spoken filler still fails. The same shape, with the claim visible, is what a marker can score quickly.",
+              "rules": [
+                "Order the slots: claim, support, support, return.",
+                "Stay near 120 words. Do not add a second claim to fill the count.",
+                "Each join is because, so, but, however, or for example, and it must be true.",
+                "Written register: no gonna, no filler like, no vague you.",
+                "The last check is boundaries: no fragment, run-on, or comma splice."
+              ],
+              "example": {
+                "prompt": "Name the four slots, in order, for a 120-word paragraph on later school start times.",
+                "steps": [
+                  "Slot 1 is the claim a reader could disagree with.",
+                  "Slots 2 and 3 are two different supports, not one support said twice.",
+                  "Slot 4 returns to the claim in new words and stops."
+                ],
+                "answer": "claim, support, support, return"
+              },
+              "practice": [
+                {
+                  "q": "How many claims belong in the 120-word shape?",
+                  "answer": "one",
+                  "why": "A second claim needs its own paragraph. The shape is one job."
+                },
+                {
+                  "q": "What is the last slot: a new claim, or a return?",
+                  "answer": "a return",
+                  "why": "The last sentence points back. It does not open the next idea."
+                },
+                {
+                  "q": "Label 'Sleep matters, students forget.' Type splice, fragment, or fine.",
+                  "answer": "splice",
+                  "why": "Two independent clauses are joined only by a comma."
+                },
+                {
+                  "q": "Which spoken filler must be cut: moreover, or gonna?",
+                  "answer": "gonna",
+                  "why": "Moreover can be a real connector. Gonna is spoken register."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-write",
+      "index": 7,
+      "title": "Exam writing",
+      "he": "כתיבה לבחינה",
+      "topic": "Exam writing",
+      "thesis": "The writing paper is task fulfillment: every bullet in the prompt must appear, in the genre it asks for.",
+      "syllabus": [
+        "Opinion essay",
+        "For and against",
+        "Description of a person, place, or experience",
+        "Formal email or letter",
+        "Task fulfillment: answering every bullet in the prompt",
+        "Planning in eight minutes"
+      ],
+      "levels": [
+        {
+          "id": "eng-write-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-write-l1a",
+              "title": "The opinion essay",
+              "he": "חיבור דעה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Opinion essay"
+              ],
+              "objectives": [
+                "State one position in the first paragraph and keep it.",
+                "Give two reasons, each with an example, and a close that does not switch sides."
+              ],
+              "teach": "An opinion essay answers what you think and why. The first paragraph states one position a marker can find without hunting. Each middle paragraph holds one reason and a concrete example, such as a lesson, a rule, or a result you saw. The last paragraph returns to the same position. It does not switch sides and it does not apologize for having one.\n\nA useful frame is: I believe X because A and because B. Skip an opening dictionary definition unless the prompt asks what a word means. \"Some people say\" is not your opinion until you land on your own sentence.",
+              "rules": [
+                "The thesis is one sentence, and it takes a side.",
+                "One reason per body paragraph, with an example that belongs to that reason.",
+                "Connectors show reason and result, not a stack of also.",
+                "The ending restates the position. It does not sneak in a new reason.",
+                "Stay in written register from the thesis to the close."
+              ],
+              "example": {
+                "prompt": "Prompt: Should schools ban phones in class? Your side is yes. Write the thesis sentence only.",
+                "steps": [
+                  "Take the side you were ready to defend. Here, the ban.",
+                  "Name the subject and the judgment in one sentence.",
+                  "Leave the reasons for the body. The thesis does not list them yet."
+                ],
+                "answer": "Schools should ban phones in class."
+              },
+              "practice": [
+                {
+                  "q": "Where must the position appear first: introduction, or only the ending?",
+                  "answer": "introduction",
+                  "why": "The marker should see the side before the reasons. The ending returns to it."
+                },
+                {
+                  "q": "A body paragraph holds two unrelated reasons. Is that its job? yes or no",
+                  "answer": "no",
+                  "why": "One reason per body paragraph keeps the example attached to a single point."
+                }
+              ]
+            },
+            {
+              "id": "eng-write-l1b",
+              "title": "For and against",
+              "he": "בעד ונגד",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "For and against"
+              ],
+              "objectives": [
+                "Separate the for-side and the against-side into their own blocks.",
+                "End on a real choice when the prompt asks for your opinion."
+              ],
+              "teach": "A for-and-against essay is not an opinion essay with extra lines. The opening names the question. One block gives the arguments for. Another block gives the arguments against. A paragraph that mixes a for-point and an against-point hides the balance the task asked for.\n\nIf the prompt says discuss, present both sides and close by weighing them. If it also says give your opinion, the last paragraph must choose. \"Both sides have points\" does not finish that task. Put however or on the other hand once, at the boundary where the side changes.",
+              "rules": [
+                "For-points live together. Against-points live together.",
+                "On the other hand appears when the side changes, not inside one side.",
+                "A discuss task needs both sides, even if you dislike one of them.",
+                "If an opinion is required, the last paragraph says which side outweighs the other.",
+                "Do not open a third topic unless it clearly serves for or against."
+              ],
+              "example": {
+                "prompt": "The essay is on homework. Which break is right: mixed points, or for-block then against-block?",
+                "steps": [
+                  "List two for-points and two against-points before you draft.",
+                  "Group them so a paragraph never changes side in the middle.",
+                  "Put the switch at the boundary, with on the other hand."
+                ],
+                "answer": "for-block then against-block"
+              },
+              "practice": [
+                {
+                  "q": "Connector at the side switch: also, or on the other hand?",
+                  "answer": "on the other hand",
+                  "why": "Also adds a point of the same kind. The switch is a contrast between sides."
+                },
+                {
+                  "q": "The prompt says discuss and give your opinion. Is 'both are valid' a finished close? yes or no",
+                  "answer": "no",
+                  "why": "The opinion half is unanswered until you say which side is stronger."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-write-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-write-l2a",
+              "title": "Description",
+              "he": "תיאור מוחשי",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Description of a person, place, or experience"
+              ],
+              "objectives": [
+                "Pick one dominant impression and choose details that serve it.",
+                "Use a concrete noun or verb instead of very, nice, or amazing."
+              ],
+              "teach": "A description asks you to make a person, a place, or an experience specific. Start from one impression: the market is crowded, the coach is strict, the hike was exhausting. Then give details a reader could point at: a sound, an object, an action, a short bit of speech. Two precise details beat a string of adjectives.\n\nOrder the details so they move, from the door inward or from the first minute to the last. Do not turn the piece into an essay about why markets matter. The prompt asked you to show, and the score follows the showing.",
+              "rules": [
+                "One dominant impression, stated or clearly implied.",
+                "Prefer a concrete detail over very, really, nice, good, or amazing.",
+                "Keep a path: time order or space order, not a random list.",
+                "A little action is detail. A moral at the end is a different genre.",
+                "Slang does not become legal just because it is vivid. The register stays written."
+              ],
+              "example": {
+                "prompt": "Impression: a strict coach. Replace 'She is very strict and nice sometimes' with one concrete action.",
+                "steps": [
+                  "Drop very, and drop the mixed word nice.",
+                  "Choose an action that only a strict coach takes.",
+                  "Keep it to one sentence a reader can see."
+                ],
+                "answer": "She stopped practice until every player could recite the drill."
+              },
+              "practice": [
+                {
+                  "q": "Which is concrete: 'The room was nice' or 'The room smelled of chalk'?",
+                  "answer": "The room smelled of chalk",
+                  "why": "Smell is a detail a reader can test. Nice is an empty judgment."
+                },
+                {
+                  "q": "A kitchen description ends with a paragraph on politics. On task? yes or no",
+                  "answer": "no",
+                  "why": "The genre is description. A new argument leaves the person, place, or experience."
+                }
+              ]
+            },
+            {
+              "id": "eng-write-l2b",
+              "title": "A formal email",
+              "he": "מייל רשמי",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Formal email or letter"
+              ],
+              "objectives": [
+                "Open, state the purpose, give the needed facts, and make one request.",
+                "Match the greeting and the sign-off to whether you know the name."
+              ],
+              "teach": "A formal email has a shape markers look for before they admire your adjectives. Open with Dear Mr Berg or Dear Ms Levy, not Hey. The first sentence says why you are writing. The next lines give only the needed facts: a date, the course, the request. Ask for one action. Close with Yours sincerely if you named the person, and sign your full name.\n\nWrite do not and I would like, not gonna or ASAP. If you do not know the name, use Dear Sir or Madam, and close with Yours faithfully. One request is enough. Do not attach the story of your whole week.",
+              "rules": [
+                "Order: greeting, purpose, needed facts, one request, sign-off, full name.",
+                "Use Dear plus a name, or Dear Sir or Madam. Not Hey, and not the bare name.",
+                "Yours sincerely follows a named person. Yours faithfully follows Sir or Madam.",
+                "No contractions, no slang, and no emoji.",
+                "Ask for one action. Do not add a second request in the sign-off."
+              ],
+              "example": {
+                "prompt": "You are writing to Ms Levy about a missed test. Write the greeting and the purpose sentence.",
+                "steps": [
+                  "You know the name, so the greeting is Dear Ms Levy.",
+                  "Sentence 1 states why you are writing, not the weather and not a long apology.",
+                  "The meeting itself can be the next sentence. The purpose is already clear."
+                ],
+                "answer": "Dear Ms Levy, I am writing to ask for a meeting about the test I missed."
+              },
+              "practice": [
+                {
+                  "q": "Sign-off after Dear Sir or Madam?",
+                  "answer": "Yours faithfully",
+                  "why": "Faithfully pairs with an unnamed greeting. Sincerely pairs with a name."
+                },
+                {
+                  "q": "Is 'Hey Mr Berg' a formal greeting? yes or no",
+                  "answer": "no",
+                  "why": "Hey is spoken register. Dear Mr Berg is the written greeting."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-write-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-write-l3a",
+              "title": "Every bullet",
+              "he": "כל סעיף בהנחיה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Task fulfillment: answering every bullet in the prompt"
+              ],
+              "objectives": [
+                "Turn each bullet in a prompt into a part of the answer a marker can point to.",
+                "Notice when a paragraph is fluent but leaves a bullet untouched."
+              ],
+              "teach": "Task fulfillment means every instruction shows up on the page. If the prompt has three bullets, the marker is looking for three answers, not for elegant English alone. Before you draft, copy the bullets as a checklist. After you draft, tick each one. An unticked bullet is lost points even when the paragraph is clean.\n\nA common miss: \"describe the place and explain why you would recommend it.\" A careful description with no recommendation has done half the task. Stay inside the genre while you cover the bullets. An email bullet stays in the email. It does not become an essay.",
+              "rules": [
+                "Number the bullets in the prompt before you write a sentence.",
+                "Each bullet must be answered in words a marker can point to.",
+                "Length does not replace a missing bullet.",
+                "Stay in the genre the prompt names while you cover the bullets.",
+                "The last minute is a tick-list, not a hunt for fancier adjectives."
+              ],
+              "example": {
+                "prompt": "Bullets: 1 your opinion, 2 one reason, 3 a personal example. The draft has only the opinion and the reason. What is missing?",
+                "steps": [
+                  "Lay the three bullets beside the draft.",
+                  "Tick the opinion and tick the reason.",
+                  "The third bullet has no sentence, so that is the gap."
+                ],
+                "answer": "a personal example"
+              },
+              "practice": [
+                {
+                  "q": "The email is polite but never states the request. Fulfilled? yes or no",
+                  "answer": "no",
+                  "why": "Politeness is not the bullet. The request had to appear in words."
+                },
+                {
+                  "q": "Best last-minute check: new adjectives, or a tick for each bullet?",
+                  "answer": "a tick for each bullet",
+                  "why": "Task fulfillment is scored by coverage. Adjectives do not replace a missing bullet."
+                }
+              ]
+            },
+            {
+              "id": "eng-write-l3b",
+              "title": "Eight-minute plan",
+              "he": "תוכנית של שמונה דקות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Planning in eight minutes"
+              ],
+              "objectives": [
+                "Use about eight minutes to lock genre, bullets, and paragraph jobs.",
+                "Leave the plan with a thesis or purpose sentence you can write from."
+              ],
+              "teach": "Eight minutes is enough to plan and not enough to write the whole answer. In the first minute, name the genre: opinion, for and against, description, or formal email. In the next two, copy every bullet as a checklist. Then assign each bullet a paragraph and note one connector or one concrete detail. In the last two minutes, write the thesis or the purpose sentence in full.\n\nThen write, and do not reopen which side you are on. If you planned an email, do not drift into an essay. A short complete answer outscores a long one that never reached the last bullet.",
+              "rules": [
+                "First name the genre the prompt actually asks for.",
+                "Copy every bullet before you write body sentences.",
+                "Give each bullet a paragraph job, or a clear pair if two belong together.",
+                "Write the thesis or the purpose sentence during the plan, not after the clock eats it.",
+                "Stop planning when the eight minutes end. An unused plan scores nothing."
+              ],
+              "example": {
+                "prompt": "Formal email to the principal. Bullets: introduce yourself, explain a clash with basketball, request a new test date. What do you write in full during the last two plan minutes?",
+                "steps": [
+                  "The genre is already fixed as a formal email, and the bullets are copied.",
+                  "The purpose sentence is the line most likely to go vague once you rush.",
+                  "Draft that sentence now: why you are writing."
+                ],
+                "answer": "the purpose sentence"
+              },
+              "practice": [
+                {
+                  "q": "First decision in the eight minutes: genre, or adjectives?",
+                  "answer": "genre",
+                  "why": "Genre decides the shape. Adjectives can wait until the draft exists."
+                },
+                {
+                  "q": "An opinion prompt. Which full sentence do you write before the draft?",
+                  "answer": "the thesis",
+                  "why": "The plan ends with the position in one sentence so the draft cannot drift."
+                },
+                {
+                  "q": "A bullet is still unassigned when eight minutes end. Type: keep planning, or assign it and start.",
+                  "answer": "assign it and start",
+                  "why": "An unused plan scores nothing. One line for the last bullet is enough to begin."
+                },
+                {
+                  "q": "You planned an email, then feel an essay coming. Which shape wins?",
+                  "answer": "email",
+                  "why": "The prompt's genre is the task. A strong essay in the wrong shape misses fulfillment."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-story",
+      "index": 8,
+      "title": "Story",
+      "he": "סיפור קצר",
+      "topic": "Story",
+      "thesis": "A literature answer about a story names craft, not a retelling of the plot.",
+      "syllabus": [
+        "Narrator, point of view, and what is withheld",
+        "Character desire versus obstacle",
+        "Setting as pressure, not wallpaper",
+        "Ending and the question the story leaves",
+        "A public-domain model: Kate Chopin, The Story of an Hour",
+        "Writing a literature answer, not a plot summary"
+      ],
+      "levels": [
+        {
+          "id": "eng-story-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-story-l1a",
+              "title": "Narrator and withholding",
+              "he": "מספר ומה שנמנע",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Narrator, point of view, and what is withheld"
+              ],
+              "objectives": [
+                "Name who speaks, and whether that voice is inside one mind.",
+                "Point to one fact the narrator holds back, and say what the delay does."
+              ],
+              "teach": "The narrator is the voice telling the story, and point of view is how much that voice may know. A first-person narrator says I and can report only what that person sees and thinks. Limited third person stays near one character and says she or he. An omniscient voice can move from mind to mind, and you should say which minds it enters.\n\nWithholding is a fact the voice could have given and does not, yet. Name the narrator type and one withheld fact in the answer. \"The narrator builds suspense\" is not enough, because it never says what was held back.",
+              "rules": [
+                "I-narrator means first person, limited to that person's access.",
+                "She or he, with one mind open, is limited third person.",
+                "Access to several minds is omniscient. Name the minds.",
+                "Withholding is a specific fact or motive, not the mood-word mystery.",
+                "Quote or paraphrase a short line that shows the limit. Do not retell the chapter."
+              ],
+              "example": {
+                "prompt": "The voice says I and never enters the brother's thoughts. Name the point of view, and name one thing it withholds.",
+                "steps": [
+                  "I marks first person.",
+                  "The brother's mind is outside that speaker's access.",
+                  "State both: the type, then the withheld piece."
+                ],
+                "answer": "first person; the brother's thoughts"
+              },
+              "practice": [
+                {
+                  "q": "The text says 'she felt cold' and never reports another mind. Name the point of view.",
+                  "answer": "limited third person",
+                  "why": "She is third person, and only one mind is open."
+                },
+                {
+                  "q": "Is 'it creates suspense' enough if you never name the withheld fact? yes or no",
+                  "answer": "no",
+                  "why": "The answer has to name what is held back, not only the mood word suspense."
+                }
+              ]
+            },
+            {
+              "id": "eng-story-l1b",
+              "title": "Desire and obstacle",
+              "he": "רצון ומכשול",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Character desire versus obstacle"
+              ],
+              "objectives": [
+                "State a character's desire in one short clause.",
+                "Name the obstacle that blocks it, using only what is in the story."
+              ],
+              "teach": "In a short-story answer, start from desire: what this person wants in this story, not in life in general. Then name the obstacle in the text: another person, a rule, a fear, or the character's own habit. The useful plot is the pressure between those two, not a list of scenes.\n\nBrave and kind are labels. They count only beside the want they serve. If you cannot say the want in one clause, you are not ready to name a theme. Practice the pair on a clean scene before you use it on a longer story.",
+              "rules": [
+                "Desire is a verb phrase: to leave, to be believed, to keep the house.",
+                "The obstacle must be in the text, not a guess about the author's childhood.",
+                "For a short answer, use one desire and one main obstacle.",
+                "A trait word is allowed only beside the action that proves it.",
+                "Do not retell every event between the want and the block."
+              ],
+              "example": {
+                "prompt": "A girl wants to keep a stray dog. Her father says the landlord forbids pets. Desire and obstacle, short.",
+                "steps": [
+                  "The desire is what she is trying to hold on to.",
+                  "The obstacle is the rule the father cites, not your opinion of dogs.",
+                  "Keep both in a few words."
+                ],
+                "answer": "to keep the dog; the landlord's rule"
+              },
+              "practice": [
+                {
+                  "q": "Which is a desire: 'She is lonely' or 'She wants a friend in the new class'?",
+                  "answer": "She wants a friend in the new class",
+                  "why": "Lonely is a state. A desire is the thing she is trying to get."
+                },
+                {
+                  "q": "You call the hero stubborn but cite no action. Enough? yes or no",
+                  "answer": "no",
+                  "why": "A trait without the want and the block is a label, not an answer."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-story-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-story-l2a",
+              "title": "Setting as pressure",
+              "he": "רקע כלחץ",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Setting as pressure, not wallpaper"
+              ],
+              "objectives": [
+                "Tie a place or a time to the character's obstacle.",
+                "Reject a setting sentence that could fit any story."
+              ],
+              "teach": "Setting is where and when a scene happens, but it earns a mark only when it presses on someone. A locked station at night is pressure if the character needs a train. A bright kitchen is wallpaper if nobody uses the light, the heat, or the door. Ask whether moving the scene would change the obstacle. If it would, the setting is working.\n\nQuote or name one detail, then say what it blocks or allows. \"The room was dark, which shows sadness\" treats dark as a mood sticker. \"The room was dark, so she could not see who entered\" is pressure, because the detail changes what she can do.",
+              "rules": [
+                "Name place or time with a detail from the text.",
+                "Say what that detail does to a want or a fear.",
+                "If the detail could move to any story, it is wallpaper.",
+                "One detail, fully used, beats three unused adjectives.",
+                "Do not claim a symbol until the pressure is clear."
+              ],
+              "example": {
+                "prompt": "Detail: the only door locks from the outside. The character wants to leave. What is the setting doing?",
+                "steps": [
+                  "State the want: to leave.",
+                  "State the detail that touches that want: the outside lock.",
+                  "Name the pressure in a few words."
+                ],
+                "answer": "The lock blocks the exit."
+              },
+              "practice": [
+                {
+                  "q": "Wallpaper or pressure? 'It was a nice autumn day,' with no effect on the scene.",
+                  "answer": "wallpaper",
+                  "why": "The season does not change what anyone can do."
+                },
+                {
+                  "q": "The storm cuts the bridge the character needs. Pressure or wallpaper?",
+                  "answer": "pressure",
+                  "why": "The setting removes the path the desire depends on."
+                }
+              ]
+            },
+            {
+              "id": "eng-story-l2b",
+              "title": "The ending's question",
+              "he": "השאלה שהסוף משאיר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Ending and the question the story leaves"
+              ],
+              "objectives": [
+                "Say whether the ending grants the desire, refuses it, or grants it at a cost.",
+                "Close on a question the events support, not on a proverb."
+              ],
+              "teach": "An ending grants the desire, refuses it, or grants it at a cost that changes it. Say which, in terms of the want you already named. Then write the question the story still leaves. A question is not a proverb you could tape onto any text. \"Be grateful\" is a moral. \"Who is free if the freedom lasts an hour?\" can be earned by events.\n\nYou do not have to solve that question. If the last page shocks, connect the shock to the want and the obstacle. Shock by itself is a reaction, not an answer.",
+              "rules": [
+                "Tie the ending to the desire: gained, lost, or gained at a cost.",
+                "End on a question the text can support, not on a slogan.",
+                "Do not add a scene the story does not contain.",
+                "Irony belongs here if the outcome undoes what a character believed.",
+                "Keep it short. The ending note is not a second summary."
+              ],
+              "example": {
+                "prompt": "She wanted to leave home. The last page shows her staying, key in hand. Result, then a question.",
+                "steps": [
+                  "The desire was to leave. She stays, so the action does not fulfill it.",
+                  "The key means the choice is still open, so the loss is not total.",
+                  "Ask what the key leaves unresolved."
+                ],
+                "answer": "She stays; will she use the key?"
+              },
+              "practice": [
+                {
+                  "q": "Which closer is an exam line: 'Always tell the truth.' or 'Does the truth cost him the friend?'",
+                  "answer": "Does the truth cost him the friend?",
+                  "why": "That question can sit on the plot. The proverb is a moral pasted on."
+                },
+                {
+                  "q": "He wins the prize and loses his partner. Is the desire simply fulfilled? yes or no",
+                  "answer": "no",
+                  "why": "The cost changes the win. Say what was gained and what it cost."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-story-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-story-l3a",
+              "title": "Chopin's hour",
+              "he": "השעה של שופן",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "A public-domain model: Kate Chopin, The Story of an Hour"
+              ],
+              "objectives": [
+                "Explain the narrator's distance from the doctors in Chopin's story.",
+                "Say why their phrase about joy is ironic."
+              ],
+              "teach": "Kate Chopin's \"The Story of an Hour\" (1894) is a public-domain model, not a required school edition. Louise Mallard, who has heart trouble, is told that Brently, her husband, has died. Alone, she whispers \"Free! Body and soul free!\" The relief is guilty, and it is real. Then Brently returns alive, and Louise dies.\n\nThe third-person narrator stays near her mind and ahead of the doctors. That distance is the irony. They call it \"the joy that kills,\" as if she died happy at his return. The reader has seen another joy: a life she thought was suddenly hers.",
+              "rules": [
+                "Use this story as a public-domain model. Do not treat it as a required edition.",
+                "Her desire is an hour of freedom. The obstacle returns with Brently, alive.",
+                "The narrator is third person, close to Louise and ahead of the doctors.",
+                "The doctors' joy and the joy the reader saw are not the same joy.",
+                "Quote a few words, then say what they do. Do not paste the story."
+              ],
+              "example": {
+                "prompt": "In one sentence, what is ironic about the doctors' line that she died of \"the joy that kills\"?",
+                "steps": [
+                  "In the room, Louise felt freedom, not delight that Brently was alive.",
+                  "The doctors see a wife shocked by happiness at his return.",
+                  "Name the mismatch: they misname the joy the reader just watched."
+                ],
+                "answer": "They misname the joy the reader saw."
+              },
+              "practice": [
+                {
+                  "q": "Who returns alive at the end?",
+                  "answer": "Brently",
+                  "why": "Brently Mallard is alive. Louise dies when he appears."
+                },
+                {
+                  "q": "Is this page claiming the story is your school's required edition? yes or no",
+                  "answer": "no",
+                  "why": "It is a public-domain model for craft. Schools choose their own lists."
+                }
+              ]
+            },
+            {
+              "id": "eng-story-l3b",
+              "title": "Not a plot summary",
+              "he": "לא תקציר עלילה",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Writing a literature answer, not a plot summary"
+              ],
+              "objectives": [
+                "Build a literature paragraph from a craft claim plus a short proof.",
+                "Cut plot that the craft claim does not need."
+              ],
+              "teach": "A literature paragraph is three sentences you can reuse. First, the craft point: narrator, desire and obstacle, setting as pressure, or irony. Second, a short proof: a few words or one event. Third, what that proof does. Then stop. Who met whom, in order, is not yet an answer.\n\nOn Chopin's hour, a weak line retells both deaths. A working line says the narrator shows Louise's freedom and hides it from the doctors, so their joy is the wrong joy. Keep that shape on any assigned story. The craft words stay. Only the proof changes.",
+              "rules": [
+                "The first sentence is the craft claim, not 'this story is about.'",
+                "The second sentence is one short proof from the text.",
+                "The third sentence says what that proof does.",
+                "Cut any event the craft claim does not need.",
+                "A few quoted words are the proof. Do not paste a long scene."
+              ],
+              "example": {
+                "prompt": "Turn this summary into a craft claim: Louise is told Brently died, feels free, and dies when he returns.",
+                "steps": [
+                  "The timeline is not the point. We know her feeling, and the doctors do not.",
+                  "Name narrator distance and the ironic misreading.",
+                  "Leave the railroad and the stairs out of the sentence."
+                ],
+                "answer": "The narrator shows a freedom the doctors misread."
+              },
+              "practice": [
+                {
+                  "q": "Which word starts a craft claim rather than a plot list: telegram, or narrator?",
+                  "answer": "narrator",
+                  "why": "Narrator names the craft. The telegram only marks an event in time."
+                },
+                {
+                  "q": "How much quotation does the proof need: a few words, or the whole scene?",
+                  "answer": "a few words",
+                  "why": "The paragraph explains the line. It does not replace the story."
+                },
+                {
+                  "q": "Must the railroad accident appear in the craft paragraph? yes or no",
+                  "answer": "no",
+                  "why": "If the claim is about irony, the accident is extra plot."
+                },
+                {
+                  "q": "The doctors' word joy matches Louise's feeling. yes or no",
+                  "answer": "no",
+                  "why": "They mean joy at his return. The reader saw joy at a freedom that just ended."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-poem",
+      "index": 9,
+      "title": "Poetry",
+      "he": "שירה",
+      "topic": "Poetry",
+      "thesis": "A poem answer talks about a speaker, a turn, and an image that does work.",
+      "syllabus": [
+        "Speaker is not automatically the poet",
+        "Image, and what an image is doing",
+        "Line, stanza, turn",
+        "Sound only when it changes meaning",
+        "A public-domain model: Emily Dickinson and Robert Frost",
+        "A poetry answer in the exam"
+      ],
+      "levels": [
+        {
+          "id": "eng-poem-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-poem-l1a",
+              "title": "Speaker, not poet",
+              "he": "דובר, לא משורר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Speaker is not automatically the poet"
+              ],
+              "objectives": [
+                "Call the voice in the poem the speaker.",
+                "Give one reason that voice is not automatically the poet's diary."
+              ],
+              "teach": "The speaker is the voice inside the poem. The poet is the person who wrote it. They may share a life, and you still may not read every line as a diary. Dickinson's speaker rides with Death. That does not mean a carriage stopped at her house. Frost's speaker looks back at two roads. The poem does not hand you his diary for that morning.\n\nSay speaker unless the question explicitly asks about the writer. If you use a biographical fact, mark it as context and return to a line. The stronger move is to show what the speaker claims, and what the images let a reader check.",
+              "rules": [
+                "The default word is speaker. Poet means the historical author.",
+                "I in a poem is the speaker's I.",
+                "Do not invent a biography to explain an image.",
+                "A title frames the poem. It is not proof the event happened to the poet.",
+                "If a question says 'the poet,' answer the craft, not a private life."
+              ],
+              "example": {
+                "prompt": "A student writes: 'Frost regrets his own hike.' Replace the subject with the accurate exam wording, in a short line.",
+                "steps": [
+                  "Any regret here is spoken inside the poem.",
+                  "The hike is not a documented event you may assert.",
+                  "Use speaker, and keep the claim small."
+                ],
+                "answer": "The speaker claims a difference."
+              },
+              "practice": [
+                {
+                  "q": "Who is 'I' in a poem, by default: the speaker, or the poet?",
+                  "answer": "the speaker",
+                  "why": "I is a role inside the text. Biography is a separate claim and needs evidence."
+                },
+                {
+                  "q": "Dickinson's speaker rides with Death. Did a carriage stop at her house? yes or no",
+                  "answer": "no",
+                  "why": "The carriage is the poem's image. It is not an event you may assert as her diary."
+                }
+              ]
+            },
+            {
+              "id": "eng-poem-l1b",
+              "title": "What an image does",
+              "he": "מה הדימוי עושה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Image, and what an image is doing"
+              ],
+              "objectives": [
+                "Quote a short image and say what job it does.",
+                "Refuse a reading that swaps in a prettier object."
+              ],
+              "teach": "An image is a concrete picture: a carriage, a road, a horse, a house. It is not a decoration beside a meaning you already prefer. Ask what the picture is doing. Does it slow the speaker, stage a choice, hide a threat, or make an idea touchable? Death as a civil driver changes dying into a polite ride, which is why the tone can stay calm.\n\nDo not swap the object for a slogan. If the line gives a carriage, do not quietly replace it with an angel because angels sound more literary. Stay with the object, then say the job. One image, fully used, is a whole exam point.",
+              "rules": [
+                "Quote the image in a few words, and name the object.",
+                "Say the job: it slows, chooses, hides, personifies, or contrasts.",
+                "Personification gives a nonhuman thing a human action. Name that action.",
+                "Do not replace the object with a different symbol you like better.",
+                "If you cannot say the job, you are still retelling, not reading the image."
+              ],
+              "example": {
+                "prompt": "Image: Death drives a carriage and knows no haste. What is the image doing to dying?",
+                "steps": [
+                  "Name the object and the human action: Death drives.",
+                  "Note the manner: no haste, civil, slow.",
+                  "Say what that manner does to the idea of dying."
+                ],
+                "answer": "It makes dying a slow, polite ride."
+              },
+              "practice": [
+                {
+                  "q": "Is 'she uses imagery' a finished point? yes or no",
+                  "answer": "no",
+                  "why": "You still have to name the image and the job it does."
+                },
+                {
+                  "q": "The line shows a horse. May you call it an angel because that sounds deeper? yes or no",
+                  "answer": "no",
+                  "why": "Stay with the object in the line. A new symbol is your invention."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-poem-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-poem-l2a",
+              "title": "Line, stanza, turn",
+              "he": "שורה, בית, מפנה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Line, stanza, turn"
+              ],
+              "objectives": [
+                "Point to a turn where the speaker's claim shifts.",
+                "Use line or stanza only when the break changes the meaning."
+              ],
+              "teach": "A line is one row. A stanza is a group of lines. A turn is the place the speaker changes direction: from a scene to a judgment, or from \"the roads were about the same\" to a claim that the choice made all the difference. Mention a line break only when the pause itself does work, for example when a word is left hanging.\n\nState the claim before the turn in one sentence and the claim after it in another. If you cannot say what changed, do not praise the stanza. Form words are locations, not compliments.",
+              "rules": [
+                "Line and stanza are locations. They are not praise words.",
+                "A turn is a change in the speaker's claim. Quote where it starts.",
+                "Say the before and the after in one sentence each.",
+                "A pause matters only if it changes stress or meaning.",
+                "Do not count lines unless the question asks about form."
+              ],
+              "example": {
+                "prompt": "Earlier the speaker says the roads were worn about the same. The close claims a great difference. What is that shift called here?",
+                "steps": [
+                  "Compare the earlier claim with the closing claim.",
+                  "The direction changes, from similarity to a life-defining difference.",
+                  "The exam word for that change is a turn."
+                ],
+                "answer": "a turn"
+              },
+              "practice": [
+                {
+                  "q": "Two lines, and the claim does not change. Must you call the break a turn? yes or no",
+                  "answer": "no",
+                  "why": "A turn is a shift in what the speaker claims, not the mere existence of a line."
+                },
+                {
+                  "q": "Word for a grouped set of lines: stanza, or simile?",
+                  "answer": "stanza",
+                  "why": "A stanza is the group. A simile is a comparison, usually with like or as."
+                }
+              ]
+            },
+            {
+              "id": "eng-poem-l2b",
+              "title": "Sound that means",
+              "he": "צליל שמשנה משמעות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Sound only when it changes meaning"
+              ],
+              "objectives": [
+                "Mention sound only when it changes speed, tone, or emphasis.",
+                "Leave out a rhyme you cannot tie to the meaning."
+              ],
+              "teach": "Sound means rhyme, rhythm, alliteration, or a hard pause such as a dash. It is worth a sentence only when it changes speed, certainty, or tone. A dash can cut a claim off before it finishes. A very neat rhyme can make a doubtful sentence sound settled. Repeated soft sounds can slow a line so the action feels unhurried.\n\nIf you cannot finish \"this sound does X to the meaning,\" leave the device out. \"The poem rhymes, so it is musical\" does not score. Name one pair or one pause, say what it does, and stop. A list of unnamed devices is padding.",
+              "rules": [
+                "Sound must change speed, certainty, or tone. Otherwise omit it.",
+                "A dash or a break can be the sound point. Say what is cut off.",
+                "Do not list rhyme-scheme letters unless you use them.",
+                "Alliteration counts only if the repeated sound hammers one idea.",
+                "Do not stop at 'it sounds nice.'"
+              ],
+              "example": {
+                "prompt": "The closing claim rhymes neatly: the choice 'has made all the difference.' What can that neat sound do to a doubtful claim?",
+                "steps": [
+                  "Separate the claim from the sound. The claim may be larger than the evidence.",
+                  "A neat rhyme sounds settled and finished.",
+                  "Say the effect in a few words: the sound makes the claim feel final."
+                ],
+                "answer": "It makes the claim sound final."
+              },
+              "practice": [
+                {
+                  "q": "You noticed a rhyme but cannot say what it does. Include it? yes or no",
+                  "answer": "no",
+                  "why": "Sound without a change in meaning is not an exam point."
+                },
+                {
+                  "q": "A dash cuts the sentence before the speaker finishes. A fair sound point? yes or no",
+                  "answer": "yes",
+                  "why": "The pause withholds the ending and changes what the reader is allowed to conclude."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-poem-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-poem-l3a",
+              "title": "Dickinson and Frost",
+              "he": "דיקינסון ופרוסט",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "A public-domain model: Emily Dickinson and Robert Frost"
+              ],
+              "objectives": [
+                "Say what Dickinson's carriage image does to dying.",
+                "Separate Frost's closing claim from the roads being nearly the same."
+              ],
+              "teach": "One stanza of Dickinson's \"Because I could not stop for Death\": \"Because I could not stop for Death - He kindly stopped for me - The Carriage held but just Ourselves - And Immortality.\" The speaker meets Death as a civil driver. Kindly and the carriage make dying look polite. That is the image's job.\n\nFrost's \"The Road Not Taken\" (1916) closes on \"Two roads diverged in a wood, and I - I took the one less traveled by, And that has made all the difference.\" Earlier the speaker says the roads were worn about the same. That closing claim is not proof the roads were very different.",
+              "rules": [
+                "Quote at most one Dickinson stanza, then say what the image does.",
+                "The carriage is the speaker's scene, not a diary entry about the poet's house.",
+                "You may use Frost's last three lines. Do not treat them as the whole argument.",
+                "Earlier in the poem the roads are worn about the same. Keep that in the answer.",
+                "The great difference is the speaker's later claim, not a measured gap between roads."
+              ],
+              "example": {
+                "prompt": "Frost's speaker says the roads were worn about the same, then says the choice made all the difference. Are those the same claim? yes or no",
+                "steps": [
+                  "The earlier lines level the two roads.",
+                  "The last three lines tell a later story of a great difference.",
+                  "The claims do not match. The ending is a retelling, not a measurement."
+                ],
+                "answer": "no"
+              },
+              "practice": [
+                {
+                  "q": "In Dickinson's stanza, who stops for the speaker?",
+                  "answer": "Death",
+                  "why": "Death kindly stops the carriage. The speaker did not stop for Death."
+                },
+                {
+                  "q": "Does Frost's last claim prove the roads were very different? yes or no",
+                  "answer": "no",
+                  "why": "The speaker already said the roads were worn about the same. The difference is the later claim."
+                }
+              ]
+            },
+            {
+              "id": "eng-poem-l3b",
+              "title": "A poetry answer",
+              "he": "תשובת שירה",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A poetry answer in the exam"
+              ],
+              "objectives": [
+                "Write a poetry paragraph in the order speaker, turn, image.",
+                "Leave sound out unless it changes the claim."
+              ],
+              "teach": "A poetry answer is three moves, in order. Name the speaker's claim. Point to the turn, where that claim shifts. Tie one image to the job it does. Add sound only if it changes the claim. Then stop.\n\nOn Frost, the speaker later claims the less traveled road made all the difference, after the poem made the roads nearly the same. The turn is that retelling. The road is an image of choice, not a map of a hike. Those three moves fit an unseen poem too.",
+              "rules": [
+                "Order: the speaker's claim, the turn, then one image and its job.",
+                "Do not call the speaker the poet unless the question asks about the author.",
+                "Sound is optional, and it must earn its sentence.",
+                "A few quoted words are enough. Do not copy out a whole poem.",
+                "Do not add a moral the turn does not support."
+              ],
+              "example": {
+                "prompt": "List the three moves of a poetry answer, in order.",
+                "steps": [
+                  "Start from the voice inside the poem, not from the poet's life.",
+                  "Next comes the shift in what that voice claims.",
+                  "Then one picture, plus the job it does."
+                ],
+                "answer": "speaker, turn, image"
+              },
+              "practice": [
+                {
+                  "q": "Default name for the voice: speaker, or poet?",
+                  "answer": "speaker",
+                  "why": "The voice inside the poem is the speaker unless the question asks about the author."
+                },
+                {
+                  "q": "Frost's last lines prove the roads were very different. yes or no",
+                  "answer": "no",
+                  "why": "The poem has the speaker call the roads about the same. The difference is what he later claims."
+                },
+                {
+                  "q": "You have no job for the rhyme. Include the rhyme? yes or no",
+                  "answer": "no",
+                  "why": "Sound without a change in meaning is padding."
+                },
+                {
+                  "q": "Dickinson's carriage is a diary fact, or an image? Type image or diary.",
+                  "answer": "image",
+                  "why": "The carriage makes dying look polite. It is not a fact about a house call."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eng-oral",
+      "index": 10,
+      "title": "Oral exam and full paper",
+      "he": "בחינה בעל פה ומבחן מלא",
+      "topic": "Oral exam and full paper",
+      "thesis": "The oral is a spoken structure, and the written papers are an order you can rehearse.",
+      "syllabus": [
+        "What the oral is actually scoring",
+        "A project structure you can say aloud",
+        "Handling a follow-up question",
+        "Linking literature to a personal example without drifting",
+        "The order of a full 5-unit sitting",
+        "A final mixed checkpoint"
+      ],
+      "levels": [
+        {
+          "id": "eng-oral-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "eng-oral-l1a",
+              "title": "What the oral scores",
+              "he": "מה הבחינה בעל פה מודדת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "What the oral is actually scoring"
+              ],
+              "objectives": [
+                "Name the two things the oral is scoring.",
+                "Treat the exact prompt as something that varies by school."
+              ],
+              "teach": "The oral scores two things you can practice: a spoken project, and your answer to a follow-up. The project is a short talk you prepared, on a text or a task your teacher set. The follow-up is a question you did not script, asked after you stop. Schools vary the exact prompt. There is no ministry form number to memorize, and none is given here.\n\nA memorized paragraph that collapses at the first real question has missed the second score. Practice the order aloud, then practice stopping to answer. The examiner is listening for structure, relevance, and whether you understood the question just asked.",
+              "rules": [
+                "The first score is the spoken project, in a clear order.",
+                "The second score is a follow-up you did not memorize.",
+                "Schools vary the exact prompt. Do not invent a form number.",
+                "A script you cannot leave is only half the task.",
+                "Answer in English, in full sentences, not in one-word asides."
+              ],
+              "example": {
+                "prompt": "Name the two things the oral scores.",
+                "steps": [
+                  "The first is the talk you prepared.",
+                  "The second is the question that comes after it.",
+                  "Leave form numbers out of the answer."
+                ],
+                "answer": "a spoken project and a follow-up"
+              },
+              "practice": [
+                {
+                  "q": "Does every school use the same oral prompt? yes or no",
+                  "answer": "no",
+                  "why": "Schools vary the exact prompt. Learn the structure, then follow the prompt you were given."
+                },
+                {
+                  "q": "You recited perfectly and could not answer the next question. Both scores met? yes or no",
+                  "answer": "no",
+                  "why": "The follow-up is part of what the oral scores."
+                }
+              ]
+            },
+            {
+              "id": "eng-oral-l1b",
+              "title": "A project you can say",
+              "he": "פרויקט שאפשר לומר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "A project structure you can say aloud"
+              ],
+              "objectives": [
+                "Say a four-beat project: topic, text moment, craft, short link.",
+                "Keep each beat short enough to speak without a full script."
+              ],
+              "teach": "A project you can say aloud has four beats. First, a topic sentence that says what you will show. Second, one short moment from the text, not a summary of every chapter. Third, the craft point: narrator, image, turn, or desire against an obstacle. Fourth, a personal link of two or three sentences, then a return to the topic sentence.\n\nUse four cards at most, not a script in your palm. If you lose a sentence, go to the next beat instead of restarting. Leave time for the follow-up. A project that uses the whole slot has spent the second score before it was offered.",
+              "rules": [
+                "Beat 1 is the topic. Beat 2 is one moment. Beat 3 is craft. Beat 4 is a short link and a return.",
+                "Four cards at most. No full script in your hand.",
+                "One text moment, not a plot summary.",
+                "Leave time for the follow-up. A longer talk is not a better score.",
+                "If you lose a sentence, move to the next beat. Do not restart from the first word."
+              ],
+              "example": {
+                "prompt": "Put these in speakable order: personal link, topic sentence, craft point, one moment from the text.",
+                "steps": [
+                  "The listener needs the destination first: the topic sentence.",
+                  "Then one moment from the text, then the craft that moment shows.",
+                  "The personal link is last, and you can return to the topic after it."
+                ],
+                "answer": "topic, moment, craft, link"
+              },
+              "practice": [
+                {
+                  "q": "How many text moments should the spoken project rely on?",
+                  "answer": "one",
+                  "why": "One moment you can explain beats a summary you cannot stop."
+                },
+                {
+                  "q": "The examiner interrupts during beat 2. Do you restart from beat 1? yes or no",
+                  "answer": "no",
+                  "why": "Move to the next beat, or answer the interruption. Restarting wastes the project."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-oral-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "eng-oral-l2a",
+              "title": "The follow-up",
+              "he": "שאלת המשך",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Handling a follow-up question"
+              ],
+              "objectives": [
+                "Answer the verb in the question: describe, explain, or compare.",
+                "Use one holding sentence instead of inventing a scene."
+              ],
+              "teach": "A follow-up is scored on the question that was actually asked. Listen for the verb. Describe wants a moment. Explain wants a reason. Compare wants two items and one difference. A memorized beat that ignores the verb is not an answer, however fluent it is.\n\nIf you need a moment, use one holding sentence, such as \"I will use the ending.\" Then give proof from the text and one comment. Do not invent a scene. Do not switch to your weekend unless the question asked for a personal example. Stop when the question is done. Silence after a complete answer is allowed.",
+              "rules": [
+                "Mark the verb: describe, explain, compare, or agree.",
+                "One holding sentence is allowed. A second prepared speech is not.",
+                "Give proof from the text, then one comment.",
+                "Do not invent events the text does not contain.",
+                "Stop when the question is answered. Do not fill the silence with a new topic."
+              ],
+              "example": {
+                "prompt": "Question: Explain why the doctors are wrong about Louise's joy. Which verb decides the shape of the answer?",
+                "steps": [
+                  "Underline the verb in the question, not the names.",
+                  "Explain needs a why, not a fresh retelling of the hour.",
+                  "The why is the gap between her freedom and their word joy."
+                ],
+                "answer": "explain"
+              },
+              "practice": [
+                {
+                  "q": "The question says compare the two roads. You describe only your morning. On task? yes or no",
+                  "answer": "no",
+                  "why": "Compare needs both roads and a difference. Your morning was not the question."
+                },
+                {
+                  "q": "You need a second to think. Type a legal holding sentence.",
+                  "answer": "I will use the ending.",
+                  "why": "A holding sentence buys a moment without changing the question."
+                }
+              ]
+            },
+            {
+              "id": "eng-oral-l2b",
+              "title": "A link that stays",
+              "he": "קישור שנשאר",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Linking literature to a personal example without drifting"
+              ],
+              "objectives": [
+                "Attach a personal example to the same craft point as the text.",
+                "Stop the example before it becomes a second story."
+              ],
+              "teach": "A personal link is a bridge, not a second project. Name the craft point first: an hour of freedom, a choice the speaker retells, a desire blocked by a rule. Then give an ordinary example from your life in two or three sentences, one that matches that point. Close the bridge with a sentence that returns to the text.\n\nDrifting is easy to hear. You start from a school rule and end on a bus ride that never comes back. If the question did not ask for a personal example, do not force one. Ordinary and short is enough. You do not need a dramatic secret.",
+              "rules": [
+                "Order: craft point, then the example, then a return to the text.",
+                "Two or three sentences for the example. No subplot.",
+                "The example must match the point. A random weekend does not.",
+                "Skip the personal link if the question did not ask for one.",
+                "Ordinary is enough. Do not tell a secret you would hate to say aloud."
+              ],
+              "example": {
+                "prompt": "Craft point: a short freedom that ends. Name the shape of the link, not the diary.",
+                "steps": [
+                  "Say the craft point in a few words before any personal detail.",
+                  "Add one ordinary moment that also ended.",
+                  "Return to the text so the bridge closes."
+                ],
+                "answer": "point, short example, return"
+              },
+              "practice": [
+                {
+                  "q": "The example becomes a fight that never returns to the poem. Is that drift? yes or no",
+                  "answer": "yes",
+                  "why": "Without a return, the personal story has replaced the literature."
+                },
+                {
+                  "q": "The question is only 'what does the carriage do?' Add your weekend? yes or no",
+                  "answer": "no",
+                  "why": "A personal link is for when the prompt asks. This question asks for the image."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "eng-oral-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "eng-oral-l3a",
+              "title": "Order of a sitting",
+              "he": "סדר הישיבה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The order of a full 5-unit sitting"
+              ],
+              "objectives": [
+                "Describe a 5-unit sitting without treating module letters as permanent.",
+                "Use the booklet in front of you for order and timing."
+              ],
+              "teach": "A full 5-unit sitting typically mixes unseen reading, writing, and sometimes listening. Literature and the oral usually run on their own clocks, not inside that booklet. The mix changes by year and school, so module letters are not permanent names here. The booklet in front of you decides order, timing, and which section is first.\n\nRead the instructions and count the tasks before you write. Do not start the essay while an unseen is still required. When listening is included, it follows the room's recording. You cannot replay it later.",
+              "rules": [
+                "A typical written mix is unseen reading, writing, and sometimes listening.",
+                "Literature and the oral usually have their own clocks.",
+                "Do not memorize module letters as if they were fixed forever.",
+                "Follow the booklet in front of you for order and time.",
+                "If listening is in the sitting, it follows the recording, not your preference."
+              ],
+              "example": {
+                "prompt": "A friend wants the permanent letter of the listening module. What do you say instead?",
+                "steps": [
+                  "Refuse a letter that would have to stay true every year.",
+                  "Say what a sitting typically mixes, including listening only sometimes.",
+                  "Send them to the booklet they will actually have on the day."
+                ],
+                "answer": "Follow the booklet. Letters are not permanent."
+              },
+              "practice": [
+                {
+                  "q": "Are literature and the oral usually on the same clock as the unseen booklet? yes or no",
+                  "answer": "no",
+                  "why": "They usually have their own clocks. The written sitting mixes unseen reading, writing, and sometimes listening."
+                },
+                {
+                  "q": "Who decides today's order: a memorized letter, or the booklet?",
+                  "answer": "the booklet",
+                  "why": "Order and timing are what the paper in front of you says that day."
+                }
+              ]
+            },
+            {
+              "id": "eng-oral-l3b",
+              "title": "Mixed checkpoint",
+              "he": "נקודת ביקורת מעורבת",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A final mixed checkpoint"
+              ],
+              "objectives": [
+                "Pick the shape each mixed item asks for: sentence, task, craft, or oral.",
+                "Answer in a short label instead of drifting into the wrong genre."
+              ],
+              "teach": "This checkpoint mixes the paper and the oral. One item asks you to fix a sentence or pick a connector. One asks which genre the prompt wants, or which bullet is missing. One asks for a craft point on Chopin, Dickinson, or Frost, not a summary. One asks what the oral scores, or how to take a follow-up.\n\nStay inside the shape of that item. A literature line does not want an email sign-off. An oral line does not want 120 words. Type a short label, a yes or no, or a name. The longer shapes are already in the earlier nodes.",
+              "rules": [
+                "Read the verb and the genre before you answer.",
+                "Sentence items want a fragment, a run-on, a splice, or the join.",
+                "Writing items want a genre, a missing bullet, or the plan's first decision.",
+                "Literature items want craft, not plot order. In poems, say speaker, not poet.",
+                "Oral items want the project plus the follow-up. No fake form number. The booklet beats a memorized letter."
+              ],
+              "example": {
+                "prompt": "Sort these labels into email, irony, and oral: 'Yours faithfully'; 'doctors misread the joy'; 'answer the follow-up'.",
+                "steps": [
+                  "A sign-off belongs to the formal email.",
+                  "The doctors' joy is the ironic misreading in Chopin.",
+                  "The follow-up is the oral's second score."
+                ],
+                "answer": "email; irony; oral"
+              },
+              "practice": [
+                {
+                  "q": "The oral scores a spoken project and what else?",
+                  "answer": "a follow-up",
+                  "why": "The second score is the unscripted question after the project. Schools vary the exact prompt."
+                },
+                {
+                  "q": "For today's section order, type: module letter, or the booklet.",
+                  "answer": "the booklet",
+                  "why": "Module letters are not permanent. The booklet in front of you sets order and time."
+                },
+                {
+                  "q": "Frost: the roads were very different, or the speaker claims a difference? Type: roads, or speaker.",
+                  "answer": "speaker",
+                  "why": "The speaker's closing claim is not the same as the roads being very different."
+                },
+                {
+                  "q": "A comma joins two full clauses. Name the error.",
+                  "answer": "comma splice",
+                  "why": "Two independent clauses with only a comma between them are a comma splice."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

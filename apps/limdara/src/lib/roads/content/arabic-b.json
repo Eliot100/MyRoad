@@ -1,0 +1,1561 @@
+{
+  "stages": [
+    {
+      "id": "ar-sentence",
+      "index": 6,
+      "title": "The sentence",
+      "he": "המשפט",
+      "topic": "The sentence",
+      "thesis": "Arabic builds either a nominal sentence or a verbal sentence, and Hebrew word order will mislead you if you do not choose.",
+      "syllabus": [
+        "Nominal sentence: mubtada and khabar",
+        "Verbal sentence: verb, subject, object",
+        "Agreement differences that Hebrew speakers miss",
+        "Kana and its sisters, introduction",
+        "Inna and its sisters, introduction",
+        "Building a correct four-line paragraph"
+      ],
+      "levels": [
+        {
+          "id": "ar-sentence-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-sentence-l1a",
+              "title": "Mubtada and khabar",
+              "he": "מובתדא וחבר",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Nominal sentence: mubtada and khabar"
+              ],
+              "objectives": [
+                "Name the mubtada and the khabar in a short nominal sentence.",
+                "Build a nominal sentence that agrees, with no copula verb."
+              ],
+              "teach": "A nominal sentence, جملة اسمية, needs no verb. It is a mubtada, the topic, plus a khabar, the comment. الطالب مجتهد means the student is diligent. English and Hebrew insert is. Arabic does not. The topic is usually definite, and the comment is often indefinite.\n\nالكتاب جديد means the book is new. Match gender and number: الطالبة مجتهدة, the female student is diligent. A relative clause can sit inside the topic, as in الطالب الذي نجح مجتهد, the student who succeeded is diligent. Add كان only when you mean was. If you open with a verb, you have left this pattern.",
+              "rules": [
+                "Nominal order is mubtada then khabar. No verb is required.",
+                "The mubtada is usually definite. A bare indefinite noun is a weak opening.",
+                "The khabar agrees: الطالبة مجتهدة, not الطالبة مجتهد.",
+                "الطالب الذي نجح is still one topic. The relative clause belongs to the noun."
+              ],
+              "example": {
+                "prompt": "Write a nominal sentence meaning the teacher is new. Use المعلم and جديد.",
+                "steps": [
+                  "The topic is the known person, so make it definite: المعلم.",
+                  "The comment is indefinite and masculine singular, to match: جديد.",
+                  "Do not insert هو or كان. Hebrew הוא is not required in this pattern.",
+                  "Read it as topic then comment: the teacher is new."
+                ],
+                "answer": "المعلم جديد"
+              },
+              "practice": [
+                {
+                  "q": "In الكتاب مفيد, what is مفيد? Type khabar or mubtada.",
+                  "answer": "khabar",
+                  "why": "الكتاب is the topic. مفيد is the comment. The sentence needs no verb."
+                },
+                {
+                  "q": "Write the nominal sentence the teacher is new. Use المعلم and جديد.",
+                  "answer": "المعلم جديد",
+                  "why": "Definite topic, agreeing indefinite khabar, no copula."
+                }
+              ]
+            },
+            {
+              "id": "ar-sentence-l1b",
+              "title": "Verb, subject, object",
+              "he": "פועל, נושא ומושא",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Verbal sentence: verb, subject, object"
+              ],
+              "objectives": [
+                "Produce verb-subject-object order on a transitive sentence.",
+                "Classify a verb-first sentence as verbal."
+              ],
+              "teach": "A verbal sentence, جملة فعلية, usually opens with the verb, then the subject, then the object. كتب الطالب الدرس means the student wrote the lesson. Hebrew likes the doer first. That order is not the default verbal sentence. Learn the slots as a fixed move: verb, doer, thing done.\n\nThe present uses the same order: يكتب الطالب الدرس, the student writes the lesson. Noun-first, as in الطالب كتب الدرس, is a nominal sentence whose comment is a verbal sentence. Hebrew word order pushes you there. When the task says verbal, start with the verb, and keep the object.",
+              "rules": [
+                "Default verbal order is verb + subject + object: كتب الطالب الدرس.",
+                "Do not treat Hebrew subject-verb-object as the Arabic verbal default.",
+                "Noun-first plus a verb is a nominal sentence with a verbal comment, not the pattern to produce here.",
+                "The present keeps the same order: يقرأ الطالب الكتاب."
+              ],
+              "example": {
+                "prompt": "Put these into a verbal sentence: الطالب / كتب / الرسالة. Gloss: the student wrote the letter.",
+                "steps": [
+                  "Start with the past verb كتب, he wrote.",
+                  "Put the doer next: الطالب.",
+                  "Put the object last: الرسالة, the letter.",
+                  "Do not leave الطالب in front. That would not be the verbal default."
+                ],
+                "answer": "كتب الطالب الرسالة"
+              },
+              "practice": [
+                {
+                  "q": "Order الطالب / كتب / الرسالة as a verbal sentence.",
+                  "answer": "كتب الطالب الرسالة",
+                  "why": "Verb, then subject, then object."
+                },
+                {
+                  "q": "Classify درس الطالب. Type verbal or nominal.",
+                  "answer": "verbal",
+                  "why": "It opens with the verb درس. That is a verbal sentence."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-sentence-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-sentence-l2a",
+              "title": "Agreement Hebrew misses",
+              "he": "התאמה שדוברי עברית מפספסים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Agreement differences that Hebrew speakers miss"
+              ],
+              "objectives": [
+                "Keep a fronted verb singular before an explicit plural noun.",
+                "Choose feminine singular for a non-human plural comment."
+              ],
+              "teach": "A verb before an explicit plural noun stays singular. ذهب الطلاب means the students went. ذهبوا الطلاب is wrong. The plural ending is itself a subject, so use ذهبوا only when no noun follows. When the noun is the topic and the verb comes second, the ending is legal: الطلاب ذهبوا, the students went.\n\nGender still shows on a fronted verb: ذهبت الطالبة, the female student went, and ذهبت الطالبات, the female students went, not ذهبن الطالبات. Non-human plurals usually take feminine singular, which Hebrew does not: الكتب مفيدة, the books are useful. Human topics do take a plural comment: الطلاب مجتهدون, the students are diligent.",
+              "rules": [
+                "Verb before an explicit plural noun: singular. ذهب الطلاب, not ذهبوا الطلاب.",
+                "The plural suffix stands in for a pronoun subject: ذهبوا means they went.",
+                "Feminine plural nouns after the verb still take a singular verb: ذهبت الطالبات.",
+                "Non-human plurals usually take feminine singular: الكتب مفيدة. Humans can take a real plural: الطلاب مجتهدون."
+              ],
+              "example": {
+                "prompt": "Correct this sentence: ذهبوا الطلاب إلى المكتبة.",
+                "steps": [
+                  "The verb is before the explicit plural noun الطلاب.",
+                  "A fronted verb does not also take the plural subject suffix وا.",
+                  "Drop وا and keep the masculine singular past: ذهب.",
+                  "Leave the rest. The plural noun is already the subject."
+                ],
+                "answer": "ذهب الطلاب إلى المكتبة"
+              },
+              "practice": [
+                {
+                  "q": "Type the legal sentence: كتبوا الطلاب or كتب الطلاب.",
+                  "answer": "كتب الطلاب",
+                  "why": "The verb precedes an explicit plural, so it stays singular."
+                },
+                {
+                  "q": "The subject is only the pronoun they, masculine. Type they went.",
+                  "answer": "ذهبوا",
+                  "why": "No noun follows the verb, so the plural suffix is the subject."
+                }
+              ]
+            },
+            {
+              "id": "ar-sentence-l2b",
+              "title": "Kana and its sisters",
+              "he": "כאן ואחיותיה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Kana and its sisters, introduction"
+              ],
+              "objectives": [
+                "Complete كان or a sister with a real predicate.",
+                "Recognize أصبح، صار، and ما زال as the same pattern."
+              ],
+              "teach": "كان and its sisters enter a nominal sentence and need a completing predicate. The school set is كان (was), أصبح (became), صار (became), and ما زال (still is). The ما in ما زال is part of the verb. It does not mean not. Full grammar puts that predicate in the accusative: كان الطالب مجتهدًا, the student was diligent.\n\nكان الطالب alone is unfinished. Unvocalized, keep the accusative alef: كان الطالب مجتهدا. Sisters fit the same slot: أصبحت الطالبة طبيبة and ما زال الجو باردا, still cold. Omit the vowels and the exam often still accepts correct order and agreement, but not a missing predicate. Do not use كان for is.",
+              "rules": [
+                "كان، أصبح، صار، and ما زال need a completing predicate.",
+                "Full pattern: كان الطالب مجتهدًا. The predicate is accusative in full grammar.",
+                "The ما in ما زال is not negation. The meaning is still.",
+                "Without vowels, order and agreement still count. A missing predicate does not.",
+                "كان means was. A present is needs no verb: الطالب مجتهد."
+              ],
+              "example": {
+                "prompt": "Complete the sentence so it means the student was diligent. Show the accusative on the predicate.",
+                "steps": [
+                  "كان means was, so it is the right sister, not a present is.",
+                  "Put the topic straight after it: الطالب.",
+                  "The sentence is unfinished until a predicate completes the verb.",
+                  "In full grammar that predicate is accusative: مجتهدًا."
+                ],
+                "answer": "كان الطالب مجتهدًا"
+              },
+              "practice": [
+                {
+                  "q": "Type the missing predicate only, with the accusative alef and no vowel marks: كان الطالب ____ (diligent, masculine).",
+                  "answer": "مجتهدا",
+                  "why": "The full vocalized form is مجتهدًا. Unvocalized, the alef still shows the accusative predicate."
+                },
+                {
+                  "q": "Which sister means still? Type the Arabic verb.",
+                  "answer": "ما زال",
+                  "why": "ما زال means still and still needs a predicate. Its ما is not negation."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-sentence-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-sentence-l3a",
+              "title": "Inna and its sisters",
+              "he": "אִנַּה ואחיותיה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Inna and its sisters, introduction"
+              ],
+              "objectives": [
+                "Place topic and khabar after إنّ or a sister.",
+                "Read one vocalized pattern and the same pattern with no vowels."
+              ],
+              "teach": "إنّ and its sisters affect the topic of a nominal sentence. The school set is إنّ (indeed), أنّ (that), لكنّ (but), and لأنّ (because). In full grammar the topic is accusative and the khabar stays nominative. Keep this vocalized model: لأنّ الطالبَ مجتهدٌ, because the student is diligent. Do not start the clause with a verb.\n\nThe same line with no vowel marks is لأن الطالب مجتهد. Read both as sister, topic, khabar. After a verb of knowing: أعرف أن الكتاب مفيد, I know the book is useful. لكنّ contrasts, and a pronoun can be the topic: لكنّه مفيد. ولكن joins sentences. لكنّ wants a noun after it.",
+              "rules": [
+                "إنّ، أنّ، لكنّ، and لأنّ are followed by topic then khabar.",
+                "Vocalized model: لأنّ الطالبَ مجتهدٌ.",
+                "Unvocalized model of the same sentence: لأن الطالب مجتهد.",
+                "The phrase after the sister stays nominal. Do not open it with a verb.",
+                "A stuck pronoun can be the topic: لكنّه مفيد."
+              ],
+              "example": {
+                "prompt": "Write the vocalized clause meaning because the student is diligent.",
+                "steps": [
+                  "Choose لأنّ, the sister that means because.",
+                  "Put the topic next. After this sister the topic is accusative: الطالبَ.",
+                  "Put the khabar last. It stays nominative and agrees: مجتهدٌ.",
+                  "Do not insert a verb between لأنّ and الطالب."
+                ],
+                "answer": "لأنّ الطالبَ مجتهدٌ"
+              },
+              "practice": [
+                {
+                  "q": "Type the unvocalized sentence because the student is diligent.",
+                  "answer": "لأن الطالب مجتهد",
+                  "why": "Same pattern as لأنّ الطالبَ مجتهدٌ, with the vowel marks and the case endings left off."
+                },
+                {
+                  "q": "In أعرف أن الطالبة مجتهدة, what is the topic after أن? Type the Arabic noun.",
+                  "answer": "الطالبة",
+                  "why": "أنّ introduces a nominal clause. الطالبة is the topic and مجتهدة is the khabar."
+                }
+              ]
+            },
+            {
+              "id": "ar-sentence-l3b",
+              "title": "Four correct lines",
+              "he": "ארבעה משפטים תקינים",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Building a correct four-line paragraph"
+              ],
+              "objectives": [
+                "Write four lines that mix a nominal sentence and a verbal sentence.",
+                "Catch an agreement error before the paragraph is finished."
+              ],
+              "teach": "A four-line paragraph is four finished sentences with four jobs. Line one can be nominal: مكتبة المدرسة هادئة, the school library is quiet. Line two should be verbal: يقرأ الطلاب الكتب, the students read the books. Line three turns with ولكن: ولكن الوقت قصير, but the time is short. Line four can close with a result: لذلك يقرأ الطالب كثيرا, so the student reads a lot.\n\nCheck agreement before you finish. ذهب الطلاب is legal. ذهبوا الطلاب is not. A feminine topic keeps a feminine khabar: الطالبة مجتهدة. A relative clause may sit in the topic: الطالب الذي نجح مجتهد. Stay in fusḥā.",
+              "rules": [
+                "Give each line one job: place, action, contrast, result or reason.",
+                "Use at least one nominal line and one verbal line.",
+                "A fronted verb before a plural noun stays singular.",
+                "ولكن contrasts. لذلك gives a result. لأن gives a reason.",
+                "Do not answer in a spoken dialect."
+              ],
+              "example": {
+                "prompt": "Write line two only. It must be verbal: the students read the books. Use يقرأ / الطلاب / الكتب.",
+                "steps": [
+                  "Line one was nominal, so this line should open with a verb.",
+                  "الطلاب is an explicit plural after the verb, so the verb stays singular: يقرأ.",
+                  "The object follows: الكتب.",
+                  "Later lines can add ولكن or لذلك. This line does not need them."
+                ],
+                "answer": "يقرأ الطلاب الكتب"
+              },
+              "practice": [
+                {
+                  "q": "Line 1, nominal. Type the library is quiet. Use المكتبة and هادئة.",
+                  "answer": "المكتبة هادئة",
+                  "why": "Definite topic, feminine khabar, no verb."
+                },
+                {
+                  "q": "Line 2, verbal. Type the students read the books.",
+                  "answer": "يقرأ الطلاب الكتب",
+                  "why": "Verb first, singular before the explicit plural الطلاب."
+                },
+                {
+                  "q": "Replace the illegal start ذهبوا الطلاب. Type the two correct words only.",
+                  "answer": "ذهب الطلاب",
+                  "why": "The plural suffix is not used when the plural noun follows the verb."
+                },
+                {
+                  "q": "Type an unvocalized reason line: because the book is useful.",
+                  "answer": "لأن الكتاب مفيد",
+                  "why": "لأنّ plus topic plus khabar. Vocalized it is لأنّ الكتابَ مفيدٌ."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-read",
+      "index": 7,
+      "title": "Reading",
+      "he": "קריאה",
+      "topic": "Reading",
+      "thesis": "Reading MSA is finding the root, the connectors, and the question type, not knowing every word.",
+      "syllabus": [
+        "Vocalizing a sentence enough to read it",
+        "Finding the root of an unknown word",
+        "Paragraph structure in MSA news prose",
+        "Reference and connectors",
+        "The question types in an unseen",
+        "A full short unseen, done slowly"
+      ],
+      "levels": [
+        {
+          "id": "ar-read-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-read-l1a",
+              "title": "Vowels for the skeleton",
+              "he": "תנועות לשלד המשפט",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Vocalizing a sentence enough to read it"
+              ],
+              "objectives": [
+                "Decide who did what without voweling every ending.",
+                "Use the next word to separate a verb from an idafa."
+              ],
+              "teach": "You vowel a sentence only enough to see who did what. First decide the sentence type. If the line opens with a verb shape, read a verbal sentence. قرأ المعلم الكتاب means the teacher read the book: قرأ is the verb, المعلم is the subject, and الكتاب is the object.\n\nSome strings stay ambiguous until the next word. كتب الطالب can be kataba, he wrote, or kutub, books of. كتب الطالب الدرس has an object, so it is verbal: the student wrote the lesson. كتب الطالب جديدة has a feminine comment, so كتب is books and the line is nominal: the student's books are new.",
+              "rules": [
+                "Vowel the skeleton first: verb or topic, then the job of the next noun.",
+                "كتب الطالب الدرس is verbal: he wrote, then the student, then the lesson.",
+                "كتب الطالب جديدة is nominal: the books of the student are new.",
+                "A feminine singular comment such as جديدة fits a non-human plural, not the masculine noun الطالب."
+              ],
+              "example": {
+                "prompt": "Who did the action in قرأ المعلم الكتاب? Answer with the Arabic noun.",
+                "steps": [
+                  "قرأ is a past verb, he read, not a noun.",
+                  "The noun that follows a fronted verb is the subject.",
+                  "الكتاب is the object, the thing read.",
+                  "You do not need the case vowels to see that split."
+                ],
+                "answer": "المعلم"
+              },
+              "practice": [
+                {
+                  "q": "In قرأ المعلم الكتاب, who acts? Type one Arabic word.",
+                  "answer": "المعلم",
+                  "why": "The singular verb comes first. المعلم is the subject that follows it."
+                },
+                {
+                  "q": "In كتب الطالب جديدة, type nominal or verbal.",
+                  "answer": "nominal",
+                  "why": "جديدة is a feminine comment, so كتب is kutub, books. The student's books are new."
+                }
+              ]
+            },
+            {
+              "id": "ar-read-l1b",
+              "title": "Strip to the root",
+              "he": "קילוף עד השורש",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Finding the root of an unknown word"
+              ],
+              "objectives": [
+                "Remove a clear prefix and suffix to leave a three-letter root.",
+                "Use the root as a field, then let the sentence pick the sense."
+              ],
+              "teach": "An unknown word is usually a root plus extra letters. Strip the definite article and a stuck conjunction, then a clear ending such as ة or ون. From المكتبة, drop ال and the feminine ة, set aside the place prefix م, and you have ك ت ب, the family of كتاب, a book, and كتب, he wrote.\n\nIn ويقرأون, the و means and, the ي is the present prefix, and ون is the masculine plural ending, they. The root left behind is ق ر أ. A broken plural may hide the root in a new shape: دروس, lessons, is still د ر س, like درس, a lesson.",
+              "rules": [
+                "Remove ال and a stuck و before you look for the root.",
+                "Remove a clear ending such as ة، ون، or وا.",
+                "A place noun often adds م: مكتبة is still the root ك ت ب.",
+                "ون on a present verb is the plural subject ending, not a separate noun.",
+                "A broken plural such as دروس keeps the root of the singular درس."
+              ],
+              "example": {
+                "prompt": "The line says تفتح المكتبة أبوابها. You know باب means door. What is the root of أبواب? Type the three letters with spaces.",
+                "steps": [
+                  "أبواب is a broken plural, so it has no ون ending to cut.",
+                  "Compare it with the singular you were given, باب.",
+                  "The stable radicals are ب و ب. The middle weak letter shows up as a long vowel.",
+                  "The pronoun ها in أبوابها means its, and it is not part of the root."
+                ],
+                "answer": "ب و ب"
+              },
+              "practice": [
+                {
+                  "q": "Strip المكتبة down to its root. Type the three letters with spaces.",
+                  "answer": "ك ت ب",
+                  "why": "Drop ال and ة, set aside the place prefix م, and the family is كتاب and كتب."
+                },
+                {
+                  "q": "In ويقرأون, what does the ending ون mark? Type pronoun or noun.",
+                  "answer": "pronoun",
+                  "why": "No noun subject follows. ون is the masculine plural subject ending, they."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-read-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-read-l2a",
+              "title": "The paragraph map",
+              "he": "מפת הפסקה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Paragraph structure in MSA news prose"
+              ],
+              "objectives": [
+                "Mark lead, detail, contrast, and result in a short report.",
+                "Say what ولكن and لذلك each do."
+              ],
+              "teach": "MSA news prose uses a short path, and a school report uses the same path. The first sentence is the lead: place or event. The next sentence is a detail: who acts. ولكن starts a turn, a limit, or a problem. لذلك starts the result of that problem. A last sentence often returns to a time, a number, or a habit.\n\nA library report can open with a nominal lead, مكتبة المدرسة مفتوحة, the school library is open, then a verbal detail, يقرأ الطلاب فيها. The turn and the result do the rest of the work.",
+              "rules": [
+                "Lead, detail, contrast, result. Read them in that order.",
+                "ولكن marks contrast. لذلك marks result.",
+                "The lead is often nominal. The detail is often verbal.",
+                "A main-idea answer comes from the lead and the result, not from one adjective."
+              ],
+              "example": {
+                "prompt": "Map this report. Lead: مكتبة المدرسة مفتوحة. Detail: يقرأ الطلاب فيها. Turn: ولكن المكان مزدحم. Result: لذلك يجلس بعض الطلاب في الصف. What does ولكن mark? Type contrast or result.",
+                "steps": [
+                  "Find ولكن. It is the third move, not the lead.",
+                  "The clause after it limits the good news: the place is crowded.",
+                  "A limit against the previous line is contrast, not result.",
+                  "لذلك in the next line is the result: some students sit in the classroom."
+                ],
+                "answer": "contrast"
+              },
+              "practice": [
+                {
+                  "q": "What does ولكن mark in الكتب جديدة ولكن الوقت قصير? Type contrast or result.",
+                  "answer": "contrast",
+                  "why": "ولكن turns the line. New books stand against short time."
+                },
+                {
+                  "q": "What does لذلك mark in الوقت قصير لذلك يختار الطالب كتابا قصيرا? Type contrast or result.",
+                  "answer": "result",
+                  "why": "لذلك introduces what follows from the short time: he chooses a short book."
+                }
+              ]
+            },
+            {
+              "id": "ar-read-l2b",
+              "title": "Reference and connectors",
+              "he": "ייחוס ומילות קישור",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Reference and connectors"
+              ],
+              "objectives": [
+                "Point a pronoun back to the noun it can refer to.",
+                "Separate a contrast connector from a result connector."
+              ],
+              "teach": "Pronouns and connectors point backward. In مكتبة المدرسة كبيرة ولكن كتبها قديمة, the library is big, but its books are old. The ها in كتبها is feminine singular, so it points to مكتبة, not to a masculine word. Look back to the nearest noun that can take that pronoun. Do not invent a librarian the line never names.\n\nولكن marks the contrast between a big library and old books. لذلك marks a result: لذلك تساعد المعلمة الطلاب, so the teacher helps the students. The helper is المعلمة, the subject after the verb. مكتبة المدرسة and a later المكتبة are one place.",
+              "rules": [
+                "A pronoun looks backward to a noun that matches it.",
+                "ها is feminine singular. On مكتبة it means the library.",
+                "ولكن contrasts. لذلك gives the result.",
+                "The doer after a fronted verb is the answer to who, if the verb agrees."
+              ],
+              "example": {
+                "prompt": "In مكتبة المدرسة كبيرة ولكن كتبها قديمة, what does ها in كتبها refer to? Type one Arabic word.",
+                "steps": [
+                  "كتبها means its books. ها is feminine singular.",
+                  "مكتبة is feminine singular and is the noun already introduced.",
+                  "المدرسة is also feminine, but it is only the second term of the idafa. The thing that has books is the library.",
+                  "So ها points to مكتبة."
+                ],
+                "answer": "مكتبة"
+              },
+              "practice": [
+                {
+                  "q": "In مكتبة المدرسة كبيرة ولكن كتبها قديمة, what does ها refer to? Type one Arabic word.",
+                  "answer": "مكتبة",
+                  "why": "ها is feminine singular and points back to the library, the thing that owns the books."
+                },
+                {
+                  "q": "In لذلك تساعد المعلمة الطلاب, who helps? Type one Arabic word.",
+                  "answer": "المعلمة",
+                  "why": "The feminine verb تساعد is followed by its subject, المعلمة."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-read-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-read-l3a",
+              "title": "Unseen question types",
+              "he": "סוגי שאלות בהבנת הנקרא",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "The question types in an unseen"
+              ],
+              "objectives": [
+                "Name the question type before answering an unseen item.",
+                "Keep a reference answer and a connector answer distinct."
+              ],
+              "teach": "An unseen question has a type, and the type tells you where to look. A main-idea question asks what the paragraph is about. Take it from the lead plus the result. A detail question asks for a fact you can point to: a place, a time, a person, or a number. Quote it. Do not add a fact from another text.\n\nA reference question asks what a pronoun or a repeated noun points to. Look backward. A connector question asks what ولكن or لذلك is doing: contrast or result. A vocabulary question asks for a root or a gloss that fits this sentence, not a dialect sense.",
+              "rules": [
+                "Main idea: lead plus result. Detail: a fact you can point to.",
+                "Reference: a pronoun or a repeated noun, looking backward.",
+                "Connector: contrast for ولكن, result for لذلك.",
+                "Vocabulary in context must fit the sentence, not a spoken dialect."
+              ],
+              "example": {
+                "prompt": "The line is تفتح المكتبة أبوابها. The question is: what does ها refer to? Name the question type. Type reference or detail.",
+                "steps": [
+                  "The question is not asking for a new fact such as an hour.",
+                  "It asks what the pronoun ها points to.",
+                  "A pronoun question is a reference question.",
+                  "The answer word would be المكتبة, but the type name is reference."
+                ],
+                "answer": "reference"
+              },
+              "practice": [
+                {
+                  "q": "What type asks what a pronoun points to? Type reference or detail.",
+                  "answer": "reference",
+                  "why": "Reference looks backward from a pronoun or a repeated noun. Detail asks for a stated fact."
+                },
+                {
+                  "q": "What type asks whether ولكن contrasts? Type connector or main idea.",
+                  "answer": "connector",
+                  "why": "A connector question asks what the link is doing, not what the whole paragraph is about."
+                }
+              ]
+            },
+            {
+              "id": "ar-read-l3b",
+              "title": "A slow library unseen",
+              "he": "קריאה איטית על הספרייה",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "A full short unseen, done slowly"
+              ],
+              "objectives": [
+                "Answer a short unseen only from the passage in front of you.",
+                "Use ولكن and لذلك to separate contrast from result."
+              ],
+              "teach": "مكتبة المدرسة مكان هادئ في الطابق الثاني. يجلس الطلاب هناك بعد الدروس ويقرأون الكتب والقصص. في المكتبة كتب جديدة عن العلوم، ولكن كتب التاريخ قديمة وصعبة. لذلك تساعد المعلمة الطلاب على اختيار كتاب مناسب. تفتح المكتبة أبوابها كل يوم من الساعة الثامنة حتى الساعة الثانية، ويحب كثير من الطلاب هذا الوقت.\n\nRead once and mark the connectors. ولكن contrasts new science books with history books that are old and hard. لذلك gives the result: the teacher helps them choose. ويقرأون is plural because its subject is the pronoun they, not a noun after the verb. The floor and the hours are facts. Answer only from this passage.",
+              "rules": [
+                "The passage is the only source. Do not add a fact from outside it.",
+                "ولكن is the contrast. لذلك is the result.",
+                "A pronoun ending such as ها in أبوابها points to المكتبة.",
+                "يجلس الطلاب stays singular because the plural noun follows the verb.",
+                "Quote a short Arabic phrase. Do not retell the passage in dialect."
+              ],
+              "example": {
+                "prompt": "In the passage, تفتح المكتبة أبوابها. What does ها refer to? Type one Arabic word.",
+                "steps": [
+                  "The sentence subject is المكتبة, feminine singular.",
+                  "أبوابها means its doors. ها has to point to that subject.",
+                  "الطلاب is masculine plural, so it cannot take ها.",
+                  "The reference answer is المكتبة."
+                ],
+                "answer": "المكتبة"
+              },
+              "practice": [
+                {
+                  "q": "Where is the school library? Type the Arabic place phrase from the first sentence.",
+                  "answer": "في الطابق الثاني",
+                  "why": "The lead says it is a quiet place on the second floor."
+                },
+                {
+                  "q": "Which two adjectives describe the history books? Type them with و.",
+                  "answer": "قديمة وصعبة",
+                  "why": "بعد ولكن the passage says كتب التاريخ قديمة وصعبة."
+                },
+                {
+                  "q": "Who helps the students choose a book? Type one Arabic word.",
+                  "answer": "المعلمة",
+                  "why": "لذلك تساعد المعلمة الطلاب على اختيار كتاب مناسب."
+                },
+                {
+                  "q": "The library is open from when until when? Type the from-until phrase.",
+                  "answer": "من الساعة الثامنة حتى الساعة الثانية",
+                  "why": "The last sentence gives the hours. Do not invent a different closing time."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-vocab",
+      "index": 8,
+      "title": "Vocabulary fields",
+      "he": "שדות אוצר מילים",
+      "topic": "Vocabulary fields",
+      "thesis": "A working lexicon is a few fields you can actually use, plus the Hebrew lookalikes that lie.",
+      "syllabus": [
+        "Person and family",
+        "School and daily time",
+        "Place and city",
+        "Society and news",
+        "Science and nature, a small working set",
+        "Words that are false friends with Hebrew"
+      ],
+      "levels": [
+        {
+          "id": "ar-vocab-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-vocab-l1a",
+              "title": "Person and family",
+              "he": "אדם ומשפחה",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Person and family"
+              ],
+              "objectives": [
+                "Use the core family nouns in a nominal sentence.",
+                "Recognize أبو in an idafa without changing the dictionary form you learn."
+              ],
+              "teach": "Person and family words are ones you should say without a dictionary. أب is father, أم is mother, أخ is brother, and أخت is sister. ابن is son and ابنة is daughter. A male friend is صديق, and friends are أصدقاء. The family as a group is عائلة. Memorize these as citation forms.\n\nأبي معلم means my father is a teacher. أمي طبيبة means my mother is a doctor. أخي في البيت means my brother is at home, and أختي في المدرسة means my sister is at school. In an idafa that is the subject, أب and أخ often show a long vowel: أبو الطالب means the student's father.",
+              "rules": [
+                "Core set: أب، أم، أخ، أخت، ابن، ابنة.",
+                "Friends are أصدقاء. One male friend is صديق.",
+                "أبي معلم is nominal: my father is a teacher. No verb.",
+                "أبو الطالب is the student's father when that idafa is the subject. The dictionary word remains أب."
+              ],
+              "example": {
+                "prompt": "Write the nominal sentence my sister is at school. Use أختي and في المدرسة.",
+                "steps": [
+                  "The topic is أختي, my sister, with the pronoun already attached.",
+                  "The comment is a place phrase, not a verb: في المدرسة.",
+                  "مدرسة here is a school. The sentence does not need كان.",
+                  "Feminine topic, but the place phrase does not need a feminine adjective."
+                ],
+                "answer": "أختي في المدرسة"
+              },
+              "practice": [
+                {
+                  "q": "Type the Arabic for sister.",
+                  "answer": "أخت",
+                  "why": "أخت is sister. أخ is brother. The hamza is part of the spelling."
+                },
+                {
+                  "q": "Type the Arabic for brother.",
+                  "answer": "أخ",
+                  "why": "أخ is brother. Do not add the idafa vowel unless the word is inside an idafa."
+                }
+              ]
+            },
+            {
+              "id": "ar-vocab-l1b",
+              "title": "School and the day",
+              "he": "בית הספר ומהלך היום",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "School and daily time"
+              ],
+              "objectives": [
+                "Produce the school nouns مدرسة، كتاب، and دفتر in a sentence.",
+                "Place an action in a time of day with يوم، وقت، or ساعة."
+              ],
+              "teach": "School and time words carry ordinary unseens. مدرسة is a school, طالب is a student, and معلم is a teacher. كتاب is a book, and دفتر is a notebook. درس is a lesson, صف is a classroom, and مكتبة is a library. These are the objects on the desk and in the building.\n\nيوم is a day, وقت is time, and ساعة is an hour or a clock. صباح is morning and مساء is evening. أمس is yesterday, اليوم is today, and غدا is tomorrow. A clean sentence is يقرأ الطالب الكتاب في الصباح, the student reads the book in the morning.",
+              "rules": [
+                "مدرسة school, كتاب book, دفتر notebook, طالب student, معلم teacher.",
+                "يوم day, وقت time, ساعة hour or clock, صباح morning, مساء evening.",
+                "أمس yesterday, اليوم today, غدا tomorrow.",
+                "يقرأ الطالب الكتاب في الصباح is verb, subject, object, then time."
+              ],
+              "example": {
+                "prompt": "Type the Arabic word for notebook, the object you write in at school.",
+                "steps": [
+                  "The school object for writing notes is not the book you read.",
+                  "كتاب is the book. The notebook is دفتر.",
+                  "An office is مكتب, which is a different word. Do not substitute it.",
+                  "The answer is the single noun دفتر."
+                ],
+                "answer": "دفتر"
+              },
+              "practice": [
+                {
+                  "q": "Type the Arabic for notebook.",
+                  "answer": "دفتر",
+                  "why": "دفتر is a notebook. كتاب is a book. مكتب is an office."
+                },
+                {
+                  "q": "Type the Arabic for day.",
+                  "answer": "يوم",
+                  "why": "يوم is a day. وقت is time, and ساعة is an hour."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-vocab-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-vocab-l2a",
+              "title": "Place and city",
+              "he": "מקום ועיר",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Place and city"
+              ],
+              "objectives": [
+                "Name بيت، مدينة، and شارع with the preposition في.",
+                "Read مكتبة المدرسة as one idafa, not two labels."
+              ],
+              "teach": "Place words answer where. بيت is a house or home, مدينة is a city, and شارع is a street. مكتبة is a library, سوق is a market, and حديقة is a garden. بلد is a country. Learn each noun with في, because the preposition is part of how you use the word.\n\nفي البيت means at home, في المدينة means in the city, and في الشارع means in the street. مكتبة المدرسة is an idafa, the school library: the first noun has no ال, and the second noun defines it. A small sentence you can reuse is الأب في البيت, the father is at home.",
+              "rules": [
+                "بيت house, مدينة city, شارع street, مكتبة library, سوق market.",
+                "في البيت at home, في المدينة in the city, في الشارع in the street.",
+                "مكتبة المدرسة is an idafa: the library of the school.",
+                "A place sentence can be nominal: الأب في البيت."
+              ],
+              "example": {
+                "prompt": "Write the nominal sentence the father is at home. Use الأب and في البيت.",
+                "steps": [
+                  "The topic is الأب, the father, definite.",
+                  "The comment is the place phrase في البيت, at home.",
+                  "No verb is required for is at.",
+                  "بيت is the house. Do not replace it with مدرسة."
+                ],
+                "answer": "الأب في البيت"
+              },
+              "practice": [
+                {
+                  "q": "Type the Arabic for street.",
+                  "answer": "شارع",
+                  "why": "شارع is a street. مدينة is a city. بيت is a house."
+                },
+                {
+                  "q": "Type the Arabic for house.",
+                  "answer": "بيت",
+                  "why": "بيت is a house or home. في البيت means at home."
+                }
+              ]
+            },
+            {
+              "id": "ar-vocab-l2b",
+              "title": "Society and news",
+              "he": "חברה וחדשות",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Society and news"
+              ],
+              "objectives": [
+                "Use خبر، صحيفة، and مدير in one formal sentence.",
+                "Keep news vocabulary in fusḥā."
+              ],
+              "teach": "Society and news use a small formal set. خبر is one news item, and أخبار is the news. صحيفة is a newspaper. مدير is a manager, and مدير المدرسة is the principal. مشكلة is a problem. حكومة is a government. الناس means the people.\n\nA verbal sentence can hold three of them: يقرأ المدير الخبر في الصحيفة, the principal reads the item in the newspaper. The verb stays singular because المدير is one person after it. Keep مدير for a person who directs something. It is not a building and not a dormitory. Even if you know a dialect word for a problem, the fusḥā word to write is مشكلة.",
+              "rules": [
+                "خبر a news item, صحيفة a newspaper, أخبار the news.",
+                "مدير المدرسة is the principal, a person.",
+                "مشكلة problem, حكومة government, الناس the people.",
+                "يقرأ المدير الخبر في الصحيفة is a clean news sentence."
+              ],
+              "example": {
+                "prompt": "Type the Arabic for newspaper.",
+                "steps": [
+                  "A newspaper is the page, not the single item on it.",
+                  "The item is خبر. The newspaper is صحيفة.",
+                  "Do not answer with a dialect word for paper.",
+                  "The fusḥā noun is صحيفة."
+                ],
+                "answer": "صحيفة"
+              },
+              "practice": [
+                {
+                  "q": "Type the Arabic for newspaper.",
+                  "answer": "صحيفة",
+                  "why": "صحيفة is a newspaper. خبر is one news item."
+                },
+                {
+                  "q": "Type the Arabic for a news item.",
+                  "answer": "خبر",
+                  "why": "خبر is one item. The plural أخبار means the news."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-vocab-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-vocab-l3a",
+              "title": "A small nature set",
+              "he": "סט קטן לטבע",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "Science and nature, a small working set"
+              ],
+              "objectives": [
+                "Use the small nature set with the right gender.",
+                "Give a non-human plural a feminine singular comment."
+              ],
+              "teach": "You need a small nature set, not a science textbook. علم is science or knowledge. طبيعة is nature. ماء is water, شمس is sun, and مطر is rain. شجرة is a tree, نبات is a plant, and حيوان is an animal. تجربة is an experiment. Stop there and make sentences.\n\nGender matters as soon as you add a comment. الشمس قوية, the sun is strong, because شمس is feminine. الماء بارد, the water is cold, because ماء is masculine. الشجرة طويلة, the tree is tall. Non-human plurals stay feminine singular in the comment: الأشجار طويلة, the trees are tall. Use a nominal sentence before you attempt a long explanation.",
+              "rules": [
+                "Working set: علم، طبيعة، ماء، شمس، مطر، شجرة، نبات، حيوان، تجربة.",
+                "شمس is feminine: الشمس قوية. ماء is masculine: الماء بارد.",
+                "A non-human plural usually takes feminine singular: الأشجار طويلة.",
+                "علم is science or knowledge. Do not confuse the set with news words."
+              ],
+              "example": {
+                "prompt": "Type the Arabic for tree.",
+                "steps": [
+                  "The nature noun for tree is feminine.",
+                  "It is شجرة, not a place word such as حديقة.",
+                  "The plural you may meet later is أشجار, with a feminine singular comment.",
+                  "The singular answer is شجرة."
+                ],
+                "answer": "شجرة"
+              },
+              "practice": [
+                {
+                  "q": "Type the Arabic for tree.",
+                  "answer": "شجرة",
+                  "why": "شجرة is a tree, feminine. الأشجار is the plural."
+                },
+                {
+                  "q": "Type the Arabic for rain.",
+                  "answer": "مطر",
+                  "why": "مطر is rain. ماء is water, and شمس is the sun."
+                }
+              ]
+            },
+            {
+              "id": "ar-vocab-l3b",
+              "title": "False friends",
+              "he": "מילים מתעתעות",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Words that are false friends with Hebrew"
+              ],
+              "objectives": [
+                "Gloss مدرسة، دفتر، and مدير without the Hebrew lookalike.",
+                "Choose أصدقاء for friends and شركة only for a business firm."
+              ],
+              "teach": "Some Arabic words look like Hebrew and do not match. مدرسة is an ordinary school. Hebrew מדרשה is a narrower academy. Do not shrink مدرسة to that sense only. دفتر is a notebook, not an office (مكتب) and not a doctor (طبيب).\n\nمدير is a manager or principal, as in مدير المدرسة, not a dormitory. A dormitory is سكن الطلاب. Hebrew חברות can mean friendship or a company. For friends write أصدقاء. صحبة is companionship, not a firm. A firm is شركة. لحم is meat, Hebrew לחם is bread, and bread is خبز. In school MSA, سفر is a journey. Hebrew ספר means a book, so write كتاب.",
+              "rules": [
+                "مدرسة means school. It is wider than Hebrew מדרשה.",
+                "دفتر means notebook. مكتب is an office. طبيب is a doctor.",
+                "مدير is a manager or principal, not a dormitory. A dormitory is سكن الطلاب.",
+                "Friends: أصدقاء. Companionship: صحبة. A business firm: شركة.",
+                "لحم is meat and خبز is bread. سفر in school MSA is a journey; كتاب is a book."
+              ],
+              "example": {
+                "prompt": "Hebrew חברות is being used to mean friends. Which Arabic plural is the safe word? Type it.",
+                "steps": [
+                  "חברות here is the friend sense, not a business firm.",
+                  "شركة would be a company in the business sense. That is the wrong sense.",
+                  "صحبة is companionship, not the plural noun friends.",
+                  "The safe plural for friends is أصدقاء."
+                ],
+                "answer": "أصدقاء"
+              },
+              "practice": [
+                {
+                  "q": "Gloss مدرسة in one English word.",
+                  "answer": "school",
+                  "why": "مدرسة is a school. Do not limit it to the narrower Hebrew מדרשה."
+                },
+                {
+                  "q": "In school, what is دفتر? Type the object you write in.",
+                  "answer": "notebook",
+                  "why": "دفتر is a notebook. An office is مكتب and a doctor is طبيب."
+                },
+                {
+                  "q": "What person is مدير المدرسة? Type one English word.",
+                  "answer": "principal",
+                  "why": "مدير is a person who directs. At school that person is the principal, not a dormitory."
+                },
+                {
+                  "q": "You mean friends, not a firm. Type the Arabic plural.",
+                  "answer": "أصدقاء",
+                  "why": "أصدقاء means friends. صحبة is companionship. شركة is a business firm."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-write",
+      "index": 9,
+      "title": "Writing",
+      "he": "כתיבה",
+      "topic": "Writing",
+      "thesis": "Writing marks start at a correct sentence, then a connector, then a guided paragraph that answers the prompt.",
+      "syllabus": [
+        "From a word to a nominal sentence",
+        "From a nominal sentence to a verbal sentence",
+        "Connecting three sentences",
+        "A guided description",
+        "A guided opinion in MSA",
+        "Editing for agreement and tense"
+      ],
+      "levels": [
+        {
+          "id": "ar-write-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-write-l1a",
+              "title": "Word to nominal sentence",
+              "he": "ממילה למשפט שמני",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "From a word to a nominal sentence"
+              ],
+              "objectives": [
+                "Turn one noun into a definite topic plus a khabar.",
+                "Use an active participle as a comment without calling it a verb."
+              ],
+              "teach": "A single word is not a sentence. Take the word, make it a definite topic if you mean a known thing, and add a khabar that agrees. From مكتبة you get المكتبة كبيرة, the library is big. From كتاب you get الكتاب جديد, the book is new. There is still no verb. The Hebrew word for is stays out.\n\nThe khabar can be an adjective or a participle. الطالب جالس means the student is sitting. جالس is not a past verb. It is a describing word in a nominal sentence. Match gender: الطالبة جالسة, the female student is sitting.",
+              "rules": [
+                "One noun is a fragment. Add a khabar.",
+                "A known topic takes ال: المكتبة كبيرة.",
+                "A participle can be the khabar: الطالب جالس. It is not a verbal sentence.",
+                "Match gender on the comment: الطالبة جالسة."
+              ],
+              "example": {
+                "prompt": "Turn مكتبة into a nominal sentence meaning the library is big. Use كبيرة.",
+                "steps": [
+                  "مكتبة alone does not say anything about the library.",
+                  "Make the topic definite: المكتبة.",
+                  "Add a feminine khabar, because مكتبة is feminine: كبيرة.",
+                  "Stop. Do not add a verb."
+                ],
+                "answer": "المكتبة كبيرة"
+              },
+              "practice": [
+                {
+                  "q": "From مكتبة, write the library is big.",
+                  "answer": "المكتبة كبيرة",
+                  "why": "Add ال and the feminine khabar كبيرة. No verb."
+                },
+                {
+                  "q": "Write the female student is sitting. Use الطالبة and جالسة.",
+                  "answer": "الطالبة جالسة",
+                  "why": "جالسة is a participle used as khabar, not a past-tense verb."
+                }
+              ]
+            },
+            {
+              "id": "ar-write-l1b",
+              "title": "Nominal to verbal",
+              "he": "משמני לפועלי",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "From a nominal sentence to a verbal sentence"
+              ],
+              "objectives": [
+                "Rebuild a nominal idea as verb, subject, object.",
+                "Keep the accusative alef on an indefinite object."
+              ],
+              "teach": "A verbal sentence puts the verb first. Rebuild the order. الطلاب يقرأون الكتب is nominal, with a verbal comment, and it is legal. The verbal sentence to produce is يقرأ الطلاب الكتب, the students read the books. The verb stays singular because الطلاب is written after it.\n\nKeep the object. يقرأ الطلاب does not say what they read. A definite object has no extra alef: يقرأ الطالب الكتاب, the student reads the book. An indefinite object keeps the accusative alef even when other vowels are gone: يقرأ الطالب كتابا, a student reads a book. When the prompt says verbal, do not leave the noun in front.",
+              "rules": [
+                "If the task says verbal, start with the verb.",
+                "الطلاب يقرأون الكتب is nominal. يقرأ الطلاب الكتب is the verbal default.",
+                "A plural noun after the verb does not pluralize that verb.",
+                "Indefinite object: كتابا. Definite object: الكتاب, with no extra alef."
+              ],
+              "example": {
+                "prompt": "Write the verbal sentence the students read the books. Use يقرأ / الطلاب / الكتب.",
+                "steps": [
+                  "Open with the verb, because the task is verbal.",
+                  "Keep يقرأ singular. The plural noun comes after it.",
+                  "Put the definite object last: الكتب.",
+                  "Do not write يقرأون الطلاب. The suffix and the noun would both try to be the subject."
+                ],
+                "answer": "يقرأ الطلاب الكتب"
+              },
+              "practice": [
+                {
+                  "q": "Write the verbal sentence the students read the books.",
+                  "answer": "يقرأ الطلاب الكتب",
+                  "why": "Verb first, singular, then the plural noun, then the object."
+                },
+                {
+                  "q": "An indefinite object keeps a final alef. Type the student reads a book, using كتابا.",
+                  "answer": "يقرأ الطالب كتابا",
+                  "why": "كتابا is one book, indefinite object. The definite object would be الكتاب."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-write-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-write-l2a",
+              "title": "Three linked sentences",
+              "he": "שלושה משפטים קשורים",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Connecting three sentences"
+              ],
+              "objectives": [
+                "Link a nominal line and a verbal line with one true connector.",
+                "Choose ولكن for contrast and لذلك for result."
+              ],
+              "teach": "Three sentences need a job and one connector. Sentence one can be nominal: المكتبة هادئة, the library is quiet. Sentence two can be verbal: يقرأ الطلاب الكتب, the students read books. Sentence three gives the result with لذلك: لذلك يحب الطلاب المكتبة, so the students like the library. Each line stays its own sentence. The connector has to be true.\n\nولكن is the contrast join, not a result. المكتبة هادئة ولكن الوقت قصير means the library is quiet, but the time is short. و only adds. ولكن turns. لذلك concludes. لأن gives a reason: لأن الامتحان قريب, because the exam is near.",
+              "rules": [
+                "Three jobs: fact, action, then contrast or result.",
+                "و adds. ولكن contrasts. لذلك gives a result. لأن gives a reason.",
+                "Each line must still be a complete sentence.",
+                "The connector has to match the meaning. A contrast is not لذلك."
+              ],
+              "example": {
+                "prompt": "Write only the third sentence: so the students like the library. Use لذلك / يحب / الطلاب / المكتبة.",
+                "steps": [
+                  "The first two lines already gave the quiet library and the reading.",
+                  "The third line is a result, so it opens with لذلك.",
+                  "After it, use a verbal sentence. الطلاب follows the verb, so يحب stays singular.",
+                  "The object is المكتبة."
+                ],
+                "answer": "لذلك يحب الطلاب المكتبة"
+              },
+              "practice": [
+                {
+                  "q": "Type the result sentence so the students like the library.",
+                  "answer": "لذلك يحب الطلاب المكتبة",
+                  "why": "لذلك marks result. The verb stays singular before الطلاب."
+                },
+                {
+                  "q": "Type the contrast sentence but the time is short.",
+                  "answer": "ولكن الوقت قصير",
+                  "why": "ولكن contrasts. الوقت is masculine, so the khabar is قصير."
+                }
+              ]
+            },
+            {
+              "id": "ar-write-l2b",
+              "title": "Guided description",
+              "he": "תיאור לפי הנחיה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "A guided description"
+              ],
+              "objectives": [
+                "Turn guided bones into fusḥā sentences in the asked order.",
+                "Keep human plural agreement when a phrase means there are students."
+              ],
+              "teach": "A guided description gives you the bones. Turn each bone into one fusḥā sentence, in the order asked. For a library the bones are place, people, action. المكتبة كبيرة means the library is big. فيها طلاب كثيرون means there are many students in it. يقرأ الطلاب الكتب means the students read books. Three lines, and no story you were not given.\n\nفيها طلاب كثيرون is nominal. The place phrase comes first, and كثيرون agrees with the human plural طلاب. Stay inside the guide. If the guide gives an adjective, use it as a khabar. Do not add dialect, and do not invent a bone.",
+              "rules": [
+                "One bone, one sentence, in the given order.",
+                "Place can be nominal: المكتبة كبيرة.",
+                "فيها طلاب كثيرون: كثيرون agrees with human plural طلاب.",
+                "Action is verbal: يقرأ الطلاب الكتب. Do not add unseen details."
+              ],
+              "example": {
+                "prompt": "The guide says place only: the library is big. Write that one nominal sentence.",
+                "steps": [
+                  "The bone is place, so do not add students yet.",
+                  "Topic: المكتبة.",
+                  "Khabar: كبيرة, feminine, matching the library.",
+                  "No verb, and no second sentence."
+                ],
+                "answer": "المكتبة كبيرة"
+              },
+              "practice": [
+                {
+                  "q": "Guide, place only. Write the library is big.",
+                  "answer": "المكتبة كبيرة",
+                  "why": "One nominal sentence. Do not add the people or the action yet."
+                },
+                {
+                  "q": "Guide, action only. Write the students read the books.",
+                  "answer": "يقرأ الطلاب الكتب",
+                  "why": "One verbal sentence. Singular verb before الطلاب."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-write-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-write-l3a",
+              "title": "Guided opinion",
+              "he": "הבעת דעה מודרכת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "A guided opinion in MSA"
+              ],
+              "objectives": [
+                "Open an opinion with أعتقد أنّ or أرى أنّ plus a nominal clause.",
+                "Refuse a dialect frame such as عايز or مش."
+              ],
+              "teach": "An opinion in MSA is a frame plus a nominal sentence, not a slang reaction. Use أعتقد أنّ or أرى أنّ. With case endings the pattern is أعتقد أنّ القراءةَ مفيدةٌ, I think that reading is useful. Unvocalized, write أعتقد أن القراءة مفيدة. After أنّ you still need a topic and a khabar. The comment مفيدة agrees with القراءة.\n\nعامية is not the answer. Do not write عايز, and do not write مش. A reason can follow with لأنّ: أعتقد أن المكتبة مفيدة لأنّها هادئة, I think the library is useful because it is quiet. The pronoun on لأنّها is the topic, and هادئة agrees with المكتبة.",
+              "rules": [
+                "Opinion frame: أعتقد أنّ or أرى أنّ, then topic and khabar.",
+                "Vocalized model: أعتقد أنّ القراءةَ مفيدةٌ. Unvocalized: أعتقد أن القراءة مفيدة.",
+                "Not عايز, and not مش. Those are dialect.",
+                "A reason uses لأنّ plus a nominal clause: لأنّها هادئة."
+              ],
+              "example": {
+                "prompt": "The prompt asks for an opinion that reading is useful. Write the unvocalized sentence with أعتقد أنّ.",
+                "steps": [
+                  "Open with the fusḥā frame أعتقد أن, not with عايز.",
+                  "After it, give a nominal sentence. The topic is القراءة.",
+                  "القراءة is feminine, so the khabar is مفيدة.",
+                  "Leave the case vowels off. The words are أعتقد أن القراءة مفيدة."
+                ],
+                "answer": "أعتقد أن القراءة مفيدة"
+              },
+              "practice": [
+                {
+                  "q": "Which opener is fusḥā, أعتقد or عايز? Type the Arabic.",
+                  "answer": "أعتقد",
+                  "why": "أعتقد أنّ is MSA. عايز is dialect and is not the answer."
+                },
+                {
+                  "q": "Type only the nominal sentence that means reading is useful.",
+                  "answer": "القراءة مفيدة",
+                  "why": "This is the clause that sits after أنّ. مفيدة agrees with القراءة."
+                }
+              ]
+            },
+            {
+              "id": "ar-write-l3b",
+              "title": "Edit agreement and tense",
+              "he": "עריכת התאמה וזמן",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Editing for agreement and tense"
+              ],
+              "objectives": [
+                "Repair a plural verb that illegally precedes its noun.",
+                "Match past time with a past verb, and past negation with لم."
+              ],
+              "teach": "Editing here means you repair agreement and tense before you add new ideas. A verb before an explicit plural noun stays singular. ذهبوا الطلاب إلى المكتبة is wrong. The verbal-order repair is ذهب الطلاب إلى المكتبة. Gender still shows on a comment: الطالبة مجتهد is wrong, and الطالبة مجتهدة is right. Change the ending. Do not rewrite the line into dialect.\n\nTense lives in the verb. أمس means yesterday, so use كتب الطالب الدرس أمس, not يكتب. Past negation is لم plus the present stem: لم يكتب الطالب الدرس. لا كتب is not a sentence. لا يكتب negates the present, not yesterday.",
+              "rules": [
+                "Verbal-order plural: ذهب الطلاب, not ذهبوا الطلاب.",
+                "Feminine singular topic, feminine khabar: الطالبة مجتهدة.",
+                "أمس takes a past verb: كتب, not يكتب.",
+                "Past negation is لم plus the present stem: لم يكتب. لا كتب is illegal.",
+                "لا plus the present negates now or a habit, not yesterday."
+              ],
+              "example": {
+                "prompt": "Rewrite as a verbal sentence with the verb first: ذهبوا الطلاب إلى المكتبة.",
+                "steps": [
+                  "The requested order is verbal, so the verb stays in front.",
+                  "الطلاب follows the verb, so the plural suffix وا must go.",
+                  "The masculine singular past is ذهب.",
+                  "Keep the place phrase إلى المكتبة."
+                ],
+                "answer": "ذهب الطلاب إلى المكتبة"
+              },
+              "practice": [
+                {
+                  "q": "Rewrite as a verbal sentence with the verb first: ذهبوا الطلاب إلى المكتبة.",
+                  "answer": "ذهب الطلاب إلى المكتبة",
+                  "why": "A fronted verb before an explicit plural noun stays singular."
+                },
+                {
+                  "q": "Correct the agreement. Type without vowels: الطالبة مجتهد.",
+                  "answer": "الطالبة مجتهدة",
+                  "why": "The feminine topic الطالبة needs the feminine khabar مجتهدة."
+                },
+                {
+                  "q": "Correct the negation. Start with لم: لا كتب الطالب الدرس.",
+                  "answer": "لم يكتب الطالب الدرس",
+                  "why": "Past negation is لم plus the present stem. لا does not precede the past verb كتب."
+                },
+                {
+                  "q": "Correct the tense. Start with the past verb: يكتب الطالب الدرس أمس.",
+                  "answer": "كتب الطالب الدرس أمس",
+                  "why": "أمس is yesterday, so the verb is كتب, not يكتب."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ar-exam",
+      "index": 10,
+      "title": "Listening, oral, and the exam",
+      "he": "האזנה, בעל פה והבחינה",
+      "topic": "Listening, oral, and the exam",
+      "thesis": "The rest of the paper is listening, a short oral in fusḥā, and a pace you can rehearse.",
+      "syllabus": [
+        "What listening items reward",
+        "Transcript drill without an audio player",
+        "Oral: personal introduction in MSA",
+        "Oral: describing a picture with prepared structures",
+        "How a 5-unit Arabic paper is usually paced",
+        "Mixed checkpoint"
+      ],
+      "levels": [
+        {
+          "id": "ar-exam-l1",
+          "title": "Foundations",
+          "he": "יסודות",
+          "intent": "Definitions and the first picture of the topic.",
+          "nodes": [
+            {
+              "id": "ar-exam-l1a",
+              "title": "What listening rewards",
+              "he": "על מה ההאזנה מתגמלת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "What listening items reward"
+              ],
+              "objectives": [
+                "Treat a listening item as a pointable detail, not a summary.",
+                "Reject a noun that the transcript mentions only to negate."
+              ],
+              "teach": "There is no audio player in this reader, so listening is a transcript drill. You read what a recording would have said, and you answer as if you had heard it. Items reward a detail you can point to: a day, an hour, a place, or a word under negation. They do not reward a dialect retelling.\n\nNegation is the usual trap. In الامتحان يوم الخميس. لا يحمل الطلاب الكتب, the exam is on Thursday, and the books are mentioned only under لا. The students do not carry them. If the question asks what they carry, الكتب is the wrong choice. ولكن often names the thing that is true instead.",
+              "rules": [
+                "This reader has no audio. Listening practice uses a transcript.",
+                "Reward comes from a day, an hour, a place, or a negation you can point to.",
+                "A noun under لا is mentioned, but it is not what happens.",
+                "Do not replace the transcript with a synonym or with dialect."
+              ],
+              "example": {
+                "prompt": "Transcript line: لا يحمل الطلاب الكتب. The question is what they carry. Why is الكتب wrong? Type negation or detail.",
+                "steps": [
+                  "الكتب does appear in the line, so a careless listener chooses it.",
+                  "لا sits on the verb يحمل. The carrying does not happen.",
+                  "The trap is negation, not a missing detail.",
+                  "The type of trap is negation."
+                ],
+                "answer": "negation"
+              },
+              "practice": [
+                {
+                  "q": "In لا يحمل الطلاب الكتب, do the students carry the books? Type yes or no.",
+                  "answer": "no",
+                  "why": "لا negates يحمل. The books are mentioned, but they are not carried."
+                },
+                {
+                  "q": "Besides a place or an hour, items often test which trap? Type negation or summary.",
+                  "answer": "negation",
+                  "why": "A summary you invent is not rewarded. A negation you notice is."
+                }
+              ]
+            },
+            {
+              "id": "ar-exam-l1b",
+              "title": "Transcript drill",
+              "he": "תרגיל על תמלול",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Transcript drill without an audio player"
+              ],
+              "objectives": [
+                "Mark day, place, hour, and the noun under لا in a transcript.",
+                "Keep a singular verb before الطلاب in the transcript's own sentence."
+              ],
+              "teach": "This drill has no audio player. Read the transcript aloud once. Mark the day, the place, the hour, and the noun under لا. Then answer with those words only.\n\nقال المعلم: الامتحان يوم الخميس في الصف الخامس. يبدأ في الساعة التاسعة. لا يحمل الطلاب الكتب، ولكن القلم ضروري. يبدأ has a hidden subject, the exam, so the verb stays singular. لا يحمل الطلاب الكتب means they do not carry the books, and the verb is singular because الطلاب follows it. ولكن القلم ضروري is the contrast: the pen is necessary. Do not invent a second hour, and do not answer that they bring the books.",
+              "rules": [
+                "No audio player. The transcript is the whole listening text.",
+                "Day: الخميس. Place: الصف الخامس. Hour: الساعة التاسعة.",
+                "لا يحمل الطلاب الكتب: they do not carry the books.",
+                "ولكن القلم ضروري: the pen is necessary. القلم agrees with ضروري."
+              ],
+              "example": {
+                "prompt": "Where is the exam? Type the Arabic place phrase from the transcript.",
+                "steps": [
+                  "Find the place phrase, not the day and not the hour.",
+                  "في الصف الخامس follows يوم الخميس in the first sentence.",
+                  "الخامس agrees with الصف, masculine.",
+                  "The phrase to type is في الصف الخامس."
+                ],
+                "answer": "في الصف الخامس"
+              },
+              "practice": [
+                {
+                  "q": "On which day is the exam? Type the Arabic day.",
+                  "answer": "الخميس",
+                  "why": "The first sentence says الامتحان يوم الخميس."
+                },
+                {
+                  "q": "What do the students not carry? Type one Arabic word.",
+                  "answer": "الكتب",
+                  "why": "لا يحمل الطلاب الكتب. The books are negated. The necessary object is القلم."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-exam-l2",
+          "title": "Technique",
+          "he": "טכניקה",
+          "intent": "The moves you can carry out on a clean problem.",
+          "nodes": [
+            {
+              "id": "ar-exam-l2a",
+              "title": "Oral introduction",
+              "he": "הצגה עצמית בעל פה",
+              "minutes": 18,
+              "kind": "worked",
+              "covers": [
+                "Oral: personal introduction in MSA"
+              ],
+              "objectives": [
+                "Say the four-clause fusḥā introduction without switching dialect.",
+                "Finish أحب with its object القراءة."
+              ],
+              "teach": "The oral introduction is four fusḥā clauses you can say without hunting. The model is: اسمي …، أسكن في …، أدرس في المدرسة …، أحب القراءة. That is: my name is …, I live in …, I study at the school …, I like reading. Do not translate I like as بحب. أحب is the fusḥā verb.\n\nEach clause is a real sentence. اسمي دانا is nominal: my name is Dana. أسكن في حيفا is verbal: I live in Haifa. أدرس في المدرسة is verbal: I study at the school, and the school name can follow المدرسة. أحب القراءة needs its object, reading.",
+              "rules": [
+                "Model: اسمي …، أسكن في …، أدرس في المدرسة …، أحب القراءة.",
+                "اسمي plus the name is nominal. No كان.",
+                "أسكن في and أدرس في are fusḥā. بحب is not the oral answer.",
+                "أحب is unfinished without القراءة or another true object."
+              ],
+              "example": {
+                "prompt": "Fill the model for Dana, who lives in Haifa, studies at the school, and likes reading. Type the four clauses as one line you could say.",
+                "steps": [
+                  "Start with the nominal clause اسمي دانا.",
+                  "Add the place clause أسكن في حيفا.",
+                  "Add أدرس في المدرسة. The model allows the school name after المدرسة; here the frame itself is enough.",
+                  "Close with أحب القراءة, not بحب."
+                ],
+                "answer": "اسمي دانا، أسكن في حيفا، أدرس في المدرسة، أحب القراءة"
+              },
+              "practice": [
+                {
+                  "q": "Type the fusḥā clause for I like reading, from the model.",
+                  "answer": "أحب القراءة",
+                  "why": "أحب is MSA. بحب is dialect. القراءة is the object and must be said."
+                },
+                {
+                  "q": "Type the two words for I live in.",
+                  "answer": "أسكن في",
+                  "why": "أسكن في is the fusḥā frame. The city name fills the gap after في."
+                }
+              ]
+            },
+            {
+              "id": "ar-exam-l2b",
+              "title": "Picture structures",
+              "he": "תבניות לתיאור תמונה",
+              "minutes": 14,
+              "kind": "practice",
+              "covers": [
+                "Oral: describing a picture with prepared structures"
+              ],
+              "objectives": [
+                "Open a picture description with في الصورة أرى.",
+                "Add one verbal action without inventing unseen details."
+              ],
+              "teach": "Picture talk uses prepared fusḥā frames, not a hunt for new words. Start with في الصورة أرى, in the picture I see, plus a noun. Place people with على اليمين, on the right, على اليسار, on the left, or هناك, there. Then give one verbal sentence for the action: يقرأ الطالب الكتاب, the student reads the book.\n\nStay inside the picture. If you do not see a clock, do not invent an hour. Agreement still applies. One male student after the verb is يقرأ الطالب. Several students after the verb are يقرأ الطلاب, not يقرأون الطلاب. A closing nominal line is allowed: المكتبة هادئة. Do not switch to بحكي.",
+              "rules": [
+                "Opener: في الصورة أرى plus what you see.",
+                "Place: على اليمين, على اليسار, or هناك.",
+                "Action is verbal, and a plural noun after the verb keeps the verb singular.",
+                "Do not invent objects that are not in the picture. Stay in fusḥā."
+              ],
+              "example": {
+                "prompt": "The picture shows one male student reading the book. Type only the action sentence.",
+                "steps": [
+                  "The action frame is a verbal sentence, so the verb comes first.",
+                  "One male student is الطالب, and the verb is masculine singular يقرأ.",
+                  "The object you can see is definite: الكتاب.",
+                  "Do not add a time, a feeling, or a second person."
+                ],
+                "answer": "يقرأ الطالب الكتاب"
+              },
+              "practice": [
+                {
+                  "q": "Type the three-word frame in the picture I see.",
+                  "answer": "في الصورة أرى",
+                  "why": "This opener is fusḥā. Put the noun you see after it."
+                },
+                {
+                  "q": "Type the action: the student reads the book.",
+                  "answer": "يقرأ الطالب الكتاب",
+                  "why": "Verb, singular subject, definite object. No invented extra detail."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ar-exam-l3",
+          "title": "Mastery",
+          "he": "שליטה",
+          "intent": "Combine the topic under exam conditions.",
+          "nodes": [
+            {
+              "id": "ar-exam-l3a",
+              "title": "Pace the booklet",
+              "he": "קצב לפי החוברת",
+              "minutes": 16,
+              "kind": "concept",
+              "covers": [
+                "How a 5-unit Arabic paper is usually paced"
+              ],
+              "objectives": [
+                "Follow the section order of the booklet in front of you.",
+                "Leave a blank rather than answer in dialect."
+              ],
+              "teach": "Pacing depends on the year's booklet. Do not memorize a form code, and do not memorize an official number of questions. Both change. Look at the paper in front of you and follow its order. If that booklet puts the unseen and the grammar first, do them first. If it orders the sections differently, follow the printed order, not a chart from a previous year.\n\nMark a hard item and move. A blank is better than a dialect sentence, because dialect is not the fusḥā answer. Leave time for the writing lines you were given. This reader cannot set your minutes. The front of the booklet does that.",
+              "rules": [
+                "Follow the paper in front of you. Form codes and question counts change.",
+                "If unseen and grammar are printed first, do them first.",
+                "A blank beats a dialect answer.",
+                "The oral model stays short: اسمي، أسكن في، أدرس في المدرسة، أحب القراءة."
+              ],
+              "example": {
+                "prompt": "The booklet prints the unseen, then grammar, then writing. What do you do first? Type unseen or writing.",
+                "steps": [
+                  "The rule is the printed order, not a favorite section.",
+                  "This booklet prints the unseen before grammar and writing.",
+                  "Do the unseen first, while you are fresh.",
+                  "Writing comes when the booklet reaches it, not before."
+                ],
+                "answer": "unseen"
+              },
+              "practice": [
+                {
+                  "q": "Should you follow a memorized form code, or the paper in front of you? Type paper or code.",
+                  "answer": "paper",
+                  "why": "Codes change by year. The booklet you have is the order."
+                },
+                {
+                  "q": "If you cannot produce fusḥā, is a dialect sentence better than a blank? Type blank or dialect.",
+                  "answer": "blank",
+                  "why": "The exam language is fusḥā. A dialect line is not a safer guess."
+                }
+              ]
+            },
+            {
+              "id": "ar-exam-l3b",
+              "title": "Mixed checkpoint",
+              "he": "ביקורת מעורבת",
+              "minutes": 22,
+              "kind": "checkpoint",
+              "covers": [
+                "Mixed checkpoint"
+              ],
+              "objectives": [
+                "Produce one idafa and one past-tense pronoun subject.",
+                "Choose لم or لا, and classify a sentence as nominal or verbal."
+              ],
+              "teach": "This checkpoint mixes four moves you already own. An idafa is two nouns, and the first drops ال: كتاب المعلم means the teacher's book. A past suffix is the subject only when no noun follows the verb. كتبوا means they wrote. كتب الطلاب means the students wrote. Do not glue the suffix and the following noun together.\n\nلم with the present stem is past: لم يذهب الطالب, the student did not go. لا with the present is now or a habit: لا يذهب الطالب. Classification looks at the opening. ذهب الطالب إلى الصف is verbal. الطالب مجتهد is nominal: it opens with the topic and needs no verb.",
+              "rules": [
+                "Idafa: first noun with no ال, second noun with ال. كتاب المعلم.",
+                "Past pronoun subject: كتبوا. Noun after the verb: كتب الطلاب, not كتبوا الطلاب.",
+                "لم plus the present stem negates the past. لا plus the present negates the present.",
+                "Verb first is verbal. Noun topic plus comment, with no verb, is nominal."
+              ],
+              "example": {
+                "prompt": "Type the idafa for the teacher's book. Use كتاب and المعلم.",
+                "steps": [
+                  "An idafa is possession: the book of the teacher.",
+                  "The first noun drops ال and takes no tanwin: كتاب.",
+                  "The second noun keeps ال: المعلم.",
+                  "Do not write الكتاب المعلم. That is not an idafa."
+                ],
+                "answer": "كتاب المعلم"
+              },
+              "practice": [
+                {
+                  "q": "Type the idafa for the teacher's book. Use كتاب and المعلم.",
+                  "answer": "كتاب المعلم",
+                  "why": "The first noun has no ال. The second noun has ال. That is the teacher's book."
+                },
+                {
+                  "q": "The subject is only they, masculine. Type they wrote, as one word.",
+                  "answer": "كتبوا",
+                  "why": "The plural suffix is the subject because no noun follows the verb."
+                },
+                {
+                  "q": "Yesterday the student did not go. Which particle fits before يذهب: لم or لا?",
+                  "answer": "لم",
+                  "why": "لم يذهب negates the past. لا يذهب would negate the present or a habit."
+                },
+                {
+                  "q": "Classify ذهب الطالب إلى الصف. Type nominal or verbal.",
+                  "answer": "verbal",
+                  "why": "It opens with the verb ذهب, then the subject الطالب. الطالب مجتهد would be nominal."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
