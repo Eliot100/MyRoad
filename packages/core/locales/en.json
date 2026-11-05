@@ -551,5 +551,7 @@
   "pr_map": "See the whole road",
   "offline_title": "You're offline",
   "offline_body": "This page didn't load because there is no connection. Your progress is saved on the server. Try again when you're back online.",
-  "offline_retry": "Try again"
+  "offline_retry": "Try again",
+  "stage_level": "Level {i} of {x}",
+  "stage_level_hint": "Progress inside this stage toward the goal"
 }

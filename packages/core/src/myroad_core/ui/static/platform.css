@@ -1112,6 +1112,69 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
   .map-view, .map-view * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
 
+/* Linear road: continuous dark track behind tiles + level I of X (SuperGrok chat 05 / topic 4). */
+.linear-stage {
+  width: min(100%, 28rem);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: .35rem;
+  margin: 0 0 .4rem;
+}
+.linear-stage-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .75rem;
+  width: 100%;
+}
+.linear-stage-head .linear-section { margin: .85rem 0 .15rem; flex: 1 1 auto; }
+.linear-level {
+  flex: none;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--ink-2);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border-radius: 999px;
+  padding: .2rem .65rem;
+  white-space: nowrap;
+}
+.linear-track {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-block: .15rem .35rem;
+}
+.linear-rail {
+  position: absolute;
+  inset-block: 0;
+  inline-size: 1.1rem;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 78%, var(--track));
+  opacity: .88;
+  z-index: 0;
+}
+[data-theme="dark"] .linear-rail,
+:root[data-theme="dark"] .linear-rail {
+  background: color-mix(in srgb, var(--ink) 35%, #1a2220);
+  opacity: .95;
+}
+.linear-track-tiles {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .55rem;
+  width: 100%;
+}
+.linear-track-tiles .linear-form,
+.linear-track-tiles .linear-tile.ahead { width: min(100%, 22rem); }
+
 /* English 5-unit roads: one centered tile per row. Other paths keep the station list or diagram. */
 .linear-rows {
   display: flex;
