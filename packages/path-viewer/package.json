@@ -1,0 +1,26 @@
+{
+  "name": "path-viewer-local",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "@xyflow/react": "^12.12.0",
+    "happy-dom": "^21.0.4",
+    "puppeteer-core": "^24.43.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^5.4.21",
+    "zustand": "^5.0.16"
+  },
+  "scripts": {
+    "test:path": "node scripts/run-path-tests.mjs",
+    "test:graph": "node --experimental-strip-types --test src/lib/path/graph.test.ts",
+    "test": "npm run test:graph && npm run test:path"
+  }
+}

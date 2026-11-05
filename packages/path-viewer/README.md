@@ -20,3 +20,13 @@ Next-best (`explainNext` in `src/lib/path/graph.ts`) walks this path's edges and
 The default view is the trail. The React Flow canvas loads only after settings, then editing. Locale, path, view or editing, and map or list stay in that popover. Quality counts there are local numbers for this learner, not retention.
 
 Imports use the `@/` alias aimed at `src/`. Peer pieces the preview already has: React, Zustand, and `@xyflow/react` (draft editing only).
+
+## Tests
+
+```bash
+cd packages/path-viewer
+npm ci
+npm test
+```
+
+`npm run test:graph` runs the graph rules with node:test. `npm run test:path` runs i18n, store, and trail/settings component checks via `scripts/run-path-tests.mjs` (happy-dom + Vite). Source: Library `51-grok-build-path-viewer-tests.md`.
