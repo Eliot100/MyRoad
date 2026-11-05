@@ -59,6 +59,7 @@
       {% set _ = wm.stages.append({"id": tp.id, "title": tp.title, "state": sstate, "done": tp.doneCount, "total": tp.stepCount, "tiles": tiles}) %}
     {% endfor %}
     {% set preview = ui_preview_on() %}
+    {% if not use_linear %}
     <div class="world-map" id="world-map" data-path="{{ doc.pathId }}" data-read-only="{{ 1 if read_only else 0 }}" data-preview="{{ 1 if preview else 0 }}"
          data-stages="{{ wm.stages|tojson|forceescape }}"
          data-i18n="{{ {"here": t('world_here'), "stage": t('world_stage_n', n='{n}'), "cells": t('world_cells', done='{done}', total='{total}'), "end": t('world_end'), "check": t('world_check'), "review": t('world_review'), "done": t('linear_done'), "open": t('linear_open'), "lock": t('linear_ahead'), "label": t('world_map_label'), "level": t('world_level', n='{n}')}|tojson|forceescape }}"
@@ -69,6 +70,7 @@
     </div>
     {% if not read_only %}
     <form method="post" action="/play/{{ doc.pathId }}/start" id="world-go" hidden><input type="hidden" name="node" value="" /></form>
+    {% endif %}
     {% endif %}
     <details class="world-list" open>
     <summary>{{ t('world_list') }}</summary>
