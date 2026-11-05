@@ -1160,7 +1160,7 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
 }
 [data-theme="dark"] .linear-rail,
 :root[data-theme="dark"] .linear-rail {
-  background: color-mix(in srgb, var(--ink) 35%, #1a2220);
+  background: color-mix(in srgb, var(--ink) 55%, var(--track));
   opacity: .95;
 }
 .linear-track-tiles {
