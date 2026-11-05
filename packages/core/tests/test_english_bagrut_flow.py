@@ -88,11 +88,12 @@ def test_bagrut_map_is_one_tile_per_row_not_stations(bagrut_app) -> None:
     app, _store = bagrut_app
     client = _client(app)
     html = client.get(f"/play/{ZERO}").text
-    assert 'data-map="linear"' in html
+    assert 'data-map="road"' in html
     assert "station-list" not in html
     assert "topic-diagram" not in html
-    assert "חלק 1" in html and "חלק 2" in html
-    assert html.count('name="node"') >= 1
+    assert "רמה 1 מתוך" in html
+    assert html.count("data-block-id=") >= 1
+    assert "עוד אין נתונים" in html
     assert "חזרה לשרשרת" in html
 
 
@@ -120,7 +121,7 @@ def test_many_mistakes_lock_everything_past_the_zero_road(bagrut_app) -> None:
         needs_practice=True,
     )
     zero = client.get(f"/play/{ZERO}").text
-    assert "lock-banner" not in zero and 'data-map="linear"' in zero
+    assert "lock-banner" not in zero and 'data-map="road"' in zero
     locked = client.get(f"/play/{TIME}").text
     assert "lock-banner" in locked
     assert ZERO in locked

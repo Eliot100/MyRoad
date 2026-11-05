@@ -58,6 +58,7 @@ from myroad_core.ui.guest_limit import GUEST_WINDOW_SECONDS, GuestLimiter
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
+from myroad_core.ui.road_view import build_road, trend_svg_points, uses_road_view
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
 from myroad_core.ui.engagement_view import (
     can_do_line,
@@ -1941,6 +1942,34 @@ def register_platform_routes(
                     st["done"] = st["blockId"] in mastered
                     st["current"] = st["blockId"] == current_bid
             open_index = next((i for i, b in enumerate(blocks) if b["blockId"] not in mastered), n)
+            if uses_road_view(path_id):
+                # Design D (Library mockups 12 + 10 + 01): real stages, states and answer events only.
+                events: list[dict[str, Any]] = []
+                if sess.get("userId"):
+                    try:
+                        events = store.answer_events(sess["userId"], path_id)
+                    except Exception:  # metrics must never break the road
+                        events = []
+                road = build_road(
+                    topics, mastered=mastered, current_bid=current_bid, open_index=open_index,
+                    total=n, read_only=read_only, events=events,
+                )
+                ctx = _shell_ctx(
+                    request,
+                    doc=doc,
+                    meta=meta,
+                    road=road,
+                    trend_points=trend_svg_points(road["trend"]),
+                    can_resume=bool(mastered) or sess.get("index", 0) > 0,
+                    locked_by=locked_by,
+                    read_only=read_only,
+                    engagement=_engagement(sess, doc, locale),
+                    series_back=str(path_id).startswith("path_english_bagrut5_"),
+                    sidebar=_sidebar_ctx(request, active_path=path_id),
+                )
+                response = templates.TemplateResponse(request, "road_map.html", ctx)
+                response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+                return response
             ctx = _shell_ctx(
                 request,
                 doc=doc,

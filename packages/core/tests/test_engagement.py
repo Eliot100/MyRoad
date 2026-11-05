@@ -312,6 +312,6 @@ def test_engagement_in_map_and_play_context(app):
         assert c.get(f"/play/{ZERO}?view=map").status_code == 200
         assert c.get(f"/play/{ZERO}?view=learn").status_code == 200
     by = dict(seen)
-    for name in ("map.html", "play.html"):
+    for name in ("road_map.html", "play.html"):  # bagrut5 map is design D
         assert by.get(name) is not None, seen
         _shape(by[name])
