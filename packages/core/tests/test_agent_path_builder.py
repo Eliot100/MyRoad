@@ -480,8 +480,9 @@ def test_demo_mode_end_to_end_over_http(app_client) -> None:
 
     catalog = client.get("/?group=agent&subject=all&tab=catalog&view=status")
     assert catalog.status_code == 200
-    assert f'data-path-id="{pid}"' in catalog.text
-    assert "דמו: שברים למתחילים" in catalog.text
+    # A published demo road that is not a 5-unit bagrut track stays out of the learner catalog.
+    assert f'data-path-id="{pid}"' not in catalog.text
+    assert "דמו: שברים למתחילים" not in catalog.text
 
     play_map = client.get(f"/play/{pid}")
     assert play_map.status_code == 200

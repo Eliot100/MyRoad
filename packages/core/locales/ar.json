@@ -578,5 +578,17 @@
   "rd_start": "ابدأ الطريق",
   "rd_sub": "{s} مراحل · {n} مربعات",
   "rd_map_label": "الطريق كله",
-  "rd_level_short": "المستوى"
+  "rd_level_short": "المستوى",
+  "rd_week_target": "الهدف الأسبوعي",
+  "rd_week_done": "هذا الأسبوع",
+  "rd_week_pace": "الوتيرة مقابل تاريخ الهدف",
+  "rd_week_both": "{tiles} مربعات · {minutes} د",
+  "rd_week_tiles": "{tiles} مربعات",
+  "rd_on_track": "على الوتيرة",
+  "rd_behind": "متأخر",
+  "rd_no_goal_date": "لا يوجد تاريخ هدف",
+  "rd_no_target": "لا يوجد هدف أسبوعي",
+  "rd_drawer_stages": "الدقة حسب المرحلة",
+  "rd_drawer_trend": "اتجاه الدقة",
+  "rd_drawer_close": "إغلاق"
 }

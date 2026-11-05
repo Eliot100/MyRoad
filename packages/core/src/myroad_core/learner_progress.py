@@ -96,6 +96,10 @@ _LEARNER_EXTRA_COLUMNS = (
     ("weekly_goal", "INTEGER"),
     # Guest sign-up offer (#210): NULL = not shown yet, "offered", "dismissed".
     ("guest_offer", "TEXT"),
+    # Optional road plan. NULL means unset. Never filled with a guessed number.
+    ("goal_date", "TEXT"),
+    ("weekly_tiles", "INTEGER"),
+    ("weekly_minutes", "INTEGER"),
 )
 
 WEEKLY_GOALS = (2, 3, 5)
@@ -347,6 +351,52 @@ class LearnerProgressMixin:
         self._conn.commit()
         return self.get_weekly_goal(user_id)
 
+    def get_road_plan(self, user_id: str | None) -> dict[str, Any]:
+        """Tile/minute weekly target and goal date. Unset fields stay None."""
+        empty = {"weeklyTiles": None, "weeklyMinutes": None, "goalDate": None}
+        if not user_id:
+            return empty
+        row = self._conn.execute(
+            "SELECT weekly_tiles, weekly_minutes, goal_date FROM learners WHERE user_id = ?",
+            (user_id,),
+        ).fetchone()
+        if not row:
+            return empty
+        tiles, minutes, goal = row[0], row[1], row[2]
+        return {
+            "weeklyTiles": int(tiles) if tiles is not None else None,
+            "weeklyMinutes": int(minutes) if minutes is not None else None,
+            "goalDate": str(goal) if goal else None,
+        }
+
+    def set_road_plan(
+        self,
+        user_id: str,
+        *,
+        weekly_tiles: int | None = None,
+        weekly_minutes: int | None = None,
+        goal_date: str | None = None,
+    ) -> dict[str, Any]:
+        """Store a plan the learner actually chose. Pass None to clear a field."""
+        if weekly_tiles is not None and int(weekly_tiles) <= 0:
+            raise ValueError("weekly tiles must be a positive integer")
+        if weekly_minutes is not None and int(weekly_minutes) <= 0:
+            raise ValueError("weekly minutes must be a positive integer")
+        if goal_date is not None:
+            datetime.fromisoformat(str(goal_date)[:10])
+            goal_date = str(goal_date)[:10]
+        self._conn.execute(
+            "UPDATE learners SET weekly_tiles = ?, weekly_minutes = ?, goal_date = ? WHERE user_id = ?",
+            (
+                None if weekly_tiles is None else int(weekly_tiles),
+                None if weekly_minutes is None else int(weekly_minutes),
+                goal_date,
+                user_id,
+            ),
+        )
+        self._conn.commit()
+        return self.get_road_plan(user_id)
+
     # --- sessions (#192): frozen step lists per (user, path, local day) ------------------
 
     def latest_learner_session(self, user_id: str, path_id: str) -> dict[str, Any] | None:
@@ -372,7 +422,7 @@ class LearnerProgressMixin:
 
     def answer_events(self, user_id: str, path_id: str | None = None) -> list[dict[str, Any]]:
         """Answer and mastery events in event order (for sessions and active days)."""
-        sql = ("SELECT path_id, block_id, event_type, ok, created_at FROM learner_events "
+        sql = ("SELECT path_id, block_id, event_type, ok, created_at, duration_ms FROM learner_events "
                "WHERE user_id = ? AND event_type IN ('answer', 'mastery')")
         args: list[Any] = [user_id]
         if path_id is not None:
@@ -381,7 +431,7 @@ class LearnerProgressMixin:
         sql += " ORDER BY event_id"
         return [
             {"pathId": r[0], "blockId": r[1], "eventType": r[2], "ok": None if r[3] is None else bool(r[3]),
-             "createdAt": r[4]}
+             "createdAt": r[4], "durationMs": r[5]}
             for r in self._conn.execute(sql, args).fetchall()
         ]
 

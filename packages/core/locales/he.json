@@ -578,5 +578,17 @@
   "rd_start": "התחלת הדרך",
   "rd_sub": "{s} שלבים · {n} משבצות",
   "rd_map_label": "כל הדרך",
-  "rd_level_short": "רמה"
+  "rd_level_short": "רמה",
+  "rd_week_target": "יעד שבועי",
+  "rd_week_done": "השבוע",
+  "rd_week_pace": "קצב מול תאריך היעד",
+  "rd_week_both": "{tiles} משבצות · {minutes} דק׳",
+  "rd_week_tiles": "{tiles} משבצות",
+  "rd_on_track": "בקצב",
+  "rd_behind": "לא בקצב",
+  "rd_no_goal_date": "אין תאריך יעד",
+  "rd_no_target": "אין יעד שבועי",
+  "rd_drawer_stages": "דיוק לפי שלב",
+  "rd_drawer_trend": "מגמת דיוק",
+  "rd_drawer_close": "סגירה"
 }

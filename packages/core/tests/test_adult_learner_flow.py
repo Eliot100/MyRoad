@@ -27,8 +27,8 @@ _CORE = Path(__file__).resolve().parents[1]
 _LOCALES = _CORE / "locales"
 _CSS = _CORE / "src" / "myroad_core" / "ui" / "static" / "platform.css"
 
-LONG = "path_test_adult_long"
-NEXT = "path_test_adult_next"
+LONG = "path_math_bagrut5_test_long"
+NEXT = "path_math_bagrut5_test_next"
 N_TOPICS = 22  # regular topics; every 5th one is a mixed review station
 EMAIL = "adult@example.com"
 

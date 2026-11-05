@@ -119,9 +119,7 @@ def _attrs(html: str, text: str) -> str:
 def test_he_only_path_falls_back_to_hebrew_marked_lang_he(app, locale) -> None:
     c = _client(app, locale)
     home = c.get("/").text
-    for text in ("שברים למבוגרים", "מסלול בעברית בלבד."):
-        tag = _attrs(home, text)
-        assert 'dir="auto"' in tag and 'lang="he"' in tag, (text, tag)
+    assert "שברים למבוגרים" not in home  # not a 5-unit road, so it stays off the catalog
 
     c.post(f"/play/{HE_ONLY}/start")
     page = c.get(f"/play/{HE_ONLY}?view=map").text
@@ -191,7 +189,7 @@ def test_bagrut_ar_station_titles_fall_back_to_hebrew_not_english(bagrut_app) ->
     h1 = _attrs(page, "מתמטיקה 3 יחידות")
     assert 'lang="he"' in h1 and "Math 3 units" not in page.split("<main", 1)[-1]
     home = c.get("/?group=adult").text
-    assert 'lang="he"' in _attrs(home, "מתמטיקה 3 יחידות")
+    assert "מתמטיקה 3 יחידות" not in home
 
 
 def test_bagrut_en_uses_english_titles_and_marks_hebrew_only_steps(bagrut_app) -> None:

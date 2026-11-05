@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
-{#- Road screen, design D (approved by Eliot 2026-11-05): Library mockup 12 look (dark winding road,
-    stage cards), levels from mockup 10, metrics from mockup 01. Dark on purpose: Eliot's mockups win
-    over lessons.md rule 1 for this screen. Every number is real; no data shows a calm empty state. -#}
+{#- Road screen, design D. Light asphalt by default; dark road and page only in dark mode.
+    Metric panels are drawers, closed until the learner opens them. Weekly pace uses
+    real answer events and an optional learner plan. No data stays an empty state. -#}
 {% block title %}{{ product }} — {{ meta.title }}{% endblock %}
 {% block head_extra %}
   <link rel="stylesheet" href="/static/road_map.css" />
@@ -45,25 +45,81 @@
 
     <section class="rd-tiles" aria-label="{{ t('metrics_link') }}">
       <div class="rd-tile">
-        <span class="rd-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg></span>
+        <span class="rd-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></span>
         <div class="rd-tx">
-          <p class="rd-tl">{{ t('rd_acc_recent', n=20) }}</p>
-          {% if road.recentAccuracy is not none %}
-          <p class="rd-tv" data-metric="accuracy"><bdi>{{ road.recentAccuracy }}%</bdi></p>
-          <div class="rd-pb" aria-hidden="true"><b style="width: {{ road.recentAccuracy }}%"></b></div>
+          <p class="rd-tl">{{ t('rd_week_target') }}</p>
+          {% if road.week.hasTarget %}
+          <p class="rd-tv" data-metric="week-target">{{ t('rd_week_both', tiles=road.week.targetTiles, minutes=road.week.targetMinutes) }}</p>
           {% else %}
-          <p class="rd-tv rd-empty" data-metric="accuracy">—</p><p class="rd-nodata">{{ t('rd_no_data') }}</p>
+          <p class="rd-tv rd-empty" data-metric="week-target">—</p><p class="rd-nodata">{{ t('rd_no_target') }}</p>
           {% endif %}
         </div>
       </div>
       <div class="rd-tile">
         <span class="rd-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19V14M10 19V11M15 19V8M20 19V5"/></svg></span>
         <div class="rd-tx">
-          <p class="rd-tl">{{ t('rd_tiles_done') }}</p>
-          <p class="rd-tv" data-metric="tiles"><bdi dir="ltr">{{ road.done }}<small> /{{ road.total }}</small></bdi></p>
-          <div class="rd-pb" role="progressbar" aria-valuemin="0" aria-valuemax="{{ road.total }}" aria-valuenow="{{ road.done }}" aria-label="{{ t('rd_tiles_done') }}"><b style="width: {{ road.pct }}%"></b></div>
+          <p class="rd-tl">{{ t('rd_week_done') }}</p>
+          {% if road.week.doneMinutes is not none %}
+          <p class="rd-tv" data-metric="week-done">{{ t('rd_week_both', tiles=road.week.doneTiles, minutes=road.week.doneMinutes) }}</p>
+          {% else %}
+          <p class="rd-tv" data-metric="week-done">{{ t('rd_week_tiles', tiles=road.week.doneTiles) }}</p><p class="rd-nodata">{{ t('rd_no_data') }}</p>
+          {% endif %}
         </div>
       </div>
+      <div class="rd-tile">
+        <span class="rd-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg></span>
+        <div class="rd-tx">
+          <p class="rd-tl">{{ t('rd_week_pace') }}</p>
+          {% if road.week.onTrack is true %}
+          <p class="rd-tv" data-metric="on-track">{{ t('rd_on_track') }}</p>
+          <p class="rd-nodata"><bdi dir="ltr">{{ road.week.goalDate }}</bdi></p>
+          {% elif road.week.onTrack is false %}
+          <p class="rd-tv" data-metric="on-track">{{ t('rd_behind') }}</p>
+          <p class="rd-nodata"><bdi dir="ltr">{{ road.week.goalDate }}</bdi></p>
+          {% else %}
+          <p class="rd-tv rd-empty" data-metric="on-track">—</p>
+          <p class="rd-nodata">{{ t('rd_no_goal_date') if road.week.paceEmpty == 'date' else t('rd_no_target') }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <div class="rd-drawers">
+      <button type="button" class="rd-drawer-btn" data-rd-drawer aria-expanded="false" aria-controls="rd-drawer-stages">{{ t('rd_drawer_stages') }}</button>
+      <button type="button" class="rd-drawer-btn" data-rd-drawer aria-expanded="false" aria-controls="rd-drawer-trend">{{ t('rd_drawer_trend') }}</button>
+    </div>
+    <section id="rd-drawer-stages" class="rd-drawer" hidden>
+      <div class="rd-drawer-bar"><button type="button" class="rd-drawer-close" data-rd-close>{{ t('rd_drawer_close') }}</button></div>
+      <div class="rd-ph"><h2>{{ t('rd_stages') }}</h2><span>{{ t('rd_acc_hint') }}</span></div>
+      {% set answered = road.stages|selectattr('answered')|list %}
+      {% if answered %}
+      <ul class="rd-rows">
+      {% for s in answered %}
+        <li class="rd-row"><span class="rd-rn" dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</span>
+          <span class="rd-rbar" aria-hidden="true"><b style="width: {{ s.accuracy }}%"></b></span>
+          <span class="rd-pill">{{ t('rd_level_short') }} <bdi>{{ s.level }}/{{ road.levelCount }}</bdi></span>
+          <span class="rd-rv"><bdi>{{ s.accuracy }}%</bdi></span></li>
+      {% endfor %}
+      </ul>
+      {% else %}
+      <p class="rd-nodata big"><span class="rd-dash">—</span> {{ t('rd_no_data') }}</p>
+      {% endif %}
+    </section>
+    <section id="rd-drawer-trend" class="rd-drawer" hidden>
+      <div class="rd-drawer-bar"><button type="button" class="rd-drawer-close" data-rd-close>{{ t('rd_drawer_close') }}</button></div>
+      <div class="rd-ph"><div><h2>{{ t('rd_trend') }}</h2><span>{{ t('rd_trend_sub') }}</span></div></div>
+      {% if trend_points %}
+      <svg class="rd-chart" viewBox="-34 -8 440 160" role="img" aria-label="{{ t('rd_trend') }}: {{ road.trend[-1].pct }}%">
+        <defs><linearGradient id="rd-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f766e" stop-opacity=".28"/><stop offset="1" stop-color="#0f766e" stop-opacity="0"/></linearGradient></defs>
+        {% for v in [0, 25, 50, 75, 100] %}<line x1="0" x2="400" y1="{{ 130 - 1.3 * v }}" y2="{{ 130 - 1.3 * v }}" class="rd-gl"/><text x="-6" y="{{ 134 - 1.3 * v }}" text-anchor="end" direction="ltr">{{ v }}%</text>{% endfor %}
+        <polygon points="0,130 {{ trend_points }} 400,130" fill="url(#rd-area)"/>
+        <polyline points="{{ trend_points }}" class="rd-pl"/>
+        <text x="0" y="148" direction="ltr">{{ road.trend[0].day[8:10] }}/{{ road.trend[0].day[5:7]|int }}</text>
+        <text x="400" y="148" text-anchor="end" direction="ltr">{{ road.trend[-1].day[8:10] }}/{{ road.trend[-1].day[5:7]|int }}</text>
+      </svg>
+      {% else %}
+      <p class="rd-nodata big"><span class="rd-dash">—</span> {{ t('rd_trend_empty') }}</p>
+      {% endif %}
     </section>
 
     <section class="rd-road-list" data-map="road" aria-label="{{ t('rd_map_label') }}">
@@ -99,50 +155,44 @@
     </section>
 
     {% if not read_only %}
-    <form method="post" action="/play/{{ doc.pathId }}/start" class="rd-cta-form rd-mob">
-      <button type="submit" class="rd-cta">{{ t('rd_continue') if can_resume else t('rd_start') }} <span aria-hidden="true">←</span></button>
-    </form>
-    {% endif %}
-  </div>
-
-  <aside class="rd-side" aria-label="{{ t('metrics_link') }}">
-    <section class="rd-panel">
-      <div class="rd-ph"><h2>{{ t('rd_stages') }}</h2><span>{{ t('rd_acc_hint') }}</span></div>
-      {% set answered = road.stages|selectattr('answered')|list %}
-      {% if answered %}
-      <ul class="rd-rows">
-      {% for s in answered %}
-        <li class="rd-row"><span class="rd-rn" dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</span>
-          <span class="rd-rbar" aria-hidden="true"><b style="width: {{ s.accuracy }}%"></b></span>
-          <span class="rd-pill">{{ t('rd_level_short') }} <bdi>{{ s.level }}/{{ road.levelCount }}</bdi></span>
-          <span class="rd-rv"><bdi>{{ s.accuracy }}%</bdi></span></li>
-      {% endfor %}
-      </ul>
-      {% else %}
-      <p class="rd-nodata big"><span class="rd-dash">—</span> {{ t('rd_no_data') }}</p>
-      {% endif %}
-    </section>
-    <section class="rd-panel">
-      <div class="rd-ph"><div><h2>{{ t('rd_trend') }}</h2><span>{{ t('rd_trend_sub') }}</span></div></div>
-      {% if trend_points %}
-      <svg class="rd-chart" viewBox="-34 -8 440 160" role="img" aria-label="{{ t('rd_trend') }}: {{ road.trend[-1].pct }}%">
-        <defs><linearGradient id="rd-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fc9b4" stop-opacity=".3"/><stop offset="1" stop-color="#4fc9b4" stop-opacity="0"/></linearGradient></defs>
-        {% for v in [0, 25, 50, 75, 100] %}<line x1="0" x2="400" y1="{{ 130 - 1.3 * v }}" y2="{{ 130 - 1.3 * v }}" class="rd-gl"/><text x="-6" y="{{ 134 - 1.3 * v }}" text-anchor="end" direction="ltr">{{ v }}%</text>{% endfor %}
-        <polygon points="0,130 {{ trend_points }} 400,130" fill="url(#rd-area)"/>
-        <polyline points="{{ trend_points }}" class="rd-pl"/>
-        <text x="0" y="148" direction="ltr">{{ road.trend[0].day[8:10] }}/{{ road.trend[0].day[5:7]|int }}</text>
-        <text x="400" y="148" text-anchor="end" direction="ltr">{{ road.trend[-1].day[8:10] }}/{{ road.trend[-1].day[5:7]|int }}</text>
-      </svg>
-      {% else %}
-      <p class="rd-nodata big"><span class="rd-dash">—</span> {{ t('rd_trend_empty') }}</p>
-      {% endif %}
-    </section>
-    {% if not read_only %}
     <form method="post" action="/play/{{ doc.pathId }}/start" class="rd-cta-form">
       <button type="submit" class="rd-cta">{{ t('rd_continue') if can_resume else t('rd_start') }}{% if road.current %}: <span dir="auto">{{ road.current.title }}</span>{% endif %} <span aria-hidden="true">←</span></button>
     </form>
     {% endif %}
-  </aside>
+  </div>
   </main>
   </div>
+  <script>
+  (function () {
+    function setOpen(btn, panel, open) {
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      panel.hidden = !open;
+    }
+    document.querySelectorAll("[data-rd-drawer]").forEach(function (btn) {
+      var panel = document.getElementById(btn.getAttribute("aria-controls"));
+      if (!panel) return;
+      setOpen(btn, panel, false);
+      btn.addEventListener("click", function () {
+        var open = btn.getAttribute("aria-expanded") !== "true";
+        setOpen(btn, panel, open);
+        if (open) {
+          var close = panel.querySelector("[data-rd-close]");
+          if (close) close.focus();
+        }
+      });
+      panel.querySelectorAll("[data-rd-close]").forEach(function (c) {
+        c.addEventListener("click", function () { setOpen(btn, panel, false); btn.focus(); });
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      document.querySelectorAll(".rd-drawer").forEach(function (panel) {
+        if (panel.hidden) return;
+        panel.hidden = true;
+        var btn = document.querySelector('[aria-controls="' + panel.id + '"]');
+        if (btn) { btn.setAttribute("aria-expanded", "false"); btn.focus(); }
+      });
+    });
+  })();
+  </script>
 {% endblock %}

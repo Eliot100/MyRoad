@@ -162,14 +162,13 @@ def platform_client(tmp_path):
     store.close()
 
 
-def test_catalog_home_lists_grade3(platform_client: TestClient) -> None:
+def test_catalog_home_lists_bagrut5_only(platform_client: TestClient) -> None:
     r = platform_client.get("/")
     assert r.status_code == 200
     assert "MyRoad" in r.text
-    assert "דרכים לתלמידי כיתה ג" in r.text
-    assert "חיבור עד 20" in r.text
-    assert "Colors" in r.text or "צבעים" in r.text
-    assert "דו־רה־מי" in r.text or "דו-רה-מי" in r.text
+    assert "חיבור עד 20" not in r.text
+    assert "מבדק רמה לאנגלית" in r.text
+    assert "ערבית מאפס" in r.text
     assert 'class="lang-switch"' not in r.text
     assert 'href="/settings"' in r.text
     settings = platform_client.get("/settings")
@@ -317,54 +316,44 @@ def test_learner_identity_tables(store: PathStore) -> None:
 
 
 def test_home_tabs_and_progress_bookmarks(platform_client: TestClient) -> None:
-    """Home primary tabs: in progress / completed / practice; progress survives reload."""
+    """Home lists a started public road; grade3 stays off the catalog but play still opens it."""
     store: PathStore = platform_client.app.state.store
     _reg(platform_client, "tabuser@example.com", "Tab", "User")
+    pid = "path_english_bagrut5_00_placement"
 
-    # Before any play — default tab is catalog (full list)
     home = platform_client.get("/")
     assert home.status_code == 200
     assert "מומלצות" in home.text or "Recommended" in home.text
-    assert "חיבור עד 20" in home.text
+    assert "מבדק רמה לאנגלית" in home.text
+    assert "חיבור עד 20" not in home.text
 
-    # Start a path → appears under in_progress after reload
-    platform_client.post("/play/path_grade3_math_add20/start", data={}, follow_redirects=True)
-    platform_client.post("/play/path_grade3_math_add20/ack", follow_redirects=True)
+    platform_client.post(f"/play/{pid}/start", data={}, follow_redirects=True)
+    platform_client.post(f"/play/{pid}/ack", follow_redirects=True)
 
     uid = _uid(platform_client)
     assert uid
-    prog = store.get_progress(uid, "path_grade3_math_add20")
+    prog = store.get_progress(uid, pid)
     assert prog is not None
     assert prog.get("startedAt")
     assert not prog.get("completedAt")
 
     tab = platform_client.get("/?tab=in_progress")
     assert tab.status_code == 200
-    assert "חיבור עד 20" in tab.text
-    assert "בתהליך" in tab.text or "In progress" in tab.text
+    assert "מבדק רמה לאנגלית" in tab.text
 
-    # Fresh client cookies still resume via same cookie jar (TestClient persists)
-    again = platform_client.get("/play/path_grade3_math_add20")
+    again = platform_client.get(f"/play/{pid}")
     assert again.status_code == 200
+    # A hidden grade3 road still opens by address. It is not deleted.
+    hidden = platform_client.get("/play/path_grade3_math_add20")
+    assert hidden.status_code == 200
 
-    # Wrong answers → needs practice tab
-    platform_client.post(
-        "/play/path_grade3_math_add20/answer",
-        data={"choice": "a"},
-        follow_redirects=True,
-    )
-    platform_client.post(
-        "/play/path_grade3_math_add20/answer",
-        data={"choice": "a"},
-        follow_redirects=True,
-    )
     practice = platform_client.get("/?tab=practice")
     assert practice.status_code == 200
 
-    # Row A lists the started road (time view was replaced by the netflix home rows)
     home2 = platform_client.get("/")
     assert "דרכים שהתחלת" in home2.text
-    assert 'href="/play/path_grade3_math_add20?view=stats"' in home2.text
+    assert f'href="/play/{pid}?view=stats"' in home2.text
+    assert "path_grade3_math_add20" not in home2.text
 
 
 def test_english_play_shows_content_token_and_he_explanation(platform_client: TestClient) -> None:
@@ -404,8 +393,11 @@ def test_completed_tab_after_finish(platform_client: TestClient) -> None:
 
     done = platform_client.get("/?tab=completed")
     assert done.status_code == 200
-    assert "חיבור עד 20" in done.text
-    assert "הושלם" in done.text or "Completed" in done.text
+    # Grade 3 stays off the learner catalog, including the completed tab. The path itself is unchanged.
+    assert "חיבור עד 20" not in done.text
+    stats = platform_client.get("/play/path_grade3_math_add20?view=stats")
+    assert stats.status_code == 200
+    assert "חיבור עד 20" in stats.text
 
 
 def test_auth_gate_redirects_and_email_only_return(tmp_path) -> None:

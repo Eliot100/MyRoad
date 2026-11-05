@@ -58,7 +58,7 @@ from myroad_core.ui.guest_limit import GUEST_WINDOW_SECONDS, GuestLimiter
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
-from myroad_core.ui.road_view import build_road, trend_svg_points, uses_road_view
+from myroad_core.ui.road_view import build_road, is_public_catalog, trend_svg_points, uses_road_view
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
 from myroad_core.ui.engagement_view import (
     can_do_line,
@@ -228,7 +228,19 @@ def register_platform_routes(
                     progress_map[row["pathId"]] = row
             except Exception:
                 progress_map = {}
-        cards = group_catalog(list_catalog_cards(store, locale=locale), group_id=group, subject=subject)["cards"]
+        cards = [
+            c for c in group_catalog(list_catalog_cards(store, locale=locale), group_id=group, subject=subject)["cards"]
+            if is_public_catalog(c.get("pathId") or "", c.get("subject"))
+        ]
+        if active_path and active_path not in {c.get("pathId") for c in cards}:
+            # The road the learner is on stays in the picker so the current row can be marked,
+            # even when that road is hidden from the catalog.
+            current = next(
+                (c for c in list_catalog_cards(store, locale=locale) if c.get("pathId") == active_path),
+                None,
+            )
+            if current:
+                cards = [current, *cards]
         order = {"in_progress": 0, "practice": 1, None: 2, "completed": 3}
         rows: list[dict[str, Any]] = []
         for c in cards:
@@ -267,7 +279,10 @@ def register_platform_routes(
             return request.url.path + "?" + "&".join(f"{k}={quote(str(v), safe='')}" for k, v in params.items())
 
         subjects = [{"id": "all", "label": t(locale, "all"), "href": _href(subject="all"), "active": subject == "all"}]
-        present = {c.get("subject") for c in list_catalog_cards(store, locale=locale)}
+        present = {
+            c.get("subject") for c in list_catalog_cards(store, locale=locale)
+            if is_public_catalog(c.get("pathId") or "", c.get("subject"))
+        }
         for sid in SUBJECTS:
             if sid in present:
                 subjects.append({"id": sid, "label": subject_label(sid, locale), "href": _href(subject=sid), "active": subject == sid})
@@ -1336,7 +1351,10 @@ def register_platform_routes(
         f_dur = [v for v in qp.getlist("dur") if v in {k for k, _a, _b in _DUR_BUCKETS}]
         sort = qp.get("sort") if qp.get("sort") in ("recommended", "name", "duration") else "recommended"
 
-        cards = list_catalog_cards(store, locale=locale)
+        cards = [
+            c for c in list_catalog_cards(store, locale=locale)
+            if is_public_catalog(c.get("pathId") or "", c.get("subject"))
+        ]
         learner = _learner(request)
         progress_map: dict[str, Any] = {}
         if learner:
@@ -1456,7 +1474,10 @@ def register_platform_routes(
         view: str | None = "status",
     ) -> HTMLResponse:
         locale = _locale(request)
-        cards = list_catalog_cards(store, locale=locale)
+        cards = [
+            c for c in list_catalog_cards(store, locale=locale)
+            if is_public_catalog(c.get("pathId") or "", c.get("subject"))
+        ]
         for c in cards:
             # Title/blurb are content: fall back to the path's own language, not English.
             chrome = localize_path_chrome(
@@ -1554,6 +1575,7 @@ def register_platform_routes(
 
         catalog = group_catalog(cards, group_id=group or None, subject=subject)
         if (group == "grade3") and catalog["total"] == 0 and cards:
+            group = "all"
             catalog = group_catalog(cards, group_id=None, subject=subject)
 
         filtered_cards = list(catalog["cards"])
@@ -1771,13 +1793,14 @@ def register_platform_routes(
                 break
         if first is None and blocks:
             first = {"title": blocks[0].get("title"), "titleLang": _explain_locale(doc), "type": None, "stage": "", "stageLang": ""}
-        started = [c for c in cards if c.get("progressStatus") == "in_progress"]
-        same = [c for c in cards if c.get("subject") == card.get("subject")]
+        started = [c for c in cards if c.get("progressStatus") == "in_progress" and is_public_catalog(c["pathId"], c.get("subject"))]
+        visible = [c for c in cards if is_public_catalog(c["pathId"], c.get("subject"))]
+        same = [c for c in visible if c.get("subject") == card.get("subject")]
         similar = _rec_items(same, started, locale, exclude=path_id, limit=6)
         if len(similar) < 3:
-            similar += [x for x in _rec_items(cards, started, locale, exclude=path_id, limit=8)
+            similar += [x for x in _rec_items(visible, started, locale, exclude=path_id, limit=8)
                         if x["pathId"] not in {s["pathId"] for s in similar}][: 3 - len(similar)]
-        reason = next((x["reason"] for x in _rec_items(cards, started, locale, limit=50) if x["pathId"] == path_id), "")
+        reason = next((x["reason"] for x in _rec_items(visible, started, locale, limit=50) if x["pathId"] == path_id), "")
         prereq_list = [{"pathId": p, "title": prereq_titles.get(p, p)} for p in prereqs.get(path_id, [])]
         preview = preview_enabled()
         return templates.TemplateResponse(
@@ -1945,14 +1968,19 @@ def register_platform_routes(
             if uses_road_view(path_id):
                 # Design D (Library mockups 12 + 10 + 01): real stages, states and answer events only.
                 events: list[dict[str, Any]] = []
+                plan: dict[str, Any] = {}
                 if sess.get("userId"):
                     try:
                         events = store.answer_events(sess["userId"], path_id)
                     except Exception:  # metrics must never break the road
                         events = []
+                    try:
+                        plan = store.get_road_plan(sess["userId"])
+                    except Exception:
+                        plan = {}
                 road = build_road(
                     topics, mastered=mastered, current_bid=current_bid, open_index=open_index,
-                    total=n, read_only=read_only, events=events,
+                    total=n, read_only=read_only, events=events, plan=plan,
                 )
                 ctx = _shell_ctx(
                     request,

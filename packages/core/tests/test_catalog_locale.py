@@ -242,45 +242,27 @@ def platform_client(tmp_path):
 def test_catalog_home_en_shows_english_path_titles(platform_client: TestClient) -> None:
     r = platform_client.post("/locale", data={"locale": "en", "next": "/?tab=catalog"}, follow_redirects=True)
     assert r.status_code == 200
-    assert "Addition up to 20" in r.text
-    assert "Light and shadow" in r.text
-    assert "Do-Re-Mi" in r.text
-    assert "Hand rhythm" in r.text
-    assert "Multiplication as repeated addition" in r.text
-    assert "Force and push" in r.text
-    assert "Colors in English" in r.text
-    assert "Animals" in r.text
-    assert "Hello" in r.text and "Feelings" in r.text  # &amp; escaped in HTML
+    assert "English level check" in r.text
+    assert "First letters" in r.text
+    assert "Addition up to 20" not in r.text
     assert "חיבור עד 20" not in r.text
-    assert "אור וצל" not in r.text
-    assert "Paths for Grade 3" in r.text
 
 
 def test_catalog_home_ar_shows_arabic_path_titles(platform_client: TestClient) -> None:
     r = platform_client.post("/locale", data={"locale": "ar", "next": "/?tab=catalog"}, follow_redirects=True)
     assert r.status_code == 200
-    assert "مسارات للصف الثالث" in r.text
-    assert "الجمع حتى 20" in r.text
-    assert "الضوء والظل" in r.text
-    assert "دو-ري-مي" in r.text
-    assert "إيقاع اليدين" in r.text
-    assert "الضرب كتكرار للجمع" in r.text
-    assert "القوة والدفع" in r.text
-    assert "الطرح مع عناصر" in r.text
-    assert "ألوان بالإنجليزية" in r.text
-    assert "حيوانات بالإنجليزية" in r.text
-    assert "مرحبا" in r.text
+    assert "اختبار مستوى الإنجليزية" in r.text
+    assert "الحروف الأولى" in r.text
+    assert "الجمع حتى 20" not in r.text
     assert "חיבור עד 20" not in r.text
-    assert "אור וצל" not in r.text
-    assert "חיות באנגלית" not in r.text
-    assert "Addition up to 20" not in r.text
     assert 'lang="ar"' in r.text
 
 
 def test_catalog_home_he_keeps_hebrew_native_titles(platform_client: TestClient) -> None:
     r = platform_client.get("/?tab=catalog")
     assert r.status_code == 200
-    assert "חיבור עד 20" in r.text
-    assert "אור וצל" in r.text
-    assert "Addition up to 20" not in r.text
-    assert "الجمع حتى 20" not in r.text
+    assert "מבדק רמה לאנגלית" in r.text
+    assert "מאפס" in r.text
+    assert "חיבור עד 20" not in r.text
+    assert "English level check" not in r.text
+    assert "First letters" not in r.text

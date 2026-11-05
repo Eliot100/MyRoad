@@ -16,7 +16,7 @@ from auth_helpers import login_with_code
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
 
-PID = "path_grade3_english_animals"
+PID = "path_english_bagrut5_00_placement"
 
 
 @pytest.fixture
