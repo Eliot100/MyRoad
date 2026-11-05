@@ -76,17 +76,17 @@
     <p class="lede">{{ t('linear_map_lede') }}</p>
     <div class="linear-rows" data-map="linear">
       {% for tp in topics %}
-      {#- Interim level I of X (X=3): from stage tile completion until real per-stage levels ship. SuperGrok chat 05 / topic 4. -#}
-      {% set lvl_x = 3 %}
+      {#- Interim level I of X (X=3): from stage tile completion until real per-stage levels ship. SuperGrok chat 05 / topic 4.
+          namespace() so Jinja if-scopes do not swallow lvl_i. -#}
+      {% set lvl = namespace(x=3, i=1) %}
       {% set frac = (tp.doneCount / tp.stepCount) if tp.stepCount else 0 %}
-      {% if tp.complete or frac >= 1 %}{% set lvl_i = lvl_x %}
-      {% elif frac >= (2 / 3) %}{% set lvl_i = 2 %}
-      {% else %}{% set lvl_i = 1 %}
+      {% if tp.complete or frac >= 1 %}{% set lvl.i = lvl.x %}
+      {% elif frac >= (2 / 3) %}{% set lvl.i = 2 %}
       {% endif %}
       <section class="linear-stage" aria-labelledby="linear-stage-{{ tp.id }}">
         <div class="linear-stage-head">
           <h3 class="linear-section" id="linear-stage-{{ tp.id }}"><span class="linear-part">{{ t('linear_part', n=loop.index) }}</span> · <span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span></h3>
-          <span class="linear-level" title="{{ t('stage_level_hint') }}">{{ t('stage_level', i=lvl_i, x=lvl_x) }}</span>
+          <span class="linear-level" title="{{ t('stage_level_hint') }}">{{ t('stage_level', i=lvl.i, x=lvl.x) }}</span>
         </div>
         <div class="linear-track">
           <div class="linear-rail" aria-hidden="true"></div>
