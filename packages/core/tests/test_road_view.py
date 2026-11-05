@@ -2,7 +2,7 @@
 from datetime import datetime as date
 
 from myroad_core.ui.road_view import (
-    build_road, first_try, is_public_catalog, split_levels, trend_svg_points, uses_road_view, weekly_progress,
+    build_road, first_try, is_public_catalog, trend_svg_points, uses_road_view, weekly_progress,
 )
 
 
@@ -30,10 +30,18 @@ def test_catalog_keeps_only_bagrut5_subjects():
     assert not is_public_catalog("path_english_bagrut5_01_zero", None)
 
 
-def test_levels_are_three_consecutive_near_equal_groups():
-    assert [len(g) for g in split_levels(9, 3)] == [3, 3, 3]
-    assert [len(g) for g in split_levels(11, 3)] == [4, 4, 3]
-    assert [len(g) for g in split_levels(2, 3)] == [1, 1]
+def test_levels_follow_the_content_field():
+    topics = _topics(6)
+    for i, topic in enumerate(topics):
+        topic["level"] = 1 if i < 4 else (2 if i == 4 else 3)
+    r = build_road(topics, mastered=set(), current_bid="b0_0", open_index=0, total=12,
+                   read_only=False, events=[], today=date(2026, 11, 5, 12))
+    assert [lv["n"] for lv in r["levels"]] == [1, 2, 3]
+    assert [len(lv["stages"]) for lv in r["levels"]] == [4, 1, 1]
+    assert r["levelCount"] == 3
+    # Six stages with no level field stay one group. Nothing is split into three.
+    plain = _road()
+    assert [lv["n"] for lv in plain["levels"]] == [None]
 
 
 def _road(events=(), mastered=(), plan=None, total=12):

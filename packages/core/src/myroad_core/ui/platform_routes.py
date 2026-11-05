@@ -525,6 +525,7 @@ def register_platform_routes(
                     "steps": steps,
                     "reviewCount": review_steps,
                     "isReview": bool(steps) and review_steps == len(steps),
+                    "level": topic.get("level") if topic.get("level") in (1, 2, 3) else None,
                 }
             )
         return out

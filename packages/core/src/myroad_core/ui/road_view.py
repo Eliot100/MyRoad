@@ -5,9 +5,8 @@ metrics from mockup 01. Pure functions, no store access: the route passes in the
 learner's real answer events and, when set, the learner's own weekly plan.
 Every number here comes from stored data. A missing plan stays empty.
 
-Levels: content has no per-road level field yet, so a road's שלבים are split into
-``LEVEL_COUNT`` consecutive groups of near-equal size, in content order (the first
-groups take the extra stage). Deterministic, and replaced once content ships levels.
+Levels: each stage carries its own ``level`` (1, 2 or 3) from content. The road screen
+groups by that field. It does not split stages into three near-equal groups.
 """
 from __future__ import annotations
 
@@ -39,20 +38,6 @@ def is_public_catalog(path_id: str, subject: str | None = None) -> bool:
     if "_bagrut5" not in str(path_id or ""):
         return False
     return subject in PUBLIC_CATALOG_SUBJECTS
-
-
-def split_levels(n: int, count: int = LEVEL_COUNT) -> list[range]:
-    """Consecutive near-equal groups of stage indexes; never an empty level."""
-    count = max(1, min(count, n))
-    if n <= 0:
-        return []
-    base, extra = divmod(n, count)
-    out, start = [], 0
-    for i in range(count):
-        size = base + (1 if i < extra else 0)
-        out.append(range(start, start + size))
-        start += size
-    return out
 
 
 def first_try(events: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -241,15 +226,24 @@ def build_road(
             "currentStep": (steps.index(cur_step) + 1) if cur_step else None,
             "currentTitle": cur_step.get("title") if cur_step else None,
             "isReview": bool(tp.get("isReview")),
+            "level": tp.get("level") if tp.get("level") in (1, 2, 3) else None,
         })
+    groups: dict[int | None, list] = {}
+    order: list[int | None] = []
+    for s in stages:
+        lv = s.get("level")
+        if lv not in groups:
+            groups[lv] = []
+            order.append(lv)
+        groups[lv].append(s)
+    order.sort(key=lambda lv: (lv is None, lv or 0))
     levels = []
-    for li, rng in enumerate(split_levels(len(stages))):
-        group = [stages[k] for k in rng]
+    for lv in order:
+        group = groups[lv]
         # Two-column grid as in mockup 12: the current stage takes a full row, and a card left
         # alone in its row (before a full-row card or at the end) widens instead of leaving a hole.
         col, prev = 0, None
         for s in group:
-            s["level"] = li + 1
             s["wide"] = s["state"] == "cur"
             if s["wide"]:
                 if col and prev:
@@ -263,17 +257,19 @@ def build_road(
         lt = sum(s["total"] for s in group)
         ld = sum(s["done"] for s in group)
         state = "done" if lt and ld >= lt else ("lock" if all(s["state"] == "lock" for s in group) else "active")
-        levels.append({"n": li + 1, "stages": group, "done": ld, "total": lt,
+        levels.append({"n": lv, "stages": group, "done": ld, "total": lt,
                        "pct": int(round(100 * ld / lt)) if lt else 0, "state": state,
                        "first": group[0]["n"], "last": group[-1]["n"]})
     recent = answers[-RECENT_ANSWERS:]
     cur = next((s for s in stages if s["state"] == "cur"), None)
-    cur_level = cur["level"] if cur else next((lv["n"] for lv in levels if lv["state"] != "done"), len(levels))
+    numbered = [lv["n"] for lv in levels if lv["n"]]
+    level_count = max(numbered) if numbered else len(levels)
+    cur_level = cur["level"] if cur and cur.get("level") else next((lv["n"] for lv in levels if lv["state"] != "done" and lv["n"]), level_count)
     plan = plan or {}
     return {
         "stages": stages,
         "levels": levels,
-        "levelCount": len(levels),
+        "levelCount": level_count,
         "currentLevel": cur_level,
         "current": cur,
         "done": len(mastered),
@@ -304,6 +300,6 @@ def trend_svg_points(points: list[dict[str, Any]], width: int = 400, height: int
 
 
 __all__ = [
-    "uses_road_view", "is_public_catalog", "split_levels", "first_try", "trend",
+    "uses_road_view", "is_public_catalog", "first_try", "trend",
     "build_road", "trend_svg_points", "weekly_progress", "LEVEL_COUNT", "PUBLIC_CATALOG_SUBJECTS",
 ]

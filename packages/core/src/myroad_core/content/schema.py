@@ -198,6 +198,15 @@ class ContentNode(BaseModel):
     # (interleaving), listed in review_topic_ids; they must be topics that come earlier in the path.
     kind: StepKind | None = None
     review_topic_ids: list[str] | None = None
+    # Teaching tile inside a stage. Order is fixed: explanation, worked example,
+    # guided practice, independent practice, quick check. Absent on placements and on celebrate.
+    tile_role: Literal[
+        "explanation",
+        "worked_example",
+        "guided_practice",
+        "independent_practice",
+        "quick_check",
+    ] | None = None
     # Optional: this step is a variant of the base step with this id (same path). The app shows
     # one step per base: the variant whose variant_when matches the learner settings, else the base.
     variant_of: str | None = None
@@ -258,6 +267,8 @@ class ContentTopic(BaseModel):
     title_ar: str | None = None
     emoji: str | None = None
     node_ids: list[str] = Field(min_length=1)
+    # 1, 2 or 3 on a 5-unit teaching road. Absent on placements and on paths that are not bagrut5.
+    level: int | None = Field(default=None, ge=1, le=3)
 
     @model_validator(mode="before")
     @classmethod
@@ -521,6 +532,55 @@ def check_prerequisites(paths: list[ContentPath]) -> list[str]:
     for pid in by_id:
         visit(pid, [])
     return problems
+
+
+TILE_ROLES: tuple[str, ...] = (
+    "explanation",
+    "worked_example",
+    "guided_practice",
+    "independent_practice",
+    "quick_check",
+)
+
+
+def validate_stage_levels(path: ContentPath) -> list[str]:
+    """5-unit teaching roads must carry levels 1, 2 and 3 and keep tile roles in order.
+
+    Placements are not teaching roads. Paths that are not ``*_bagrut5`` are unchanged.
+    A celebrate step is an ending marker, not one of the five tiles, so it is skipped.
+    A stage may omit a role. It may not invent one, and it may not put a later role
+    before an earlier one. Order is the order the learner meets the tiles (``nodes``).
+    """
+    pid = path.id
+    if "_bagrut5_" not in pid or "placement" in pid:
+        return []
+    errors: list[str] = []
+    topics = list(path.topics or [])
+    if not topics:
+        return [f"{pid}: teaching road has no stages"]
+    levels = [t.level for t in topics]
+    if any(lv not in (1, 2, 3) for lv in levels):
+        errors.append(f"{pid}: every stage needs level 1, 2 or 3")
+    elif set(levels) != {1, 2, 3}:
+        errors.append(f"{pid}: road must include levels 1, 2 and 3 (has {sorted(set(levels))})")
+    pos = {n.id: i for i, n in enumerate(path.nodes) if n.id}
+    by_id = {n.id: n for n in path.nodes if n.id}
+    rank = {role: i for i, role in enumerate(TILE_ROLES)}
+    for topic in topics:
+        roles: list[str] = []
+        for nid in sorted(topic.node_ids, key=lambda i: pos.get(i, 10**9)):
+            node = by_id.get(nid)
+            if node is None or node.type == "celebrate":
+                continue
+            role = node.tile_role
+            if role not in rank:
+                errors.append(f"{pid}: stage {topic.id} tile {nid} needs a tile_role")
+                continue
+            roles.append(role)
+        ranks = [rank[r] for r in roles]
+        if ranks != sorted(ranks):
+            errors.append(f"{pid}: stage {topic.id} tiles are out of order: {roles}")
+    return errors
 
 
 def infer_topics(path: ContentPath) -> list[ContentTopic]:

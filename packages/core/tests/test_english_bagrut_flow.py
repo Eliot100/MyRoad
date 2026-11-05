@@ -91,7 +91,9 @@ def test_bagrut_map_is_one_tile_per_row_not_stations(bagrut_app) -> None:
     assert 'data-map="road"' in html
     assert "station-list" not in html
     assert "topic-diagram" not in html
-    assert "רמה 1 מתוך" in html
+    # This fixture has no level field, so the screen does not invent "level 1 of 3".
+    assert 'data-level="x"' in html
+    assert "רמה 1 מתוך" not in html
     assert html.count("data-block-id=") >= 1
     assert "עוד אין נתונים" in html
     assert "חזרה לשרשרת" in html

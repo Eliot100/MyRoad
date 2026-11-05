@@ -97,7 +97,7 @@
       {% for s in answered %}
         <li class="rd-row"><span class="rd-rn" dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</span>
           <span class="rd-rbar" aria-hidden="true"><b style="width: {{ s.accuracy }}%"></b></span>
-          <span class="rd-pill">{{ t('rd_level_short') }} <bdi>{{ s.level }}/{{ road.levelCount }}</bdi></span>
+          {% if s.level %}<span class="rd-pill">{{ t('rd_level_short') }} <bdi>{{ s.level }}/{{ road.levelCount }}</bdi></span>{% endif %}
           <span class="rd-rv"><bdi>{{ s.accuracy }}%</bdi></span></li>
       {% endfor %}
       </ul>
@@ -124,10 +124,10 @@
 
     <section class="rd-road-list" data-map="road" aria-label="{{ t('rd_map_label') }}">
       {% for lv in road.levels %}
-      <section class="rd-level" data-level="{{ lv.n }}" aria-labelledby="rd-level-{{ lv.n }}">
+      <section class="rd-level" data-level="{{ lv.n if lv.n is not none else 'x' }}" aria-labelledby="rd-level-{{ lv.n if lv.n is not none else 'x' }}">
         <div class="rd-lh">
-          <span class="rd-lic">{{ icon('l' ~ lv.n if lv.n < 3 else 'l3') }}</span>
-          <h2 id="rd-level-{{ lv.n }}">{{ t('rd_level', n=lv.n, x=road.levelCount) }}<span>{{ t('rd_level_stages', a=lv.first, b=lv.last) }}</span></h2>
+          <span class="rd-lic">{{ icon('l' ~ lv.n if lv.n in (1, 2) else 'l3') }}</span>
+          <h2 id="rd-level-{{ lv.n or 'x' }}">{% if lv.n %}{{ t('rd_level', n=lv.n, x=road.levelCount) }}{% else %}{{ t('rd_stages') }}{% endif %}<span>{{ t('rd_level_stages', a=lv.first, b=lv.last) }}</span></h2>
           <span class="rd-line" aria-hidden="true"></span>
           {% if lv.state == 'done' %}<span class="rd-pill">{{ t('rd_level_done') }}</span>
           {% elif lv.state == 'lock' %}<span class="rd-pill o">{{ t('rd_level_lock') }}</span>

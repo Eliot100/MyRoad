@@ -11,7 +11,7 @@ from myroad_core.content.loader import (
     load_content_paths,
     seed_content_paths,
 )
-from myroad_core.content.schema import ContentPath, infer_topics, validate_content_path
+from myroad_core.content.schema import ContentPath, infer_topics, validate_content_path, validate_stage_levels
 from myroad_core.models import PathStatus
 from myroad_core.store import PathStore
 
@@ -580,3 +580,11 @@ def test_allowed_origins_env_adds_the_public_origin(platform_client: TestClient,
     monkeypatch.setenv("MYROAD_ALLOWED_ORIGINS", "https://other.example, https://MyRoad.example/")
     assert platform_client.post("/locale", data={"locale": "en"}, headers=hdr,
                                 follow_redirects=False).status_code == 303
+
+
+def test_bagrut_teaching_roads_have_three_levels_and_ordered_tiles() -> None:
+    paths = [p for p in load_content_paths(default_content_dir()) if "_bagrut5_" in p.id and "placement" not in p.id]
+    assert len(paths) >= 9
+    for path in paths:
+        assert validate_stage_levels(path) == []
+        assert {t.level for t in path.topics} == {1, 2, 3}
