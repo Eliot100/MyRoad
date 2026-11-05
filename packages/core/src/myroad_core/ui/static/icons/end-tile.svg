@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <!-- Calm end-of-road mark: flag on a pin, premium not childish -->
+  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+  <path d="M10 16.5 V8.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M10 8.2 L16.2 10.1 L10 12.1 Z" fill="currentColor" opacity=".9"/>
+</svg>

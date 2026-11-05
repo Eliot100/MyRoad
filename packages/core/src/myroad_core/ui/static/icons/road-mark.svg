@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <!-- Perspective road mark from Library mockups 06/16: three converging dashed lines -->
+  <path d="M8 20 L11 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/>
+  <path d="M12 20 L12 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/>
+  <path d="M16 20 L13 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/>
+</svg>
