@@ -6,7 +6,7 @@
   <header class="top shell-top">
     <div class="brand">
       <a href="/" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('back_catalog') }}</a>
-      <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+      <a class="brand-name" href="/" aria-label="{{ product }}"><span class="brand-road" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 20 L11 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/><path d="M12 20 L12 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/><path d="M16 20 L13 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/></svg></span><strong>{{ product }}</strong></a>
     </div>
   </header>
   <main id="main" tabindex="-1">
@@ -17,7 +17,7 @@
     <ol class="series-chain">
       {% for road in roads %}
       <li class="series-road {{ road.state }}" data-path-id="{{ road.pathId }}" data-state="{{ road.state }}">
-        <span class="series-index" aria-hidden="true">{% if road.state == 'done' %}✓{% else %}{{ loop.index }}{% endif %}</span>
+        <span class="series-index{% if road.state in ('gap', 'open') %} road-mark-slot{% endif %}" aria-hidden="true">{% if road.state == 'done' %}<svg viewBox="0 0 24 24" fill="none" width="18" height="18"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.75"/><path d="M7.5 12.2 L10.4 15.1 L16.5 9" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>{% elif road.state in ('gap', 'open') %}<svg viewBox="0 0 24 24" fill="none"><path d="M8 20 L11 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/><path d="M12 20 L12 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/><path d="M16 20 L13 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 2.4"/></svg>{% else %}{{ loop.index }}{% endif %}</span>
         <div class="series-body">
           <h2 dir="auto"{{ road.titleLang|content_lang(locale) }}>{{ road.title }}</h2>
           {% if road.blurb %}<p dir="auto"{{ road.blurbLang|content_lang(locale) }}>{{ road.blurb }}</p>{% endif %}
