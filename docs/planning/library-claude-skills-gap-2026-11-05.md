@@ -28,3 +28,10 @@ Planning inventory only. Promoting any of these into `skills/` needs an explicit
 Eliot/frank decision (product vs agent hygiene). Do not treat Claude export text
 as MyRoad product glossary or UI rules — those stay in `docs/product/` and
 `docs/ui/lessons.md`.
+
+## Pass 3 addendum — `47-MEMORY.md`
+
+Library `47-MEMORY.md` is a GeoColl/Setup memory index that restates the same
+standing rules (verification, never-assume, root-cause, systematic debugging,
+ponytail, code quality, humanizer, Apple UI filtered for web). No new MyRoad
+product rule. Still not installed under `skills/` without an Eliot/frank call.
