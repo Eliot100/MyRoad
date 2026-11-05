@@ -58,6 +58,8 @@ from myroad_core.ui.guest_limit import GUEST_WINDOW_SECONDS, GuestLimiter
 from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
+from myroad_core.errors import NotFoundError
+from myroad_core.ui.metrics_view import build_metrics
 from myroad_core.ui.road_view import build_road, is_public_catalog, trend_svg_points, uses_road_view
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
 from myroad_core.ui.engagement_view import (
@@ -1879,6 +1881,33 @@ def register_platform_routes(
             "series.html",
             _shell_ctx(request, roads=roads, band=band, ceiling=ceiling),
         )
+
+    @app.get("/metrics/{path_id}", response_class=HTMLResponse)
+    def metrics_page(request: Request, path_id: str) -> HTMLResponse:
+        try:
+            store.get_path_latest_published(path_id) or store.get_path_latest(path_id)
+        except NotFoundError:
+            return HTMLResponse("not found", status_code=404)
+        locale = _locale(request)
+        sess = _play_session(request, path_id)
+        doc = _load_play_doc(sess)
+        blocks = doc.get("blocks") or []
+        topics = _topics_for_ui(doc, blocks, locale)
+        events: list[dict[str, Any]] = []
+        plan: dict[str, Any] = {}
+        if sess.get("userId"):
+            events = store.answer_events(sess["userId"], path_id)
+            plan = store.get_road_plan(sess["userId"])
+        ctx = _shell_ctx(
+            request,
+            doc=doc,
+            meta=_card_meta(doc, locale),
+            metrics=build_metrics(topics, events, plan),
+            sidebar=_sidebar_ctx(request, active_path=path_id),
+        )
+        response = templates.TemplateResponse(request, "metrics.html", ctx)
+        response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+        return response
 
     @app.get("/play/{path_id}", response_class=HTMLResponse)
     def play_path(

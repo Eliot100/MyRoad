@@ -590,5 +590,16 @@
   "rd_no_target": "لا يوجد هدف أسبوعي",
   "rd_drawer_stages": "الدقة حسب المرحلة",
   "rd_drawer_trend": "اتجاه الدقة",
-  "rd_drawer_close": "إغلاق"
+  "rd_drawer_close": "إغلاق",
+  "mx_title": "المؤشرات",
+  "mx_back": "العودة إلى الطريق",
+  "mx_weeks": "الأسابيع",
+  "mx_met": "تحقق الهدف",
+  "mx_missed": "لم يتحقق الهدف",
+  "mx_minutes": "{n} د",
+  "mx_levels": "الدقة حسب المستوى",
+  "mx_tiles": "الوقت للمربع",
+  "mx_n": "{n} إجابات",
+  "mx_seconds": "{n} ث",
+  "mx_time": "{m} د {s} ث"
 }

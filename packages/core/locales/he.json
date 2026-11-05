@@ -590,5 +590,16 @@
   "rd_no_target": "אין יעד שבועי",
   "rd_drawer_stages": "דיוק לפי שלב",
   "rd_drawer_trend": "מגמת דיוק",
-  "rd_drawer_close": "סגירה"
+  "rd_drawer_close": "סגירה",
+  "mx_title": "מדדים",
+  "mx_back": "חזרה לדרך",
+  "mx_weeks": "שבועות",
+  "mx_met": "היעד הושג",
+  "mx_missed": "היעד לא הושג",
+  "mx_minutes": "{n} דק׳",
+  "mx_levels": "דיוק לפי רמה",
+  "mx_tiles": "זמן למשבצת",
+  "mx_n": "{n} תשובות",
+  "mx_seconds": "{n} שנ׳",
+  "mx_time": "{m} דק׳ {s} שנ׳"
 }

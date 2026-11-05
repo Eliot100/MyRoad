@@ -1,0 +1,103 @@
+{% extends "_base.html" %}
+{#- Separate metrics. Weeks, trend, stage and level accuracy, time per tile.
+    Empty when the learner has no recorded answers. No invented goal. -#}
+{% block title %}{{ product }} — {{ t('mx_title') }}{% endblock %}
+{% block head_extra %}
+  <link rel="stylesheet" href="/static/metrics.css" />
+{% endblock %}
+{% block body_attrs %} class="platform metrics"{% endblock %}
+{% block body %}
+<main id="main" class="mx">
+  <a class="mx-back" href="/play/{{ doc.pathId }}">{{ t('mx_back') }}</a>
+  <h1>{{ t('mx_title') }}</h1>
+  <p class="mx-sub" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</p>
+
+  <section aria-labelledby="mx-weeks">
+    <h2 id="mx-weeks">{{ t('mx_weeks') }}</h2>
+    {% if not metrics.weeks %}
+    <p class="mx-empty">{{ t('rd_no_data') }}</p>
+    {% else %}
+    <ul class="mx-list">
+      {% for w in metrics.weeks %}
+      <li data-week="{{ w.start }}">
+        <bdi dir="ltr">{{ w.start }} - {{ w.end }}</bdi>
+        <span>{{ t('rd_week_tiles', tiles=w.tiles) }}</span>
+        {% if w.minutes is not none %}<span>{{ t('mx_minutes', n=w.minutes) }}</span>
+        {% else %}<span class="mx-k">{{ t('rd_no_data') }}</span>{% endif %}
+        {% if w.met is true %}<span data-met="yes">{{ t('mx_met') }}</span>
+        {% elif w.met is false %}<span data-met="no">{{ t('mx_missed') }}</span>
+        {% elif metrics.hasTarget %}<span class="mx-k" data-met="unknown">{{ t('rd_no_data') }}</span>
+        {% else %}<span class="mx-k" data-met="none">{{ t('rd_no_target') }}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="mx-trend">
+    <h2 id="mx-trend">{{ t('rd_drawer_trend') }}</h2>
+    {% if metrics.trend|length > 1 %}
+    <ul class="mx-list">
+      {% for point in metrics.trend %}
+      <li><bdi dir="ltr">{{ point.day }}</bdi> <bdi>{{ point.pct }}%</bdi></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="mx-empty">{{ t('rd_trend_empty') }}</p>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="mx-stages">
+    <h2 id="mx-stages">{{ t('rd_drawer_stages') }}</h2>
+    {% if not metrics.stages %}
+    <p class="mx-empty">{{ t('rd_no_data') }}</p>
+    {% else %}
+    <ul class="mx-list">
+      {% for s in metrics.stages %}
+      <li data-stage="{{ s.id }}">
+        <span dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</span>
+        {% if s.level %}<span class="mx-k">{{ t('rd_level_short') }} <bdi>{{ s.level }}</bdi></span>{% endif %}
+        {% if s.accuracy is not none %}<bdi>{{ s.accuracy }}%</bdi><span class="mx-k">{{ t('mx_n', n=s.answered) }}</span>
+        {% else %}<span class="mx-k">{{ t('rd_no_data') }}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="mx-levels">
+    <h2 id="mx-levels">{{ t('mx_levels') }}</h2>
+    {% if not metrics.levels %}
+    <p class="mx-empty">{{ t('rd_no_data') }}</p>
+    {% else %}
+    <ul class="mx-list">
+      {% for lv in metrics.levels %}
+      <li data-level="{{ lv.level if lv.level is not none else 'x' }}">
+        {% if lv.level %}{{ t('rd_level', n=lv.level, x=metrics.levelCount) }}{% else %}{{ t('rd_stages') }}{% endif %}
+        {% if lv.accuracy is not none %}<bdi>{{ lv.accuracy }}%</bdi>
+        {% else %}<span class="mx-k">{{ t('rd_no_data') }}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="mx-tiles">
+    <h2 id="mx-tiles">{{ t('mx_tiles') }}</h2>
+    {% if not metrics.tiles %}
+    <p class="mx-empty">{{ t('rd_no_data') }}</p>
+    {% else %}
+    <ul class="mx-list">
+      {% for tile in metrics.tiles %}
+      <li data-tile="{{ tile.blockId }}">
+        <span dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>
+        {% if tile.minutes %}<bdi>{{ t('mx_time', m=tile.minutes, s=tile.seconds) }}</bdi>
+        {% else %}<bdi>{{ t('mx_seconds', n=tile.seconds) }}</bdi>{% endif %}
+        <span class="mx-k">{{ t('mx_n', n=tile.samples) }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

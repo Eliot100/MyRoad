@@ -590,5 +590,16 @@
   "rd_no_target": "No weekly target",
   "rd_drawer_stages": "Accuracy by stage",
   "rd_drawer_trend": "Accuracy trend",
-  "rd_drawer_close": "Close"
+  "rd_drawer_close": "Close",
+  "mx_title": "Metrics",
+  "mx_back": "Back to the road",
+  "mx_weeks": "Weeks",
+  "mx_met": "Goal met",
+  "mx_missed": "Goal missed",
+  "mx_minutes": "{n} min",
+  "mx_levels": "Accuracy by level",
+  "mx_tiles": "Time per tile",
+  "mx_n": "{n} answers",
+  "mx_seconds": "{n} s",
+  "mx_time": "{m} min {s} s"
 }

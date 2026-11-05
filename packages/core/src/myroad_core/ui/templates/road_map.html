@@ -34,6 +34,7 @@
     <section class="rd-head">
       <h1 dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</h1>
       <p class="rd-sub">{{ meta.subjectLabel or subject_label_fn(meta.subject) }} · {{ t('rd_sub', s=road.stages|length, n=road.total) }}</p>
+      <p class="rd-sub"><a class="text-link" href="/metrics/{{ doc.pathId }}">{{ t('metrics_link') }}</a></p>
     </section>
 
     {% if read_only %}

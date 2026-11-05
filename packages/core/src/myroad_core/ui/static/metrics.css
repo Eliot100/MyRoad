@@ -1,0 +1,18 @@
+/* Metrics screen. Same quiet type as the road. No score decoration. */
+.mx { max-width: 40rem; margin-inline: auto; padding: 1.25rem 1.25rem 3rem; }
+.mx-back { color: var(--ink-2); text-decoration: none; }
+.mx h1 { font-size: 1.6rem; margin: .6rem 0 0; font-weight: 620; }
+.mx-sub { color: var(--ink-2); margin: .2rem 0 1.4rem; }
+.mx section { margin: 0 0 1.6rem; }
+.mx h2 { font-size: 1rem; font-weight: 640; margin: 0 0 .6rem; }
+.mx-empty { color: var(--ink-2); margin: 0; }
+.mx-list { list-style: none; margin: 0; padding: 0; }
+.mx-list li {
+  display: flex; flex-wrap: wrap; gap: .35rem 1rem; align-items: baseline;
+  padding: .55rem 0; border-block-end: 1px solid var(--line, rgba(0,0,0,.08));
+}
+.mx-k { color: var(--ink-2); }
+.mx bdi { font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) {
+  .mx { padding-inline: 1rem; }
+}
