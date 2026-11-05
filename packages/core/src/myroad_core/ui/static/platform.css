@@ -1140,6 +1140,22 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
   padding: .2rem .65rem;
   white-space: nowrap;
 }
+/* Stage progress under head — Library mockups 07/08/10/11/16 */
+.linear-stage-meter {
+  width: 100%;
+  block-size: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 12%, var(--track));
+  overflow: hidden;
+  margin-block: 0 .15rem;
+}
+.linear-stage-meter-fill {
+  display: block;
+  block-size: 100%;
+  inline-size: var(--fill, 0%);
+  border-radius: inherit;
+  background: var(--accent);
+}
 .linear-track {
   position: relative;
   display: flex;
@@ -1147,21 +1163,48 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
   width: 100%;
   padding-block: .15rem .35rem;
 }
+/* Two-lane dashed road rail — Library mockups 06/07/17 */
 .linear-rail {
   position: absolute;
   inset-block: 0;
-  inline-size: 1.1rem;
+  inline-size: 1.35rem;
   inset-inline-start: 50%;
   translate: -50% 0;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 78%, var(--track));
-  opacity: .88;
+  background: color-mix(in srgb, var(--ink) 72%, var(--track));
+  border: 1.5px solid color-mix(in srgb, var(--ink) 35%, var(--line));
+  opacity: .9;
   z-index: 0;
+  box-sizing: border-box;
+}
+.linear-rail::before {
+  content: "";
+  position: absolute;
+  inset-block: 6%;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  inline-size: 2px;
+  border-radius: 1px;
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--surface) 78%, transparent) 0 5px,
+    transparent 5px 11px
+  );
+  opacity: .85;
 }
 [data-theme="dark"] .linear-rail,
 :root[data-theme="dark"] .linear-rail {
-  background: color-mix(in srgb, var(--ink) 55%, var(--track));
-  opacity: .95;
+  background: color-mix(in srgb, var(--ink) 48%, var(--track));
+  border-color: color-mix(in srgb, var(--ink) 28%, var(--line));
+  opacity: .96;
+}
+[data-theme="dark"] .linear-rail::before,
+:root[data-theme="dark"] .linear-rail::before {
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--accent) 35%, var(--surface)) 0 5px,
+    transparent 5px 11px
+  );
 }
 .linear-track-tiles {
   position: relative;
@@ -1207,7 +1250,12 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
   box-shadow: var(--shadow);
 }
 button.linear-tile { cursor: pointer; }
-.linear-tile.current { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.linear-tile.current {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+              0 0 18px color-mix(in srgb, var(--accent) 28%, transparent);
+}
 .linear-tile.done { border-style: solid; }
 .linear-tile.ahead { opacity: .55; box-shadow: none; }
 .linear-tile.review { border-style: dashed; }
@@ -1218,7 +1266,43 @@ button.linear-tile { cursor: pointer; }
   display: grid;
   place-items: center;
   background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  color: var(--accent);
   flex: none;
+}
+.linear-mark svg { width: 1.05rem; height: 1.05rem; display: block; }
+.linear-tile.ahead .linear-mark { color: var(--ink-2); background: color-mix(in srgb, var(--ink) 8%, var(--surface)); }
+.linear-tile.done .linear-mark { color: var(--accent); }
+.linear-tile.current .linear-mark { color: var(--accent); background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+.linear-end {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-block: .35rem .15rem;
+  color: color-mix(in srgb, var(--accent) 70%, var(--ink-2));
+}
+.linear-end-mark {
+  width: 2rem; height: 2rem;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+}
+.linear-end-mark svg { width: 1.15rem; height: 1.15rem; display: block; }
+.brand-name { display: inline-flex; align-items: center; gap: .4rem; }
+.brand-road {
+  display: inline-grid; place-items: center;
+  width: 1.35rem; height: 1.35rem;
+  color: var(--accent);
+  flex: none;
+}
+.brand-road svg { width: 100%; height: 100%; display: block; }
+.series-index.road-mark-slot {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+.series-index.road-mark-slot svg { width: 1.05rem; height: 1.05rem; display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .linear-tile.current { transition: box-shadow 200ms ease-out, border-color 200ms ease-out, background-color 200ms ease-out; }
 }
 .linear-copy { display: flex; flex-direction: column; min-width: 0; }
 .linear-title { font-weight: 650; }
