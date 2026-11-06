@@ -2006,7 +2006,7 @@ html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
 
 /* Issue 209: privacy notice + terms. Footer keeps the platform line; the legal links sit under it. */
 .legal-links { display: flex; justify-content: center; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin-block-start: var(--space-1); font-size: .85rem; }
-.legal-links a, .legal-list a { display: inline-flex; align-items: center; min-height: 24px; padding-block: .2rem; text-decoration: underline; text-underline-offset: .2em; }
+.legal-links a, .legal-list a { display: inline-flex; align-items: center; min-block-size: 44px; padding-block: .2rem; text-decoration: underline; text-underline-offset: .2em; }
 .legal-links a[aria-current="page"] { color: var(--ink); text-decoration: none; font-weight: 600; }
 .legal-card { width: min(100%, 40rem); margin-inline: auto; line-height: 1.65; }
 .legal-card h1 { letter-spacing: -0.02em; margin-block-end: .25rem; }
