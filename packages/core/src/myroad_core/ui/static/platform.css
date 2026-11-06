@@ -2150,3 +2150,36 @@ html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
   .chip, .qtabs > a { min-block-size: 44px; min-inline-size: 44px; justify-content: center; }
   .qtabs > a { display: inline-flex; align-items: center; }
 }
+
+/* Practice modes: a quiet row, not a second design. */
+.mode-switch { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.mode-btn, a.mode-btn {
+  min-block-size: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.mode-btn[aria-pressed="true"] { border-color: var(--ink); }
+.mode-panel { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 16px; }
+.mode-label { font-size: 0.95rem; }
+.mode-input {
+  min-block-size: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+.round-meta { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); }
+.round-result { font-size: 1.25rem; }
+.level-misses { padding-inline-start: 1.2rem; }
+.empty-state { color: var(--muted); }
+html[data-text-only="1"] #btn-speak,
+html[data-text-only="1"] .listen-panel { display: none; }
+

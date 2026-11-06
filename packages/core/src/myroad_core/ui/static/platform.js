@@ -48,7 +48,7 @@
       a.onerror = function () { onFail(); };
     } catch (err) { onFail(); }
   }
-  function speakTts(text, lang) {
+  function speakTts(text, lang, rate) {
     var synth = window.speechSynthesis;
     if (!synth || typeof window.SpeechSynthesisUtterance !== "function") { speakNote("unsupported"); return; }
     withVoices(function (voices) {
@@ -58,16 +58,18 @@
       var u = new SpeechSynthesisUtterance(text);
       u.lang = lang;
       u.voice = voice;
+      u.rate = rate || 1;
       synth.speak(u);
     });
   }
-  function speak(text, audioUrl) {
+  function speak(text, audioUrl, rate) {
+    if (document.documentElement.getAttribute("data-text-only") === "1") return;
     speakNote("");
     text = (text || "").trim();
     var lang = speakLang(text);
-    if (audioUrl) { playAudio(audioUrl, function () { if (text) speakTts(text, lang); else speakNote("novoice"); }); return; }
+    if (audioUrl && (rate || 1) === 1) { playAudio(audioUrl, function () { if (text) speakTts(text, lang, rate); else speakNote("novoice"); }); return; }
     if (!text) return;
-    speakTts(text, lang);
+    speakTts(text, lang, rate);
   }
   window.MyRoadSpeak = { lang: speakLang, pickVoice: pickVoice };
 
@@ -87,6 +89,101 @@
   }
 
   function init(root) {
+    var textOn = false;
+    try { textOn = localStorage.getItem("myroad.textOnly") === "1"; } catch (err) {}
+    function applyTextOnly(on) {
+      document.documentElement.setAttribute("data-text-only", on ? "1" : "0");
+      var speakBtn = root.querySelector("#btn-speak");
+      var note = root.querySelector("#text-only-note");
+      var toggle = root.querySelector("#btn-text-only");
+      if (speakBtn) speakBtn.hidden = !!on;
+      if (note) note.hidden = !on;
+      if (toggle) toggle.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    applyTextOnly(textOn);
+    var textBtn = root.querySelector("#btn-text-only");
+    if (textBtn && bindOnce(textBtn)) {
+      textBtn.addEventListener("click", function () {
+        var on = textBtn.getAttribute("aria-pressed") !== "true";
+        try { localStorage.setItem("myroad.textOnly", on ? "1" : "0"); } catch (err) {}
+        applyTextOnly(on);
+      });
+    }
+    function showMode(name) {
+      root.querySelectorAll("[data-mode]").forEach(function (btn) {
+        if (btn.tagName === "A") return;
+        btn.setAttribute("aria-pressed", btn.getAttribute("data-mode") === name ? "true" : "false");
+      });
+      var choices = root.querySelector("form.choices");
+      if (choices) choices.hidden = name === "type" || name === "voice" || name === "listen";
+      root.querySelectorAll("[data-panel]").forEach(function (panel) {
+        panel.hidden = panel.getAttribute("data-panel") !== name;
+      });
+      if (name === "listen") {
+        var source = root.querySelector("#speak-source");
+        if (source) speak(source.getAttribute("data-speak") || source.textContent || "", source.getAttribute("data-speak-audio") || "", 1);
+      }
+    }
+    root.querySelectorAll("button[data-mode]").forEach(function (btn) {
+      if (!bindOnce(btn)) return;
+      btn.addEventListener("click", function () { showMode(btn.getAttribute("data-mode")); });
+    });
+    root.querySelectorAll("#btn-listen, #btn-listen-slow").forEach(function (btn) {
+      if (!bindOnce(btn)) return;
+      btn.addEventListener("click", function () {
+        var source = root.querySelector("#speak-source");
+        if (!source) return;
+        var rate = parseFloat(btn.getAttribute("data-rate") || "1");
+        speak(source.getAttribute("data-speak") || source.textContent || "", source.getAttribute("data-speak-audio") || "", rate);
+      });
+    });
+    var voiceBtn = root.querySelector("#btn-voice");
+    if (voiceBtn && bindOnce(voiceBtn)) {
+      var Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var rec = null;
+      var listening = false;
+      voiceBtn.addEventListener("click", function () {
+        var live = root.querySelector("#voice-live");
+        var box = root.querySelector("#voice-transcript");
+        var panel = voiceBtn.closest("[data-voice-lang]");
+        var lang = (panel && panel.getAttribute("data-voice-lang")) || "en-US";
+        if (!Rec) {
+          if (live) live.textContent = voiceBtn.getAttribute("data-unsupported") || "";
+          if (box) box.focus();
+          return;
+        }
+        if (!listening) {
+          rec = new Rec();
+          rec.lang = lang;
+          rec.interimResults = true;
+          rec.continuous = false;
+          rec.onresult = function (ev) {
+            var text = "";
+            for (var i = 0; i < ev.results.length; i++) text += ev.results[i][0].transcript;
+            if (box) box.value = text.trim();
+            if (live) live.textContent = text.trim();
+          };
+          rec.onend = function () {
+            listening = false;
+            voiceBtn.textContent = voiceBtn.getAttribute("data-start") || voiceBtn.textContent;
+          };
+          rec.onerror = function () {
+            listening = false;
+            if (box) box.focus();
+          };
+          try {
+            rec.start();
+            listening = true;
+            voiceBtn.textContent = voiceBtn.getAttribute("data-stop") || voiceBtn.textContent;
+          } catch (err) {
+            if (box) box.focus();
+          }
+        } else if (rec) {
+          rec.stop();
+        }
+      });
+    }
+
     // Optional recording (MediaRecorder / SpeechRecognition) — graceful fallback
     var btnRec = root.querySelector("#btn-record");
     var recStatus = root.querySelector("#record-status");

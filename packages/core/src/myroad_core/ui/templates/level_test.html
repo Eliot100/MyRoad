@@ -1,0 +1,39 @@
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ t('level_title', n=level) }}{% endblock %}
+{% block body_attrs %} class="platform play"{% endblock %}
+{% block body %}
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
+  <header class="top shell-top">
+    <div class="brand">
+      <a href="/play/{{ path_id }}?view=map" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('level_back') }}</a>
+      <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="card step-card" aria-labelledby="level-title">
+      <h1 id="level-title">{{ t('level_title', n=level) }}</h1>
+      <p class="lede">{{ t('level_lead') }}</p>
+      {% if view.empty %}
+      <p class="empty-state">{{ t('round_empty') }}</p>
+      {% elif view.done %}
+      <p class="round-result">{{ t('level_result', hits=view.hits, total=view.total) }}</p>
+      {% if view.misses %}
+      <ul class="level-misses">
+        {% for name in view.misses %}<li>{{ t('level_miss', name=name) }}</li>{% endfor %}
+      </ul>
+      {% else %}
+      <p>{{ t('level_clear') }}</p>
+      {% endif %}
+      <a class="primary big" href="/play/{{ path_id }}?view=learn">{{ t('level_back') }}</a>
+      {% else %}
+      <p class="round-meta"><span>{{ view.stage }}</span> <span>{{ view.index + 1 }} / {{ view.total }}</span></p>
+      <p class="body-text" dir="auto">{{ view.prompt }}</p>
+      <form method="post" action="/play/{{ path_id }}/level/{{ level }}" class="choices">
+        {% for label in view.choices %}
+        <button type="submit" class="choice-tile" name="choice" value="{{ label }}"><span class="choice-label" dir="auto">{{ label }}</span></button>
+        {% endfor %}
+      </form>
+      {% endif %}
+    </section>
+  </main>
+{% endblock %}

@@ -38,6 +38,19 @@ from myroad_core.content.english_bagrut import (
 )
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
+from myroad_core.ui.practice_modes import (
+    build_level_test,
+    build_round,
+    check_transcript,
+    check_typed,
+    level_view,
+    mark_level,
+    mark_round,
+    new_level_state,
+    new_round_state,
+    round_view,
+    step_modes,
+)
 from myroad_core.content.schema import GROUPS, SUBJECTS
 from myroad_core.ui.i18n import (
     COOKIE_LOCALE,
@@ -2124,6 +2137,7 @@ def register_platform_routes(
             swap_focus=swap_focus if hx else None,
             status_oob=hx,
             engagement=_engagement(sess, doc, locale),
+            modes=step_modes(doc, block, kids),
         )
         if answer is None and block and not locked_by and sess.get("userId"):
             _step_event(sess, block, "step_view")
@@ -2285,6 +2299,9 @@ def register_platform_routes(
         request: Request,
         choice: str = Form(""),
         sequence: str = Form(""),
+        typed: str = Form(""),
+        transcript: str = Form(""),
+        mode: str = Form(""),
     ) -> Response:
         locale = _locale(request)
         hx = _is_htmx(request)
@@ -2306,7 +2323,16 @@ def register_platform_routes(
         node_type = kids.get("type") or (block.get("content") or {}).get("nodeType")
         ok = False
         scored = False
-        if node_type in ("practice", "check") and kids.get("choices"):
+        mode = (mode or "").strip()
+        if mode == "type":
+            scored = True
+            ok = check_typed(kids, typed)
+            choice = ""
+        elif mode == "voice":
+            scored = True
+            ok = check_transcript(kids, transcript)
+            choice = ""
+        elif node_type in ("practice", "check") and kids.get("choices"):
             scored = True
             correct = kids.get("correct")
             if isinstance(correct, list):
@@ -2385,6 +2411,88 @@ def register_platform_routes(
         resp = _play_answer_response(request, sess, doc, blocks, path_id, hx, ok, feedback, answered_idx, locale)
         if offer:
             resp.headers["X-Offer-Registration"] = "true"
+        return resp
+
+    def _stage_title(path_id: str, topic_id: str) -> str:
+        from myroad_core.content.loader import load_content_paths
+
+        for path in load_content_paths():
+            if path.id != path_id:
+                continue
+            for topic in path.topics or []:
+                if topic.id == topic_id:
+                    return (topic.titles or {}).get("he") or topic.title_he or topic_id
+        return topic_id
+
+    @app.get("/play/{path_id}/round/{topic_id}")
+    def play_round(path_id: str, topic_id: str, request: Request) -> Response:
+        sess = _play_session(request, path_id)
+        rounds = sess.setdefault("rounds", {})
+        state = rounds.get(topic_id)
+        if state is None:
+            state = new_round_state(build_round(path_id, topic_id))
+            rounds[topic_id] = state
+        view = round_view(state)
+        if view["done"]:
+            state["done"] = True
+        resp = templates.TemplateResponse(
+            request,
+            "round.html",
+            _shell_ctx(
+                request,
+                path_id=path_id,
+                topic_id=topic_id,
+                stage_title=_stage_title(path_id, topic_id),
+                view=view,
+                last_ok=state.get("last_ok"),
+            ),
+        )
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+        return resp
+
+    @app.post("/play/{path_id}/round/{topic_id}")
+    def play_round_answer(path_id: str, topic_id: str, request: Request, choice: str = Form("")) -> Response:
+        sess = _play_session(request, path_id)
+        rounds = sess.setdefault("rounds", {})
+        state = rounds.get(topic_id) or new_round_state(build_round(path_id, topic_id))
+        rounds[topic_id] = state
+        view = round_view(state)
+        if not view["done"]:
+            state["last_ok"] = mark_round(state, choice)
+            if round_view(state)["done"]:
+                state["done"] = True
+        resp = RedirectResponse(f"/play/{path_id}/round/{topic_id}", status_code=303)
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+        return resp
+
+    @app.get("/play/{path_id}/level/{level}")
+    def play_level(path_id: str, level: int, request: Request) -> Response:
+        if level not in (1, 2, 3):
+            return RedirectResponse(f"/play/{path_id}?view=map", status_code=303)
+        sess = _play_session(request, path_id)
+        tests = sess.setdefault("level_tests", {})
+        state = tests.get(level)
+        if state is None:
+            state = new_level_state(build_level_test(path_id, level))
+            tests[level] = state
+        resp = templates.TemplateResponse(
+            request,
+            "level_test.html",
+            _shell_ctx(request, path_id=path_id, level=level, view=level_view(state)),
+        )
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+        return resp
+
+    @app.post("/play/{path_id}/level/{level}")
+    def play_level_answer(path_id: str, level: int, request: Request, choice: str = Form("")) -> Response:
+        sess = _play_session(request, path_id)
+        tests = sess.setdefault("level_tests", {})
+        state = tests.get(level) or new_level_state(build_level_test(path_id, level))
+        tests[level] = state
+        if not level_view(state)["done"]:
+            mark_level(state, choice)
+        resp = RedirectResponse(f"/play/{path_id}/level/{level}", status_code=303)
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
         return resp
 
     @app.post("/play/{path_id}/seen_solution")

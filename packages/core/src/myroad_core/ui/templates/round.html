@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+{% block title %}{{ product }} — {{ t('round_title') }}{% endblock %}
+{% block body_attrs %} class="platform play"{% endblock %}
+{% block body %}
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
+  <header class="top shell-top">
+    <div class="brand">
+      <a href="/play/{{ path_id }}?view=learn" class="back"><span class="back-arrow" aria-hidden="true">→</span> {{ t('round_back') }}</a>
+      <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <section class="card step-card" aria-labelledby="round-title">
+      <p class="kicker">{{ stage_title }}</p>
+      <h1 id="round-title">{{ t('round_title') }}</h1>
+      <p class="lede">{{ t('round_lead') }}</p>
+      {% if view.empty %}
+      <p class="empty-state">{{ t('round_empty') }}</p>
+      {% elif view.done %}
+      <p class="round-result">{{ t('round_result', hits=view.hits, total=view.total) }}</p>
+      {% if view.timed_out %}<p>{{ t('round_done_time') }}</p>{% endif %}
+      <p>{{ t('round_streak', n=view.best) }}</p>
+      <a class="primary big" href="/play/{{ path_id }}?view=learn">{{ t('round_back') }}</a>
+      {% else %}
+      <p class="round-meta"><span>{{ t('round_left', n=view.left_min) }}</span> <span>{{ t('round_streak', n=view.streak) }}</span> <span>{{ view.index + 1 }} / {{ view.total }}</span></p>
+      {% if last_ok is sameas true %}<p class="step-feedback ok" role="status">{{ t('feedback_correct') }}</p>
+      {% elif last_ok is sameas false %}<p class="step-feedback try" role="status">{{ t('feedback_not_yet') }}</p>{% endif %}
+      <p class="body-text" dir="auto">{{ view.prompt }}</p>
+      <form method="post" action="/play/{{ path_id }}/round/{{ topic_id }}" class="choices">
+        {% for label in view.choices %}
+        <button type="submit" class="choice-tile" name="choice" value="{{ label }}"><span class="choice-label" dir="auto">{{ label }}</span></button>
+        {% endfor %}
+      </form>
+      {% endif %}
+    </section>
+  </main>
+{% endblock %}
