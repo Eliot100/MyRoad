@@ -24,6 +24,7 @@ from myroad_core.ui.app import create_learner_app
 
 ZERO = "path_math_zero_to_equation"
 BAGRUT = "path_math_bagrut_3_units"
+PLACE = "path_math_bagrut5_00_placement"
 ADULT_MATH = {ZERO, BAGRUT}
 
 
@@ -60,12 +61,13 @@ def test_goal_terms_drop_stop_words_and_keep_numbers() -> None:
 @pytest.mark.parametrize("goal", ["math from zero", "מתמטיקה מאפס"])
 def test_math_from_zero_offers_both_adult_math_paths(store, locale: str, goal: str) -> None:
     matches = rank_existing(goal, catalog_entries(store, locale=locale), subject="general")
-    assert _ids(matches)[:2] == [ZERO, BAGRUT]
-    zero, bagrut = matches[0], matches[1]
+    assert _ids(matches)[:3] == [ZERO, PLACE, BAGRUT]
+    zero, placed, bagrut = matches[0], matches[1], matches[2]
     assert zero["reason"]["code"] == "goal_match"
     assert "title" in zero["reason"]["fields"]
     assert zero["prerequisites"] == [] and zero["missing_prerequisites"] == []
-    # Bagrut requires the zero path; the learner has not done it yet.
+    assert placed["missing_prerequisites"] == []
+    # The 3-unit road still requires the zero path; the learner has not done it yet.
     assert bagrut["missing_prerequisites"] == [ZERO]
     assert bagrut["prerequisites"][0]["available"] is True
     assert bagrut["prerequisites"][0]["title"] == zero["title"]
@@ -175,16 +177,17 @@ def test_route_existing_step_offers_adult_math_paths(app_client) -> None:
     assert page.status_code == 200
     ctx = page.context
     matches = ctx["existing_matches"]
-    assert [m["pathId"] for m in matches][:2] == [ZERO, BAGRUT]
+    assert [m["pathId"] for m in matches][:3] == [ZERO, PLACE, BAGRUT]
     assert all(m["reason_text"] for m in matches)
     assert matches[0]["href"] == f"/play/{ZERO}"
-    assert matches[1]["missing_prerequisites"] == [ZERO]
-    assert "finish first" in matches[1]["prerequisites_text"]
+    assert matches[1]["missing_prerequisites"] == []
+    assert matches[2]["missing_prerequisites"] == [ZERO]
+    assert "finish first" in matches[2]["prerequisites_text"]
     # The current template shows matches first, as cards that open the path.
-    assert [c["pathId"] for c in ctx["existing"]][:2] == [ZERO, BAGRUT]
+    assert [c["pathId"] for c in ctx["existing"]][:2] == [ZERO, PLACE]
     assert ctx["existing"][0]["match"]["reason_text"] == matches[0]["reason_text"]
     assert f'href="/play/{ZERO}"' in page.text and f'href="/play/{BAGRUT}"' in page.text
-    assert "Existing roads that fit your goal (2)" in ctx["flash_ok"]
+    assert "Existing roads that fit your goal (3)" in ctx["flash_ok"]
     assert "Existing roads that fit your goal" in page.text
     # "Build anyway": the outline step still works and may name a match as prerequisite.
     assert client.post("/add-path/outline", follow_redirects=False).headers["location"] == "/add-path/outline"

@@ -2166,6 +2166,7 @@ html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
 }
 .mode-btn[aria-pressed="true"] { border-color: var(--ink); }
 .mode-panel { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 16px; }
+.mode-panel[hidden] { display: none !important; }
 .mode-label { font-size: 0.95rem; }
 .mode-input {
   min-block-size: 44px;
@@ -2182,4 +2183,11 @@ html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
 .empty-state { color: var(--muted); }
 html[data-text-only="1"] #btn-speak,
 html[data-text-only="1"] .listen-panel { display: none; }
+.pwa-install {
+  position: fixed;
+  z-index: 40;
+  inset-inline-end: 16px;
+  inset-block-end: 16px;
+}
+.pwa-install[hidden] { display: none !important; }
 

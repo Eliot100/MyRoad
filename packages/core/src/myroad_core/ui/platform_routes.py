@@ -38,6 +38,7 @@ from myroad_core.content.english_bagrut import (
 )
 from myroad_core.content.loader import group_catalog, list_catalog_cards
 from myroad_core.content.locale_rules import resolve_node_display
+from myroad_core.ui.continue_plan import apply_placement_plan, choose_tile
 from myroad_core.ui.practice_modes import (
     build_level_test,
     build_round,
@@ -597,6 +598,8 @@ def register_platform_routes(
             )
             sess["attempt_saved"] = True
             sess["last_attempt"] = attempt
+            if _is_placement(sess["pathId"]) and sess.get("userId"):
+                apply_placement_plan(store, sess["userId"], sess["pathId"], int(nums["incorrectTaps"] or 0))
         else:
             attempt = sess.get("last_attempt") or store.latest_attempt(sess["userId"], sess["pathId"])
         needs = nums["masteryPct"] < 85.0 or nums["incorrectTaps"] >= 2
@@ -1834,6 +1837,7 @@ def register_platform_routes(
                 similar=similar,
                 ui_preview=preview,
                 sidebar=_sidebar_ctx(request, active_path=path_id),
+                continue_href=f"/play/{path_id}/continue" if learner else None,
             ),
         )
 
@@ -2190,6 +2194,37 @@ def register_platform_routes(
             return requested
         return gap
 
+    @app.get("/play/{path_id}/continue")
+    def play_continue(path_id: str, request: Request) -> RedirectResponse:
+        """Open the next tile: a due review, else the lowest-level mistake, else the next new tile."""
+        learner = _learner(request)
+        if not learner:
+            return RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
+        sess = _play_session(request, path_id)
+        doc = _load_play_doc(sess)
+        blocks = doc.get("blocks") or []
+        topics = _topics_for_ui(doc, blocks, _locale(request))
+        order = [b["blockId"] for b in blocks]
+        levels: dict[str, int | None] = {}
+        for topic in topics:
+            level = topic.get("level") if topic.get("level") in (1, 2, 3) else None
+            for bid in topic.get("blockIds") or []:
+                levels[bid] = level
+        mastered = set(sess.get("mastered") or set())
+        wrong = {bid for bid, ok in store.first_try_answers(learner["userId"], path_id) if not ok}
+        due = store.due_reviews(learner["userId"], path_id)
+        chosen = choose_tile(order, levels, mastered, wrong, due)
+        if chosen is not None:
+            found = _block_index(blocks, chosen)
+            if found is not None:
+                sess["index"] = found
+        sess["view"] = "learn"
+        sess["last_result"] = None
+        _persist_progress(sess)
+        resp = RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
+        resp.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
+        return resp
+
     @app.post("/play/{path_id}/start")
     def play_start(
         path_id: str,
@@ -2382,6 +2417,8 @@ def register_platform_routes(
                 )
             except Exception:  # pragma: no cover - keep the tap count if events are unavailable
                 pass
+        if scored and sess.get("userId") and not _is_placement(sess["pathId"]):
+            store.note_review(sess["userId"], sess["pathId"], block["blockId"], ok=bool(ok))
         if ok and block["blockId"] not in sess["mastered"]:
             _step_event(sess, block, "mastery", ok=True)
         if ok:

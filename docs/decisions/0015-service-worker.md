@@ -34,7 +34,7 @@ unregisters itself on each browser's next visit (ops: packages/core/README.md).
 
 ## Known limits
 - SW needs HTTPS or localhost; plain-http hosts (today's LAN setup) skip it cleanly.
-- No icons/manifest yet (UI issue); offline answers: #235.
+- Manifest and 192/512 icons are served (POC 2026-11-06). PNG icons stay out of the precache. Offline answers: #235.
 
 ## How to switch
 To Workbox: generate `sw.js` with workbox-build from the same precache list, keep `/sw.js`,

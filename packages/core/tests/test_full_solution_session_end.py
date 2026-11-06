@@ -87,8 +87,9 @@ def test_wrong_answer_shows_right_answer_full_solution_and_one_next_step(client)
     assert "is-solution" in right and "disabled" not in right and "התשובה הנכונה" in right
     # The method is not repeated in the closed disclosure above the choices.
     assert 'class="worked-method"' not in card
-    # Still one primary at most: a miss adds no new filled button.
-    assert card.count('class="primary') == 0
+    # Still no filled button on the miss itself. Hidden practice-mode forms keep their own submit.
+    shown = re.sub(r"<form\b[^>]*\shidden\b[^>]*>.*?</form>", "", card, flags=re.S)
+    assert shown.count('class="primary') == 0
 
 
 def test_wrong_answer_without_worked_method_falls_back_to_the_right_choice_feedback(client) -> None:

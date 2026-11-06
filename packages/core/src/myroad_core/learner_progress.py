@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from myroad_core.store_schema import _iso_now
@@ -75,6 +75,15 @@ CREATE TABLE IF NOT EXISTS placement_details (
   updated_at TEXT NOT NULL,
   PRIMARY KEY (user_id, placement_id)
 );
+CREATE TABLE IF NOT EXISTS learner_reviews (
+  user_id TEXT NOT NULL,
+  path_id TEXT NOT NULL,
+  block_id TEXT NOT NULL,
+  stage INTEGER NOT NULL DEFAULT 0,
+  due_on TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  PRIMARY KEY (user_id, path_id, block_id)
+);
 CREATE INDEX IF NOT EXISTS idx_events_user_path ON learner_events(user_id, path_id, block_id);
 CREATE INDEX IF NOT EXISTS idx_progress_user ON learner_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_attempts_user ON learner_attempts(user_id);
@@ -100,10 +109,15 @@ _LEARNER_EXTRA_COLUMNS = (
     ("goal_date", "TEXT"),
     ("weekly_tiles", "INTEGER"),
     ("weekly_minutes", "INTEGER"),
+    # 1 only on the demo seed database. Real sign-ups stay 0.
+    ("is_demo", "INTEGER NOT NULL DEFAULT 0"),
 )
 
 WEEKLY_GOALS = (2, 3, 5)
 DEFAULT_WEEKLY_GOAL = 3
+# Spaced review: stage 0 is due in 1 day, stage 1 in 3, stage 2 in 7. After the
+# 7-day review is answered correctly the row is deleted.
+REVIEW_STEPS = (1, 3, 7)
 
 
 STEP_EVENT_TYPES = ("step_view", "answer", "mastery")
@@ -113,6 +127,14 @@ MAX_STEP_DURATION_MS = 30 * 60 * 1000
 
 GUEST_PREFIX = "gst_"
 GUEST_RETENTION_DAYS = 30
+
+
+def _as_date(value: datetime | date | None) -> date:
+    if value is None:
+        return datetime.now(timezone.utc).date()
+    if isinstance(value, datetime):
+        return value.date()
+    return value
 
 class LearnerProgressMixin:
     """Mixin expecting self._conn (sqlite3 connection)."""
@@ -396,6 +418,66 @@ class LearnerProgressMixin:
         )
         self._conn.commit()
         return self.get_road_plan(user_id)
+
+    def set_demo(self, user_id: str) -> None:
+        """Mark a learner as demo data. The seed script is the only caller."""
+        self._conn.execute("UPDATE learners SET is_demo = 1 WHERE user_id = ?", (user_id,))
+        self._conn.commit()
+
+    def note_review(
+        self,
+        user_id: str,
+        path_id: str,
+        block_id: str,
+        *,
+        ok: bool,
+        today: datetime | date | None = None,
+    ) -> None:
+        """Schedule or advance the 1, 3, 7 day review for one tile.
+
+        ``today`` is a date or a datetime. Tests pass a date; the app uses UTC today.
+        A correct answer before the due day does not move the row.
+        """
+        day = _as_date(today)
+        row = self._conn.execute(
+            "SELECT stage, due_on FROM learner_reviews WHERE user_id = ? AND path_id = ? AND block_id = ?",
+            (user_id, path_id, block_id),
+        ).fetchone()
+        if not ok or row is None:
+            self._write_review(user_id, path_id, block_id, 0, day + timedelta(days=REVIEW_STEPS[0]))
+            return
+        due = date.fromisoformat(str(row["due_on"])[:10])
+        if day < due:
+            return
+        stage = int(row["stage"])
+        if stage >= len(REVIEW_STEPS) - 1:
+            self._conn.execute(
+                "DELETE FROM learner_reviews WHERE user_id = ? AND path_id = ? AND block_id = ?",
+                (user_id, path_id, block_id),
+            )
+            self._conn.commit()
+            return
+        nxt = stage + 1
+        self._write_review(user_id, path_id, block_id, nxt, day + timedelta(days=REVIEW_STEPS[nxt]))
+
+    def _write_review(self, user_id: str, path_id: str, block_id: str, stage: int, due) -> None:
+        self._conn.execute(
+            "INSERT INTO learner_reviews (user_id, path_id, block_id, stage, due_on, updated_at) "
+            "VALUES (?,?,?,?,?,?) ON CONFLICT(user_id, path_id, block_id) DO UPDATE SET "
+            "stage = excluded.stage, due_on = excluded.due_on, updated_at = excluded.updated_at",
+            (user_id, path_id, block_id, int(stage), due.isoformat(), _iso_now()),
+        )
+        self._conn.commit()
+
+    def due_reviews(self, user_id: str, path_id: str, today: datetime | date | None = None) -> list[str]:
+        """Block ids whose review is due on or before today, earliest first."""
+        day = _as_date(today).isoformat()
+        rows = self._conn.execute(
+            "SELECT block_id FROM learner_reviews WHERE user_id = ? AND path_id = ? AND due_on <= ? "
+            "ORDER BY due_on, block_id",
+            (user_id, path_id, day),
+        ).fetchall()
+        return [r[0] for r in rows]
 
     # --- sessions (#192): frozen step lists per (user, path, local day) ------------------
 
@@ -811,7 +893,7 @@ class LearnerProgressMixin:
         """
         ids = [r[0] for r in self._conn.execute(sql, (cutoff,)).fetchall()]
         tables = ["learner_progress", "learner_events", "learner_attempts", "learner_sessions",
-                  "placement_details", "auth_sessions", "analytics_ids", "learners"]
+                  "placement_details", "learner_reviews", "auth_sessions", "analytics_ids", "learners"]
         have = {r[0] for r in self._conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         for uid in ids:
             for table in tables:
@@ -827,7 +909,7 @@ class LearnerProgressMixin:
         prefs = self.get_step_settings(guest_id)
         self.adopt_learner_data(guest_id, to_user_id)  # type: ignore[arg-type]
         self.set_step_settings(to_user_id, audio=prefs["audio"], writing=prefs["writing"])
-        for table in ("learner_progress", "placement_details", "learner_sessions", "learners"):
+        for table in ("learner_progress", "placement_details", "learner_sessions", "learner_reviews", "learners"):
             # Rows the account already had won; the guest's leftovers go (no orphans).
             self._conn.execute(f"DELETE FROM {table} WHERE user_id = ?", (guest_id,))
         self._conn.commit()
@@ -844,6 +926,7 @@ class LearnerProgressMixin:
         c.execute("UPDATE OR IGNORE placement_details SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.execute("UPDATE learner_attempts SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.execute("UPDATE OR IGNORE learner_sessions SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
+        c.execute("UPDATE OR IGNORE learner_reviews SET user_id = ? WHERE user_id = ?", (to_user_id, from_user_id))
         c.commit()
         if hasattr(self, "move_analytics_id"):
             self.move_analytics_id(from_user_id, to_user_id)

@@ -633,5 +633,6 @@
   "mx_tiles": "Time per tile",
   "mx_n": "{n} answers",
   "mx_seconds": "{n} s",
-  "mx_time": "{m} min {s} s"
+  "mx_time": "{m} min {s} s",
+  "pwa_install": "Install on this device"
 }

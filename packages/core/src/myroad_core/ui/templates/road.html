@@ -9,7 +9,7 @@
   </header>
   <main id="main" tabindex="-1">
   {% set started = card.progressStatus == 'in_progress' %}
-  {% set start_href = '/play/' ~ card.pathId ~ '?view=learn' %}
+  {% set start_href = continue_href if continue_href else '/play/' ~ card.pathId ~ '?view=learn' %}
   <section class="tv-hero" aria-labelledby="road-h">
     <p class="tv-kicker">{% if reason %}{{ reason }} · {% endif %}{{ card.subjectLabel }}{% if card.estimatedMinutes %} · {{ card.estimatedMinutes }} {{ t('mins') }}{% endif %}</p>
     <h1 id="road-h" dir="auto"{{ card.blurbLang|content_lang(locale) }}>{{ card.blurb or card.title }}</h1>

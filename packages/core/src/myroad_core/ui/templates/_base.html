@@ -7,6 +7,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}{{ product }}{% endblock %}</title>
+  <meta name="theme-color" content="#171614" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/static/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png" />
   <script src="/static/prefs.js"></script>
   <link rel="stylesheet" href="/static/platform.css" />
   <script src="/static/sw-register.js" defer></script>
@@ -16,6 +20,7 @@
 {%- endif %}
 </head>
 <body{% block body_attrs %}{% endblock %}>
+<button type="button" id="pwa-install" class="pwa-install" hidden>{{ t('pwa_install') }}</button>
 {%- if sidebar is defined and sidebar %}
 <div class="app-shell">
 <div class="app-main" id="app-main">

@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from myroad_core.ui.i18n import dir_for, html_lang, t
 
@@ -21,6 +21,22 @@ SHELL_SUFFIXES = {".css", ".js", ".woff2"}
 CACHE_PREFIX = "myroad-shell-"
 OFFLINE_URL = "/offline"
 OFFLINE_LOCALES = ("he", "en", "ar")
+
+MANIFEST = {
+    "name": "MyRoad",
+    "short_name": "MyRoad",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "lang": "he",
+    "dir": "rtl",
+    "theme_color": "#171614",
+    "background_color": "#F3EFE6",
+    "icons": [
+        {"src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+        {"src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    ],
+}
 
 
 def shell_files() -> list[str]:
@@ -90,6 +106,10 @@ def sw_killed() -> bool:
 def register_pwa_routes(app: FastAPI) -> None:
     source = KILL_SW if sw_killed() else sw_source()
     offline = offline_html()
+
+    @app.get("/manifest.webmanifest", include_in_schema=False)
+    def web_manifest() -> JSONResponse:
+        return JSONResponse(MANIFEST, media_type="application/manifest+json", headers={"Cache-Control": "no-cache"})
 
     @app.get("/sw.js", include_in_schema=False)
     def service_worker() -> Response:

@@ -39,7 +39,7 @@ def test_renders_all_roads_with_facets_and_sidebar_button(client) -> None:
     assert all("_bagrut5" in i for i in ids)
     assert 'role="search"' in r.text and 'name="q"' in r.text
     assert 'name="subject" value="english"' in r.text and 'name="subject" value="arabic"' in r.text
-    assert 'name="subject" value="math"' not in r.text and 'name="status" value="open"' in r.text
+    assert 'name="subject" value="math"' in r.text and 'name="status" value="open"' in r.text
     assert re.search(r'<a class="ibtn" href="/roads"[^>]*aria-current="page"', r.text)
     assert "rs_" not in re.sub(r'(id|class|data-[a-z-]+)="[^"]*"', "", r.text)  # no raw keys
     assert 'href="/road/path_english_bagrut5_01_zero"' in r.text
@@ -53,9 +53,10 @@ def test_filter_by_subject(client) -> None:
     ids = _ids(client.get("/roads?subject=english").text)
     assert ids and all("english" in i and "_bagrut5" in i for i in ids)
     both = _ids(client.get("/roads?subject=english&subject=math").text)
-    # No public math 5-unit road yet. The 3-unit path stays in the database, off the catalog.
-    assert set(both) == set(ids)
-    assert "path_math_zero_to_equation" not in both
+    # 5-unit math is in the public catalog. The 3-unit path and the zero path stay out.
+    assert set(ids) < set(both)
+    assert any(i.startswith("path_math_bagrut5_") for i in both)
+    assert "path_math_zero_to_equation" not in both and "path_math_bagrut_3_units" not in both
 
 
 def test_query_matches_title_and_description(client) -> None:
@@ -87,8 +88,8 @@ def test_browse_rows_and_see_all(client) -> None:
     client.post("/play/path_english_bagrut5_00_placement/ack")
     html = client.get("/roads").text
     rows = re.findall(r'data-row="([^"]+)"', html)
-    assert rows[0] == "continue" and "subject-english" in rows
-    assert "subject-math" not in rows and "path_grade3" not in html
+    assert rows[0] == "continue" and "subject-english" in rows and "subject-math" in rows
+    assert "path_grade3" not in html
     assert "rs-grid" not in html and 'data-shelf' in html
     assert 'href="/roads?subject=english"' in html and 'href="/roads?status=in_progress"' in html
     see = client.get("/roads?subject=english").text
