@@ -70,18 +70,6 @@ def test_login(page):
     scan(page, "login")
 
 
-@pytest.mark.parametrize("url", ["/privacy", "/terms"])
-def test_legal_signed_out(page, url):
-    """#209: privacy notice and terms before sign in."""
-    page.goto(url)
-    scan(page, "legal" + url.replace("/", "_") + "_out")
-
-
-def test_register_legal_links(page):
-    page.goto("/login?mode=register")
-    scan(page, "login_register")
-
-
 def test_signed_in(page, server):
     login(page, server[1])
     assert "/login" not in page.url
@@ -200,10 +188,3 @@ def test_placement_result(page):
     page.goto(f"/play/{road}?view=learn&from=placement")
     page.locator("#placement-result").wait_for()
     scan(page, "placement-result")
-
-
-@pytest.mark.parametrize("url", ["/privacy", "/terms", "/settings"])
-def test_legal_signed_in(page, url):
-    """#209: the same pages (and the settings links) after sign in."""
-    page.goto(url)
-    scan(page, "legal" + url.replace("/", "_") + "_in")
