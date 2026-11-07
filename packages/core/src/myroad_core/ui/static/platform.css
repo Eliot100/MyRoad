@@ -2003,3 +2003,21 @@ html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
   .chip, .qtabs > a { min-block-size: 44px; min-inline-size: 44px; justify-content: center; }
   .qtabs > a { display: inline-flex; align-items: center; }
 }
+
+/* Issue 209: privacy notice + terms. Footer keeps the platform line; the legal links sit under it. */
+.legal-links { display: flex; justify-content: center; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin-block-start: var(--space-1); font-size: .85rem; }
+.legal-links a, .legal-list a { display: inline-flex; align-items: center; min-block-size: 44px; padding-block: .2rem; text-decoration: underline; text-underline-offset: .2em; }
+.legal-links a[aria-current="page"] { color: var(--ink); text-decoration: none; font-weight: 600; }
+.legal-card { width: min(100%, 40rem); margin-inline: auto; line-height: 1.65; }
+.legal-card h1 { letter-spacing: -0.02em; margin-block-end: .25rem; }
+.legal-card h2 { font-size: 1.05rem; margin: 1.5rem 0 .35rem; }
+.legal-card p { margin: 0 0 .6rem; }
+.legal-card a { color: var(--accent); }
+.legal-note { color: var(--muted); font-size: .92rem; padding-inline-start: .75rem; border-inline-start: 3px solid var(--accent); }
+.legal-screen .shell-top { width: min(100%, 40rem); margin-inline: auto; display: flex; justify-content: space-between; }
+.settings-legal h2 { font-size: 1rem; margin: 1.25rem 0 .25rem; }
+.legal-list { list-style: none; padding: 0; margin: 0; display: flex; gap: var(--space-4); flex-wrap: wrap; }
+.legal-list a { color: var(--accent); }
+.register-legal a { color: var(--accent); }
+.auth-card .lede.tiny.register-legal > a { display: inline; }
+

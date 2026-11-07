@@ -1009,6 +1009,26 @@ def register_platform_routes(
         resp.delete_cookie(COOKIE_LOGIN_CHALLENGE, path="/login", secure=cookie_secure(), httponly=True)
         return resp
 
+    _LEGAL_SECTIONS = {
+        "privacy": ("account", "log", "why", "keep", "contact"),
+        "terms": ("service", "account", "use", "content", "privacy", "more"),
+    }
+
+    def _legal_page(request: Request, doc: str) -> HTMLResponse:
+        # #209: open before and after sign in (not in the auth gate's protected list).
+        return templates.TemplateResponse(
+            request, "legal.html",
+            _shell_ctx(request, legal_doc=doc, sections=_LEGAL_SECTIONS[doc]),
+        )
+
+    @app.get("/privacy", response_class=HTMLResponse)
+    def privacy_page(request: Request) -> HTMLResponse:
+        return _legal_page(request, "privacy")
+
+    @app.get("/terms", response_class=HTMLResponse)
+    def terms_page(request: Request) -> HTMLResponse:
+        return _legal_page(request, "terms")
+
     @app.get("/settings", response_class=HTMLResponse)
     def settings_page(
         request: Request,
