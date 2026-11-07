@@ -82,6 +82,8 @@
     {% endif %}
   </section>
   </main>
-{% include "_footer.html" %}
+  <footer>
+    <small>{{ t('footer_platform', product=product) }}</small>
+  </footer>
   <script src="/static/roads.js" defer></script>
 {% endblock %}

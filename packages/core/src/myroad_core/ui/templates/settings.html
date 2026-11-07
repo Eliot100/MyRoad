@@ -129,14 +129,9 @@
       })();
       </script>
     </section>
-    <section class="settings-legal" aria-labelledby="settings-legal">
-      <h2 id="settings-legal">{{ t('settings_legal_h') }}</h2>
-      <ul class="legal-list" role="list">
-        <li><a href="/privacy">{{ t('legal_privacy_link') }}</a></li>
-        <li><a href="/terms">{{ t('legal_terms_link') }}</a></li>
-      </ul>
-    </section>
     <p class="lede tiny"><a href="/">{{ t('back_home') }}</a></p>
   </main>
-{% include "_footer.html" %}
+  <footer>
+    <small>{{ t('footer_platform', product=product) }}</small>
+  </footer>
 {% endblock %}
