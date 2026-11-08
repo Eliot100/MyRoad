@@ -1140,6 +1140,10 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
   padding: .2rem .65rem;
   white-space: nowrap;
 }
+@media (max-width:700px){
+  .linear-stage-head{flex-wrap:wrap;align-items:flex-start}
+  .linear-stage-head .linear-section{min-width:0;white-space:normal}
+}
 /* Stage progress under head — Library mockups 07/08/10/11/16 */
 .linear-stage-meter {
   width: 100%;
@@ -1597,6 +1601,10 @@ body.platform:has(> .app-shell) { max-width: none; padding: 0; margin: 0; }
 .rname b { font-weight: 650; font-size: .98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rtag { font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 0 .35rem; white-space: nowrap; flex: none; }
 .rprev { font-size: .85rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width:700px){
+  .rname{align-items:flex-start;flex-wrap:wrap}
+  .rname b,.rprev{white-space:normal;overflow:visible;text-overflow:clip}
+}
 .rprev .acc { color: var(--accent); font-weight: 600; }
 .rprev .ok { color: var(--ok-ink, var(--ok)); font-weight: 600; }
 .side-foot { border-block-start: 1px solid var(--line); padding: .75rem 1rem; }

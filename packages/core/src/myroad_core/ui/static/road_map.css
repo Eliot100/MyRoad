@@ -146,6 +146,10 @@ button.rd-card:hover{border-color:var(--rd-t)}
 @media (max-width:700px){
   .rd-tiles{grid-template-columns:1fr}
   .rd-road .rd-asphalt{stroke-width:72px}.rd-road .rd-asphalt-edge{stroke-width:80px}
+  .rd-lh{flex-wrap:wrap;align-items:flex-start}
+  .rd-lh h2{white-space:normal}
+  .rd-ct,.rd-rn{white-space:normal;overflow:visible;text-overflow:clip}
+  .rd-cta{flex-wrap:wrap;block-size:auto;padding-block:10px;line-height:1.35}
 }
 @media (prefers-reduced-motion:reduce){.rd-card,.rd-drawer-btn{transition:none}}
 @media (max-width:420px){.rd-tile{padding:10px;gap:8px}.rd-tl{font-size:11px}.rd-cards{grid-template-columns:1fr}}
