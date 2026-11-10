@@ -1,7 +1,7 @@
 # Overnight platform QA, 2026-11-11
 
 Branch `supergrok-picks-2026-11-05` at `1533b90` (app) with MyRoad-content `supergrok-picks-2026-11-05` at `7cec9c4`.
-Run 2026-11-10, 22:30 to 23:55 Israel time (UTC+2), by Grok Bot (queue items B1 and B2).
+Run 2026-11-10, 22:26 to 23:00 Israel time (UTC+2), by Grok Bot (queue items B1 and B2).
 
 ## How it was run
 
