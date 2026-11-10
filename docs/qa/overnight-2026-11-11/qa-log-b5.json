@@ -1,0 +1,1826 @@
+{
+ "console": [
+  [
+   "desktop",
+   "x-privacy",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "desktop",
+   "x-terms",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "mobile",
+   "x-privacy",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "mobile",
+   "x-terms",
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ ],
+ "pageerror": [],
+ "failed": [],
+ "bad_status": [
+  [
+   "desktop",
+   "x-privacy",
+   404,
+   "http://127.0.0.1:8771/privacy"
+  ],
+  [
+   "desktop",
+   "x-terms",
+   404,
+   "http://127.0.0.1:8771/terms"
+  ],
+  [
+   "mobile",
+   "x-privacy",
+   404,
+   "http://127.0.0.1:8771/privacy"
+  ],
+  [
+   "mobile",
+   "x-terms",
+   404,
+   "http://127.0.0.1:8771/terms"
+  ]
+ ],
+ "shots": [
+  [
+   "desktop",
+   "01-home",
+   "/",
+   200,
+   "desktop-01-home.png"
+  ],
+  [
+   "desktop",
+   "02-road-math-analysis",
+   "/road/path_math_bagrut5_01_analysis",
+   200,
+   "desktop-02-road-math-analysis.png"
+  ],
+  [
+   "desktop",
+   "05-placement-question",
+   "/play/path_math_bagrut5_00_placement?view=learn",
+   null,
+   "desktop-05-placement-question.png"
+  ],
+  [
+   "desktop",
+   "03-teaching-stage",
+   "/play/path_math_bagrut5_01_analysis?view=learn&from=placement",
+   null,
+   "desktop-03-teaching-stage.png"
+  ],
+  [
+   "desktop",
+   "04-practice-after-answer",
+   "/play/path_math_bagrut5_01_analysis?view=learn",
+   null,
+   "desktop-04-practice-after-answer.png"
+  ],
+  [
+   "mobile",
+   "01-home",
+   "/",
+   200,
+   "mobile-01-home.png"
+  ],
+  [
+   "mobile",
+   "02-road-math-analysis",
+   "/road/path_math_bagrut5_01_analysis",
+   200,
+   "mobile-02-road-math-analysis.png"
+  ],
+  [
+   "mobile",
+   "05-placement-question",
+   "/play/path_math_bagrut5_00_placement?view=learn",
+   null,
+   "mobile-05-placement-question.png"
+  ],
+  [
+   "mobile",
+   "03-teaching-stage",
+   "/play/path_math_bagrut5_01_analysis?view=learn&from=placement",
+   null,
+   "mobile-03-teaching-stage.png"
+  ],
+  [
+   "mobile",
+   "04-practice-after-answer",
+   "/play/path_math_bagrut5_01_analysis?view=learn",
+   null,
+   "mobile-04-practice-after-answer.png"
+  ]
+ ],
+ "notes": [
+  "desktop placement path_math_bagrut5_00_placement frac=0.0: 10 items, band 1 -> path_math_bagrut5_01_analysis, end url /play/path_math_bagrut5_01_analysis?view=learn&from=placement",
+  "desktop first lesson tile text: 'לומדים\\nקצב שינוי\\nהקראה\\nטקסט בלבד\\n\\nשיפוע של ישר הוא כמה y משתנה כש־x גדל ב־1. מה השיפוע בין (1, 2) ל־(3, 8)?\\n\\nהבנתי, ממשיכים\\nהקודם\\nהבא' filler=False overflow={'scrollW': 1280, 'clientW': 1280, 'bad': []}",
+  "desktop next tile: 'לומדים\\nקצב שינוי: 2\\nהקראה\\nטקסט בלבד\\n\\nשיפוע של ישר הוא כמה y משתנה כש־x גדל ב־1. דוגמה: מה השיפוע בין (1, 2) ל־(3, 8)? התשובה היא 3. נכון. (8−2)/(3−1) = 3.\\n\\nהבנת' filler=False",
+  "desktop next tile: 'תרגול\\nקצב שינוי: 3\\nהקראה\\nטקסט בלבד\\n\\nשיפוע של ישר הוא כמה y משתנה כש־x גדל ב־1. מה השיפוע בין (1, 2) ל־(3, 8)?\\n\\nדף עבודה\\nבחירה\\nהקלדה\\nדיבור\\nהאזנה\\nסבב\\nמבחן רמה\\n3\\n6' filler=False",
+  "desktop practice after answer overflow={'scrollW': 1280, 'clientW': 1280, 'bad': []}",
+  "desktop GET /privacy -> 404",
+  "desktop GET /terms -> 404",
+  "desktop GET /settings -> 200",
+  "desktop GET /series/english-bagrut5 -> 200",
+  "mobile placement path_math_bagrut5_00_placement frac=0.0: 10 items, band 1 -> path_math_bagrut5_01_analysis, end url /play/path_math_bagrut5_01_analysis?view=learn&from=placement",
+  "mobile first lesson tile text: 'לומדים\\nקצב שינוי\\nהקראה\\nטקסט בלבד\\n\\nשיפוע של ישר הוא כמה y משתנה כש־x גדל ב־1. מה השיפוע בין (1, 2) ל־(3, 8)?\\n\\nהבנתי, ממשיכים\\nהקודם\\nהבא' filler=False overflow={'scrollW': 390, 'clientW': 390, 'bad': []}",
+  "mobile next tile: 'לומדים\\nקצב שינוי: 2\\nהקראה\\nטקסט בלבד\\n\\nשיפוע של ישר הוא כמה y משתנה כש־x גדל ב־1. דוגמה: מה השיפוע בין (1, 2) ל־(3, 8)? התשובה היא 3. נכון. (8−2)/(3−1) = 3.\\n\\nהבנת' filler=False",
+  "mobile next tile: 'תרגול\\nקצב שינוי: 3\\nהקראה\\nטקסט בלבד\\n\\nשיפוע של ישר הוא כמה y משתנה כש־x גדל ב־1. מה השיפוע בין (1, 2) ל־(3, 8)?\\n\\nדף עבודה\\nבחירה\\nהקלדה\\nדיבור\\nהאזנה\\nסבב\\nמבחן רמה\\n3\\n6' filler=False",
+  "mobile practice after answer overflow={'scrollW': 390, 'clientW': 390, 'bad': []}",
+  "mobile GET /privacy -> 404",
+  "mobile GET /terms -> 404",
+  "mobile GET /settings -> 200",
+  "mobile GET /series/english-bagrut5 -> 200"
+ ],
+ "sweep": [
+  [
+   "path_arabic_bagrut5_01_script",
+   "s0_start",
+   317,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמימין לשמאל, כמו בעברית\nהקראה\nטקסט בלבד\n\nערבית נכתבת מימין לשמאל, כמו עבר"
+  ],
+  [
+   "path_arabic_bagrut5_01_script",
+   "s1_letters",
+   584,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nשש אותיות ראשונות\nהקראה\nטקסט בלבד\n\nا אַלִף (א, וגם תנועה א ארוכה). ب"
+  ],
+  [
+   "path_arabic_bagrut5_01_script",
+   "s2_letters",
+   592,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nעוד שש אותיות\nהקראה\nטקסט בלבד\n\nي יַא (י, וגם תנועה אִי ארוכה). و וַא"
+  ],
+  [
+   "path_arabic_bagrut5_01_script",
+   "s2_review",
+   841,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה\nהקראה\nטקסט בלבד\n\nשתים עשרה אותיות עד עכשיו. ב ת נ י נבדלות רק ב"
+  ],
+  [
+   "path_arabic_bagrut5_01_script",
+   "s2_done",
+   173,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקה\nהקראה\nטקסט בלבד\n\nמה השלב הבא, לפי מה שכבר כתוב כאן?\n\nמילת יעד\nأَحْسَ"
+  ],
+  [
+   "path_arabic_bagrut5_02_words",
+   "t_hello",
+   212,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשלום\nהקראה\nטקסט בלבד\n\nבספרותית אומרים مرحبا. בדיבור, לפי מאגר השאלות של ה"
+  ],
+  [
+   "path_arabic_bagrut5_02_words",
+   "t_num",
+   173,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמספרים\nהקראה\nטקסט בלבד\n\nאחד בספרותית הוא واحد. שתיים הוא اثنان. מה פירוש "
+  ],
+  [
+   "path_arabic_bagrut5_02_words",
+   "t_sent",
+   171,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמשפט\nהקראה\nטקסט בלבד\n\nهذا كتاب הוא משפט שמני: זה ספר. מה פירוש هذا كتاب?\n"
+  ],
+  [
+   "path_arabic_bagrut5_03_verbs",
+   "t_pres",
+   177,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהווה\nהקראה\nטקסט בלבד\n\nיكتب הוא הוא כותב. הקידומת ي מסמנת גוף שלישי. מה פי"
+  ],
+  [
+   "path_arabic_bagrut5_03_verbs",
+   "t_past",
+   145,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nעבר\nהקראה\nטקסט בלבד\n\nكتب הוא הוא כתב. מה פירוש كتب?\n\nמילת יעד\nكتب\n\nאפשר ל"
+  ],
+  [
+   "path_arabic_bagrut5_03_verbs",
+   "t_spoken",
+   188,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nדיבור\nהקראה\nטקסט בלבד\n\nבדיבור, בדוגמאות של מאגר המשרד, בدي מסמן רצון: אני"
+  ],
+  [
+   "path_arabic_bagrut5_04_reading",
+   "t_where",
+   216,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמקום\nהקראה\nטקסט בלבד\n\nהקטע המקורי: الطالب في البيت. הוא בבית, לא בבית הספ"
+  ],
+  [
+   "path_arabic_bagrut5_04_reading",
+   "t_who",
+   185,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמי\nהקראה\nטקסט בלבד\n\nבאותו משפט הנושא הוא الطالب, התלמיד. מי הנושא במשפט ا"
+  ],
+  [
+   "path_arabic_bagrut5_04_reading",
+   "t_not",
+   188,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשלילה\nהקראה\nטקסט בלבד\n\nليس في المدرسة: הוא אינו בבית הספר. מה פירוש ليس ف"
+  ],
+  [
+   "path_arabic_bagrut5_05_exam",
+   "t_readq",
+   227,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשאלת קריאה\nהקראה\nטקסט בלבד\n\nשואלים איפה, מי, ולמה. התשובה נמצאת במשפט, לא"
+  ],
+  [
+   "path_arabic_bagrut5_05_exam",
+   "t_write",
+   180,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמשפט כתוב\nהקראה\nטקסט בלבד\n\nמשפט שמני קצר: أنا طالب. אני תלמיד. מה פירוש أ"
+  ],
+  [
+   "path_arabic_bagrut5_05_exam",
+   "t_oral",
+   207,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nתור דיבור\nהקראה\nטקסט בלבד\n\nפותחים בדיבור בשם ובברכה. הדוגמה המקורית: أنا "
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_letters",
+   163,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאותיות\nהקראה\nטקסט בלבד\n\nאומרים את שם האות, ואז קוראים מילה קצרה.\n\nמילת יע"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_be",
+   187,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nam is are\nהקראה\nטקסט בלבד\n\nI הולך עם am. He, she, it עם is. You, we, they"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_not",
+   176,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשלילה\nהקראה\nטקסט בלבד\n\nשלילה: am not, is not, are not. לא מוסיפים do.\n\nמי"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_review_1",
+   223,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_you",
+   182,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nyou ו we\nהקראה\nטקסט בלבד\n\nyou, we, they הולכים עם are. לא עם am.\n\nמילת יע"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_word",
+   173,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמילה קצרה\nהקראה\nטקסט בלבד\n\nקוראים את כל המילה, לא רק את האות הראשונה.\n\nמי"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_sent",
+   177,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמשפט\nהקראה\nטקסט בלבד\n\nמשפט מתחיל באות גדולה ונגמר בנקודה. יש בו מישהו ופו"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_review_2",
+   224,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_01_zero",
+   "t_end",
+   165,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\nThey ___ not lat"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_simple",
+   177,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nPresent Simple\nהקראה\nטקסט בלבד\n\nהרגל. אחרי he, she, it הפועל מקבל s.\n\nמיל"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_there",
+   181,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nthere is\nהקראה\nטקסט בלבד\n\nיש אחד: there is. יש כמה: there are.\n\nמילת יעד\n"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_q",
+   175,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשאלות\nהקראה\nטקסט בלבד\n\nשאלה בהווה: Do או Does בהתחלה, והפועל בלי s.\n\nמילת"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_review_1",
+   230,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_day",
+   318,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nיום רגיל\nהקראה\nטקסט בלבד\n\nקטע קצר על יום עבודה. שאלה על הרעיון ושאלה על פ"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_neg",
+   188,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשלילה בהווה\nהקראה\nטקסט בלבד\n\nשלילה: do not או does not, והפועל בלי s.\n\nמי"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_freq",
+   191,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nתדירות\nהקראה\nטקסט בלבד\n\nalways ו never באים לפני הפועל העיקרי, ואחרי is.\n"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_review_2",
+   228,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_02_present",
+   "t_end",
+   176,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\n___ there a book"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_past",
+   191,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nPast Simple\nהקראה\nטקסט בלבד\n\nאתמול: פועל עם ed, או צורה חריגה כמו went וs"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_fut",
+   204,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nעתיד\nהקראה\nטקסט בלבד\n\nמחר: will והפועל הבסיסי. תוכנית קרובה: am, is או ar"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_story",
+   372,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nסיפור קצר\nהקראה\nטקסט בלבד\n\nקראו וזהו את הרעיון ואת ההסקה.\n\nמילת יעד\nJonah"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_review_1",
+   227,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_irreg",
+   199,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nעבר חריג\nהקראה\nטקסט בלבד\n\nלא כל עבר הוא ed. go נהיה went. see נהיה saw.\n\n"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_ago",
+   185,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמתי\nהקראה\nטקסט בלבד\n\nago מסתכל אחורה. tomorrow מסתכל קדימה. לא מערבבים.\n\n"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_who",
+   377,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמי ואיפה\nהקראה\nטקסט בלבד\n\nwho שואל על אדם. where שואל על מקום.\n\nמילת יעד\n"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_review_2",
+   222,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_03_time",
+   "t_end",
+   182,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\nTomorrow we ___ "
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_art",
+   247,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\na וthe\nהקראה\nטקסט בלבד\n\na בפעם הראשונה. the כשכבר יודעים על מה מדובר. על "
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_perf",
+   276,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nזמן פתוח וזמן סגור\nהקראה\nטקסט בלבד\n\nhave והצורה השלישית כשהזמן עוד פתוח, "
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_if",
+   190,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nתנאי ראשון\nהקראה\nטקסט בלבד\n\nאחרי if בא הווה. בחלק של התוצאה בא will.\n\nמיל"
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_review_1",
+   237,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_an",
+   226,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nan\nהקראה\nטקסט בלבד\n\nan לפני צליל תנועה: an apple, an hour. a לפני צליל עי"
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_order",
+   232,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nסדר מילים\nהקראה\nטקסט בלבד\n\nנושא, פועל, ואז מושא. תואר בא לפני השם: a red "
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_for",
+   231,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nfor וsince\nהקראה\nטקסט בלבד\n\nfor עם משך: for two years. since עם נקודת התח"
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_review_2",
+   224,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_04_accuracy",
+   "t_end",
+   1478,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\nThe small librar"
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_read",
+   799,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nקטע E\nהקראה\nטקסט בלבד\n\nקראו פעם אחת בלי לעצור על כל מילה. אחר כך השאלות.\n"
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_vocab",
+   177,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאוצר מילים\nהקראה\nטקסט בלבד\n\nהמילה מהמשפט, לא מהמילון לבד.\n\nמילת יעד\nThe h"
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_ref",
+   798,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמילת ייחוס\nהקראה\nטקסט בלבד\n\nit וthere מצביעים אחורה, לא קדימה אל ניחוש.\n\n"
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_review_1",
+   228,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_detail",
+   784,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nפרט\nהקראה\nטקסט בלבד\n\nפרט הוא עובדה שכתובה, לא מסקנה שלנו.\n\nמילת יעד\nWhen "
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_infer",
+   793,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהסקה\nהקראה\nטקסט בלבד\n\nהסקה נשענת על שתי עובדות בטקסט, לא על ניחוש.\n\nמילת "
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_band",
+   199,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמילים מהקטע\nהקראה\nטקסט בלבד\n\nחמש מילים מתוך הקטע, במשפט חדש. לא רשימת משר"
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_review_2",
+   221,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_05_module_e",
+   "t_end",
+   242,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\nWhat is the writ"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_read",
+   1083,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nקטע G\nהקראה\nטקסט בלבד\n\nהכותב לא אומר שהסדנה היא צדקה. הוא אומר שהיא נשארת"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_essay",
+   252,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחיבור דעה\nהקראה\nטקסט בלבד\n\n120 עד 140 מילים. פתיחה עם דעה, שתי סיבות, ומש"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_rubric",
+   248,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמחוון\nהקראה\nטקסט בלבד\n\nתוכן ושכנוע, ארגון, אוצר מילים, ודיוק. אורך קצר מד"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_review_1",
+   222,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_body",
+   241,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nגוף החיבור\nהקראה\nטקסט בלבד\n\nאחרי הפתיחה באות שתי סיבות. כל סיבה במשפט שלם"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_close",
+   201,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nסיום\nהקראה\nטקסט בלבד\n\nהסיום חוזר לדעה בלי להעתיק את הפתיחה מילה במילה.\n\nמ"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_words",
+   184,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאוצר לחיבור\nהקראה\nטקסט בלבד\n\nשלוש מילים מהקטע, לשימוש בחיבור. לא רשימה רש"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_review_2",
+   228,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_06_module_g",
+   "t_end",
+   276,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\nA 70-word essay "
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_story",
+   390,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nסיפור קצר\nהקראה\nטקסט בלבד\n\nמי עושה מה, ומה משתנה בסוף. לא צריך את שם המחב"
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_poem",
+   325,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשיר קצר\nהקראה\nטקסט בלבד\n\nחפץ עושה משהו שאדם עושה. זו התמונה, לא חידה עם ת"
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_speak",
+   243,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nדיבור\nהקראה\nטקסט בלבד\n\nשלוש פניות: תגובה אישית, סיבה אחת, ומשפט על הטקסט."
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_review_1",
+   224,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_essay",
+   245,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחיבור על הטקסט\nהקראה\nטקסט בלבד\n\n100 עד 120 מילים על הטקסט: מה קורה, מה את"
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_poem2",
+   336,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשורה\nהקראה\nטקסט בלבד\n\nבוחרים שורה ואומרים מה היא עושה, לא מה היא 'באמת או"
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_turn",
+   239,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nפנייה שלישית\nהקראה\nטקסט בלבד\n\nהפנייה השלישית קושרת אתכם לטקסט במשפט אחד, "
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_review_2",
+   233,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_07_literature_oral",
+   "t_end",
+   213,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\nHow does the poe"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_mix",
+   806,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nקריאה מעורבת\nהקראה\nטקסט בלבד\n\nאותן שאלות כמו בשאלונים, על קטע שכבר מהסוג "
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_write",
+   249,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחיבור\nהקראה\nטקסט בלבד\n\nפתחו בדעה, תנו סיבה מהקטע, וסיימו במשפט אחד. 120 ע"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_oral",
+   207,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nדיבור אחרון\nהקראה\nטקסט בלבד\n\nתגובה אישית בלי לקרוא מהדף.\n\nמילת יעד\nI agre"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_review_1",
+   231,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_read2",
+   1057,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהסקה בבחינה\nהקראה\nטקסט בלבד\n\nבבחינה ההסקה עדיין חייבת להישען על הקטע.\n\nמי"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_write2",
+   253,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאורך ודיוק\nהקראה\nטקסט בלבד\n\nבחיבור הדיוק נספר. בקריאה כתיב לבדו לא מוריד."
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_last",
+   215,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמשפט אחרון\nהקראה\nטקסט בלבד\n\nסוגרים במשפט אחד שאפשר לומר גם בעל פה.\n\nמילת "
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_review_2",
+   234,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחזרה\nחזרה מעורבת\nהקראה\nטקסט בלבד\n\nשאלות על מה שכבר למדתם. אין מילה חדשה.\n"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "sim_1",
+   1846,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nRemote Work After the Pandemic\nהקראה\nטקסט בלבד\n\nקראו את הקטע.\n\nמילת יעד\nM"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "sim_2",
+   1676,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nHousing Costs in Growing Cities\nהקראה\nטקסט בלבד\n\nקראו את הקטע.\n\nמילת יעד\n"
+  ],
+  [
+   "path_english_bagrut5_08_exam",
+   "t_end",
+   287,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "בדיקה\nבדיקת סוף\nהקראה\nטקסט בלבד\n\nשאלה אחת על כל הדרך.\n\nמילת יעד\nSpelling in a re"
+  ],
+  [
+   "path_math_bagrut5_01_analysis",
+   "t_rate",
+   180,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nקצב שינוי\nהקראה\nטקסט בלבד\n\nשיפוע של ישר הוא כמה y משתנה כש־x גדל ב־1. מה "
+  ],
+  [
+   "path_math_bagrut5_01_analysis",
+   "t_poly",
+   180,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nפולינום\nהקראה\nטקסט בלבד\n\nבפולינום, הנגזרת של x בחזקת n היא n כפול x בחזקת"
+  ],
+  [
+   "path_math_bagrut5_01_analysis",
+   "t_root",
+   195,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשורש ורציונלית\nהקראה\nטקסט בלבד\n\nלפונקציית שורש, התחום הוא איפה שהביטוי שב"
+  ],
+  [
+   "path_math_bagrut5_02_geometry",
+   "t_triangle",
+   187,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהמשולש\nהקראה\nטקסט בלבד\n\nסכום הזוויות במשולש הוא 180 מעלות. במשולש שתי זוו"
+  ],
+  [
+   "path_math_bagrut5_02_geometry",
+   "t_circle",
+   226,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהמעגל\nהקראה\nטקסט בלבד\n\nזווית מרכזית נשענת על קשת. זווית היקפית על אותה קש"
+  ],
+  [
+   "path_math_bagrut5_02_geometry",
+   "t_similar",
+   193,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nדמיון\nהקראה\nטקסט בלבד\n\nבמשולשים דומים, יחס הצלעות שווה. השטח גדל לפי ריבו"
+  ],
+  [
+   "path_math_bagrut5_03_trigonometry",
+   "t_right",
+   206,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמשולש ישר זווית\nהקראה\nטקסט בלבד\n\nבמשולש ישר זווית, סינוס הזווית הוא הניצב"
+  ],
+  [
+   "path_math_bagrut5_03_trigonometry",
+   "t_sine",
+   174,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמשפט הסינוסים\nהקראה\nטקסט בלבד\n\nבכל משולש, a/sin A = b/sin B. אם a=6 ו־sin"
+  ],
+  [
+   "path_math_bagrut5_03_trigonometry",
+   "t_eq",
+   197,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמשוואה בסיסית\nהקראה\nטקסט בלבד\n\nsin x = 0 כש־x הוא כפולה שלמה של 180 מעלות"
+  ],
+  [
+   "path_math_bagrut5_04_calculus",
+   "t_seq",
+   186,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nסדרה חשבונית\nהקראה\nטקסט בלבד\n\nבסדרה חשבונית האיבר הכללי הוא a1 ועוד (n−1)"
+  ],
+  [
+   "path_math_bagrut5_04_calculus",
+   "t_induct",
+   184,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאינדוקציה\nהקראה\nטקסט בלבד\n\nהוכחה באינדוקציה בודקת בסיס, ואז צעד מ־n אל n+"
+  ],
+  [
+   "path_math_bagrut5_04_calculus",
+   "t_int",
+   166,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאינטגרל\nהקראה\nטקסט בלבד\n\nהאינטגרל של 2x הוא x² ועוד קבוע. מה האינטגרל הלא"
+  ],
+  [
+   "path_math_bagrut5_05_probability",
+   "t_simple",
+   195,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמרחב שווה\nהקראה\nטקסט בלבד\n\nכשכל התוצאות שוות, ההסתברות היא מספר המתאימות "
+  ],
+  [
+   "path_math_bagrut5_05_probability",
+   "t_union",
+   206,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמאורעות זרים\nהקראה\nטקסט בלבד\n\nלמאורעות זרים, הסתברות האיחוד היא סכום ההסת"
+  ],
+  [
+   "path_math_bagrut5_05_probability",
+   "t_cond",
+   191,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהסתברות מותנית\nהקראה\nטקסט בלבד\n\nP(A|B) = P(A ו־B) חלקי P(B), כש־P(B) חיוב"
+  ],
+  [
+   "path_math_bagrut5_06_vectors",
+   "t_vec",
+   190,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nכפל בסקלר\nהקראה\nטקסט בלבד\n\nלכל וקטור u ולכל מספר ממשי a, המכפלה a·u היא ו"
+  ],
+  [
+   "path_math_bagrut5_06_vectors",
+   "t_dep",
+   204,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nתלות לינארית\nהקראה\nטקסט בלבד\n\nוקטור תלוי לינארית בקבוצה אם הוא צירוף לינא"
+  ],
+  [
+   "path_math_bagrut5_06_vectors",
+   "t_dot",
+   226,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמכפלה סקלארית\nהקראה\nטקסט בלבד\n\nהמכפלה הסקלארית היא מכפלת האורכים בקוסינוס"
+  ],
+  [
+   "path_math_bagrut5_06_vectors",
+   "t_coord",
+   205,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהצגה אלגברית\nהקראה\nטקסט בלבד\n\nוקטור שזנבו בראשית מיוצג על ידי נקודת הראש "
+  ],
+  [
+   "path_math_bagrut5_06_vectors",
+   "t_cyl",
+   175,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nגליל ישר\nהקראה\nטקסט בלבד\n\nנפח גליל ישר הוא שטח הבסיס כפול הגובה. שטח הבסי"
+  ],
+  [
+   "path_math_bagrut5_07_analytic",
+   "t_div",
+   217,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחלוקת קטע\nהקראה\nטקסט בלבד\n\nחלוקה פנימית ביחס m:n מ־A ל־B שמה נקודה במרחק "
+  ],
+  [
+   "path_math_bagrut5_07_analytic",
+   "t_circ",
+   180,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמעגל\nהקראה\nטקסט בלבד\n\nעל מעגל שמרכזו בראשית ורדיוסו r מתקיים x²+y²=r². רד"
+  ],
+  [
+   "path_math_bagrut5_07_analytic",
+   "t_par",
+   206,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nפרבולה\nהקראה\nטקסט בלבד\n\nבפרבולה, המרחק מנקודה למוקד שווה למרחקה מהמדריך. "
+  ],
+  [
+   "path_math_bagrut5_07_analytic",
+   "t_ell",
+   201,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאליפסה\nהקראה\nטקסט בלבד\n\nבאליפסה, סכום המרחקים משני המוקדים קבוע. הסכום הק"
+  ],
+  [
+   "path_math_bagrut5_07_analytic",
+   "t_hyp",
+   208,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהיפרבולה\nהקראה\nטקסט בלבד\n\nבהיפרבולה, הפרש המרחקים משני המוקדים קבוע. ההפר"
+  ],
+  [
+   "path_math_bagrut5_08_exp",
+   "t_log",
+   199,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nלוגריתם של מכפלה\nהקראה\nטקסט בלבד\n\nלוגריתם של מכפלה, באותו בסיס, הוא סכום "
+  ],
+  [
+   "path_math_bagrut5_08_exp",
+   "t_exp",
+   151,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nנגזרת מעריכית\nהקראה\nטקסט בלבד\n\nהנגזרת של e^x היא e^x. מה הנגזרת של e^x?\n\n"
+  ],
+  [
+   "path_math_bagrut5_08_exp",
+   "t_ln",
+   178,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאינטגרל של 1/x\nהקראה\nטקסט בלבד\n\nהאינטגרל של 1/x הוא ln|x| ועוד קבוע. מה ה"
+  ],
+  [
+   "path_math_bagrut5_09_complex",
+   "t_i",
+   134,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהמספר i\nהקראה\nטקסט בלבד\n\nהמספר i מקיים i² = -1. מה i²?\n\nאפשר להציץ פנימה "
+  ],
+  [
+   "path_math_bagrut5_09_complex",
+   "t_mod",
+   170,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nערך מוחלט\nהקראה\nטקסט בלבד\n\nהערך המוחלט של a+bi הוא השורש של a²+b². מה הער"
+  ],
+  [
+   "path_math_bagrut5_09_complex",
+   "t_moivre",
+   201,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nדה־מואבר\nהקראה\nטקסט בלבד\n\nלפי משפט דה־מואבר, הזווית בהצגה הקוטבית מוכפלת "
+  ],
+  [
+   "path_math_bagrut5_09_complex",
+   "t_unity",
+   210,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nשורשי היחידה\nהקראה\nטקסט בלבד\n\nשורשי היחידה מסדר n יושבים כקודקודי מצולע מ"
+  ],
+  [
+   "path_physics_bagrut5_01_mechanics",
+   "t_kin",
+   192,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nתנועה קצובה\nהקראה\nטקסט בלבד\n\nבמהירות קבועה, הדרך היא מהירות כפול זמן. מהי"
+  ],
+  [
+   "path_physics_bagrut5_01_mechanics",
+   "t_newton",
+   206,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהחוק השני\nהקראה\nטקסט בלבד\n\nהחוק השני: הכוח השקול שווה מסה כפול תאוצה. מסה"
+  ],
+  [
+   "path_physics_bagrut5_01_mechanics",
+   "t_energy",
+   212,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאנרגיה קינטית\nהקראה\nטקסט בלבד\n\nאנרגיה קינטית היא חצי מסה כפול מהירות בריב"
+  ],
+  [
+   "path_physics_bagrut5_02_electricity",
+   "t_ohm",
+   168,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחוק אום\nהקראה\nטקסט בלבד\n\nהמתח שווה זרם כפול התנגדות. זרם 2 אמפר והתנגדות "
+  ],
+  [
+   "path_physics_bagrut5_02_electricity",
+   "t_series",
+   174,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nטור\nהקראה\nטקסט בלבד\n\nבטור, ההתנגדות הכוללת היא סכום ההתנגדויות. 2 אום בטו"
+  ],
+  [
+   "path_physics_bagrut5_02_electricity",
+   "t_power",
+   160,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהספק\nהקראה\nטקסט בלבד\n\nההספק שווה מתח כפול זרם. מתח 3 וולט וזרם 2 אמפר. מה"
+  ],
+  [
+   "path_physics_bagrut5_03_waves",
+   "t_mirror",
+   190,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהחזרה\nהקראה\nטקסט בלבד\n\nבמראה מישורית, זווית הפגיעה שווה לזווית ההחזרה. זו"
+  ],
+  [
+   "path_physics_bagrut5_03_waves",
+   "t_wave",
+   184,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמהירות גל\nהקראה\nטקסט בלבד\n\nמהירות הגל שווה תדירות כפול אורך גל. תדירות 5 "
+  ],
+  [
+   "path_physics_bagrut5_03_waves",
+   "t_lens",
+   213,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nעדשה דקה\nהקראה\nטקסט בלבד\n\nבעדשה מרכזת, קרן מקבילה לציר עוברת אחרי העדשה ד"
+  ],
+  [
+   "path_physics_bagrut5_04_modern",
+   "t_photon",
+   180,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nפוטון\nהקראה\nטקסט בלבד\n\nאנרגיית פוטון היא קבוע פלאנק כפול התדירות. אם התדי"
+  ],
+  [
+   "path_physics_bagrut5_04_modern",
+   "t_photo",
+   213,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nאפקט פוטואלקטרי\nהקראה\nטקסט בלבד\n\nמתחת לתדירות סף אין פליטת אלקטרונים, גם "
+  ],
+  [
+   "path_physics_bagrut5_04_modern",
+   "t_level",
+   220,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nרמות\nהקראה\nטקסט בלבד\n\nאטום פולט פוטון כשהוא יורד מרמה גבוהה לנמוכה. הפרש "
+  ],
+  [
+   "path_physics_bagrut5_05_magnetism",
+   "t_src",
+   226,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nמקורות השדה\nהקראה\nטקסט בלבד\n\nתיל ישר וארוך, כריכה מעגלית וסילונית הם מקור"
+  ],
+  [
+   "path_physics_bagrut5_05_magnetism",
+   "t_lorentz",
+   210,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nכוח לורנץ\nהקראה\nטקסט בלבד\n\nכוח לורנץ פועל על מטען שנע בשדה מגנטי, לא על מ"
+  ],
+  [
+   "path_physics_bagrut5_05_magnetism",
+   "t_amp",
+   191,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nהאמפר\nהקראה\nטקסט בלבד\n\nהאמפר מוגדר באמצעות הכוח בין שני תיילים מקבילים נו"
+  ],
+  [
+   "path_physics_bagrut5_05_magnetism",
+   "t_faraday",
+   227,
+   false,
+   {
+    "scrollW": 390,
+    "clientW": 390,
+    "bad": []
+   },
+   "לומדים\nחוק פרדיי\nהקראה\nטקסט בלבד\n\nכא״מ מושרה נוצר כשהשטף המגנטי דרך מעגל משתנה. "
+  ],
+  [
+   "path_physics_bagrut5_lab",
+   null,
+   0,
+   false,
+   null,
+   ""
+  ]
+ ]
+}

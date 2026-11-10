@@ -93,3 +93,48 @@ Not covered: dark theme, en/ar UI locales, add-path with a live gateway.
 | desktop, mobile | `/terms` | 404 Not Found (console "Failed to load resource") |
 
 No `pageerror`, no `requestfailed`. (Harness-only 404s from `GET /api/placement/result` before a placement was finished are not app bugs and are not listed.)
+
+---
+
+## B5 re-run after the filler removal and the AMIRNET road (2026-11-11, 00:33 to 00:55 Israel time, UTC+2)
+
+App `supergrok-picks-2026-11-05` at `247c01b` with MyRoad-content `fix/remove-pad-filler` at `4ca3c10` ([MyRoad-content #56](https://github.com/Eliot100/MyRoad-content/pull/56)).
+Separate smoke test: app `feat/amirnet-road` at `0dff158` ([MyRoad #258](https://github.com/Eliot100/MyRoad/pull/258)) with content `feat/amirnet-road` at `5454504` ([MyRoad-content #55](https://github.com/Eliot100/MyRoad-content/pull/55)).
+
+### How it was run
+
+- Fresh clones under `/workspace/overnight/qa-b5/` (box), same env as B1 (`MYROAD_DEV_MAIL_CONSOLE=1`, `MYROAD_DEV_INSECURE_COOKIES=1`), branch app on port 8771, AMIRNET app on 8772, fresh SQLite each.
+- Playwright (Chromium headless), desktop 1280x800 and mobile 390x844 (touch). Each viewport registered a learner, took the math placement at 0% (lands in math 01 at band 1), read the first teaching tiles, answered the first practice.
+- Sweep (mobile): for all 28 bagrut5 roads, the first tile of every topic (140 tiles, `?view=learn&topic=…`) checked for the filler pattern `בדיקה N: X ועוד 1` and for any element of the step card wider than the viewport.
+- Scripts: [`tools/qa_b5.py`](overnight-2026-11-11/tools/qa_b5.py), [`tools/amirnet_smoke_b5.py`](overnight-2026-11-11/tools/amirnet_smoke_b5.py). Logs: [`qa-log-b5.json`](overnight-2026-11-11/qa-log-b5.json), [`qa-log-b5-amirnet.json`](overnight-2026-11-11/qa-log-b5-amirnet.json).
+
+### Results
+
+- **Filler is gone.** 0 of 140 swept tiles contain it (`rg` on the content agrees). The math 01 teaching tiles now show one or two short sentences.
+- **Short texts look OK.** No horizontal overflow on any of the 139 tiles that have text (the physics lab road is the expected empty state). The shortest card (math 09 "המספר i", 134 characters including the chrome) and the math 01 tiles look normal on both viewports. Math stays in LTR order inside the RTL text.
+- Placement at 0% still gives band 1 → `path_math_bagrut5_01_analysis` and lands on its first tile.
+- A wrong practice answer shows the calm lead, the right answer and "בחרו את התשובה המסומנת כדי להמשיך" (no change from B1).
+- Console errors: only the known `/privacy` and `/terms` 404s. No `pageerror`, no failed requests.
+- **AMIRNET pair works.** The road appears on the home page (sidebar group filter "אמירנט: אנגלית לפטור והשמה" and a "להתחיל באנגלית" recommended card), `/roads?group=amirnet` lists 1 road, and `/road/path_english_amirnet_01` returns 200. The first learn tile ("אמירנט ולא פסיכומטרי") continues, and the first check accepts an answer with feedback and the "עכשיו אפשר" line. `/roads?group=psychometric` lists 0 roads, so no English appears there. No console errors on this pair (it has privacy and terms from `main`).
+- Tests on the branch with `CONTENT_DIR` = filler-free content: `pytest` 795 passed (793 + 2 new); `tests_a11y` 25 passed.
+
+### Findings
+
+1. Known: `/privacy` and `/terms` still 404 on this branch (5 commits behind `main`). Merging `main` is Eliot's decision, so it was not done here.
+2. Content, needs Grok Build or an author: after the filler removal the teaching texts are thin. 60 of 168 "explanation" tiles have exactly the same text as their guided-practice question. Many learn tiles end in an open question with no answer and only a "הבנתי, ממשיכים" button. Example: math 01 "קצב שינוי": "…מה השיפוע בין (1, 2) ל־(3, 8)?". This is not a layout bug.
+3. Content typo, small: in `path_arabic_bagrut5_03_verbs` the word "יكتب" (5 places) starts with a Hebrew yod (U+05D9) instead of the Arabic ya, so it should read "يكتب". It comes from `scripts/build_bagrut5_roads.py` line 759 in MyRoad-content. It was not fixed here because this run commits only to the app branch.
+4. Fixed in B5 (a11y): on a right answer whose authored `feedback_ok` already opens with the verdict word ("נכון. …", which covers most bagrut5 content), the visually hidden verdict "נכון." was also rendered, so screen readers said "נכון. נכון.". `_step_card.html` now skips the hidden verdict when the feedback's first word is the verdict word. Two tests were added in `tests/test_step_player.py`: one failed before the fix, and the other keeps the hidden verdict for feedback like "מצוין! …". One existing assertion now accepts the visible "נכון!" as the verdict.
+5. Note: the psychometric group currently has no roads at all on the AMIRNET pair, so its filter shows "לא נמצאה דרך". The verbal and quantitative roads are still to come (content plan).
+
+### Screenshots
+
+Under [`screens/overnight-2026-11-11-b5/`](screens/overnight-2026-11-11-b5/), viewport-only, 128-colour PNG:
+
+| Screen | Desktop | Mobile |
+|---|---|---|
+| Home, signed in | `desktop-01-home.png` | `mobile-01-home.png` |
+| Road screen, math 01 | `desktop-02-road-math-analysis.png` | `mobile-02-road-math-analysis.png` |
+| Teaching stage, math 01 (no filler) | `desktop-03-teaching-stage.png` | `mobile-03-teaching-stage.png` |
+| Practice after a wrong answer | `desktop-04-practice-after-answer.png` | `mobile-04-practice-after-answer.png` |
+| Placement question, math | `desktop-05-placement-question.png` | `mobile-05-placement-question.png` |
+| AMIRNET (feat/amirnet-road): home / first check answered | `desktop-06-amirnet-home.png` | `mobile-06-amirnet-step.png` |
