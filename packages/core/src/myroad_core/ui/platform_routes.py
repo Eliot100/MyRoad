@@ -599,7 +599,20 @@ def register_platform_routes(
             sess["attempt_saved"] = True
             sess["last_attempt"] = attempt
             if _is_placement(sess["pathId"]) and sess.get("userId"):
-                apply_placement_plan(store, sess["userId"], sess["pathId"], int(nums["incorrectTaps"] or 0))
+                answers = []
+                try:
+                    answers = store.first_try_answers(
+                        sess["userId"], sess["pathId"], since=sess.get("started_at")
+                    )
+                except Exception:
+                    answers = []
+                if answers:
+                    right = sum(1 for _bid, ok in answers if ok)
+                    wrong = sum(1 for _bid, ok in answers if not ok)
+                else:
+                    right = int(nums["correctTaps"] or 0)
+                    wrong = int(nums["incorrectTaps"] or 0)
+                apply_placement_plan(store, sess["userId"], sess["pathId"], wrong, right)
         else:
             attempt = sess.get("last_attempt") or store.latest_attempt(sess["userId"], sess["pathId"])
         needs = nums["masteryPct"] < 85.0 or nums["incorrectTaps"] >= 2
@@ -726,9 +739,20 @@ def register_platform_routes(
         if not user_id:
             return None
         try:
-            return store.get_progress(user_id, ENGLISH_SERIES[0][0])
+            progress = store.get_progress(user_id, ENGLISH_SERIES[0][0])
         except Exception:
             return None
+        if not progress:
+            return None
+        try:
+            detail = store.get_placement_detail(user_id, ENGLISH_SERIES[0][0]) or {}
+        except Exception:
+            detail = {}
+        level = detail.get("startingLevel")
+        if isinstance(level, int):
+            progress = dict(progress)
+            progress["startingLevel"] = level
+        return progress
 
     def _with_series_lock(
         path_id: str,
@@ -811,6 +835,11 @@ def register_platform_routes(
             return None
         learner = _learner(request)
         progress = store.get_progress(learner["userId"], path_id) if learner else None
+        if progress and learner:
+            detail = store.get_placement_detail(learner["userId"], path_id) or {}
+            if isinstance(detail.get("startingLevel"), int):
+                progress = dict(progress)
+                progress["startingLevel"] = detail["startingLevel"]
         band = english_placement_band(progress)
         target = placement_target(store, path_id, band)
         if target["routing_gap"] and learner:

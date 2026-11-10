@@ -15,11 +15,11 @@ Both also return (#211, decision 0012) ``domains: [{id, level 1-5, score 0-100, 
 ``overall`` (0-100) and ``weights`` ({domain: w}, sum 1, lower score = higher weight) from
 the adaptive placement's first-try answers.
 
-``band`` is the English series index from ``placement_band`` (1, 3 or 5) and
-``gap`` is the series road id at that index. ``recommended_road_id`` is the published
-road whose ``placement_route`` (content) covers the band, else null (still 200). The result is
-stored on the learner's placement progress row (existing ``PathStore`` SQLite
-table), so the series map and locks read the same result.
+``band`` is the starting level 1-5 from the first-try percent (see
+``placement_score``). An exact edge of 20, 40, 60 or 80 uses the hardest
+answered item as the tie-break. ``gap`` is the English series road at that
+index when the placement is the English one. ``recommended_road_id`` is the
+published road whose ``placement_route`` covers the band, else null (still 200).
 """
 
 from __future__ import annotations
@@ -34,7 +34,9 @@ from myroad_core import placement_cat
 from myroad_core.auth.sessions import SESSION_COOKIE
 from myroad_core.content.english_bagrut import SERIES, placement_band
 from myroad_core.content.loader import list_catalog_cards
+from myroad_core.content.placement_score import level_from_counts, tie_up_from_answers
 from myroad_core.content.variants import route_by_band, select_variants
+from myroad_core.ui.continue_plan import apply_placement_plan
 from myroad_core.ui.i18n import COOKIE_LOCALE, normalize_locale
 from myroad_core.store_schema import _iso_now
 
@@ -143,8 +145,13 @@ def register_placement_api(app, *, store) -> None:
             detail = placement_cat.summarize(items, answers)
         return {k: detail.get(k) for k in ("domains", "overall", "weights")}
 
-    def _result(progress: dict[str, Any], placement_id: str = PLACEMENT_ID) -> dict[str, Any]:
-        band = placement_band(progress)
+    def _result(progress: dict[str, Any], placement_id: str = PLACEMENT_ID, *, uid: str | None = None) -> dict[str, Any]:
+        stored = None
+        if uid:
+            detail = store.get_placement_detail(uid, placement_id) or {}
+            if isinstance(detail.get("startingLevel"), int):
+                stored = detail["startingLevel"]
+        band = placement_band(progress, level=stored)
         target = placement_target(store, placement_id, band)
         road = target["road"]
         first_step = None
@@ -196,9 +203,16 @@ def register_placement_api(app, *, store) -> None:
         items = _placement_items(uid, pid)
         by_key = {k: it.block_id for it in items for k in (it.block_id, it.node_id)}
         mapped = [(by_key[q], ok) for q, ok in first.items() if q in by_key]
+        tie = tie_up_from_answers(items, mapped) if mapped else None
+        level = level_from_counts(correct, incorrect, tie_up=tie)
         if items:
-            store.save_placement_detail(uid, pid, placement_cat.summarize(items, mapped))
-        result = {**_result(progress, pid), **_detail(uid, progress, pid)}
+            detail = placement_cat.summarize(items, mapped)
+        else:
+            detail = {}
+        detail["startingLevel"] = level
+        store.save_placement_detail(uid, pid, detail)
+        apply_placement_plan(store, uid, pid, incorrect, correct, tie_up=tie)
+        result = {**_result(progress, pid, uid=uid), **_detail(uid, progress, pid)}
         for qid, ok in first.items():
             store.emit_server_event(uid, "placement_answer", path_id=pid, block_id=qid[:160], ok=ok)
         store.emit_server_event(uid, "placement_result", path_id=pid, band=result["band"],
@@ -216,7 +230,7 @@ def register_placement_api(app, *, store) -> None:
         progress = store.get_progress(uid, pid)
         if not progress or not progress.get("completedAt"):
             return _error(404, "no_placement_result")
-        return JSONResponse({**_result(progress, pid), **_detail(uid, progress, pid)})
+        return JSONResponse({**_result(progress, pid, uid=uid), **_detail(uid, progress, pid)})
 
     @app.get("/api/settings/steps")
     def get_step_settings(request: Request) -> JSONResponse:

@@ -46,7 +46,7 @@ def _answers(wrong: int, right: int = 5) -> dict:
 
 def test_match_returns_published_road_and_first_step(app):
     c = _client(app)
-    r = c.post(URL, json=_answers(wrong=5), headers=H)
+    r = c.post(URL, json=_answers(wrong=9, right=1), headers=H)
     assert r.status_code == 200
     body = r.json()
     assert body["band"] == 1 and body["gap"] == ZERO
@@ -66,13 +66,13 @@ def test_no_match_is_200_with_null(app):
 
 def test_repeat_call_is_deterministic_and_get_returns_last(app):
     c = _client(app)
-    first = c.post(URL, json=_answers(wrong=1), headers=H).json()
-    again = c.post(URL, json=_answers(wrong=1), headers=H).json()
+    first = c.post(URL, json=_answers(wrong=5, right=5), headers=H).json()
+    again = c.post(URL, json=_answers(wrong=5, right=5), headers=H).json()
     assert {k: v for k, v in first.items() if k != "completedAt"} == {
         k: v for k, v in again.items() if k != "completedAt"
     }
     assert first["band"] == 3
-    last = c.post(URL, json=_answers(wrong=6), headers=H).json()
+    last = c.post(URL, json=_answers(wrong=9, right=1), headers=H).json()
     assert c.get(URL).json() == last and last["band"] == 1
 
 
@@ -117,7 +117,7 @@ def test_placement_routes_to_arabic_path(tmp_path: Path, monkeypatch: pytest.Mon
     try:
         c = _client(create_learner_app(store=store, seed=False, seed_content=True))
         body = c.post(URL, json={**_answers(wrong=5), "placementId": ar_place}, headers=H).json()
-        assert body["band"] == 1 and body["recommended_road_id"] == ar_zero and body["placement_id"] == ar_place
+        assert body["band"] == 3 and body["recommended_road_id"] == ar_zero and body["placement_id"] == ar_place
         assert c.get(URL, params={"placementId": ar_place}).json() == body
         high = c.post(URL, json={**_answers(wrong=0), "placementId": ar_place}, headers=H).json()
         assert high["band"] == 5 and high["recommended_road_id"] == ar_zero and high["routing_gap"] is True
@@ -142,7 +142,7 @@ def test_english_routing_reads_placement_route(tmp_path: Path, monkeypatch: pyte
     store = PathStore(str(tmp_path / "p.db"))
     try:
         c = _client(create_learner_app(store=store, seed=False, seed_content=True))
-        body = c.post(URL, json=_answers(wrong=5), headers=H).json()
+        body = c.post(URL, json=_answers(wrong=9, right=1), headers=H).json()
         assert body["band"] == 1 and body["recommended_road_id"] == "path_english_bagrut5_03_time"
     finally:
         store.close()

@@ -6,27 +6,50 @@ from __future__ import annotations
 
 from typing import Any
 
+from myroad_core.content.placement_score import level_from_counts
 
-def plan_from_wrong(incorrect: int) -> dict[str, int]:
-    """Starting level and a weekly plan from how many placement items were wrong.
-
-    4 or more: level 1, a short week. 1 to 3: level 2. None: level 3.
-    Days are only 2, 3 or 5, the goals the learner store already accepts.
-    """
-    n = int(incorrect)
-    if n >= 4:
-        return {"startingLevel": 1, "weeklyTiles": 12, "weeklyMinutes": 40, "weeklyGoal": 2}
-    if n >= 1:
-        return {"startingLevel": 2, "weeklyTiles": 20, "weeklyMinutes": 70, "weeklyGoal": 3}
-    return {"startingLevel": 3, "weeklyTiles": 30, "weeklyMinutes": 100, "weeklyGoal": 5}
+# Tiles, minutes, and the day goal the learner store already accepts (2, 3 or 5).
+_WEEK = {
+    1: (12, 40, 2),
+    2: (16, 55, 2),
+    3: (20, 70, 3),
+    4: (25, 85, 5),
+    5: (30, 100, 5),
+}
 
 
-def apply_placement_plan(store: Any, user_id: str, placement_id: str, incorrect: int) -> dict[str, int]:
+def plan_from_score(correct: int, incorrect: int, *, tie_up: bool | None = None) -> dict[str, int]:
+    """Starting level 1-5 and the weekly plan that level sets."""
+    level = level_from_counts(correct, incorrect, tie_up=tie_up)
+    tiles, minutes, days = _WEEK[level]
+    return {
+        "startingLevel": level,
+        "weeklyTiles": tiles,
+        "weeklyMinutes": minutes,
+        "weeklyGoal": days,
+    }
+
+
+def plan_from_wrong(incorrect: int, correct: int = 0, *, tie_up: bool | None = None) -> dict[str, int]:
+    """Same plan, with the wrong-count first so older callers keep their argument order."""
+    return plan_from_score(correct, incorrect, tie_up=tie_up)
+
+
+def apply_placement_plan(
+    store: Any,
+    user_id: str,
+    placement_id: str,
+    incorrect: int,
+    correct: int | None = None,
+    *,
+    tie_up: bool | None = None,
+) -> dict[str, int]:
     """Set the plan once. An existing weekly tile target or day goal is left as the learner set it.
 
     ``startingLevel`` is merged into the stored placement detail so a CAT summary stays.
+    ``correct`` defaults to 0. Pass both counts from first-try answers, not from retries.
     """
-    plan = plan_from_wrong(incorrect)
+    plan = plan_from_score(0 if correct is None else correct, incorrect, tie_up=tie_up)
     current = store.get_road_plan(user_id)
     if current.get("weeklyTiles") is None:
         store.set_road_plan(

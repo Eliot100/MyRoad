@@ -2,13 +2,15 @@
 
 The chain is still 00 then 01 … 08. A finished placement does not force a
 beginner through every earlier road, and it does not open the exam roads
-before the weak band. Progress fields already stored on the placement path
-are enough: completedAt, incorrectTaps, needsPractice.
+before the weak band. The band is a starting level 1-5 from the score
+(see placement_score). Roads 06-08 still open one at a time after that.
 """
 
 from __future__ import annotations
 
 from typing import Any
+
+from myroad_core.content.placement_score import level_from_counts
 
 SERIES: tuple[tuple[str, str, str], ...] = (
     ("path_english_bagrut5_00_placement", "מבדק רמה", "Level check"),
@@ -33,18 +35,21 @@ def series_index(path_id: str) -> int | None:
     return _INDEX.get(path_id)
 
 
-def placement_band(progress: dict[str, Any] | None) -> int:
-    """Highest road index (1-8) the learner should work now. 0 means still on the placement."""
+def placement_band(progress: dict[str, Any] | None, *, level: int | None = None) -> int:
+    """Road index 1-5 to open now. 0 means the placement is not finished.
+
+    A stored ``startingLevel`` (or ``level``) wins, so a tie that was already
+    broken stays broken. Otherwise the level is the first-try percent.
+    """
     if not progress or not progress.get("completedAt"):
         return 0
-    # incorrectTaps on a placement holds first-try wrong items only (#199); needsPractice
-    # is not used: a finished placement is banded, never sent to practice.
+    stored = level if level is not None else progress.get("startingLevel")
+    if isinstance(stored, int) and 1 <= stored <= 5:
+        return stored
+    # incorrectTaps on a placement holds first-try wrong items only (#199).
+    correct = int(progress.get("correctTaps") or 0)
     wrong = int(progress.get("incorrectTaps") or 0)
-    if wrong >= 4:
-        return 1
-    if wrong >= 1:
-        return 3
-    return 5
+    return level_from_counts(correct, wrong)
 
 
 def open_through(progress: dict[str, Any] | None, completed: set[str]) -> int:

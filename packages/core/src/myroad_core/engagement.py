@@ -186,7 +186,15 @@ def start_stage(store, user_id: str, doc: dict[str, Any], total: int) -> int | N
     pid = route.get("from_placement")
     if not pid:
         return None
-    band = placement_band(store.get_progress(user_id, pid))
+    progress = store.get_progress(user_id, pid)
+    level = None
+    try:
+        detail = store.get_placement_detail(user_id, pid) or {}
+        if isinstance(detail.get("startingLevel"), int):
+            level = detail["startingLevel"]
+    except Exception:
+        level = None
+    band = placement_band(progress, level=level)
     if not band:
         return None
     lo, hi = int(route.get("band_min", 1)), int(route.get("band_max", 8))

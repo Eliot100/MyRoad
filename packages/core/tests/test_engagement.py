@@ -176,7 +176,7 @@ def test_goal_meter_stages_and_placement(store, monkeypatch):
     Clock(monkeypatch, "2026-11-02T08:00:00+02:00")
     _progress(store, {"b0", "b1", "b2", "b3"}, index=4)
     store.save_progress(U, PLACE, version_id=None, node_index=0, mastered=set(), correct_taps=5,
-                        incorrect_taps=2, completed_at="2026-11-01T08:00:00+00:00")  # band 3
+                        incorrect_taps=5, completed_at="2026-11-01T08:00:00+00:00")  # 50 percent, level 3
     gm = engagement_for(store, U, _doc())["goal_meter"]
     assert gm == {"target_label": '5 יח"ל', "stage": 1, "stages_total": 4, "start_stage": 1, "from_placement": True}
     store.save_progress(U, PLACE, version_id=None, node_index=0, mastered=set(), correct_taps=5,

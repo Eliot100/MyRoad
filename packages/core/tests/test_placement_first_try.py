@@ -84,24 +84,26 @@ def test_first_try_wrong_then_right_is_one_wrong(env):
     c, store = env
     _play(c, [1, 0, 0])
     _uid, prog = _progress(c, store)
-    assert prog["incorrectTaps"] == 1 and placement_band(prog) == 3
+    assert prog["incorrectTaps"] == 1 and placement_band(prog) == 4
 
 
 def test_repeated_wrong_taps_on_one_item_count_once(env):
     c, store = env
     _play(c, [6, 0, 0])
     _uid, prog = _progress(c, store)
-    assert prog["incorrectTaps"] == 1 and placement_band(prog) == 3
+    assert prog["incorrectTaps"] == 1 and placement_band(prog) == 4
     assert not prog["needsPractice"]
 
 
-def test_three_items_five_wrong_taps_each_is_band_3_not_1(env):
+def test_three_first_try_misses_stay_three_and_not_fifteen(env):
     c, store = env
     _play(c, [5, 5, 5])
-    _uid, prog = _progress(c, store)
-    assert prog["incorrectTaps"] == 3 and placement_band(prog) == 3
+    uid, prog = _progress(c, store)
+    assert prog["incorrectTaps"] == 3
     body = c.get(URL).json()
-    assert body["band"] == 3 and body["incorrect"] == 3
+    # Fifteen taps must not move the level. The stored level is the first try: 0 of 3.
+    assert body["band"] == 1 and body["incorrect"] == 3
+    assert store.get_placement_detail(uid, PLACE)["startingLevel"] == 1
 
 
 def test_store_counts_first_answer_per_item(env):
@@ -120,7 +122,7 @@ def test_api_uses_first_answer_per_question(env):
         answers += [{"questionId": q, "correct": False}] * 5 + [{"questionId": q, "correct": True}]
     answers += [{"questionId": "q3", "correct": True}, {"questionId": "q3", "correct": False}]
     body = c.post(URL, json={"answers": answers}, headers=H).json()
-    assert body["band"] == 3 and body["incorrect"] == 3 and body["correct"] == 1
+    assert body["band"] == 2 and body["incorrect"] == 3 and body["correct"] == 1
     assert c.get(URL).json() == body
     four = [{"questionId": f"w{i}", "correct": False} for i in range(4)]
     assert c.post(URL, json={"answers": four}, headers=H).json()["band"] == 1

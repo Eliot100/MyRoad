@@ -17,7 +17,7 @@ from auth_helpers import login
 
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
-from myroad_core.ui.continue_plan import choose_tile, plan_from_wrong
+from myroad_core.ui.continue_plan import choose_tile, plan_from_score, plan_from_wrong
 from myroad_core.ui.db_path import DEFAULT_UI_DB
 from myroad_core.ui.pwa import MANIFEST
 
@@ -45,12 +45,24 @@ def test_choose_tile_prefers_due_then_lowest_mistake_then_next() -> None:
     assert choose_tile(order, levels, mastered=set(order), wrong=set(), due=[]) is None
 
 
-def test_plan_from_wrong_bands() -> None:
-    assert plan_from_wrong(4)["startingLevel"] == 1 and plan_from_wrong(9)["weeklyGoal"] == 2
-    assert plan_from_wrong(1)["startingLevel"] == 2 and plan_from_wrong(3)["weeklyTiles"] == 20
-    assert plan_from_wrong(0) == {
-        "startingLevel": 3, "weeklyTiles": 30, "weeklyMinutes": 100, "weeklyGoal": 5,
+def test_plan_from_score_hits_every_level() -> None:
+    assert plan_from_score(0, 8)["startingLevel"] == 1 and plan_from_score(0, 8)["weeklyGoal"] == 2
+    assert plan_from_score(3, 7) == {
+        "startingLevel": 2, "weeklyTiles": 16, "weeklyMinutes": 55, "weeklyGoal": 2,
     }
+    assert plan_from_score(5, 5)["startingLevel"] == 3 and plan_from_score(5, 5)["weeklyTiles"] == 20
+    assert plan_from_score(7, 3)["startingLevel"] == 4 and plan_from_score(7, 3)["weeklyGoal"] == 5
+    assert plan_from_score(9, 1) == {
+        "startingLevel": 5, "weeklyTiles": 30, "weeklyMinutes": 100, "weeklyGoal": 5,
+    }
+    # Exact 20 percent: the harder item lifts the level, a miss or no item keeps the lower one.
+    assert plan_from_score(2, 8, tie_up=False)["startingLevel"] == 1
+    assert plan_from_score(2, 8, tie_up=True)["startingLevel"] == 2
+    assert plan_from_score(4, 6)["startingLevel"] == 2
+    assert plan_from_score(4, 6, tie_up=True)["startingLevel"] == 3
+    assert plan_from_score(6, 4, tie_up=True)["startingLevel"] == 4
+    assert plan_from_score(8, 2, tie_up=True)["startingLevel"] == 5
+    assert plan_from_wrong(0)["startingLevel"] == 5
 
 
 def test_reviews_advance_1_3_7_and_a_miss_resets(tmp_path: Path) -> None:
@@ -217,9 +229,9 @@ def test_finishing_a_placement_sets_level_and_weekly_goal(app) -> None:
     client.post(f"/play/{PLACE}/answer", data={"choice": "b"})
     uid = _uid(app, client)
     store = app.state.store
-    assert store.get_weekly_goal(uid) == {"goal": 3, "goal_set": True}
-    assert store.get_road_plan(uid)["weeklyTiles"] == 20
-    assert store.get_placement_detail(uid, PLACE)["startingLevel"] == 2
+    assert store.get_weekly_goal(uid) == {"goal": 2, "goal_set": True}
+    assert store.get_road_plan(uid)["weeklyTiles"] == 12
+    assert store.get_placement_detail(uid, PLACE)["startingLevel"] == 1
 
 
 def test_manifest_and_icons_and_hidden_install_button(tmp_path: Path) -> None:

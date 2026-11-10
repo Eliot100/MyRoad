@@ -24,14 +24,19 @@ def test_many_mistakes_open_only_the_zero_road() -> None:
     assert extra_lock(TIME, progress, set())["pathId"] == ZERO
 
 
-def test_a_few_mistakes_stop_at_time() -> None:
-    progress = {"completedAt": "2026-10-21T00:00:00Z", "incorrectTaps": 2, "needsPractice": False}
+def test_a_mid_score_stops_at_time() -> None:
+    progress = {"completedAt": "2026-10-21T00:00:00Z", "correctTaps": 5, "incorrectTaps": 5}
     assert placement_band(progress) == 3
     assert extra_lock(TIME, progress, set()) is None
     assert extra_lock(MOD_E, progress, set())["pathId"] == TIME
 
 
-def test_a_clean_placement_starts_at_module_e() -> None:
+def test_every_starting_level() -> None:
+    """Percent edges are open on the right, so these five scores are one band each."""
+    scores = {1: (0, 8), 2: (3, 7), 3: (5, 5), 4: (7, 3), 5: (9, 1)}
+    for level, (correct, wrong) in scores.items():
+        progress = {"completedAt": "2026-10-21T00:00:00Z", "correctTaps": correct, "incorrectTaps": wrong}
+        assert placement_band(progress) == level
     progress = {"completedAt": "2026-10-21T00:00:00Z", "incorrectTaps": 0, "needsPractice": False}
     assert placement_band(progress) == 5
     assert extra_lock(MOD_E, progress, set()) is None
