@@ -145,7 +145,7 @@ def test_hx_right_answer_shows_feedback_then_continue_swaps_next_step(app) -> No
     assert 'data-node-type="practice"' in card and "is-answered" in card
     right = re.search(r'<button[^>]*value="b"[^>]*>', card).group(0)
     assert "is-correct" in right and "disabled" in right
-    assert "step-feedback ok" in card and "נכון." in card
+    assert "step-feedback ok" in card and "נכון" in card  # verdict word (visible or hidden)
     assert '<bdi dir="ltr">5 − (−3) = 8</bdi>' in card  # feedback goes through the bdi filter
     # The session already moved on; the learner continues when ready.
     assert _progress(app, c)["nodeIndex"] == 2
@@ -467,3 +467,22 @@ def test_every_content_node_type_has_a_label_in_every_locale() -> None:
         j = json.loads((_CORE / "locales" / f"{code}.json").read_text(encoding="utf-8"))
         for nt in ("learn", "practice", "check", "celebrate", "piano_keys", "rhythm", "speak"):
             assert j[f"node_type_{nt}"].strip(), (code, nt)
+
+
+# --- QA 2026-11-11 (B5): the hidden verdict is not doubled when feedback_ok opens with it ---
+
+def test_right_answer_hidden_verdict_not_repeated_when_feedback_opens_with_it(app) -> None:
+    c = _at_practice(app)
+    card = _card(c.post(f"/play/{PID}/answer", data={"choice": "b"}, headers=HX).text)
+    line = re.search(r'<p class="feedback-line">.*?</p>', card, re.S).group(0)
+    # feedback_ok is "נכון! 5 − (−3) = 8.": the visible text already says the verdict.
+    assert "feedback-verdict" not in line and "נכון!" in line
+
+
+def test_right_answer_keeps_hidden_verdict_when_feedback_has_none(app) -> None:
+    c = _at_practice(app)
+    c.post(f"/play/{PID}/answer", data={"choice": "b"}, headers=HX)
+    c.get(f"/play/{PID}?view=learn", headers=HX)  # on to the check: feedback_ok "מצוין! 2 + 2 = 4."
+    card = _card(c.post(f"/play/{PID}/answer", data={"choice": "a"}, headers=HX).text)
+    line = re.search(r'<p class="feedback-line">.*?</p>', card, re.S).group(0)
+    assert '<span class="feedback-verdict visually-hidden">נכון.</span>' in line and "מצוין!" in line

@@ -263,7 +263,9 @@
     {%- if answer.ok %}
     {#- No authored feedback_ok: the server sends a bare mark; show the word, not a second ✓. -#}
     {%- set ok_text = answer.text if (answer.text and answer.text|trim not in ['✓', '']) else t('feedback_correct') %}
-    <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">✓</span>{% if ok_text != t('feedback_correct') %} <span class="feedback-verdict visually-hidden">{{ t('feedback_correct') }}</span>{% endif %} <span class="feedback-text" dir="auto"{% if fb_lang and ok_text == answer.text %} lang="{{ fb_lang }}"{% endif %}>{{ ok_text|bdi }}</span></p>
+    {#- Authored feedback that already opens with the verdict word ("נכון. …") gets no hidden verdict, so a screen reader does not say it twice. -#}
+    {%- set ok_first = ((ok_text|trim).split(' ')[0]).rstrip('.!,:') %}
+    <p class="feedback-line"><span class="feedback-mark" aria-hidden="true">✓</span>{% if ok_first != t('feedback_correct').rstrip('.!,:') %} <span class="feedback-verdict visually-hidden">{{ t('feedback_correct') }}</span>{% endif %} <span class="feedback-text" dir="auto"{% if fb_lang and ok_text == answer.text %} lang="{{ fb_lang }}"{% endif %}>{{ ok_text|bdi }}</span></p>
     {%- elif sol %}
     {#- Wrong answer (#215): calm lead, the right answer, the full worked solution, one next step. -#}
     <p class="feedback-line">{{ t('fb_wrong_lead') }}</p>
