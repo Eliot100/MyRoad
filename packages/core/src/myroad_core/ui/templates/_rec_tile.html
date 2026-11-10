@@ -2,6 +2,10 @@
   {% if c.reason %}<p class="tv-kicker">{{ c.reason }}</p>{% endif %}
   <h3 class="tv-name" id="tvr-{{ c.pathId }}"><a href="/road/{{ c.pathId }}" dir="auto"{{ c.titleLang|content_lang(locale) }}>{{ c.title }}</a></h3>
   {% if c.blurb %}<p class="tv-desc" dir="auto"{{ c.blurbLang|content_lang(locale) }}>{{ c.blurb }}</p>{% endif %}
+  {% if c.unavailable %}
+  <p class="tv-sub" data-unavailable="1">{{ t('rd_unavailable') }}</p>
+  {% else %}
   <p class="tv-goal">{{ t('tv_goal_label') }} <span>{{ t('tv_goal_derived', n=c.nodeCount or 0, m=c.estimatedMinutes or '—') }}</span></p>
-  <span class="tv-sub tv-foot">{{ c.subjectLabel }}{% if c.estimatedMinutes %} · {{ c.estimatedMinutes }} {{ t('mins') }}{% endif %}{% if c.nodeCount %} · {{ t('tv_cells', n=c.nodeCount) }}{% endif %}</span>
+  {% endif %}
+  <span class="tv-sub tv-foot">{{ c.subjectLabel }}{% if not c.unavailable and c.estimatedMinutes %} · {{ c.estimatedMinutes }} {{ t('mins') }}{% endif %}{% if not c.unavailable and c.nodeCount %} · {{ t('tv_cells', n=c.nodeCount) }}{% endif %}</span>
 </article>

@@ -129,7 +129,8 @@ def test_seed_publishes_demo_only(store: PathStore) -> None:
         if card["pathId"] in grade3:  # kids demo flag belongs to the grade-3 set
             assert card["kidsDemo"] is True
         raw = doc.model_dump(mode="json")
-        assert raw.get("topics")
+        if not raw.get("unavailable"):
+            assert raw.get("topics")
 
 
 def test_content_to_path_version_blocks() -> None:
@@ -587,4 +588,7 @@ def test_bagrut_teaching_roads_have_three_levels_and_ordered_tiles() -> None:
     assert len(paths) >= 9
     for path in paths:
         assert validate_stage_levels(path) == []
+        if path.unavailable:
+            assert not path.topics and not path.nodes
+            continue
         assert {t.level for t in path.topics} == {1, 2, 3}

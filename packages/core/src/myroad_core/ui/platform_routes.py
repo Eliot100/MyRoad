@@ -1984,6 +1984,10 @@ def register_platform_routes(
                 sess["index"] = match["startIndex"]
                 sess["view"] = "learn"
 
+        unavailable = bool(doc.get("unavailable"))
+        if unavailable:
+            sess["view"] = "map"
+
         if _maybe_done(sess, n) and sess.get("view") != "map":
             sess["view"] = "stats"
         if read_only and sess.get("view") == "stats":
@@ -2067,6 +2071,7 @@ def register_platform_routes(
                     can_resume=bool(mastered) or sess.get("index", 0) > 0,
                     locked_by=locked_by,
                     read_only=read_only,
+                    unavailable=unavailable,
                     engagement=_engagement(sess, doc, locale),
                     series_back=str(path_id).startswith("path_english_bagrut5_"),
                     sidebar=_sidebar_ctx(request, active_path=path_id),
@@ -2223,9 +2228,19 @@ def register_platform_routes(
             return requested
         return gap
 
+    def _published_unavailable(path_id: str) -> bool:
+        """A road the Ministry has not given a stage program. Play stays on the map."""
+        try:
+            doc = store.get_path_latest_published(path_id) or store.get_path_latest(path_id)
+        except NotFoundError:
+            return False
+        return bool(doc.model_dump(mode="json").get("unavailable"))
+
     @app.get("/play/{path_id}/continue")
     def play_continue(path_id: str, request: Request) -> RedirectResponse:
         """Open the next tile: a due review, else the lowest-level mistake, else the next new tile."""
+        if _published_unavailable(path_id):
+            return RedirectResponse(f"/play/{path_id}", status_code=303)
         learner = _learner(request)
         if not learner:
             return RedirectResponse(f"/play/{path_id}?view=learn", status_code=303)
@@ -2262,6 +2277,8 @@ def register_platform_routes(
         node: str = Form(""),
         reset: str = Form(""),
     ) -> RedirectResponse:
+        if _published_unavailable(path_id):
+            return RedirectResponse(f"/play/{path_id}", status_code=303)
         sess = _play_session(request, path_id, resume=not bool(reset))
         if _lock_state(request, path_id):
             # Read-only: open a topic or a tile without writing progress, and without skipping rules.
@@ -2492,6 +2509,8 @@ def register_platform_routes(
 
     @app.get("/play/{path_id}/round/{topic_id}")
     def play_round(path_id: str, topic_id: str, request: Request) -> Response:
+        if _published_unavailable(path_id):
+            return RedirectResponse(f"/play/{path_id}", status_code=303)
         sess = _play_session(request, path_id)
         rounds = sess.setdefault("rounds", {})
         state = rounds.get(topic_id)
@@ -2518,6 +2537,8 @@ def register_platform_routes(
 
     @app.post("/play/{path_id}/round/{topic_id}")
     def play_round_answer(path_id: str, topic_id: str, request: Request, choice: str = Form("")) -> Response:
+        if _published_unavailable(path_id):
+            return RedirectResponse(f"/play/{path_id}", status_code=303)
         sess = _play_session(request, path_id)
         rounds = sess.setdefault("rounds", {})
         state = rounds.get(topic_id) or new_round_state(build_round(path_id, topic_id))
@@ -2533,6 +2554,8 @@ def register_platform_routes(
 
     @app.get("/play/{path_id}/level/{level}")
     def play_level(path_id: str, level: int, request: Request) -> Response:
+        if _published_unavailable(path_id):
+            return RedirectResponse(f"/play/{path_id}", status_code=303)
         if level not in (1, 2, 3):
             return RedirectResponse(f"/play/{path_id}?view=map", status_code=303)
         sess = _play_session(request, path_id)
@@ -2551,6 +2574,8 @@ def register_platform_routes(
 
     @app.post("/play/{path_id}/level/{level}")
     def play_level_answer(path_id: str, level: int, request: Request, choice: str = Form("")) -> Response:
+        if _published_unavailable(path_id) or level not in (1, 2, 3):
+            return RedirectResponse(f"/play/{path_id}", status_code=303)
         sess = _play_session(request, path_id)
         tests = sess.setdefault("level_tests", {})
         state = tests.get(level) or new_level_state(build_level_test(path_id, level))

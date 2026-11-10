@@ -370,8 +370,11 @@ class ContentPath(BaseModel):
     score: ScoreLink | None = None
     # Optional: placement routing (a placement result band routes the learner here).
     placement_route: PlacementRoute | None = None
+    # True when the Ministry has not published a stage program. The road stays in the
+    # catalog as a calm empty state. It has no stages and no invented items.
+    unavailable: bool = False
     topics: list[ContentTopic] | None = None
-    nodes: list[ContentNode] = Field(min_length=1)
+    nodes: list[ContentNode] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod
@@ -404,6 +407,16 @@ class ContentPath(BaseModel):
             object.__setattr__(self, "title_he", self.titles.get("he"))
         if not self.blurb_he:
             object.__setattr__(self, "blurb_he", self.blurbs.get("he"))
+        return self
+
+    @model_validator(mode="after")
+    def _nodes_unless_unavailable(self) -> ContentPath:
+        if self.unavailable:
+            if self.nodes or self.topics:
+                raise ValueError(f"{self.id}: an unavailable road has no stages and no tiles")
+            return self
+        if len(self.nodes) < 1:
+            raise ValueError(f"{self.id}: nodes are required")
         return self
 
     @field_validator("id")
@@ -552,7 +565,7 @@ def validate_stage_levels(path: ContentPath) -> list[str]:
     before an earlier one. Order is the order the learner meets the tiles (``nodes``).
     """
     pid = path.id
-    if "_bagrut5_" not in pid or "placement" in pid:
+    if path.unavailable or "_bagrut5_" not in pid or "placement" in pid:
         return []
     errors: list[str] = []
     topics = list(path.topics or [])

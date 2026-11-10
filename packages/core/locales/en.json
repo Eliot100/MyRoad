@@ -634,5 +634,7 @@
   "mx_n": "{n} answers",
   "mx_seconds": "{n} s",
   "mx_time": "{m} min {s} s",
+  "rd_unavailable": "Not yet available",
+  "rd_unavailable_body": "The Ministry has not published a staged laboratory program. This road will open when it does. There are no experiments here.",
   "pwa_install": "Install on this device"
 }

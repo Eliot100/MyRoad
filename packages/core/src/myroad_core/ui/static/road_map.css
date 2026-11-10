@@ -93,6 +93,9 @@ html[data-theme="dark"] body.road-d{
 .rd-tv.rd-empty{color:var(--rd-mute)}
 .rd-nodata{font-size:11.5px;color:var(--rd-mute);margin:0}
 .rd-nodata.big{font-size:13px;padding:8px 0}.rd-dash{font-size:20px;font-weight:700;margin-inline-end:6px}
+.rd-wait{margin:28px 0 48px;max-width:38rem}
+.rd-wait h2{margin:0 0 8px;font-size:1.35rem;font-weight:650;letter-spacing:-.01em}
+.rd-wait p{margin:0;line-height:1.6;color:var(--rd-ink)}
 .rd-pb{height:4px;border-radius:4px;background:var(--rd-track);margin-top:5px;overflow:hidden}
 .rd-pb b{display:block;height:100%;background:linear-gradient(270deg,var(--rd-t2),var(--rd-t));border-radius:4px}
 .rd-drawers{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}

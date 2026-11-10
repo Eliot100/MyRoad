@@ -319,7 +319,7 @@ def teaching_generators(paths: list[ContentPath] | None = None) -> list[StageGen
     loaded = paths if paths is not None else load_content_paths()
     out: list[StageGenerator] = []
     for path in loaded:
-        if "_bagrut5_" not in path.id or "placement" in path.id:
+        if getattr(path, "unavailable", False) or "_bagrut5_" not in path.id or "placement" in path.id:
             continue
         for topic in path.topics or []:
             if topic.level not in (1, 2, 3):

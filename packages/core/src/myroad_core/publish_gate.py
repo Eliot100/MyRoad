@@ -18,8 +18,8 @@ Scope:
   the rule.
 - Other documents in the player/content node format (any block has
   ``content.kids``, e.g. the content-repo paths): format check only.
-- A document with no blocks is always refused (``PATH_EMPTY``), e.g. an empty
-  draft from ``/tools/createDraft``.
+- A document with no blocks is refused (``PATH_EMPTY``), except a road marked
+  ``unavailable`` (a published program is missing, so the empty road is the state).
 - Legacy freeze-format documents (no ``content.kids`` anywhere, e.g. the golden
   quadratic seed) are refused (``PATH_LEGACY_FORMAT``) unless the caller passes
   ``allow_legacy=True``. Only in-process seed/demo code (the golden loop) does;
@@ -105,6 +105,8 @@ def publish_block(
     errors: list[dict[str, Any]] = []
     data: dict[str, Any] = {}
     if not raw.get("blocks"):
+        if raw.get("unavailable"):
+            return None
         errors.append({"code": PUBLISH_EMPTY, "message": "path has no blocks"})
     agent_draft = bool(raw.get("agentBuild")) or (
         conn is not None and bool(raw.get("pathId")) and _path_has_agent_build(conn, raw["pathId"])
