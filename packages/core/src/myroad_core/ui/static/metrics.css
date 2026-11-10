@@ -5,6 +5,7 @@
 .mx-sub { color: var(--ink-2); margin: .2rem 0 1.4rem; }
 .mx section { margin: 0 0 1.6rem; }
 .mx h2 { font-size: 1rem; font-weight: 640; margin: 0 0 .6rem; }
+[data-goals] { margin: 0 0 .8rem; font-weight: 640; }
 .mx-empty { color: var(--ink-2); margin: 0; }
 .mx-list { list-style: none; margin: 0; padding: 0; }
 .mx-list li {

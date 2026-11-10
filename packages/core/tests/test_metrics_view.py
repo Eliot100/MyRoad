@@ -73,7 +73,10 @@ def test_accuracy_is_first_try_and_time_ignores_answers_without_a_duration() -> 
     stages = stage_accuracy(topics, events)
     assert stages[0]["accuracy"] == 100 and stages[0]["answered"] == 1
     assert stages[1]["accuracy"] == 0 and stages[1]["answered"] == 1
-    view = build_metrics(topics, events, {}, today=datetime(2026, 11, 5, tzinfo=timezone.utc))
+    view = build_metrics(topics, events, {"weeklyTiles": 9, "weeklyMinutes": 1}, today=datetime(2026, 11, 5, tzinfo=timezone.utc))
+    assert view["hasTarget"] is True and view["goalsMissed"] >= 1
+    empty = build_metrics(topics, [], {}, today=datetime(2026, 11, 5, tzinfo=timezone.utc))
+    assert empty["goalsMet"] == 0 and empty["goalsMissed"] == 0 and empty["hasTarget"] is False
     assert [row["level"] for row in view["levels"]] == [1, 2]
     assert view["levels"][0]["accuracy"] == 100
     assert view["levels"][1]["accuracy"] == 0
@@ -124,3 +127,20 @@ def test_metrics_page_is_empty_until_there_are_answers(client) -> None:
     assert 'data-tile=' not in page
     road = http.get(f"/play/{PID}").text
     assert f'href="/metrics/{PID}"' in road
+    assert 'data-metric="week-versus"' not in road
+
+
+def test_road_and_metrics_show_progress_against_the_goal(client) -> None:
+    from auth_helpers import login_with_code
+
+    http, store = client
+    login_with_code(http, {"first_name": "Eli", "last_name": "R", "email": "week@example.com", "next": "/"})
+    uid = store.get_session_user(http.cookies.get("myroad_session"))
+    store.set_road_plan(uid, weekly_tiles=12, weekly_minutes=40, goal_date="2026-12-01")
+    road = http.get(f"/play/{PID}").text
+    assert 'data-metric="week-versus"' in road
+    assert "0 מתוך 12" in road
+    metrics = http.get(f"/metrics/{PID}").text
+    assert 'data-goals' in metrics
+    assert "לא הושגו" in metrics
+    assert 'data-met="no"' in metrics

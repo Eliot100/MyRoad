@@ -71,6 +71,9 @@
         <span class="rd-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19V14M10 19V11M15 19V8M20 19V5"/></svg></span>
         <div class="rd-tx">
           <p class="rd-tl">{{ t('rd_week_done') }}</p>
+          {% if road.week.hasTarget %}
+          <p class="rd-tv" data-metric="week-versus">{{ t('rd_week_of', done=road.week.doneTiles, target=road.week.targetTiles) }}</p>
+          {% endif %}
           {% if road.week.doneMinutes is not none %}
           <p class="rd-tv" data-metric="week-done">{{ t('rd_week_both', tiles=road.week.doneTiles, minutes=road.week.doneMinutes) }}</p>
           {% else %}

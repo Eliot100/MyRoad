@@ -204,14 +204,17 @@ def build_metrics(
     tries = first_try(events)
     levels = level_accuracy(stages)
     numbered = [row["level"] for row in levels if row["level"]]
+    weeks = weekly_history(
+        events,
+        weekly_tiles=tiles if isinstance(tiles, int) else None,
+        weekly_minutes=minutes if isinstance(minutes, int) else None,
+        today=today,
+    )
     return {
         "hasTarget": _has_target(tiles if isinstance(tiles, int) else None, minutes if isinstance(minutes, int) else None),
-        "weeks": weekly_history(
-            events,
-            weekly_tiles=tiles if isinstance(tiles, int) else None,
-            weekly_minutes=minutes if isinstance(minutes, int) else None,
-            today=today,
-        ),
+        "goalsMet": sum(1 for week in weeks if week["met"] is True),
+        "goalsMissed": sum(1 for week in weeks if week["met"] is False),
+        "weeks": weeks,
         "trend": trend(tries, today=today),
         "stages": stages,
         "levels": levels,

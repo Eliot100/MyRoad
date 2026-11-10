@@ -14,6 +14,9 @@
 
   <section aria-labelledby="mx-weeks">
     <h2 id="mx-weeks">{{ t('mx_weeks') }}</h2>
+    {% if metrics.hasTarget %}
+    <p data-goals>{{ t('mx_goals', met=metrics.goalsMet, missed=metrics.goalsMissed) }}</p>
+    {% endif %}
     {% if not metrics.weeks %}
     <p class="mx-empty">{{ t('rd_no_data') }}</p>
     {% else %}
