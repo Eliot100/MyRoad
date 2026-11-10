@@ -141,3 +141,27 @@ def test_spoken_explanation_checks_the_transcript(client: TestClient) -> None:
         headers=HX,
     )
     assert "step-feedback ok" in ok.text or "הבנתי" in ok.text
+
+
+def test_blank_typed_or_spoken_answer_is_not_a_first_try_miss(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """An empty 'type' or 'voice' submit is not scored and leaves no 'answer' event (#199 first try)."""
+    content = tmp_path / "content" / "adult"
+    content.mkdir(parents=True)
+    (content / f"{PID}.json").write_text(json.dumps(_path(), ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setenv("CONTENT_DIR", str(tmp_path / "content"))
+    store = PathStore(str(tmp_path / "ui.db"))
+    try:
+        with TestClient(create_learner_app(store=store, seed=False, seed_content=True)) as c:
+            login(c, "blank@example.com", first_name="Noa", last_name="Levi")
+            c.post(f"/play/{PID}/start")
+            c.post(f"/play/{PID}/ack")
+            uid = store.get_learner_by_email("blank@example.com")["userId"]
+            for data in ({"mode": "type", "typed": "  "}, {"mode": "voice", "transcript": ""}):
+                c.post(f"/play/{PID}/answer", data=data, headers=HX)
+            assert store.first_try_answers(uid, PID) == []
+            assert store.first_try_wrong_count(uid, PID) == 0
+            right = c.post(f"/play/{PID}/answer", data={"mode": "type", "typed": "8"}, headers=HX)
+            assert "step-feedback ok" in right.text or "נכון" in right.text
+            assert [ok for _bid, ok in store.first_try_answers(uid, PID)] == [True]
+    finally:
+        store.close()

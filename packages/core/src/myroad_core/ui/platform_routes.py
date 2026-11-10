@@ -2405,7 +2405,14 @@ def register_platform_routes(
         ok = False
         scored = False
         mode = (mode or "").strip()
-        if mode == "type":
+        # An empty typed or spoken answer is not an answer: it is not scored and is not a
+        # first-try miss (a placement counts first-try misses from 'answer' events, #199).
+        blank = (mode == "type" and not (typed or "").strip()) or (
+            mode == "voice" and not (transcript or "").strip()
+        )
+        if blank:
+            choice = ""
+        elif mode == "type":
             scored = True
             ok = check_typed(kids, typed)
             choice = ""
@@ -2454,7 +2461,8 @@ def register_platform_routes(
             "ok": ok,
             "text": (kids.get("feedback_ok") or "✓") if ok else (kids.get("feedback_try") or t(locale, "gate_practice")),
         }
-        _step_event(sess, block, "answer", ok=ok)
+        if not blank:
+            _step_event(sess, block, "answer", ok=ok)
         if scored and _is_placement(sess["pathId"]):
             # #199: a placement counts wrong ITEMS by first try (from learner_events), not taps.
             try:
