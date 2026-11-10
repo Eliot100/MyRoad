@@ -18,8 +18,12 @@ from myroad_core.content.schema import SCORE_GROUPS
 
 DEMO_PREFIX = "דמו: "
 
-# Demo score link for psychometric paths: subject -> part of the shared 200-800 score.
-_PSYCHOMETRIC_PART = {"math": "quantitative", "hebrew": "verbal", "english": "english", "general": "writing"}
+# Demo score link per audience: audience -> (score group, subject -> part).
+# English left the psychometric score in Dec 2026 (NITE); it now links to AMIRNET.
+_AUDIENCE_SCORE: dict[str, tuple[str, dict[str, str]]] = {
+    "psychometric": ("psychometric_800", {"math": "quantitative", "hebrew": "verbal", "general": "writing"}),
+    "amirnet": ("amirnet_150", {"english": "english"}),
+}
 
 _TOPIC_THEMES: list[tuple[str, str]] = [
     ("מושגי יסוד", "🧱"),
@@ -128,9 +132,10 @@ class FakePathGenerator:
                 )
             )
         score = None
-        part = _PSYCHOMETRIC_PART.get(spec.subject)
-        if spec.audience == "psychometric" and part:
-            score = {"group_id": next(iter(SCORE_GROUPS)), "part_id": part, "weight": 1}
+        group_id, parts = _AUDIENCE_SCORE.get(spec.audience or "", ("", {}))
+        part = parts.get(spec.subject)
+        if part and group_id in SCORE_GROUPS:
+            score = {"group_id": group_id, "part_id": part, "weight": 1}
         # Realistic prerequisite: the first published path offered in the same subject.
         prereqs = [str(p["pathId"]) for p in (existing_paths or [])[:1] if p.get("pathId")]
         outline = PathOutline(

@@ -5,11 +5,11 @@
 ## מה חדש בגרסה 2
 | שדה | איפה | מה זה | כלל |
 |---|---|---|---|
-| `group_ids` | דרך | קהל היעד | `grade3`, `agent`, `adult` (מבוגרים מאפס), `psychometric` |
+| `group_ids` | דרך | קהל היעד | `grade3`, `agent`, `adult` (מבוגרים מאפס), `psychometric`, `amirnet` (אנגלית לפטור והשמה) |
 | `subject` | דרך | נושא | נוסף `hebrew` (לחלק המילולי בפסיכומטרי) |
 | `estimated_minutes` | דרך | זמן משוער | 1 עד 1200 (20 שעות) |
 | `prerequisite_path_ids` | דרך | דרכים שצריך לסיים קודם | מתחיל ב-`path_`, לא הדרך עצמה, בלי כפילויות; במפה הדרך מוצגת נעולה עד שהן הושלמו |
-| `score` | דרך | חלק בציון מאוחד | `{"group_id": "psychometric_800", "part_id": "quantitative", "weight": 1}`. החלקים הם `quantitative`, `verbal`, `english`, `writing` |
+| `score` | דרך | חלק בציון מאוחד | `{"group_id": "psychometric_800", "part_id": "quantitative", "weight": 1}`. ב-`psychometric_800` החלקים הם `quantitative`, `verbal`, `writing`. מדצמבר 2026 אנגלית לא בפסיכומטרי (NITE), ולכן היא ב-`amirnet_150` עם החלק `english` (סולם 50–150) |
 | `kind` | שלב | למה השלב קיים | `understanding` (הבנה ראשונה) או `review` (תרגול חוזר אחרי זמן) |
 | `review_topic_ids` | שלב | נושאים שהחזרה מערבבת | מותר רק כש-`kind` הוא `review`. צריך `topics[]` מפורש, וכל נושא חייב להופיע לפני הנושא שמכיל את השלב |
 

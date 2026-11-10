@@ -120,9 +120,19 @@ GROUPS["psychometric"] = _group(
     "psychometric",
     {"he": "הכנה לפסיכומטרי", "en": "Psychometric exam prep", "ar": "التحضير للبسيخومتري"},
     {
-        "he": "ארבע דרכים שנפגשות בציון אחד: כמותי, מילולי, אנגלית וכתיבה.",
-        "en": "Four paths that meet in one score: quantitative, verbal, English, and writing.",
-        "ar": "أربعة مسارات تلتقي في علامة واحدة: كمي، لفظي، إنجليزي وكتابة.",
+        "he": "דרכים שנפגשות בציון אחד: כמותי ומילולי (כולל מטלת הכתיבה). מדצמבר 2026 אנגלית לא בפסיכומטרי.",
+        "en": "Paths that meet in one score: quantitative and verbal (including the writing task). From December 2026 English is not part of the test.",
+        "ar": "مسارات تلتقي في علامة واحدة: كمي ولفظي (مع مهمة الكتابة). من كانون الأول 2026 لم تعد الإنجليزية جزءًا من الامتحان.",
+    },
+)
+# English placement/exemption via NITE's AMIRNET (50-150), separate from the PET from Dec 2026.
+GROUPS["amirnet"] = _group(
+    "amirnet",
+    {"he": "אמירנט: אנגלית לפטור והשמה", "en": "AMIRNET English placement", "ar": "أميرنت: الإنجليزية للتصنيف والإعفاء"},
+    {
+        "he": "אנגלית לרמה ולפטור באקדמיה: השלמת משפטים, ניסוח מחדש והבנת הנקרא.",
+        "en": "English for university placement and exemption: sentence completion, restatement, and reading.",
+        "ar": "الإنجليزية للتصنيف والإعفاء في الجامعة: إكمال الجمل وإعادة الصياغة وفهم المقروء.",
     },
 )
 
@@ -131,7 +141,14 @@ SCORE_GROUPS: dict[str, dict[str, Any]] = {
     "psychometric_800": {
         "id": "psychometric_800",
         "titles": {"he": "ציון פסיכומטרי", "en": "Psychometric score", "ar": "علامة البسيخومتري"},
-        "parts": ("quantitative", "verbal", "english", "writing"),
+        # From December 2026 the PET has two domains (NITE); English moved to AMIRNET.
+        # "writing" stays a separate part: it is the verbal writing task (25% of verbal).
+        "parts": ("quantitative", "verbal", "writing"),
+    },
+    "amirnet_150": {
+        "id": "amirnet_150",
+        "titles": {"he": "ציון אמירנט", "en": "AMIRNET score", "ar": "علامة أميرنت"},
+        "parts": ("english",),
     },
 }
 
