@@ -123,6 +123,68 @@
   </section>
     {% endif %}
 
+  {% if stage_board %}
+  <section class="card stage-board" aria-labelledby="stage-board-h">
+    <div class="sb-summary">
+      <article>
+        <p>{{ t('metrics_mean_level') }}</p>
+        <p class="sb-big">{% if stage_board.meanLevel is not none %}{{ stage_board.meanLevel }}<span>/{{ stage_board.levelScale }}</span>{% else %}{{ t('metrics_none') }}{% endif %}</p>
+        <span class="rm-bar" aria-hidden="true"><i style="inline-size: {{ stage_board.meanPct or 0 }}%"></i></span>
+      </article>
+      <article>
+        <p>{{ t('metrics_recent_accuracy', n=stage_board.recentWindow) }}</p>
+        <p class="sb-big">{% if stage_board.recentAccuracy is not none %}{{ stage_board.recentAccuracy }}%{% else %}{{ t('metrics_none') }}{% endif %}</p>
+        <span class="rm-bar" aria-hidden="true"><i style="inline-size: {{ stage_board.recentAccuracy or 0 }}%"></i></span>
+      </article>
+    </div>
+    <h2 id="stage-board-h">{{ t('metrics_stages_h') }}</h2>
+    <ul class="sb-rows">
+      {% for row in stage_board.rows %}
+      <li>
+        <div class="sb-top">
+          <a class="sb-name" href="/play/{{ row.pathId }}"><bdi>{{ row.title }}</bdi></a>
+          <span class="sb-acc-label">{{ t('metrics_last_n', n=row.window) }}</span>
+          <span class="sb-badge">{% if row.levels %}{{ t('metrics_level', n=row.level, total=row.levels) }}{% else %}{{ t('metrics_level_none') }}{% endif %}</span>
+        </div>
+        <div class="sb-mid">
+          <span class="sb-pct">{% if row.accuracy is not none %}{{ row.accuracy }}%{% else %}{{ t('metrics_none') }}{% endif %}</span>
+          {% if row.spark %}<svg class="sb-spark" viewBox="0 0 120 36" aria-hidden="true" focusable="false"><polyline points="{{ row.spark }}"></polyline></svg>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    <h2 class="sb-trend-h">{{ t('metrics_trend_h') }} <small>{{ t('metrics_trend_window', n=stage_board.trendDays) }}</small></h2>
+    {% if stage_board.trendLine %}
+    <svg class="sb-trend" viewBox="0 0 320 120" role="img" aria-label="{{ t('metrics_trend_h') }}">
+      <g class="sb-grid">
+        <line x1="36" y1="16" x2="284" y2="16"></line>
+        <line x1="36" y1="38" x2="284" y2="38"></line>
+        <line x1="36" y1="60" x2="284" y2="60"></line>
+        <line x1="36" y1="82" x2="284" y2="82"></line>
+        <line x1="36" y1="104" x2="284" y2="104"></line>
+      </g>
+      <g class="sb-ylabels">
+        <text x="2" y="20">100</text>
+        <text x="8" y="64">50</text>
+        <text x="8" y="108">0</text>
+      </g>
+      {% if stage_board.trendArea %}<polygon class="sb-fill" points="{{ stage_board.trendArea }}"></polygon>{% endif %}
+      <polyline points="{{ stage_board.trendLine }}"></polyline>
+    </svg>
+    <p class="sb-trend-axis"><span>{{ stage_board.trendPoints[0].label }}</span><span>{{ stage_board.trendPoints[-1].label }}</span></p>
+    <ul class="visually-hidden">
+      {% for point in stage_board.trendPoints %}<li>{{ point.label }}: {{ point.pct }}%</li>{% endfor %}
+    </ul>
+    {% else %}
+    <p class="rm-empty">{{ t('metrics_trend_empty') }}</p>
+    {% endif %}
+    <div class="row map-actions">
+      <a class="primary big link-btn" href="/play/{{ doc.pathId }}?view=learn">{{ t('road_continue') }}</a>
+      <a class="secondary big link-btn" href="/series/math-bagrut5">{{ t('math_series_open') }}</a>
+    </div>
+  </section>
+  {% endif %}
+
   <aside class="card rm-side" aria-label="{{ t('metrics_aria') }}">
     {#- Metrics list: one block, edit freely. Every row reads learner_progress /
         learner_attempts (via road_metrics) or this play session. -#}

@@ -18,6 +18,14 @@
     <a class="primary" href="/series/english-bagrut5">{{ t('series_home_open') }}</a>
   </section>
   {% endif %}
+  {% if math_series_home %}
+  <section class="card series-banner">
+    <p class="kicker">{{ t('math_series_kicker') }}</p>
+    <h2>{{ t('math_series_title') }}</h2>
+    <p class="lede">{{ t('math_series_lede') }}</p>
+    <a class="primary" href="/series/math-bagrut5">{{ t('math_series_open') }}</a>
+  </section>
+  {% endif %}
 
   {% macro ago_text(ts) -%}
     {%- set ago = ts|days_ago -%}
