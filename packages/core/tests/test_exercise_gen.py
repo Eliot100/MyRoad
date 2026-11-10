@@ -45,3 +45,38 @@ def test_one_thousand_samples_per_stage_are_correct_and_unique() -> None:
         if stage._seeds:
             assert samples[0].parameters[0] == "seed"
             assert seed_ids
+
+
+def test_every_teaching_stage_has_a_stored_example() -> None:
+    from myroad_core.content.loader import load_content_paths, seed_content_paths
+    from myroad_core.store import PathStore
+
+    paths = load_content_paths()
+    by_id = {path.id: path for path in paths}
+    generators = teaching_generators(paths)
+    assert generators
+    missing = []
+    for stage in generators:
+        seeds = stage._seed_exercises()
+        if not seeds:
+            missing.append(f"{stage.path_id}/{stage.topic_id}")
+            continue
+        node_id = seeds[0].parameters[1]
+        assert any(node.id == node_id for node in by_id[stage.path_id].nodes)
+        assert stage.recompute(seeds[0]) == seeds[0].answer
+    assert missing == []
+    store = PathStore(":memory:")
+    try:
+        seed_content_paths(store)
+        for stage in generators:
+            node_id = stage._seed_exercises()[0].parameters[1]
+            doc = store.get_path_latest(stage.path_id)
+            found = False
+            for block in doc.blocks or []:
+                kids = (block.content or {}).get("kids") or {}
+                if kids.get("id") == node_id:
+                    found = True
+                    break
+            assert found, (stage.path_id, stage.topic_id, node_id)
+    finally:
+        store.close()

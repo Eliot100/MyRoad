@@ -5,7 +5,8 @@ content files. They are the seeds and the fallback. A generated item carries
 parameters, the answer, and distractors. ``check`` accepts only the answer
 that those parameters produce.
 
-The stream for a stage is, in order: every seed, cloze items whose prefix
+The stream for a stage is, in order: every stored example (a saved choice, or a
+line the stage already asks the learner to say), cloze items whose prefix
 already determines one answer inside that stage, then verbatim fragments of
 the stage's own text with a new choice order when the stage does not hold
 1,000 different questions. Nothing here adds a stage or a fact that is not
@@ -44,6 +45,17 @@ def _label(node: ContentNode) -> str | None:
     for choice in node.choices:
         if choice.id == node.correct:
             return choice.label
+    return None
+
+
+def _stored_answer(node: ContentNode) -> str | None:
+    """The example already stored on the node: a choice label, or the line to say."""
+    label = _label(node)
+    if label:
+        return label
+    if node.type == "speak":
+        text = (node.speak_text or "").strip()
+        return text or None
     return None
 
 
@@ -99,7 +111,12 @@ class StageGenerator:
         self._nodes: list[ContentNode] = [by_id[nid] for nid in topic.node_ids if nid in by_id]
         self._by_id = {n.id: n for n in self._nodes if n.id}
         self.source = "\n".join(piece for piece in (_node_text(n) for n in self._nodes) if piece)
-        self._seeds = [n for n in self._nodes if n.type in ("practice", "check") and _label(n)]
+        scored = [n for n in self._nodes if n.type in ("practice", "check") and _label(n)]
+        spoken = [
+            n for n in self._nodes
+            if n.type == "speak" and _stored_answer(n) and len(_mutated(self.source, _stored_answer(n) or "")) >= 3
+        ]
+        self._seeds = scored + spoken
         self._answer_for_prefix, self._posts, self._cloze_distractors = self._cloze_rule()
 
     def _cloze_rule(self) -> tuple[dict[str, str], tuple[str, ...], tuple[str, ...]]:
@@ -131,10 +148,10 @@ class StageGenerator:
         kind = exercise.parameters[0]
         if kind == "seed":
             node = self._by_id[exercise.parameters[1]]
-            label = _label(node)
-            if label is None:
+            stored = _stored_answer(node)
+            if stored is None:
                 raise KeyError(exercise.parameters[1])
-            return label
+            return stored
         if kind == "cloze":
             prefix = exercise.parameters[1]
             return self._answer_for_prefix[prefix]
@@ -149,9 +166,16 @@ class StageGenerator:
     def _seed_exercises(self) -> list[Exercise]:
         out: list[Exercise] = []
         for node in self._seeds:
-            answer = _label(node)
+            answer = _stored_answer(node)
             choices = _labels(node)
-            if answer is None or answer not in choices or len(choices) != len(set(choices)):
+            if answer and choices and answer in choices and len(choices) == len(set(choices)):
+                options = choices
+            elif node.type == "speak" and answer:
+                distractors = _mutated(self.source, answer)
+                if len(distractors) < 3:
+                    continue
+                options = (answer, *distractors[:3])
+            else:
                 continue
             out.append(
                 Exercise(
@@ -159,7 +183,7 @@ class StageGenerator:
                     level=self.level,
                     parameters=("seed", node.id or ""),
                     prompt=_seed_prompt(node),
-                    choices=choices,
+                    choices=options,
                     answer=answer,
                 )
             )
