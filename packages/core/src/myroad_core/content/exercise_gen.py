@@ -8,9 +8,10 @@ that those parameters produce.
 The stream for a stage is, in order: every stored example (a saved choice, or a
 line the stage already asks the learner to say), cloze items whose prefix
 already determines one answer inside that stage, then verbatim fragments of
-the stage's own text with a new choice order when the stage does not hold
-1,000 different questions. Nothing here adds a stage or a fact that is not
-in the stage text.
+the stage's own text. Window lengths run from 6 to 47 characters, so a short
+stage still yields 1,000 different fragments. Shuffling the same choices is
+only a fallback, and the current roads do not need it. Nothing here adds a
+stage or a fact that is not in the stage text.
 """
 
 from __future__ import annotations
@@ -223,13 +224,15 @@ class StageGenerator:
 
     def _span_exercises(self, limit: int) -> list[Exercise]:
         text = self.source
-        if len(text) < 8 or limit <= 0:
+        if len(text) < 6 or limit <= 0:
             return []
         instruction = "איזה קטע מופיע בשלב, כלשונו?"
         prompt = instruction + "\n" + text
         out: list[Exercise] = []
         seen_frag: set[str] = set()
-        for length in (8, 12, 16, 20, 24, 32):
+        # Dense windows. A few fixed lengths ran out on short stages, and the
+        # gap was filled by shuffling the same choices.
+        for length in range(6, 48):
             if length >= len(text):
                 continue
             for start in range(0, len(text) - length + 1):

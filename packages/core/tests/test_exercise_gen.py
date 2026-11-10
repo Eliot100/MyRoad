@@ -28,13 +28,11 @@ def test_one_thousand_samples_per_stage_are_correct_and_unique() -> None:
             assert key not in seen, stage.topic_id
             seen.add(key)
             kind = exercise.parameters[0]
+            if kind == "order":
+                raise AssertionError(f"{stage.topic_id} repeated a question by shuffling choices")
             if kind == "seed":
                 seed_ids.add(exercise.parameters[1])
             elif kind == "span":
-                assert exercise.answer in stage.source
-                for wrong in exercise.distractors:
-                    assert wrong not in stage.source
-            elif kind == "order" and exercise.parameters[1][0] == "span":
                 assert exercise.answer in stage.source
                 for wrong in exercise.distractors:
                     assert wrong not in stage.source
