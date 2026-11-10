@@ -80,6 +80,8 @@ git clone https://github.com/Eliot100/MyRoad-content.git
 cd MyRoad/packages/core
 export CONTENT_DIR="$(cd ../../MyRoad-content && pwd)"   # or copy grade3 into content/
 pip install -e ".[api]"
+# local sign-in: print the login code to this console (no SMTP); plain http cookies on localhost
+export MYROAD_DEV_MAIL_CONSOLE=1 MYROAD_DEV_INSECURE_COOKIES=1
 uvicorn myroad_core.ui.app:app --reload --port 8765
 # http://127.0.0.1:8765/          catalog
 # http://127.0.0.1:8765/login     register / sign in (email)
@@ -100,6 +102,9 @@ python -m venv .venv
 pip install -e ".[api,dev]"
 $env:CLOUDFLARE_ACCOUNT_ID = ""
 $env:CLOUDFLARE_GATEWAY_ID = ""
+# Local sign-in: print the login code to this console (no SMTP); plain http cookies on localhost
+$env:MYROAD_DEV_MAIL_CONSOLE = "1"
+$env:MYROAD_DEV_INSECURE_COOKIES = "1"
 # Optional, only if the gateway has authenticated gateway enabled:
 $env:CLOUDFLARE_AI_GATEWAY_TOKEN = ""
 uvicorn myroad_core.ui.app:app --reload --port 8765

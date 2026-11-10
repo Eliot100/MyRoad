@@ -11,13 +11,14 @@ pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient
 
 from myroad_core.content.exercise_gen import teaching_generators
-from myroad_core.content.loader import load_content_paths
+from myroad_core.content.loader import default_content_dir, load_content_paths
 from myroad_core.content.schema import validate_stage_levels
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
 
 LAB = "path_physics_bagrut5_lab"
-CONTENT = Path(__file__).resolve().parents[4] / "MyRoad-content" / "adult" / "path_physics_bagrut5_lab.json"
+# Same lookup as the app (CONTENT_DIR, submodule, then sibling clone), not a fixed sibling path.
+CONTENT = default_content_dir() / "adult" / "path_physics_bagrut5_lab.json"
 
 
 def test_lab_path_has_no_stages_and_no_generator() -> None:
