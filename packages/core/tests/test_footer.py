@@ -25,7 +25,10 @@ def test_every_template_footer_is_the_platform_line() -> None:
     for p in _TPL.glob("*.html"):
         text = p.read_text(encoding="utf-8")
         for footer in re.findall(r"<footer>(.*?)</footer>", text, flags=re.S):
-            assert "footer_platform" in footer and "<a " not in footer, p.name
+            assert "footer_platform" in footer, p.name
+            # #209: the only links allowed in the footer are the privacy notice and terms.
+            hrefs = re.findall(r'href="([^"]+)"', footer)
+            assert sorted(hrefs) in ([], ["/privacy", "/terms"]), p.name
 
 
 def test_accessibility_statement_is_gone(tmp_path) -> None:
