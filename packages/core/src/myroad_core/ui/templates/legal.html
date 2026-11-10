@@ -1,0 +1,30 @@
+{% extends "_base.html" %}
+{#- Privacy notice and terms of use (#209). Open to everyone, signed in or not. Copy lives in
+    the locale files; sections are a heading + paragraph each. -#}
+{% block title %}{{ t(legal_doc ~ '_title') }} · {{ product }}{% endblock %}
+{% block body_attrs %} class="platform legal-screen"{% endblock %}
+{% block body %}
+  <a class="skip-link" href="#main">{{ t('skip_to_main') }}</a>
+  <header class="top shell-top">
+    <a class="brand-name" href="/"><strong>{{ product }}</strong></a>
+    {% if learner %}
+    <a class="settings-link" href="/">{{ t('legal_back_home') }}</a>
+    {% else %}
+    <a class="settings-link" href="/login">{{ t('legal_back_login') }}</a>
+    {% endif %}
+  </header>
+  <main id="main" tabindex="-1" class="card legal-card">
+    <h1>{{ t(legal_doc ~ '_title') }}</h1>
+    <p class="lede">{{ t(legal_doc ~ '_lede') }}</p>
+    {% for sid in sections %}
+    <section aria-labelledby="{{ legal_doc }}-{{ sid }}">
+      <h2 id="{{ legal_doc }}-{{ sid }}">{{ t(legal_doc ~ '_' ~ sid ~ '_h') }}</h2>
+      <p>{{ t(legal_doc ~ '_' ~ sid ~ '_p') }}</p>
+      {% if legal_doc == 'privacy' and sid == 'log' %}<p class="legal-note">{{ t('privacy_log_note') }}</p>{% endif %}
+      {% if legal_doc == 'terms' and sid == 'privacy' %}<p><a href="/privacy">{{ t('legal_privacy_link') }}</a></p>{% endif %}
+    </section>
+    {% endfor %}
+    <p class="lede tiny">{{ t('legal_updated') }}</p>
+  </main>
+{% include "_footer.html" %}
+{% endblock %}
