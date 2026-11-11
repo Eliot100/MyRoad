@@ -604,6 +604,13 @@
   "road_style_timeline": "ציר זמן",
   "road_style_timeline_note": "כל השלבים על קו אחד, עם התקדמות ברורה.",
   "road_style_journey": "דרך מפותלת",
-  "road_style_journey_note": "הנתיב כדרך שמתפתלת, עם כרטיס לכל שלב.",
-  "jy_lede": "כל הדרך במסך אחד. השלב שלך מסומן, ואפשר לפתוח כל שלב כדי לראות את המשבצות שלו."
+  "road_style_journey_note": "אבני מדרך במשטח דשא, עם התקדמות ברורה.",
+  "jy_lede": "כל הדרך במסך אחד, כאבני מדרך במשטח דשא. האבן שלך מסומנת, ואפשר לפתוח כל משבצת פתוחה.",
+  "road_orient_h": "כיוון הדרך",
+  "road_orient_legend": "איך גוללים את הנתיב במסך רחב",
+  "road_orient_vertical": "אנכי",
+  "road_orient_vertical_note": "גוללים מלמעלה למטה.",
+  "road_orient_horizontal": "אופקי",
+  "road_orient_horizontal_note": "במסך רחב הדרך נפרשת לצד וגוללים לאורכה.",
+  "road_orient_narrow_note": "במסך צר הדרך תמיד אנכית."
 }
