@@ -29,11 +29,13 @@ Generalized, testable lessons from Eliot's feedback. Add new entries dated, with
 
 - [2026-10-29] Experiential, not template like. Use the road metaphor (a path, a winding mountain road). Test: the screen reads as a journey, not a generic list or card grid. Why: "פחות תבניתי ומשעמם אלא חוויתי".
 - [2026-10-29] Raise the quality bar on every round. Test: each new round is visibly more refined than the previous one. Why: "להבא תעשה באיכות גבוהה יותר".
+- [2026-11-11] The learner can switch road styles in Settings: ציר זמן or דרך מפותלת (winding road, his first idea). The winding style is a premium asphalt road with cards, never a childish garden path (v2 was rejected for that). Test: Settings has the two options; the choice persists and the road page renders that style in both themes. Why: "I want you to build in the settings an option to switch to other style to be like my first idea".
 
 ## Keep doing (things Eliot liked)
 
 - [2026-10-29] One whole road view on a single screen.
-- [2026-10-29] Worlds map (option B) is the chosen direction for the road screen.
+- [2026-10-29] Worlds map (option B) is the chosen direction for the road screen. Replaced 2026-11-11: first by the timeline, then by a Settings choice between the timeline and the winding-road journey style.
+- [2026-11-11] The road page offers two styles in Settings: ציר זמן (the timeline from the 11-11 arena) and דרך מפותלת, built from Eliot's first idea (winding asphalt road and stage cards, SuperGrok mockup 12).
 
 ## Pre-PR checklist additions
 
@@ -64,3 +66,5 @@ Mockup rounds for the road screen:
 - 2026-11-03: privacy notice + terms (#209), decision 0011: one legal template, copy in locale keys, footer is one partial with the platform line plus two legal links; legal copy is a draft for Eliot, no auto-merge.
 - 2026-11-04: mobile pass at 360 and 412 px (#233), decision 0017: 44px tap areas on header links, chips, subject tabs and map tiles with the text size unchanged; focused field kept above the soft keyboard; CI test tests_a11y/test_mobile_360_412.py in he, ar and en.
 - 2026-11-11: road page arena (3 candidates, cross-judged): Eliot chose to replace the v4 worlds map (#144) with a vertical timeline that keeps the whole road visible: sticky overview bar, solid line behind the learner and dashed ahead, alternating sides on desktop, one message and action for finished or locked roads, continue card first on mobile. Open notes: no auto-jump to the current stage on load yet, long roads still scroll a lot on mobile.
+- 2026-11-11: after reviewing the timeline (PR #259) Eliot still was not liking it, and asked for a Settings selection so he can switch to a style like his first idea ("I didn't manage you to build good enough similar to my vision"). The journey style (דרך מפותלת) is a winding asphalt road with stage cards, from his SuperGrok mockup 12, premium and calm, light and dark. Default stays the timeline. Persisted in localStorage as myroad.roadStyle, same as the theme. Why: "I want you to build in the settings an option to switch to other style to be like my first idea".
+

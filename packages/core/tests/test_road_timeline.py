@@ -214,7 +214,9 @@ def test_current_stage_is_the_jump_target_and_the_tile_has_aria_current(app, loc
     c = _client(app, locale)
     _go_to_station(c, 15)
     html = c.get(f"/play/{LONG}?view=map").text
-    assert html.count('aria-current="step"') == 1 and html.count('id="here"') == 1
+    tl = html[html.index('data-road-style-panel="timeline"'):html.index('data-road-style-panel="journey"')]
+    assert tl.count('aria-current="step"') == 1 and tl.count('id="here"') == 1
+    assert html.count('id="here"') == 1
     here = _stage(html, "s14")
     head = here.split(">", 1)[0]
     assert "tl-stage is-here" in head and 'id="here"' in head
@@ -366,7 +368,8 @@ def test_short_map_opens_every_stage_and_marks_the_current(app) -> None:
     c.post(f"/play/{SHORT}/start")
     c.post(f"/play/{SHORT}/ack")
     html = c.get(f"/play/{SHORT}?view=map").text
-    assert html.count("<details open") >= 2 and html.count('aria-current="step"') == 1
+    tl = html[html.index('data-road-style-panel="timeline"'):html.index('data-road-style-panel="journey"')]
+    assert tl.count("<details open") >= 2 and tl.count('aria-current="step"') == 1
     assert "tl-stage is-here" in _stage(html, "b").split(">", 1)[0]
     assert "tl-stage is-done" in _stage(html, "a").split(">", 1)[0]
 

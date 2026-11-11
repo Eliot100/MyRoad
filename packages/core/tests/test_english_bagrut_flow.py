@@ -92,7 +92,8 @@ def test_bagrut_map_is_one_tile_per_row_not_stations(bagrut_app) -> None:
     assert "station-list" not in html
     assert "topic-diagram" not in html
     assert "שלב 1" in html and "שלב 2" in html  # read only until the placement is done
-    assert html.count('data-block-id="') == 4  # every tile listed in road order
+    tl = html[html.index('data-road-style-panel="timeline"'):html.index('data-road-style-panel="journey"')]
+    assert tl.count('data-block-id="') == 4  # every tile listed in road order
     assert "חזרה לשרשרת" in html
 
 

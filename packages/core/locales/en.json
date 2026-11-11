@@ -598,5 +598,12 @@
   "tl_done_kicker": "Road complete",
   "tl_done_title": "All {total} tiles on this road are done",
   "tl_done_note": "Every tile stays open in the track below, to revisit any time.",
-  "tl_again": "Open the first tile"
+  "tl_again": "Open the first tile",
+  "road_style_h": "Road style",
+  "road_style_legend": "How the path is shown",
+  "road_style_timeline": "Timeline",
+  "road_style_timeline_note": "Every stage on one line, with clear progress.",
+  "road_style_journey": "Winding road",
+  "road_style_journey_note": "The path as a winding road, with a card for each stage.",
+  "jy_lede": "The whole road on one screen. Your stage is marked, and you can open any stage to see its tiles."
 }

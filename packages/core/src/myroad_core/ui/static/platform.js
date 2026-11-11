@@ -197,7 +197,7 @@
   // --- Road timeline: bring the current שלב (#here) into view on load ---
   // Without JS the map links (?view=map#here) and the sticky bar's #here link jump there instead.
   function jumpToCurrentStation() {
-    var here = document.getElementById("here");
+    var here = currentRoadHere() || document.getElementById("here");
     if (!here || !document.body.classList.contains("map-view")) return;
     if (window.location.hash) return; // the browser already scrolled to the fragment
     var nav = window.performance && performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
@@ -211,8 +211,18 @@
   // Road timeline: the sticky continue bar shows only while the head's continue button is off
   // screen, so one next action is always in view and never twice. Without JS (or
   // IntersectionObserver) the bar stays hidden and the head button does the job.
+  function currentRoadHere() {
+    var style = document.documentElement.getAttribute("data-road-style") || "timeline";
+    if (style === "journey") return document.getElementById("jy-here");
+    return document.getElementById("here");
+  }
+  function roadStylePanel() {
+    var style = document.documentElement.getAttribute("data-road-style") || "timeline";
+    return document.querySelector('[data-road-style-panel="' + style + '"]');
+  }
   function stickyContinue() {
-    var bar = document.querySelector("[data-tl-continue]");
+    var panel = roadStylePanel();
+    var bar = (panel && panel.querySelector("[data-tl-continue]")) || document.querySelector("[data-tl-continue]");
     var head = document.querySelector(".continue-btn");
     if (!bar || !("IntersectionObserver" in window)) return;
     if (!head) { bar.hidden = false; return; }
@@ -223,9 +233,9 @@
   // Links to the current שלב (sticky bar, overview "שלב n מתוך m"): open it, scroll, and move
   // focus to the current משבצת. Without JS they are plain #here fragment links.
   function hereLinks() {
-    var here = document.getElementById("here");
+    var here = currentRoadHere();
     if (!here) return;
-    var links = document.querySelectorAll('[data-tl-continue] a[href="#here"], .road-tl a[href="#here"]');
+    var links = document.querySelectorAll('[data-tl-continue] a[href="#here"], .road-tl a[href="#here"], [data-tl-continue] a[href="#jy-here"], .road-jy a[href="#jy-here"]');
     Array.prototype.forEach.call(links, function (link) {
       link.addEventListener("click", function (e) {
         e.preventDefault();
@@ -233,7 +243,7 @@
         if (d) d.open = true;
         var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : false;
         here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
-        var f = here.querySelector('[aria-current="step"] button') || here.querySelector("summary");
+        var f = here.querySelector('[aria-current="step"]') || here.querySelector("summary");
         if (f) f.focus({ preventScroll: true });
       });
     });

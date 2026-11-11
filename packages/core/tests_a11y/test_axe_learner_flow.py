@@ -105,6 +105,20 @@ def test_map_view(page):
     scan(page, "map")
 
 
+def test_map_view_journey(page):
+    """Journey style (winding road) on the same road, both themes, axe clean."""
+    page.goto(STEP_PATH + "?view=map")
+    page.evaluate("localStorage.setItem('myroad.roadStyle', 'journey')")
+    page.reload()
+    page.locator(".road-jy").wait_for()
+    scan(page, "map-journey")
+    page.evaluate("localStorage.setItem('myroad.theme', 'dark'); document.documentElement.setAttribute('data-theme', 'dark')")
+    page.reload()
+    page.locator(".road-jy").wait_for()
+    scan(page, "map-journey-dark")
+    page.evaluate("localStorage.setItem('myroad.roadStyle', 'timeline'); localStorage.removeItem('myroad.theme')")
+
+
 def test_path_head_session_card(page):
     """After starting, the head shows the engagement session card (.eng-head) when present."""
     page.goto(STEP_PATH)

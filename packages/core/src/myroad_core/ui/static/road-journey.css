@@ -1,0 +1,333 @@
+/* Journey style: a winding asphalt road with stage cards (Eliot's first idea, mockup 12).
+   Tokens have light and dark values. Logical properties only. */
+
+/* Which style is on: default is the timeline (no attribute, or timeline). */
+html:not([data-road-style="journey"]) [data-road-style-panel="journey"] { display: none !important; }
+html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: none !important; }
+
+.road-jy {
+  --jy-pave: #c8cecd;
+  --jy-pave-edge: #9aa3a1;
+  --jy-curb: #b8c0be;
+  --jy-dash: #5d6967;
+  --jy-width: 56px;
+  --jy-dash-w: 2px;
+  --jy-amp: 72px;
+  --jy-card-r: 16px;
+  position: relative;
+  padding-block: var(--space-4) var(--space-5);
+  padding-inline: var(--space-4);
+  overflow: hidden;
+  background: var(--card);
+  color: var(--ink);
+}
+@media (max-width: 640px) {
+  .road-jy { --jy-width: 36px; --jy-amp: 28px; padding-inline: var(--space-3); }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .road-jy {
+    --jy-pave: #2a2f2e;
+    --jy-pave-edge: #3d4443;
+    --jy-curb: #1c2120;
+    --jy-dash: #8a9a97;
+  }
+}
+:root[data-theme="dark"] .road-jy {
+  --jy-pave: #2a2f2e;
+  --jy-pave-edge: #3d4443;
+  --jy-curb: #1c2120;
+  --jy-dash: #8a9a97;
+}
+
+.road-jy > h2 { margin: 0 0 var(--space-2); font-size: var(--text-lg); }
+.road-jy .jy-lede { margin: 0 0 var(--space-3); color: var(--muted); line-height: 1.55; max-inline-size: 42rem; }
+.road-jy .jy-sum {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-4);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.road-jy .jy-sum-here,
+.road-jy .jy-sum > span { white-space: nowrap; flex: none; }
+.road-jy .jy-sum-here {
+  color: var(--accent);
+  text-decoration: none;
+  min-block-size: 44px;
+  display: inline;
+  padding-block: 10px;
+  /* not flex: a visually-hidden child would otherwise become a flex item and wrap the numbers */
+}
+.road-jy .jy-sum-here:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+
+.road-jy .jy-canvas { position: relative; isolation: isolate; }
+
+/* The winding road sits behind the cards and is drawn to the canvas size by road-journey.js.
+   No-JS fallback: a straight ribbon down the start side (mobile) or the centre (wide). */
+.road-jy .jy-road {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.road-jy .jy-pave-path { stroke-width: var(--jy-width); }
+.road-jy .jy-edge-path { stroke-width: calc(var(--jy-width) + 6px); opacity: .55; }
+.road-jy .jy-dash-path { stroke-width: var(--jy-dash-w); stroke-dasharray: 10 14; }
+.road-jy .jy-done-path { stroke-width: 3px; opacity: .85; }
+.road-jy:not(.is-drawn) .jy-road {
+  /* Fallback ribbon, before JS measures the cards (and when JS is off). */
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      var(--jy-dash) 0 8px,
+      transparent 8px 20px
+    ) 50% 0 / 2px 100% no-repeat,
+    linear-gradient(to bottom, var(--jy-pave), var(--jy-pave)) 50% 0 / var(--jy-width) 100% no-repeat;
+}
+@media (max-width: 719.98px) {
+  [dir="rtl"] .road-jy:not(.is-drawn) .jy-road {
+    background-position: calc(100% - 1.15rem) 0, calc(100% - 1.15rem) 0;
+  }
+  [dir="ltr"] .road-jy:not(.is-drawn) .jy-road {
+    background-position: 1.15rem 0, 1.15rem 0;
+  }
+}
+
+.road-jy .jy-stages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 1;
+}
+
+.road-jy .jy-stage { position: relative; min-inline-size: 0; }
+
+.road-jy .jy-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--jy-card-r);
+  color: var(--ink);
+  min-inline-size: 0;
+}
+.road-jy .jy-stage.is-here .jy-card {
+  border-color: var(--accent);
+  border-width: 2px;
+  background: var(--tint-info);
+}
+.road-jy .jy-stage.is-done .jy-card { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.road-jy .jy-stage.is-ahead .jy-card { opacity: .78; }
+.road-jy .jy-stage.is-review .jy-card { border-style: dashed; }
+
+.road-jy .jy-card > details { margin: 0; }
+.road-jy .jy-card summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  list-style: none;
+  min-block-size: 52px;
+}
+.road-jy .jy-card summary::-webkit-details-marker { display: none; }
+.road-jy .jy-card summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+  border-radius: var(--jy-card-r);
+}
+
+.road-jy .jy-mark {
+  flex: none;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 999px;
+  border: 2px solid var(--line-strong);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+.road-jy .jy-mark svg { inline-size: 1.15rem; block-size: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.road-jy .jy-stage.is-done > .jy-card > details > summary > .jy-mark,
+.road-jy .jy-tile.is-done .jy-mark {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+  color: var(--accent);
+}
+.road-jy .jy-stage.is-here > .jy-card > details > summary > .jy-mark,
+.road-jy .jy-tile.is-here .jy-mark {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.road-jy .jy-stage.is-here > .jy-card > details > summary > .jy-mark svg { fill: currentColor; stroke: none; }
+.road-jy .jy-tile.is-here .jy-mark svg { fill: currentColor; stroke: none; }
+.road-jy .jy-tile.is-ahead .jy-mark { color: var(--muted); }
+
+.road-jy .jy-copy { flex: 1 1 auto; min-inline-size: 0; display: grid; gap: 2px; text-align: start; }
+.road-jy .jy-kicker { color: var(--muted); font-size: var(--text-xs); font-weight: 600; }
+.road-jy .jy-here-word { color: var(--accent); }
+.road-jy .jy-title {
+  font-weight: 650;
+  font-size: var(--text-md);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.road-jy .jy-count { color: var(--muted); font-weight: 500; }
+.road-jy .jy-chev {
+  flex: none;
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+  stroke: var(--muted);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  transition: transform 180ms ease-out;
+}
+.road-jy details[open] > summary .jy-chev { transform: rotate(180deg); }
+
+.road-jy .jy-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-3);
+  display: grid;
+  gap: var(--space-2);
+  border-block-start: 1px solid var(--line);
+}
+.road-jy .jy-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-block-size: 48px;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+button.jy-row { appearance: none; }
+.road-jy .jy-row:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.road-jy .jy-tile.is-here .jy-row { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); font-weight: 600; }
+.road-jy .jy-tile.is-ahead .jy-row { cursor: default; opacity: .7; }
+.road-jy .jy-tile-title { flex: 1 1 auto; min-inline-size: 0; overflow-wrap: anywhere; line-height: 1.4; }
+.road-jy .jy-tag, .road-jy .jy-state {
+  flex: none;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--accent);
+}
+.road-jy .jy-tile .jy-mark { inline-size: 2rem; block-size: 2rem; }
+.road-jy .jy-peek { margin: 0 var(--space-3) var(--space-3); }
+
+.road-jy .jy-end {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-start: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+}
+.road-jy .jy-flag {
+  flex: none;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--surface);
+  display: grid;
+  place-items: center;
+}
+.road-jy .jy-flag svg { inline-size: 1.2rem; block-size: 1.2rem; fill: currentColor; }
+.road-jy .jy-end.is-done .jy-flag { background: var(--accent); color: var(--on-accent); }
+.road-jy .jy-end-copy { margin: 0; display: grid; gap: 2px; min-inline-size: 0; }
+.road-jy .jy-end-title { font-weight: 650; overflow-wrap: anywhere; }
+
+/* Mobile: cards almost full width, gutter on the start side for the road ribbon. */
+@media (max-width: 719.98px) {
+  .road-jy .jy-stages { padding-inline-start: 3.25rem; }
+  .road-jy .jy-end { padding-inline-start: 3.25rem; }
+  .road-jy .jy-card summary,
+  .road-jy .jy-row { min-block-size: 44px; }
+}
+
+/* Desktop: alternating sides around a centred winding road. First שלב on the reading-start side. */
+@media (min-width: 720px) {
+  .road-jy { --jy-width: 64px; --jy-amp: 96px; padding-inline: var(--space-5); }
+  .road-jy .jy-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: calc(var(--jy-width) + var(--space-5));
+  }
+  .road-jy .jy-stage > .jy-card { grid-column: 1; max-inline-size: 100%; }
+  .road-jy .jy-stage:nth-child(even) > .jy-card { grid-column: 2; }
+  .road-jy .jy-stage.is-here > .jy-card {
+    /* Current שלב sits a little closer to the road. */
+    margin-inline-end: calc(-0.5 * var(--space-4));
+  }
+  .road-jy .jy-stage.is-here:nth-child(even) > .jy-card { margin-inline-end: 0; margin-inline-start: calc(-0.5 * var(--space-4)); }
+  .road-jy .jy-end {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: calc(var(--jy-width) + var(--space-5));
+    padding-inline: 0;
+  }
+  .road-jy .jy-end > .jy-flag { justify-self: end; }
+  /* After an odd last שלב (start side), the end sits on the end side, and vice versa. */
+  .road-jy .jy-stages:has(.jy-stage:last-child:nth-child(odd)) + .jy-end > .jy-flag { grid-column: 2; justify-self: start; }
+  .road-jy .jy-stages:has(.jy-stage:last-child:nth-child(odd)) + .jy-end > .jy-end-copy { grid-column: 2; }
+  .road-jy .jy-stages:has(.jy-stage:last-child:nth-child(even)) + .jy-end > .jy-flag { grid-column: 1; }
+  .road-jy .jy-stages:has(.jy-stage:last-child:nth-child(even)) + .jy-end > .jy-end-copy { grid-column: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .road-jy .jy-chev { transition: none; }
+}
+
+/* Settings: two-option road style picker. */
+.road-style-opts {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.road-style-opts legend { font-weight: 600; padding: 0; margin-block-end: var(--space-2); }
+.road-style-opts .rs-opt {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2) var(--space-3);
+  align-items: start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  min-block-size: 52px;
+  cursor: pointer;
+  background: var(--surface);
+}
+.road-style-opts .rs-opt:has(input:checked) {
+  border-color: var(--accent);
+  border-width: 2px;
+  padding: calc(var(--space-3) - 1px) calc(var(--space-4) - 1px);
+  background: var(--tint-info);
+}
+.road-style-opts .rs-opt:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.road-style-opts .rs-opt input { margin-block-start: .35rem; inline-size: 1.15rem; block-size: 1.15rem; accent-color: var(--accent); }
+.road-style-opts .rs-name { font-weight: 650; display: block; }
+.road-style-opts .rs-note { color: var(--muted); font-size: var(--text-sm); line-height: 1.5; display: block; margin-block-start: 2px; }
+@media (min-width: 560px) {
+  .road-style-opts { grid-template-columns: 1fr 1fr; }
+  .road-style-opts legend { grid-column: 1 / -1; }
+}

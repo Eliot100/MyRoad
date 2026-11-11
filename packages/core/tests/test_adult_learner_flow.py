@@ -127,9 +127,11 @@ def test_long_map_is_one_timeline_with_progress(adult_app) -> None:
     html = page.text
     assert 'data-stages="22"' in html
     assert html.count('<li class="tl-stage ') == N_TOPICS
+    tl = html[html.index('data-road-style-panel="timeline"'):html.index('data-road-style-panel="journey"')]
     # Week strip goal setting (#193) adds closed <details> in the path head; only the current שלב is open.
+    # The journey style (second panel) repeats the stages; counts below are on the timeline panel.
     n_head = html.count('<details class="week-goal-set"') + html.count('<details class="goal-skills"')
-    assert html.count("<details") == N_TOPICS + n_head and html.count("<details open") == 1
+    assert tl.count("<details") == N_TOPICS and tl.count("<details open") == 1
     assert "<bdi>0</bdi> of <bdi>22</bdi> stages done" in html
     assert html.count('class="tl-dots"') == N_TOPICS
 

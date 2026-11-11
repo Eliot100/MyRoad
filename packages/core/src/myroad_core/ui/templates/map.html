@@ -3,6 +3,7 @@
 {% block head_extra %}
   <link rel="stylesheet" href="/static/transitions.css" />
   <link rel="stylesheet" href="/static/road-timeline.css" />
+  <link rel="stylesheet" href="/static/road-journey.css" />
 {% endblock %}
 {% block body_attrs %} class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}"{% endblock %}
 {% block body %}
@@ -42,10 +43,16 @@
     {% endif %}
   </section>
 
+  <div data-road-style-panel="timeline">
   {% include "_road_timeline.html" %}
+  </div>
+  <div data-road-style-panel="journey">
+  {% include "_road_journey.html" %}
+  </div>
 
   </main>
 {% include "_footer.html" %}
   <script src="/static/platform.js" defer></script>
+  <script src="/static/road-journey.js" defer></script>
   <script src="/static/engagement.js" defer></script>
 {% endblock %}

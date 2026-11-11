@@ -15,6 +15,14 @@
     if (th) return th;
     return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   };
+  /* Road style (timeline | journey): unset = timeline, the current road page. */
+  var roadStyle = null;
+  try { roadStyle = localStorage.getItem("myroad.roadStyle"); } catch (e) {}
+  if (roadStyle === "journey" || roadStyle === "timeline") d.setAttribute("data-road-style", roadStyle);
+  else d.setAttribute("data-road-style", "timeline");
+  window.myroadRoadStyle = function () {
+    return d.getAttribute("data-road-style") || "timeline";
+  };
   window.myroadReduceMotion = function () {
     var m = d.getAttribute("data-motion");
     if (m) return m === "reduce";
