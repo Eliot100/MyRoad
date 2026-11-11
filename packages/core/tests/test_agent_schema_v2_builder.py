@@ -88,7 +88,7 @@ def test_stage_types_and_subjects_are_imported_from_schema() -> None:
     assert models_mod.SubjectId is schema.SubjectId
     assert models_mod.STEP_KINDS == schema.STEP_KINDS
     assert set(models_mod.AUDIENCE_IDS) == set(schema.GROUPS) - {"agent"}
-    assert {"adult", "psychometric"} <= set(models_mod.AUDIENCE_IDS)
+    assert {"adult", "psychometric", "amirnet"} <= set(models_mod.AUDIENCE_IDS)
     # No local copies of the lists in the builder package.
     for mod in (models_mod, builder_mod, completeness_mod):
         src = inspect.getsource(mod)
@@ -167,10 +167,19 @@ def test_outline_review_rules() -> None:
 # ---------- prerequisites + score ----------
 
 def test_prerequisites_and_score_on_psychometric_demo() -> None:
-    doc = _doc(_spec(subject="english", audience="psychometric"), existing=EXISTING)
+    doc = _doc(_spec(subject="math", audience="psychometric"), existing=EXISTING)
     assert doc["prerequisitePathIds"] == ["path_grade3_math_add20"]
-    assert doc["score"] == {"group_id": "psychometric_800", "part_id": "english", "weight": 1.0}
+    assert doc["score"] == {"group_id": "psychometric_800", "part_id": "quantitative", "weight": 1.0}
     assert doc["groupIds"] == ["agent", "psychometric"]
+    schema.validate_content_path(_as_content_path(doc))
+
+
+def test_english_demo_links_to_amirnet_not_psychometric() -> None:
+    # Dec 2026: English left the PET (NITE); English placement is the AMIRNET road.
+    assert FakePathGenerator().outline(_spec(subject="english", audience="psychometric")).score is None
+    doc = _doc(_spec(subject="english", audience="amirnet"), existing=EXISTING)
+    assert doc["score"] == {"group_id": "amirnet_150", "part_id": "english", "weight": 1.0}
+    assert doc["groupIds"] == ["agent", "amirnet"]
     schema.validate_content_path(_as_content_path(doc))
 
 
@@ -186,9 +195,10 @@ def test_psychometric_parts_per_subject() -> None:
         for subj in ("math", "hebrew", "english", "general", "piano")
     }
     assert {k: (v.part_id if v else None) for k, v in parts.items()} == {
-        "math": "quantitative", "hebrew": "verbal", "english": "english", "general": "writing", "piano": None,
+        "math": "quantitative", "hebrew": "verbal", "english": None, "general": "writing", "piano": None,
     }
-    assert set(schema.SCORE_GROUPS["psychometric_800"]["parts"]) == {"quantitative", "verbal", "english", "writing"}
+    assert set(schema.SCORE_GROUPS["psychometric_800"]["parts"]) == {"quantitative", "verbal", "writing"}
+    assert schema.SCORE_GROUPS["amirnet_150"]["parts"] == ("english",)
 
 
 def test_audience_must_be_a_schema_group() -> None:
@@ -235,7 +245,7 @@ def test_gateway_generator_asks_for_new_fields_and_keeps_only_offered_prerequisi
     assert any(s.kind == "review" for t in out.topics for s in t.stages)
     prompt = sent[0][1]["content"]
     for needle in ("kind is understanding", "review_topic_ids", "EARLIER", "prerequisite_path_ids",
-                   "path_grade3_math_add20", "psychometric_800", "quantitative, verbal, english, writing",
+                   "path_grade3_math_add20", "psychometric_800", "quantitative, verbal, writing",
                    "Audience: psychometric"):
         assert needle in prompt, needle
 

@@ -95,6 +95,15 @@ def test_score_link_psychometric():
         validate_content_path(_path(score={"group_id": "sat", "part_id": "math"}))
 
 
+def test_english_left_psychometric_for_amirnet():
+    # From Dec 2026 NITE's PET has only verbal + quantitative; English is the separate AMIRNET.
+    with pytest.raises(ValidationError):
+        validate_content_path(_path(score={"group_id": "psychometric_800", "part_id": "english"}))
+    p = validate_content_path(_path(group_ids=["adult", "amirnet"],
+                                    score={"group_id": "amirnet_150", "part_id": "english"}))
+    assert p.score.group_id == "amirnet_150"
+
+
 def test_hebrew_subject_allowed():
     validate_content_path(_path(subject="hebrew"))
 
