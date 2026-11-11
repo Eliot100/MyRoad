@@ -138,3 +138,43 @@ Under [`screens/overnight-2026-11-11-b5/`](screens/overnight-2026-11-11-b5/), vi
 | Practice after a wrong answer | `desktop-04-practice-after-answer.png` | `mobile-04-practice-after-answer.png` |
 | Placement question, math | `desktop-05-placement-question.png` | `mobile-05-placement-question.png` |
 | AMIRNET (feat/amirnet-road): home / first check answered | `desktop-06-amirnet-home.png` | `mobile-06-amirnet-step.png` |
+
+---
+
+## Follow-up 6 (2026-11-11)
+
+Work on `supergrok-picks-2026-11-05` only. Content tip `60eb341`. App commits below are on that branch and were not merged, and no pull request was opened.
+
+### What changed
+
+1. **Content `0ae1bd9`.** Remaining English placeholder lines were replaced with real Hebrew and one worked example. Mixed-review stages now have an explanation, a worked example, and the practice. The time check no longer says the form is not taught. The four exam-passage explanations say how to read the passage and work one claim from the opening. The passage stays in `body_content`. No extra tile was added inside those exam stages: two explanation tiles already sit before the checks, and a new role between them would break tile order.
+2. **Content `60eb341`.** Every math 5-unit stage now has three different practice questions. The hint and the worked method are the same Hebrew steps (at least two). Physics and Arabic JSON were not rewritten by that change.
+3. **App `3608541`.** An empty typed or spoken check says "צריך תשובה לפני הבדיקה. כתבו או אמרו, ואז בדקו." It does not say "בחרו תשובה אחרת", it does not record an answer event, and it does not reveal the solution. At 760px and below, the home shelves, the road stage cards, and the roads shelf stack in one column so the next card is not a clipped sliver. The play progress bar's accessible name uses the existing key `metrics_progress` ("התקדמות") instead of the English word "progress".
+4. **App `c5fa0b3`.** A place panel on the road screen and on both maps. It uses mastered steps and the saved step index only. The learner sees "כאן עכשיו" and "אחר כך", or "עוד אין תשובות בדרך הזו", or "הדרך הושלמה". No percent and no score. The three place strings landed in `3608541` because they share the locale files with the empty-answer copy.
+5. **App `b2bcfe7`.** Playwright covers `/`, `/roads`, the math placement, and math 01 at 375 and 1280. The first placement answer is a real click. The rest of that check is posted on the same session. Math 01 then shows "עוד אין תשובות בדרך הזו", and one practice answer is "נכון".
+
+### Still blocked
+
+`/privacy` and `/terms` still return 404 on this branch. They exist on `main` and were not merged. Those routes were not edited.
+
+### Already done before this follow-up (not redone)
+
+- The filler pattern `בדיקה N: X ועוד 1` was already gone (B5). A search of the content branch finds none of it, and none of the old English stub lines "שאלות על מה שכבר למדתם", "Review only.", or "לא מלמדים כאן".
+- Arabic "يكتب" spelling: content `aae66bb`.
+- Hidden double "נכון.": app `a580119`.
+- Empty type/voice is not scored: B2. This follow-up only changed the copy and the solution reveal.
+- README mail console and the physics lab `CONTENT_DIR` lookup: B2.
+
+### Not changed
+
+- Muted text `#4a5553` on white and `#9eaaa8` on near-black already clears WCAG AA for normal text, so no contrast token was edited.
+- Math roads stay off the design-D road view. The place panel is still shown on the math map and the road screen.
+- Length closers that restate a real rule were kept. Placement files were not regenerated.
+- English roads were patched in place. `build_english_bagrut5.py` was not run, so exam nodes, tile roles, and levels stay.
+- The B5 note about the psychometric group belongs to the AMIRNET branch, not this one.
+
+### Tests
+
+`cd packages/core && .venv/bin/pytest -q` (Python 3.11): 797 passed, 1 skipped. That is the previous 795 passed and 1 skipped, plus the two new Playwright smokes (375 and 1280).
+
+
