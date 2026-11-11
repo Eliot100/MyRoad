@@ -23,6 +23,15 @@
   window.myroadRoadStyle = function () {
     return d.getAttribute("data-road-style") || "timeline";
   };
+  /* Road orientation (vertical | horizontal): applies to the journey style on wide screens.
+     Unset = vertical. Narrow screens always render vertical, even if this is horizontal. */
+  var roadOrient = null;
+  try { roadOrient = localStorage.getItem("myroad.roadOrientation"); } catch (e) {}
+  if (roadOrient === "horizontal" || roadOrient === "vertical") d.setAttribute("data-road-orientation", roadOrient);
+  else d.setAttribute("data-road-orientation", "vertical");
+  window.myroadRoadOrientation = function () {
+    return d.getAttribute("data-road-orientation") || "vertical";
+  };
   window.myroadReduceMotion = function () {
     var m = d.getAttribute("data-motion");
     if (m) return m === "reduce";

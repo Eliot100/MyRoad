@@ -1,7 +1,10 @@
-/* Draw a winding asphalt road through the journey-style stage cards.
-   Measures card centres and builds a smooth cubic path. No-JS keeps the CSS fallback ribbon.
-   Recalculates on resize. Respects reduced motion (no animated dash). */
+/* Journey style: stepping-stones path. Handles the wide-screen orientation
+   toggle (vertical | horizontal), persistence, keyboard scrolling, and
+   scrolling the current משבצת into view. The winding itself is CSS; this
+   file only refines behaviour. Respects reduced motion. */
 (function () {
+  var WIDE = "(min-width: 1024px)";
+
   function styleIsJourney() {
     return (document.documentElement.getAttribute("data-road-style") || "timeline") === "journey";
   }
@@ -9,129 +12,145 @@
     return document.querySelector("html[data-road-style='journey'] .road-jy") ||
            (styleIsJourney() ? document.querySelector(".road-jy") : null);
   }
-  function pointsFor(wrap, stages, endEl, rtl) {
-    var wr = wrap.getBoundingClientRect();
-    var w = wr.width, h = wrap.scrollHeight || wr.height;
-    var mid = w / 2;
-    var ampAttr = getComputedStyle(wrap.closest(".road-jy") || wrap).getPropertyValue("--jy-amp");
-    var amp = parseFloat(ampAttr) || Math.min(w * 0.18, 96);
-    if (w < 720) {
-      // Mobile: the road runs along the reading-start edge and weaves slightly inward.
-      mid = rtl ? (w - 22) : 22;
-      amp = Math.min(amp, 28);
-    }
-    var pts = [{ x: mid, y: 0 }];
-    for (var i = 0; i < stages.length; i++) {
-      var r = stages[i].getBoundingClientRect();
-      var y = r.top - wr.top + r.height / 2;
-      var side = (i % 2 === 0) ? 1 : -1;
-      if (rtl) side = -side;
-      // On wide screens the road bows toward the card (card is on start side first).
-      // Start side in RTL is the right half, which is a positive x from centre? 
-      // First card is grid-column 1 = start = right in RTL = higher x.
-      // side +1 should move toward the first card.
-      if (w >= 720) {
-        var towardStart = rtl ? 1 : -1;
-        side = (i % 2 === 0) ? towardStart : -towardStart;
-      } else {
-        // Weave inward from the start-edge ribbon.
-        side = rtl ? -1 : 1;
-        if (i % 2) side = -side * 0.35;
-        else side = side * 0.15;
-      }
-      pts.push({ x: mid + side * amp, y: y });
-    }
-    if (endEl) {
-      var er = endEl.getBoundingClientRect();
-      pts.push({ x: mid, y: er.top - wr.top + er.height / 2 });
-    }
-    pts.push({ x: mid, y: h });
-    return { pts: pts, w: w, h: h };
+  function storedOrientation() {
+    if (window.myroadRoadOrientation) return window.myroadRoadOrientation();
+    return document.documentElement.getAttribute("data-road-orientation") || "vertical";
   }
-  function smooth(pts) {
-    if (!pts.length) return "";
-    var d = "M " + pts[0].x.toFixed(1) + " " + pts[0].y.toFixed(1);
-    for (var i = 1; i < pts.length; i++) {
-      var p0 = pts[i - 1], p1 = pts[i];
-      var dy = p1.y - p0.y;
-      var c = Math.max(24, dy * 0.42);
-      d += " C " + p0.x.toFixed(1) + " " + (p0.y + c).toFixed(1) +
-           ", " + p1.x.toFixed(1) + " " + (p1.y - c).toFixed(1) +
-           ", " + p1.x.toFixed(1) + " " + p1.y.toFixed(1);
+  function isWide() {
+    return !!(window.matchMedia && window.matchMedia(WIDE).matches);
+  }
+  function isHorizontal() {
+    return isWide() && storedOrientation() === "horizontal";
+  }
+  function reduceMotion() {
+    return window.myroadReduceMotion ? window.myroadReduceMotion() : false;
+  }
+  function setOrientation(v, persist) {
+    v = v === "horizontal" ? "horizontal" : "vertical";
+    if (persist !== false) {
+      try { localStorage.setItem("myroad.roadOrientation", v); } catch (err) {}
     }
-    return d;
+    document.documentElement.setAttribute("data-road-orientation", v);
+    if (window.myroadRoadOrientation) {
+      /* keep the getter in sync; it reads the attribute already */
+    }
+    syncButtons();
+    syncCanvas();
+    scheduleHere();
   }
-  function pathLength(path) {
-    try { return path.getTotalLength(); } catch (e) { return 0; }
+  function syncButtons() {
+    var v = storedOrientation();
+    document.querySelectorAll("[data-jy-orient]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-jy-orient") === v ? "true" : "false");
+    });
+    document.querySelectorAll('input[name="road_orient"]').forEach(function (r) {
+      r.checked = r.value === v;
+    });
   }
-  function draw() {
+  function syncCanvas() {
     var jy = root();
     if (!jy) return;
-    var wrap = jy.querySelector(".jy-canvas");
-    var svg = jy.querySelector("svg.jy-road");
-    var pave = jy.querySelector(".jy-pave-path");
-    var edge = jy.querySelector(".jy-edge-path");
-    var dash = jy.querySelector(".jy-dash-path");
-    var done = jy.querySelector(".jy-done-path");
-    if (!wrap || !svg || !pave) return;
-    var stages = jy.querySelectorAll(".jy-stage");
-    var endEl = jy.querySelector(".jy-end");
-    var rtl = (document.documentElement.getAttribute("dir") || "rtl") === "rtl";
-    var m = pointsFor(wrap, stages, endEl, rtl);
-    svg.setAttribute("viewBox", "0 0 " + m.w + " " + m.h);
-    svg.setAttribute("width", String(m.w));
-    svg.setAttribute("height", String(m.h));
-    var d = smooth(m.pts);
-    pave.setAttribute("d", d);
-    if (edge) edge.setAttribute("d", d);
-    if (dash) dash.setAttribute("d", d);
-    // The walked part of the road is solid teal up to the current שלב (or the end if finished).
-    if (done) {
-      var here = jy.querySelector(".jy-stage.is-here") || (jy.querySelector(".jy-end.is-done") ? endEl : null);
-      if (here) {
-        var wr = wrap.getBoundingClientRect();
-        var hr = here.getBoundingClientRect();
-        var y = hr.top - wr.top + (here.classList.contains("jy-end") ? hr.height / 2 : 0);
-        // Use a second path clipped by length: copy the path and dash it to the here y via getPoint.
-        done.setAttribute("d", d);
-        var len = pathLength(done);
-        if (len) {
-          // Find length along the path closest to y of the current שלב's top.
-          var target = 0, best = 1e9, i, pt;
-          var steps = 80;
-          for (i = 0; i <= steps; i++) {
-            pt = done.getPointAtLength((len * i) / steps);
-            var err = Math.abs(pt.y - y);
-            if (err < best) { best = err; target = (len * i) / steps; }
-          }
-          done.setAttribute("stroke-dasharray", target + " " + len);
-        }
-      } else {
-        done.setAttribute("d", "");
-      }
+    var canvas = jy.querySelector(".jy-canvas");
+    if (!canvas) return;
+    var horiz = isHorizontal();
+    canvas.classList.toggle("is-horizontal", horiz);
+    if (horiz) {
+      canvas.setAttribute("tabindex", "0");
+      canvas.setAttribute("role", "region");
+    } else {
+      canvas.removeAttribute("tabindex");
+      if (canvas.getAttribute("role") === "region") canvas.removeAttribute("role");
     }
     jy.classList.add("is-drawn");
   }
-  var t = null;
-  function schedule() {
-    if (t) cancelAnimationFrame(t);
-    t = requestAnimationFrame(function () { t = null; draw(); });
+  function scrollHereIntoView() {
+    if (!styleIsJourney() || !isHorizontal()) return;
+    var jy = root();
+    if (!jy) return;
+    var here = jy.querySelector("#jy-here") || jy.querySelector(".jy-stone.is-here, .jy-step.is-here");
+    if (!here) return;
+    var behavior = reduceMotion() ? "auto" : "smooth";
+    try {
+      here.scrollIntoView({ inline: "center", block: "nearest", behavior: behavior });
+    } catch (err) {
+      here.scrollIntoView(true);
+    }
+  }
+  var hereTimer = null;
+  function scheduleHere() {
+    if (hereTimer) clearTimeout(hereTimer);
+    hereTimer = setTimeout(function () { hereTimer = null; scrollHereIntoView(); }, 40);
+  }
+  function onOrientClick(e) {
+    var btn = e.target.closest && e.target.closest("[data-jy-orient]");
+    if (!btn) return;
+    e.preventDefault();
+    setOrientation(btn.getAttribute("data-jy-orient"), true);
+  }
+  function onKey(e) {
+    if (!isHorizontal()) return;
+    var jy = root();
+    if (!jy) return;
+    var canvas = jy.querySelector(".jy-canvas");
+    if (!canvas) return;
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End") return;
+    /* Only when focus is inside the journey (canvas, a stone, a card). */
+    if (!jy.contains(document.activeElement) && document.activeElement !== canvas) return;
+    var stages = Array.prototype.slice.call(jy.querySelectorAll(".jy-stage"));
+    if (!stages.length) return;
+    var rtl = (document.documentElement.getAttribute("dir") || "rtl") === "rtl";
+    var idx = 0, i, r, best = 1e9, cr = canvas.getBoundingClientRect();
+    var mid = (cr.left + cr.right) / 2;
+    for (i = 0; i < stages.length; i++) {
+      r = stages[i].getBoundingClientRect();
+      var err = Math.abs((r.left + r.right) / 2 - mid);
+      if (err < best) { best = err; idx = i; }
+    }
+    var next = idx;
+    if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = stages.length - 1;
+    else if (e.key === "ArrowLeft") next = rtl ? idx + 1 : idx - 1;
+    else if (e.key === "ArrowRight") next = rtl ? idx - 1 : idx + 1;
+    next = Math.max(0, Math.min(stages.length - 1, next));
+    if (next === idx && e.key !== "Home" && e.key !== "End") return;
+    e.preventDefault();
+    var behavior = reduceMotion() ? "auto" : "smooth";
+    try {
+      stages[next].scrollIntoView({ inline: "center", block: "nearest", behavior: behavior });
+    } catch (err) {
+      stages[next].scrollIntoView(true);
+    }
+  }
+  function bind(jy) {
+    if (!jy || jy.__jyBound) return;
+    jy.__jyBound = true;
+    jy.addEventListener("click", onOrientClick);
+    var canvas = jy.querySelector(".jy-canvas");
+    if (canvas) canvas.addEventListener("keydown", onKey);
   }
   function init() {
+    syncButtons();
     if (!styleIsJourney()) return;
-    draw();
+    var jy = root();
+    if (jy) bind(jy);
+    syncCanvas();
+    scheduleHere();
     if (!window.__jyRoadResize) {
       window.__jyRoadResize = true;
-      window.addEventListener("resize", schedule, { passive: true });
-    }
-    // Recalculate when a שלב opens or closes (height changes).
-    var jy = root();
-    if (jy && !jy.__jyBound) {
-      jy.__jyBound = true;
-      jy.addEventListener("toggle", schedule, true);
+      window.addEventListener("resize", function () {
+        syncCanvas();
+        scheduleHere();
+      }, { passive: true });
+      if (window.matchMedia) {
+        var mq = window.matchMedia(WIDE);
+        var onMq = function () { syncCanvas(); scheduleHere(); };
+        if (mq.addEventListener) mq.addEventListener("change", onMq);
+        else if (mq.addListener) mq.addListener(onMq);
+      }
     }
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
-  window.myroadDrawJourneyRoad = schedule;
+  window.myroadDrawJourneyRoad = function () { syncCanvas(); scheduleHere(); };
+  window.myroadSetRoadOrientation = setOrientation;
 })();

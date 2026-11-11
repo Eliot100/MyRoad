@@ -147,6 +147,18 @@
             <span><span class="rs-name">{{ t('road_style_journey') }}</span><span class="rs-note">{{ t('road_style_journey_note') }}</span></span>
           </label>
         </fieldset>
+        <fieldset class="road-orient-opts">
+          <legend>{{ t('road_orient_legend') }}</legend>
+          <label class="rs-opt">
+            <input type="radio" name="road_orient" value="vertical" />
+            <span class="rs-name">{{ t('road_orient_vertical') }}</span>
+          </label>
+          <label class="rs-opt">
+            <input type="radio" name="road_orient" value="horizontal" />
+            <span class="rs-name">{{ t('road_orient_horizontal') }}</span>
+          </label>
+          <p class="rs-note">{{ t('road_orient_note') }}</p>
+        </fieldset>
         <p class="lede tiny">{{ t('reading_prefs_note') }}</p>
         <p class="flash ok" role="status" aria-live="polite" id="road-style-saved"></p>
       </form>
@@ -157,11 +169,21 @@
         f.hidden = false;
         var cur = window.myroadRoadStyle ? window.myroadRoadStyle() : "timeline";
         f.querySelectorAll('input[name="road_style"]').forEach(function (r) { r.checked = r.value === cur; });
+        var ori = window.myroadRoadOrientation ? window.myroadRoadOrientation() : "vertical";
+        f.querySelectorAll('input[name="road_orient"]').forEach(function (r) { r.checked = r.value === ori; });
         f.addEventListener("change", function (e) {
-          if (e.target.name !== "road_style") return;
-          var v = e.target.value === "journey" ? "journey" : "timeline";
-          try { localStorage.setItem("myroad.roadStyle", v); } catch (err) {}
-          d.setAttribute("data-road-style", v);
+          if (e.target.name === "road_style") {
+            var v = e.target.value === "journey" ? "journey" : "timeline";
+            try { localStorage.setItem("myroad.roadStyle", v); } catch (err) {}
+            d.setAttribute("data-road-style", v);
+            msg.textContent = {{ t('settings_saved')|tojson }};
+            return;
+          }
+          if (e.target.name !== "road_orient") return;
+          var o = e.target.value === "horizontal" ? "horizontal" : "vertical";
+          try { localStorage.setItem("myroad.roadOrientation", o); } catch (err) {}
+          d.setAttribute("data-road-orientation", o);
+          if (window.myroadSetRoadOrientation) window.myroadSetRoadOrientation(o, true);
           msg.textContent = {{ t('settings_saved')|tojson }};
         });
       })();

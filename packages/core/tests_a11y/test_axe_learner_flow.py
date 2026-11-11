@@ -116,7 +116,14 @@ def test_map_view_journey(page):
     page.reload()
     page.locator(".road-jy").wait_for()
     scan(page, "map-journey-dark")
-    page.evaluate("localStorage.setItem('myroad.roadStyle', 'timeline'); localStorage.removeItem('myroad.theme')")
+    # Horizontal orientation on a wide screen, still axe-clean.
+    page.set_viewport_size({"width": 1280, "height": 800})
+    page.evaluate("localStorage.setItem('myroad.roadOrientation', 'horizontal'); document.documentElement.setAttribute('data-road-orientation', 'horizontal')")
+    page.reload()
+    page.locator(".road-jy").wait_for()
+    scan(page, "map-journey-horizontal")
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.evaluate("localStorage.setItem('myroad.roadStyle', 'timeline'); localStorage.removeItem('myroad.theme'); localStorage.removeItem('myroad.roadOrientation')")
 
 
 def test_path_head_session_card(page):
