@@ -604,6 +604,11 @@
   "road_style_timeline": "Timeline",
   "road_style_timeline_note": "Every stage on one line, with clear progress.",
   "road_style_journey": "Winding road",
-  "road_style_journey_note": "The path as a winding road, with a card for each stage.",
-  "jy_lede": "The whole road on one screen. Your stage is marked, and you can open any stage to see its tiles."
+  "road_style_journey_note": "Stepping stones in a field, with your progress marked.",
+  "jy_lede": "The whole road on one screen, as stepping stones in a field. Your stage is marked, and you can open any unlocked tile.",
+  "road_orientation_legend": "Path direction",
+  "road_orientation_vertical": "Vertical",
+  "road_orientation_horizontal": "Horizontal",
+  "road_orientation_vertical_note": "The path scrolls from top to bottom, on a phone and on a wide screen.",
+  "road_orientation_horizontal_note": "On a wide screen only: the path scrolls sideways, in the reading direction."
 }

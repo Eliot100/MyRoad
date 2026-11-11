@@ -23,6 +23,14 @@
   window.myroadRoadStyle = function () {
     return d.getAttribute("data-road-style") || "timeline";
   };
+  /* Road orientation (vertical | horizontal): unset = vertical. Only applied on wide screens. */
+  var roadOrient = null;
+  try { roadOrient = localStorage.getItem("myroad.roadOrientation"); } catch (e) {}
+  if (roadOrient === "horizontal" || roadOrient === "vertical") d.setAttribute("data-road-orientation", roadOrient);
+  else d.setAttribute("data-road-orientation", "vertical");
+  window.myroadRoadOrientation = function () {
+    return d.getAttribute("data-road-orientation") || "vertical";
+  };
   window.myroadReduceMotion = function () {
     var m = d.getAttribute("data-motion");
     if (m) return m === "reduce";

@@ -206,14 +206,19 @@
     var fits = r.top >= 0 && r.bottom <= (window.innerHeight || document.documentElement.clientHeight);
     if (fits) return; // already on screen: do not move the page
     var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    var horiz = (document.documentElement.getAttribute("data-road-orientation") === "horizontal") &&
+                window.matchMedia && window.matchMedia("(min-width: 1024px)").matches &&
+                (document.documentElement.getAttribute("data-road-style") === "journey");
+    here.scrollIntoView({ block: horiz ? "nearest" : "start", inline: horiz ? "center" : "nearest", behavior: reduce ? "auto" : "smooth" });
   }
   // Road timeline: the sticky continue bar shows only while the head's continue button is off
   // screen, so one next action is always in view and never twice. Without JS (or
   // IntersectionObserver) the bar stays hidden and the head button does the job.
   function currentRoadHere() {
     var style = document.documentElement.getAttribute("data-road-style") || "timeline";
-    if (style === "journey") return document.getElementById("jy-here");
+    if (style === "journey") {
+      return document.querySelector("[data-jy-current]") || document.getElementById("jy-here");
+    }
     return document.getElementById("here");
   }
   function roadStylePanel() {

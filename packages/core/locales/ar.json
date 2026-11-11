@@ -604,6 +604,11 @@
   "road_style_timeline": "خط زمني",
   "road_style_timeline_note": "كل المراحل على خط واحد، مع تقدّم واضح.",
   "road_style_journey": "طريق متعرّج",
-  "road_style_journey_note": "المسار كطريق متعرّج، مع بطاقة لكل مرحلة.",
-  "jy_lede": "الطريق كلّه في شاشة واحدة. مرحلتك معلّمة، ويمكنك فتح أي مرحلة لرؤية مربعاتها."
+  "road_style_journey_note": "أحجار عبور في حقل، مع تعليم تقدّمك.",
+  "jy_lede": "الطريق كلّه في شاشة واحدة، كأحجار عبور في حقل. مرحلتك معلّمة، ويمكنك فتح أي مربع مفتوح.",
+  "road_orientation_legend": "اتجاه المسار",
+  "road_orientation_vertical": "عمودي",
+  "road_orientation_horizontal": "أفقي",
+  "road_orientation_vertical_note": "المسار يُمرَّر من الأعلى إلى الأسفل، على الهاتف والشاشة العريضة.",
+  "road_orientation_horizontal_note": "في الشاشة العريضة فقط: المسار يُمرَّر أفقياً، في اتجاه القراءة."
 }
