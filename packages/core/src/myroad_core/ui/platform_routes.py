@@ -66,6 +66,7 @@ from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
+from myroad_core.ui.road_timeline import road_timeline
 from myroad_core.ui.engagement_view import (
     can_do_line,
     engagement_view,
@@ -2060,23 +2061,10 @@ def register_platform_routes(
             return response
 
         if sess.get("view") != "learn":
-            # Topic map first
+            # Road page: the whole road as one timeline (road_timeline.py).
             mastered = sess.get("mastered") or set()
             resume_index = int(sess.get("index", 0) or 0)
-            current_bid = blocks[resume_index]["blockId"] if 0 <= resume_index < n else None
-            current_station = 0
-            for i, tp in enumerate(topics):
-                done = sum(1 for bid in tp["blockIds"] if bid in mastered)
-                tp["doneCount"] = done
-                tp["complete"] = tp["stepCount"] > 0 and done >= tp["stepCount"]
-                tp["pct"] = int(round(100 * done / tp["stepCount"])) if tp["stepCount"] else 0
-                tp["current"] = current_bid is not None and current_bid in tp["blockIds"]
-                if tp["current"]:
-                    current_station = i + 1
-                for st in tp["steps"]:
-                    st["done"] = st["blockId"] in mastered
-                    st["current"] = st["blockId"] == current_bid
-            open_index = next((i for i, b in enumerate(blocks) if b["blockId"] not in mastered), n)
+            linear = str(path_id).startswith("path_english_bagrut5_") or is_math_series(path_id)
             ctx = _shell_ctx(
                 request,
                 doc=doc,
@@ -2084,15 +2072,18 @@ def register_platform_routes(
                 topics=topics,
                 mastered=mastered,
                 total=n,
-                progress=int(round(100 * len(mastered) / n)) if n else 0,
-                can_resume=bool(mastered) or sess.get("index", 0) > 0,
-                resume_index=resume_index,
-                current_station=current_station,
-                stations_done=sum(1 for tp in topics if tp["complete"]),
+                path_id=path_id,
+                tl=road_timeline(
+                    topics,
+                    mastered=mastered,
+                    current_block=blocks[resume_index]["blockId"] if 0 <= resume_index < n else None,
+                    linear=linear,
+                    read_only=read_only,
+                ),
+                can_resume=bool(mastered) or resume_index > 0,
                 locked_by=locked_by,
                 read_only=read_only,
-                open_index=open_index,
-                linear_rows=str(path_id).startswith("path_english_bagrut5_") or is_math_series(path_id),
+                linear_rows=linear,
                 series_href=(
                     "/series/english-bagrut5" if str(path_id).startswith("path_english_bagrut5_")
                     else "/series/math-bagrut5" if is_math_series(path_id) else ""

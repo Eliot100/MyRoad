@@ -1,0 +1,3 @@
+{#- The one next משבצת on the road page, named above the head's continue button (road_timeline.py `tl.next`). -#}
+<p class="continue-next"><span class="tiny">{{ t('tl_next') }} · {{ t('tl_stage_n', n=tl.next.stageN) }}</span>
+  <span class="continue-next-title" dir="auto"{{ tl.next.titleLang|content_lang(locale) }}>{{ tl.next.title }}</span></p>

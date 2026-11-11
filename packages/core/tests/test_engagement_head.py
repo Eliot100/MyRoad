@@ -73,7 +73,7 @@ def test_map_head_empty_state_and_whole_road(client) -> None:
     assert "עוד אין נקודת התחלה" in html
     assert "הנתיב הקצר הראשון" in html and "התחל את הדרך" in html
     assert html.count('<li class="is-next">') == 1 and "is-done" not in html[html.index("set-dots"):html.index("set-count")]
-    assert 'id="world-map"' in html and 'id="track"' in html  # the whole road stays on this screen
+    assert 'class="card road-tl' in html and 'id="track"' in html  # the whole road stays on this screen
     assert "%" not in _text(html[html.index("eng-head"):html.index("eng-links")])
 
 

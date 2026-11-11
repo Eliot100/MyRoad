@@ -3,6 +3,8 @@
     Later slots (week strip, set end) attach below the card; nothing here assumes they exist. -#}
 {%- set eng = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
 {%- set gm = eng.goal_meter or {} %}
+{#- A road with progress says continue, even when today's short נתיב has not started yet. -#}
+{%- set started = eng.started or can_resume|default(false) %}
 {%- set ss = eng.session or {} %}
 {#- #192: goal_meter.stage counts finished שלבים; the head names the one the learner is on. -#}
 {%- set g_done = [gm.stage or 0, gm.stages_total or 0]|min %}
@@ -39,15 +41,19 @@
   </section>
 
   <section class="continue-card" aria-labelledby="continue-title">
-    <h2 class="continue-title" id="continue-title">{{ t('eng_set_title') if eng.started else t('eng_set_first') }}</h2>
+    <h2 class="continue-title" id="continue-title">{{ t('eng_set_title') if started else t('eng_set_first') }}</h2>
     {%- if ss.steps %}
     <ol class="set-dots" aria-label="{{ t('eng_set_progress', done=ss.done_count, total=ss.size) }}">
       {%- for s in ss.steps %}<li class="{% if s.done %}is-done{% elif loop.index0 == ss.done_count %}is-next{% endif %}"></li>{% endfor %}
     </ol>
     <p class="set-count tiny">{{ t('eng_set_progress', done='<bdi>%s</bdi>'|format(ss.done_count), total='<bdi>%s</bdi>'|format(ss.size))|safe }}</p>
     {%- endif %}
+    {#- Road page timeline (road_timeline.py): name the one next משבצת right above the button. -#}
+    {%- if tl is defined and tl and tl.next %}
+    {% include "_road_next.html" %}
+    {%- endif %}
     <form method="post" action="/play/{{ doc.pathId }}/start">
-      <button type="submit" class="primary big continue-btn">{{ t('eng_continue') if eng.started else t('start_path') }}</button>
+      <button type="submit" class="primary big continue-btn">{{ t('eng_continue') if started else t('start_path') }}</button>
     </form>
   </section>
   {%- set wk = week_view(eng.week, locale if locale is defined else 'he') if week_view is defined else none %}

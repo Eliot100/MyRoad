@@ -194,8 +194,8 @@
 
   init(document);
 
-  // --- Path map: bring the current station (#here, aria-current="step") into view on load ---
-  // Without JS the "Station N of M" pill and the map links (?view=map#here) jump there instead.
+  // --- Road timeline: bring the current שלב (#here) into view on load ---
+  // Without JS the map links (?view=map#here) and the sticky bar's #here link jump there instead.
   function jumpToCurrentStation() {
     var here = document.getElementById("here");
     if (!here || !document.body.classList.contains("map-view")) return;
@@ -208,27 +208,35 @@
     var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
   }
-  // Floating "back to my station" (UI): visible only while the current station is off screen.
-  // Without JS (or IntersectionObserver) it stays hidden and the #here pill link still works.
-  function floatBackToStation() {
-    var here = document.getElementById("here");
-    var btn = document.querySelector(".float-here");
-    if (!here || !btn || !("IntersectionObserver" in window)) return;
+  // Road timeline: the sticky continue bar shows only while the head's continue button is off
+  // screen, so one next action is always in view and never twice. Without JS (or
+  // IntersectionObserver) the bar stays hidden and the head button does the job.
+  function stickyContinue() {
+    var bar = document.querySelector("[data-tl-continue]");
+    var head = document.querySelector(".continue-btn");
+    if (!bar || !("IntersectionObserver" in window)) return;
+    if (!head) { bar.hidden = false; return; }
     new IntersectionObserver(function (entries) {
-      btn.hidden = entries[entries.length - 1].isIntersecting;
-    }).observe(here);
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : false;
-      here.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
-      var f = here.querySelector("summary, a, button");
-      if (f) f.focus({ preventScroll: true });
-    });
+      bar.hidden = entries[entries.length - 1].isIntersecting;
+    }).observe(head);
+    var link = bar.querySelector('a[href="#here"]');
+    var here = document.getElementById("here");
+    if (link && here) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        var d = here.querySelector("details");
+        if (d) d.open = true;
+        var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : false;
+        here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+        var f = here.querySelector('[aria-current="step"] button') || here.querySelector("summary");
+        if (f) f.focus({ preventScroll: true });
+      });
+    }
   }
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", floatBackToStation);
+    document.addEventListener("DOMContentLoaded", stickyContinue);
   } else {
-    floatBackToStation();
+    stickyContinue();
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", jumpToCurrentStation);

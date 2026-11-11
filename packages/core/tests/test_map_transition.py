@@ -93,7 +93,7 @@ def test_linked_on_map_and_play_only(client, locale) -> None:
     map_html = client.get(f"/play/{PID}?view=map").text
     play_html = client.get(f"/play/{PID}?view=learn").text
     assert LINK in map_html and LINK in play_html
-    assert '<section class="card map-card">' in map_html
+    assert '<section class="card road-tl' in map_html
     assert re.search(r'<body class="[^"]*\bplay map-view\b', map_html)
     assert not re.search(r'<body class="[^"]*\bmap-view\b', play_html)
     assert 'id="step-card"' in play_html and 'class="card path-head"' in play_html
