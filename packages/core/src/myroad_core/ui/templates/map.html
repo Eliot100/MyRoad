@@ -2,6 +2,7 @@
 {% block title %}{{ product }} — {{ meta.title }}{% endblock %}
 {% block head_extra %}
   <link rel="stylesheet" href="/static/transitions.css" />
+  <link rel="stylesheet" href="/static/journey.css" />
 {% endblock %}
 {% block body_attrs %} class="platform play map-view {% if meta.kidsDemo %}tone-demo{% endif %}{% if read_only %} read-only{% endif %}"{% endblock %}
 {% block body %}
@@ -39,162 +40,26 @@
   </section>
   {% endif %}
 
-  {% set long_map = topics|length > 8 %}
-  {% set use_linear = linear_rows|default(false) %}
-  {% set gap = open_index|default(0) %}
+  {#- Journey map (arena c2): one template for every road shape, see _journey.html. -#}
+  {% set jv = journey_view(topics, read_only=read_only, linear=linear_rows|default(false), gap=open_index|default(0)) %}
   <section class="card map-card">
     <h2 id="track" tabindex="-1">{{ t('path_map') }}</h2>
-    {#- World map (approved option B): each שלב is a ring of משבצות, the בדיקה tile sits at the top.
-        Drawn by worldmap.js from this JSON; the list below stays as the no-JS and screen reader view. -#}
-    {% set wm = namespace(stages=[]) %}
-    {% for tp in topics %}
-      {% set first_ix = tp.steps[0].index if tp.steps else 0 %}
-      {% set tiles = [] %}
-      {% for st in tp.steps %}
-        {% set ahead = use_linear and (not read_only) and (gap < total) and (st.index > gap) %}
-        {% set _ = tiles.append({"id": st.blockId, "title": st.title, "review": st.kind == 'review', "check": loop.last and tp.steps|length > 1,
-             "state": "done" if st.done else ("cur" if (st.current and not read_only) else ("lock" if ahead else "open")), "ix": st.index}) %}
-      {% endfor %}
-      {% set sstate = "done" if tp.complete else ("cur" if (tp.current and not read_only) else ("lock" if (use_linear and not read_only and gap < total and first_ix > gap) else "open")) %}
-      {% set _ = wm.stages.append({"id": tp.id, "title": tp.title, "state": sstate, "done": tp.doneCount, "total": tp.stepCount, "tiles": tiles}) %}
-    {% endfor %}
-    {% set preview = ui_preview_on() %}
-    <div class="world-map" id="world-map" data-path="{{ doc.pathId }}" data-read-only="{{ 1 if read_only else 0 }}" data-preview="{{ 1 if preview else 0 }}"
-         data-stages="{{ wm.stages|tojson|forceescape }}"
-         data-i18n="{{ {"here": t('world_here'), "stage": t('world_stage_n', n='{n}'), "cells": t('world_cells', done='{done}', total='{total}'), "end": t('world_end'), "check": t('world_check'), "review": t('world_review'), "done": t('linear_done'), "open": t('linear_open'), "lock": t('linear_ahead'), "label": t('world_map_label'), "level": t('world_level', n='{n}')}|tojson|forceescape }}"
-         data-title="{{ meta.title }}" hidden>
-      {% if preview %}<p class="world-sample">{{ t('world_sample') }}</p>{% endif %}
-      <div class="world-canvas"></div>
-      <div class="world-legend" aria-hidden="true"></div>
-    </div>
-    {% if not read_only %}
-    <form method="post" action="/play/{{ doc.pathId }}/start" id="world-go" hidden><input type="hidden" name="node" value="" /></form>
-    {% endif %}
-    <details class="world-list" open>
-    <summary>{{ t('world_list') }}</summary>
-    {% if use_linear %}
-    <p class="lede">{{ t('linear_map_lede') }}</p>
-    <div class="linear-rows" data-map="linear">
-      {% for tp in topics %}
-      <h3 class="linear-section"><span class="linear-part">{{ t('linear_part', n=loop.index) }}</span> · <span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span></h3>
-      {% for st in tp.steps %}
-      {% set ahead = (not read_only) and (gap < total) and (st.index > gap) %}
-      {% if ahead %}
-      <div class="linear-tile ahead" data-block-id="{{ st.blockId }}" aria-disabled="true">
-        <span class="linear-mark" aria-hidden="true">○</span>
-        <span class="linear-copy">
-          <span class="linear-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
-          <span class="tiny">{{ t('linear_ahead') }}</span>
-        </span>
-      </div>
-      {% else %}
-      <form method="post" action="/play/{{ doc.pathId }}/start" class="linear-form">
-        <input type="hidden" name="node" value="{{ st.blockId }}" />
-        <button type="submit" class="linear-tile {% if st.done %}done{% elif st.current %}current{% else %}open{% endif %}{% if st.kind == 'review' %} review{% endif %}"{% if st.current %} id="here"{% endif %}>
-          <span class="linear-mark" aria-hidden="true">{% if st.done %}✓{% elif st.current %}●{% else %}○{% endif %}</span>
-          <span class="linear-copy">
-            <span class="linear-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
-            <span class="tiny">{% if st.done %}{{ t('linear_done') }}{% elif st.current %}{{ t('station_current') }}{% else %}{{ t('linear_open') }}{% endif %}</span>
-          </span>
+    <p class="lede">{{ t('linear_map_lede') if jv.linear else (t('journey_lede') if jv.here_n else t('journey_lede_all')) }}</p>
+    {% include "_journey.html" %}
+
+    {#- The one primary action: continue at the next משבצת, named. On phones it stays in reach
+        at the bottom while the road scrolls (platform.css .map-view .map-actions). -#}
+    <div class="row map-actions">
+      {%- if read_only %}
+      <a class="primary big link-btn" href="/play/{{ doc.pathId }}?view=learn">{{ t('read_only_open') }}</a>
+      {%- elif not jv.finished %}
+      <form method="post" action="/play/{{ doc.pathId }}/start">
+        <button type="submit" class="primary big jr-next">
+          {%- if jv.next and can_resume %}<span>{{ t('eng_continue') }}</span> <span class="jr-next-title" dir="auto"{{ jv.next.titleLang|content_lang(locale) }}>{{ jv.next.title }}</span>
+          {%- else %}<span>{{ t('start_path') }}</span>{% endif -%}
         </button>
       </form>
-      {% endif %}
-      {% endfor %}
-      {% endfor %}
-    </div>
-    {% elif long_map %}
-    <p class="lede">{{ t('map_long_lede') }}</p>
-    <p class="map-summary tiny">
-      {#- Works without JS: the pill links to the current station (#here). -#}
-      {% if current_station and not read_only %}<a class="station-pill current jump-here" href="#here">{{ t('station_of', n=current_station, total=topics|length) }}<span class="visually-hidden"> · {{ t('map_jump_here') }}</span></a>{% endif %}
-      <span class="station-pill">{{ t('stations_done', done=stations_done, total=topics|length) }}</span>
-    </p>
-    <ol class="station-list" data-stations="{{ topics|length }}">
-      {% for tp in topics %}
-      {% set is_here = tp.current and not read_only %}
-      <li class="station {% if tp.complete %}done{% elif tp.current %}current{% elif tp.doneCount %}started{% endif %}{% if tp.isReview %} review{% endif %}" data-topic-id="{{ tp.id }}"{% if is_here %} id="here" aria-current="step"{% endif %}>
-        <details {% if tp.current %}open{% endif %}>
-          <summary>
-            <span class="station-num" aria-hidden="true">{% if tp.complete %}✓{% else %}{{ loop.index }}{% endif %}</span>
-            <span class="station-main">
-              <span class="station-title" dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span>
-              <span class="station-meta tiny">
-                {% if tp.isReview %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
-                {% if is_here %}<span class="here-badge">{{ t('station_current') }}</span>{% endif %}
-                <span class="station-count">{{ tp.doneCount }}/{{ tp.stepCount }} {{ t('steps_count') }}</span>
-              </span>
-            </span>
-            <span class="mini-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ tp.pct }}" aria-label="{{ tp.title }}"><span class="mini-fill" style="width: {{ tp.pct }}%"></span></span>
-          </summary>
-          <ol class="step-list">
-            {% for st in tp.steps %}
-            <li class="step-row {% if st.done %}done{% endif %}{% if st.current %} current{% endif %}">
-              <span class="step-mark" aria-hidden="true">{% if st.done %}✓{% elif st.current %}▶{% else %}○{% endif %}</span>
-              <span class="step-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
-              {% if st.kind == 'review' %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
-            </li>
-            {% endfor %}
-          </ol>
-          {% if read_only %}
-          <a class="secondary link-btn small-btn" href="/play/{{ doc.pathId }}?topic={{ tp.id }}">{{ t('read_only_open') }}</a>
-          {% else %}
-          <form method="post" action="/play/{{ doc.pathId }}/start">
-            <input type="hidden" name="topic" value="{{ tp.id }}" />
-            <button type="submit" class="secondary">{{ t('enter_topic') }}</button>
-          </form>
-          {% endif %}
-        </details>
-      </li>
-      {% endfor %}
-    </ol>
-    {% else %}
-    <p class="lede">{{ t('path_map_lede') }}</p>
-
-    <div class="topic-diagram" role="list">
-      {% for tp in topics %}
-      <div class="topic-station {% if tp.complete %}done{% endif %}{% if tp.current %} current{% endif %}{% if tp.isReview %} review{% endif %}" role="listitem" data-topic-id="{{ tp.id }}"{% if tp.current and not read_only %} id="here" aria-current="step"{% endif %}>
-        <div class="topic-box" style="--subject: {{ meta.subjectColor }}">
-          <h3><span dir="auto"{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</span>{% if tp.isReview %} <span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}</h3>
-          <p class="tiny muted">{{ tp.stepCount }} {{ t('steps_count') }}
-            {% if tp.doneCount %} · {{ tp.doneCount }}/{{ tp.stepCount }} {{ t('topic_progress') }}{% endif %}
-          </p>
-          <span class="mini-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ tp.pct }}" aria-label="{{ tp.title }}"><span class="mini-fill" style="width: {{ tp.pct }}%"></span></span>
-          {% if read_only %}
-          <a class="secondary link-btn small-btn" href="/play/{{ doc.pathId }}?topic={{ tp.id }}">{{ t('read_only_open') }}</a>
-          {% else %}
-          <form method="post" action="/play/{{ doc.pathId }}/start">
-            <input type="hidden" name="topic" value="{{ tp.id }}" />
-            <button type="submit" class="secondary">{{ t('enter_topic') }}</button>
-          </form>
-          {% endif %}
-        </div>
-        {% if not loop.last %}
-        <div class="topic-arrow" aria-hidden="true">↓</div>
-        {% endif %}
-      </div>
-      {% endfor %}
-    </div>
-    {% endif %}
-    </details>
-
-    <div class="row map-actions">
-      {% if read_only %}
-      <a class="primary big link-btn" href="/play/{{ doc.pathId }}?view=learn">{{ t('read_only_open') }}</a>
-      {% else %}
-      {% if can_resume %}
-      <form method="post" action="/play/{{ doc.pathId }}/start">
-        <button type="submit" class="primary big">{{ t('resume') }}</button>
-      </form>
-      <form method="post" action="/play/{{ doc.pathId }}/start">
-        <input type="hidden" name="topic" value="{{ topics[0].id if topics else '' }}" />
-        <button type="submit" class="secondary big">{{ t('start_path') }}</button>
-      </form>
-      {% else %}
-      <form method="post" action="/play/{{ doc.pathId }}/start">
-        <button type="submit" class="primary big">{{ t('start_path') }}</button>
-      </form>
-      {% endif %}
-      {% endif %}
+      {%- endif %}
     </div>
   </section>
 
@@ -205,5 +70,4 @@
   {#- Scrolls the current station (#here) into view on load; the map works the same without it. -#}
   <script src="/static/platform.js" defer></script>
   <script src="/static/engagement.js" defer></script>
-  <script src="/static/worldmap.js" defer></script>
 {% endblock %}

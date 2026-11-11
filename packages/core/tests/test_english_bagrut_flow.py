@@ -88,11 +88,11 @@ def test_bagrut_map_is_one_tile_per_row_not_stations(bagrut_app) -> None:
     app, _store = bagrut_app
     client = _client(app)
     html = client.get(f"/play/{ZERO}").text
-    assert 'data-map="linear"' in html
-    assert "station-list" not in html
+    assert 'data-map="linear"' in html and '<ol class="journey"' in html
     assert "topic-diagram" not in html
     assert "חלק 1" in html and "חלק 2" in html
-    assert html.count('name="node"') >= 1
+    # ZERO is still locked behind the placement: read-only, so links to look inside, no start forms.
+    assert f'href="/play/{ZERO}?topic=' in html and f'action="/play/{ZERO}/start"' not in html
     assert "חזרה לשרשרת" in html
 
 

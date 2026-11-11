@@ -600,5 +600,11 @@
   "terms_privacy_h": "Privacy",
   "terms_privacy_p": "What we keep and why is in the privacy notice.",
   "terms_more_h": "More details",
-  "terms_more_p": "Operator: Eliot, at eli4056-3ery4h@mail.grokbot.com. Governing law: the law of the State of Israel, and the courts of Israel."
+  "terms_more_p": "Operator: Eliot, at eli4056-3ery4h@mail.grokbot.com. Governing law: the law of the State of Israel, and the courts of Israel.",
+  "journey_lede": "The stage you are on is open. Tap any other stage to see its tiles.",
+  "journey_enter": "Enter stage",
+  "journey_restart": "Start the road from the beginning",
+  "journey_end_note": "{total} tiles on the whole road",
+  "journey_finished": "The whole road is done",
+  "journey_lede_all": "Tap a stage to see its tiles."
 }

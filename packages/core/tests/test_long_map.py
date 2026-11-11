@@ -148,7 +148,7 @@ def test_jump_script_respects_reduced_motion_and_restored_scroll() -> None:
 def test_read_only_map_has_no_current_marker(app) -> None:
     c = _client(app)
     html = c.get(f"/play/{LOCKED}?view=map").text
-    assert "lock-banner" in html and "station-list" in html
+    assert "lock-banner" in html and '<ol class="journey"' in html
     main = html.split('<nav class="side"')[0]  # the road picker marks the open road, not a station
     assert 'aria-current' not in main and 'id="here"' not in html and "jump-here" not in html
 
@@ -158,8 +158,8 @@ def test_short_map_marks_the_current_station_too(app) -> None:
     c.post(f"/play/{SHORT}/start")
     c.post(f"/play/{SHORT}/ack")
     html = c.get(f"/play/{SHORT}?view=map").text
-    assert "topic-diagram" in html and html.count('aria-current="step"') == 1
-    current = re.search(r'<div class="topic-station[^"]*"[^>]*data-topic-id="b"[^>]*>', html).group(0)
+    assert '<ol class="journey" data-stations="2"' in html and html.count('aria-current="step"') == 1
+    current = re.search(r'<li class="station[^"]*"[^>]*data-topic-id="b"[^>]*>', html).group(0)
     assert "current" in current and 'id="here"' in current and 'aria-current="step"' in current
 
 

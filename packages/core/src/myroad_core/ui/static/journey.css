@@ -1,0 +1,228 @@
+/* Journey map (arena c2): the road screen as one winding road, a station per שלב.
+   Logical properties only (RTL first). Colors are theme tokens from platform.css, so
+   light and dark both follow the active theme. Layout knobs:
+     --jr-track   width of the road strip at the inline start of every station
+     --jr-node    station marker size (44px tap area for the summary row)
+     --x / --nx   this station's lane and the next one's, percent across the track */
+.journey {
+  --jr-track: 6rem;
+  --jr-node: 2.75rem;
+  --jr-gap: .5rem;
+  --jr-top: .45rem;
+  --jr-bed: var(--track);
+  --jr-ahead: var(--line-strong);
+  container-type: inline-size;
+  container-name: journey;
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--jr-gap);
+}
+@media (min-width: 48rem) { .journey { --jr-track: 10rem; } }
+
+.journey > .station {
+  position: relative;
+  padding-inline-start: calc(var(--jr-track) + var(--space-3));
+  min-block-size: calc(var(--jr-node) + 2 * var(--jr-top));
+}
+
+/* Road segment from this station's marker to the next one (or to the end flag). */
+.jr-seg {
+  position: absolute;
+  inset-block-start: calc(var(--jr-top) + var(--jr-node) / 2);
+  block-size: calc(100% + var(--jr-gap));
+  inset-inline-start: calc(var(--jr-ts, 0px) + var(--jr-node) / 2);
+  inline-size: calc(var(--jr-track) - var(--jr-node));
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+[dir="rtl"] .jr-seg { transform: scaleX(-1); }
+.jr-seg path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.jr-seg .jr-bed { stroke: var(--jr-bed); stroke-width: 14px; }
+.jr-seg .jr-line { stroke: var(--jr-ahead); stroke-width: 2px; stroke-dasharray: 2 7; }
+.jr-seg.is-travelled .jr-bed { stroke: color-mix(in srgb, var(--accent) 22%, var(--jr-bed)); }
+.jr-seg.is-travelled .jr-line { stroke: var(--accent); stroke-width: 4px; stroke-dasharray: none; }
+
+/* The station row: the journey replaces the old card border with the road itself. */
+.journey > .station > details { border: 0; background: none; border-radius: var(--radius-md); }
+.journey > .station.done > details { background: none; }
+.journey .station summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--jr-top) var(--space-2);
+  min-block-size: calc(var(--jr-node) + 2 * var(--jr-top));
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  list-style: none;
+}
+.journey .station details[open] summary { border-bottom: 0; }
+.journey .station summary:hover { background: var(--surface-2); }
+
+/* Marker on the road: round for learning stations, rounded square for review milestones. */
+.journey .station-num {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: var(--jr-top);
+  inset-inline-start: calc(var(--jr-ts, 0px) + (var(--jr-track) - var(--jr-node)) * var(--x) / 100);
+  inline-size: var(--jr-node);
+  block-size: var(--jr-node);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--card);
+  color: var(--ink-2);
+  border: 2px solid var(--line-strong);
+  box-shadow: 0 0 0 4px var(--card);
+}
+.journey .station.started .station-num { border-color: var(--accent); color: var(--accent); }
+.journey .station.done .station-num { background: var(--ok); border-color: var(--ok); color: var(--on-accent); }
+.journey .station.current .station-num {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 4px var(--card), 0 0 0 7px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.journey .station.lock .station-num { border-style: dashed; color: var(--muted); }
+.journey .station.review .station-num { border-radius: 5px; }
+
+.jr-kicker { color: var(--muted); display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; font-variant-numeric: tabular-nums; }
+.journey .station.current .jr-kicker { color: var(--accent); font-weight: 600; }
+.journey .station-title { font-size: var(--text-md); line-height: 1.4; }
+.journey .station.current .station-title { font-size: var(--text-lg); }
+.journey .station.lock .station-title { color: var(--muted); }
+.journey .here-badge {
+  background: var(--accent); color: var(--on-accent);
+  padding: .05rem .5rem; border-radius: 999px; font-weight: 600;
+}
+
+/* The open station: its משבצות as waypoints, one tap each. */
+.jr-steps { list-style: none; margin: var(--space-1) 0 0; padding: 0 var(--space-2); display: grid; gap: 2px; }
+.jr-steps .step-row { display: block; padding: 0; }
+.jr-steps form { margin: 0; }
+.jr-step {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: .35rem var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  box-shadow: none;
+}
+button.jr-step { cursor: pointer; }
+button.jr-step:hover { background: var(--surface-2); }
+.jr-step .step-title { min-width: 0; overflow-wrap: anywhere; }
+.jr-step .review-badge { grid-column: 2; justify-self: start; }
+.jr-step-note { color: var(--muted); white-space: nowrap; }
+.jr-steps .step-row.done .step-mark { color: var(--ok); }
+.jr-steps .step-row.current .jr-step {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--card));
+  font-weight: 650;
+}
+.jr-steps .step-row.current .step-mark,
+.jr-steps .step-row.current .jr-step-note { color: var(--accent); }
+.jr-steps .step-row.ahead .jr-step { color: var(--muted); }
+.jr-go { margin: var(--space-2) var(--space-2) var(--space-3); }
+.jr-go button { min-block-size: 44px; }
+
+/* End of the road milestone. */
+.jr-end {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: 3rem;
+  padding-inline-start: calc(var(--jr-track) + var(--space-3));
+  color: var(--muted);
+}
+.jr-flag {
+  position: absolute;
+  inset-inline-start: calc(var(--jr-ts, 0px) + (var(--jr-track) - var(--jr-node)) / 2);
+  inline-size: var(--jr-node);
+  block-size: var(--jr-node);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 2px solid var(--line-strong);
+}
+.jr-flag svg { inline-size: 1.3rem; block-size: 1.3rem; fill: none; stroke: var(--ink-2); stroke-width: 2; stroke-linejoin: round; }
+[dir="rtl"] .jr-flag svg { transform: scaleX(-1); }
+.jr-end.is-done .jr-flag { background: var(--ok); border-color: var(--ok); }
+.jr-end.is-done .jr-flag svg { stroke: var(--on-accent); }
+.jr-end-copy { display: flex; flex-wrap: wrap; gap: .4rem; align-items: baseline; }
+.jr-end-copy strong { color: var(--ink); }
+
+/* Mini map of the whole road: sticks to the top while the road scrolls under it. */
+.jr-overview {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 3;
+  margin-inline: calc(-1 * var(--space-2));
+  padding: var(--space-2);
+  background: color-mix(in srgb, var(--card) 94%, transparent);
+  backdrop-filter: blur(6px);
+  border-block-end: 1px solid var(--line);
+}
+.jr-ov-line { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-2); align-items: center; }
+.jr-ov-bar { list-style: none; display: flex; gap: 3px; margin: 0; padding: 0; block-size: .5rem; align-items: stretch; }
+.jr-ov-bar > li { position: relative; min-inline-size: 4px; background: var(--track); border-radius: 999px; overflow: hidden; }
+.jr-ov-bar > li > span { display: block; block-size: 100%; background: var(--accent); }
+.jr-ov-bar > li.is-done > span { background: var(--ok); }
+.jr-ov-bar > li.is-here { outline: 2px solid var(--accent); outline-offset: 1px; }
+.jr-ov-bar > li.is-review { background: repeating-linear-gradient(45deg, var(--track) 0 3px, var(--line) 3px 5px); }
+.jr-ov-bar > .jr-ov-end { flex: 0 0 .5rem; background: var(--line-strong); }
+
+/* Focus, motion, narrow containers. */
+.journey .station summary:focus-visible,
+.journey .jr-step:focus-visible,
+.journey .jr-go button:focus-visible,
+.jr-overview .jump-here:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.journey > .station#here { scroll-margin-block-start: 7rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .journey .station summary, .jr-step { transition: background-color .15s ease-out; }
+}
+@container journey (max-width: 26rem) {
+  .journey { --jr-track: 4.25rem; }
+  .jr-step { grid-template-columns: 1.2rem minmax(0, 1fr); }
+  .jr-step-note { grid-column: 2; white-space: normal; }
+}
+@media print { .jr-overview { position: static; } .jr-seg { display: none; } }
+
+/* The named next step in the action bar: label on one line, step title under it. */
+.jr-next { display: inline-flex; flex-direction: column; align-items: center; gap: 0; line-height: 1.3; }
+.jr-next-title { font-size: var(--text-sm); font-weight: 500; opacity: .92; overflow-wrap: anywhere; }
+
+/* Narrow: notes for finished or open משבצות are read by screen readers only; ✓ and ○ show it. */
+@container journey (max-width: 26rem) {
+  .jr-steps .step-row:not(.current):not(.ahead) .jr-step-note {
+    position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  .jr-steps .jr-step { position: relative; }
+}
+
+/* Wide: the road runs down the middle and the stations alternate sides, like a route map. */
+@container journey (min-width: 40rem) {
+  .journey > .station, .journey > .jr-end { --jr-track: 12rem; --jr-ts: calc(50% - var(--jr-track) / 2); }
+  .journey > .station { padding-inline-start: calc(50% + var(--jr-track) / 2 + var(--space-2)); }
+  .journey > .station:nth-child(even) {
+    padding-inline-start: 0;
+    padding-inline-end: calc(50% + var(--jr-track) / 2 + var(--space-2));
+  }
+  .journey > .station:nth-child(even) summary,
+  .journey > .station:nth-child(even) .jr-kicker { text-align: end; justify-content: flex-end; }
+  .journey > .station:nth-child(even) .station-main { justify-items: end; }
+  .journey > .jr-end { padding-inline-start: calc(50% + var(--jr-track) / 2 + var(--space-2)); }
+}

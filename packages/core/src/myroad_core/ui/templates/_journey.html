@@ -1,0 +1,82 @@
+{#- Journey map (arena c2): the whole road as one winding road with a station per שלב.
+    Inputs: `jv` from journey_view(topics, ...) and `doc.pathId`. Server rendered, works
+    without JS; platform.js only scrolls #here into view. Every שלב stays on screen (no filter):
+    the current one is open with its משבצות, the others open on tap. -#}
+{%- set pid = doc.pathId %}
+<div class="jr-overview" role="group" aria-labelledby="jr-ov-line">
+  <p class="jr-ov-line" id="jr-ov-line">
+    {%- if jv.here_n and not jv.read_only %}
+    <a class="station-pill current jump-here" href="#here">{{ t('station_of', n=jv.here_n, total=jv.stages_total) }}<span class="visually-hidden"> · {{ t('map_jump_here') }}</span></a>
+    {%- elif jv.finished %}
+    <span class="station-pill current">{{ t('journey_finished') }}</span>
+    {%- endif %}
+    <span class="station-pill">{{ t('stations_done', done=jv.stages_done, total=jv.stages_total) }}</span>
+    <span class="station-pill">{{ t('world_cells', done=jv.cells_done, total=jv.cells_total) }}</span>
+  </p>
+  {#- Mini map of the whole road: one segment per שלב, as long as its משבצות. Visual only;
+      the same facts are in the line above and in each station below. -#}
+  <ol class="jr-ov-bar" aria-hidden="true">
+    {%- for s in jv.stations %}
+    <li class="is-{{ s.state }}{% if s.review %} is-review{% endif %}" style="flex-grow: {{ [s.total, 1]|max }}"><span style="inline-size: {{ s.pct }}%"></span></li>
+    {%- endfor %}
+    <li class="jr-ov-end"></li>
+  </ol>
+</div>
+
+<ol class="journey" data-stations="{{ jv.stages_total }}" data-map="{{ 'linear' if jv.linear else 'stations' }}">
+  {%- for s in jv.stations %}
+  {%- set is_here = s.state == 'here' %}
+  <li class="station {% if s.state == 'done' %}done{% elif is_here %}current{% elif s.state == 'lock' %}lock{% elif s.started %}started{% else %}open{% endif %}{% if s.review %} review{% endif %}" data-topic-id="{{ s.id }}" style="--x: {{ s.x }}; --nx: {{ s.nextX }}"{% if is_here %} id="here" aria-current="step"{% endif %}>
+    <svg class="jr-seg{% if s.travelled %} is-travelled{% endif %}" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="jr-bed" d="M{{ s.x }} 0 C{{ s.x }} 55 {{ s.nextX }} 45 {{ s.nextX }} 100" /><path class="jr-line" d="M{{ s.x }} 0 C{{ s.x }} 55 {{ s.nextX }} 45 {{ s.nextX }} 100" /></svg>
+    <details{% if is_here %} open{% endif %}>
+      <summary>
+        <span class="station-num" aria-hidden="true">{% if s.state == 'done' %}✓{% else %}{{ s.n }}{% endif %}</span>
+        <span class="station-main">
+          <span class="jr-kicker tiny">
+            {%- if jv.linear %}{{ t('linear_part', n=s.n) }}{% else %}{{ t('world_stage_n', n=s.n) }}{% endif %}
+            {%- if s.review %} <span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
+            {%- if is_here %} <span class="here-badge">{{ t('station_current') }}</span>{% endif %}
+          </span>
+          <span class="station-title" dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</span>
+          <span class="station-meta tiny"><span class="station-count">{{ t('world_cells', done=s.done, total=s.total) }}</span></span>
+        </span>
+      </summary>
+      <ol class="step-list jr-steps">
+        {%- for st in s.steps %}
+        <li class="step-row {% if st.state == 'done' %}done{% elif st.state == 'here' %}current{% elif st.state == 'lock' %}ahead{% else %}open{% endif %}{% if st.review %} review{% endif %}" data-block-id="{{ st.blockId }}">
+          {%- if jv.read_only or st.state == 'lock' %}
+          <span class="jr-step"{% if st.state == 'lock' %} aria-disabled="true"{% endif %}>
+            <span class="step-mark" aria-hidden="true">{% if st.state == 'done' %}✓{% else %}○{% endif %}</span>
+            <span class="step-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
+            {%- if st.state == 'lock' %}<span class="tiny jr-step-note">{{ t('linear_ahead') }}</span>{% endif %}
+          </span>
+          {%- else %}
+          <form method="post" action="/play/{{ pid }}/start">
+            <input type="hidden" name="node" value="{{ st.blockId }}" />
+            <button type="submit" class="jr-step">
+              <span class="step-mark" aria-hidden="true">{% if st.state == 'done' %}✓{% elif st.state == 'here' %}●{% else %}○{% endif %}</span>
+              <span class="step-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
+              {%- if st.review %}<span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
+              <span class="tiny jr-step-note">{% if st.state == 'done' %}{{ t('linear_done') }}{% elif st.state == 'here' %}{{ t('station_current') }}{% else %}{{ t('linear_open') }}{% endif %}</span>
+            </button>
+          </form>
+          {%- endif %}
+        </li>
+        {%- endfor %}
+      </ol>
+      {%- if jv.read_only %}
+      <a class="secondary link-btn small-btn" href="/play/{{ pid }}?topic={{ s.id }}">{{ t('read_only_open') }}</a>
+      {%- elif s.state != 'lock' and not is_here and not jv.linear %}
+      <form method="post" action="/play/{{ pid }}/start" class="jr-go">
+        <input type="hidden" name="topic" value="{{ s.id }}" />
+        <button type="submit" class="secondary">{{ t('journey_enter') }}</button>
+      </form>
+      {%- endif %}
+    </details>
+  </li>
+  {%- endfor %}
+  <li class="jr-end{% if jv.finished %} is-done{% endif %}">
+    <span class="jr-flag" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M6 21V4M6 4h11l-2.5 4L17 12H6" /></svg></span>
+    <span class="jr-end-copy"><strong>{{ t('world_end') }}</strong> <span class="tiny">{{ t('journey_end_note', total=jv.cells_total) }}</span></span>
+  </li>
+</ol>

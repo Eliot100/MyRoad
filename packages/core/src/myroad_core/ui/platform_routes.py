@@ -66,6 +66,7 @@ from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
+from myroad_core.ui.journey_view import journey_view
 from myroad_core.ui.engagement_view import (
     can_do_line,
     engagement_view,
@@ -1797,6 +1798,8 @@ def register_platform_routes(
     templates.env.globals.update(session_end=session_end, stage_end=stage_end, week_view=week_view,
                                  mastered_skills=mastered_skills)
     templates.env.globals["can_do_line"] = can_do_line
+    # Road screen journey map (arena c2): pure view model for _journey.html.
+    templates.env.globals["journey_view"] = journey_view
     # Wrong answer solution and session end progress / actions (#215): pure view helpers.
     templates.env.globals.update(wrong_solution=wrong_solution, road_progress=road_progress,
                                  session_can_do=session_can_do)
