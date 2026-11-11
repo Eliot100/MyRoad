@@ -12,51 +12,6 @@
 /* MyRoad platform shell — age-agnostic. "Ink & teal": near-black ink, one teal accent, hairline
    borders, no shadows, no filled pills, no decorative emoji. */
 :root {
-  /* Road world map: every --world-* token has a light value here and a dark value in the dark blocks. */
-  --world-bg: linear-gradient(180deg, #fbfcfc 0%, #f2f6f5 100%);
-  --world-edge: rgba(15, 40, 36, .08);
-  --world-ink: #0b0f0e;
-  --world-muted: #4a5553;
-  --world-contour: rgba(15, 118, 110, .05);
-  --world-plate-a: #ffffff;
-  --world-plate-b: #f6f9f8;
-  --world-plate-cur-a: #f2fbf9;
-  --world-plate-cur-b: #e3f3f0;
-  --world-plate-line: rgba(15, 40, 36, .09);
-  --world-ring-track: #e1e8e6;
-  --world-ring-full: #0f766e;
-  --world-teal: #14a093;
-  --world-road-off: #e3e9e7;
-  --world-road-dash: #b9c5c2;
-  --world-stage: #0f766e;
-  --world-stage-lock: #5b6866;
-  --world-title: #0b0f0e;
-  --world-title-lock: #4a5553;
-  --world-meta: #4a5553;
-  --world-tile-done-a: #1aa596;
-  --world-tile-done-b: #0f766e;
-  --world-tile-done-lip: #0a4f49;
-  --world-tile-done-glyph: #ffffff;
-  --world-tile-open-a: #ffffff;
-  --world-tile-open-b: #eef5f3;
-  --world-tile-open-lip: #cddbd8;
-  --world-tile-open-glyph: #0f766e;
-  --world-tile-lock-a: #eef1f0;
-  --world-tile-lock-b: #e4e9e7;
-  --world-tile-lock-lip: #cfd6d4;
-  --world-tile-lock-glyph: #7d8987;
-  --world-level-on: #0f766e;
-  --world-level-decay: #a87d0a;
-  --world-level-off: #d9e0de;
-  --world-check-ring: #c9a227;
-  --world-here-ring: #0f766e;
-  --world-here-line: #0f766e;
-  --world-here-pill: #0f766e;
-  --world-here-ink: #ffffff;
-  --world-gold-a: #f4d470;
-  --world-gold-b: #b8860b;
-  --world-gold-glyph: #ffffff;
-  --world-end-ink: #7a5a06;
   --bg: #ffffff;
   --card: #ffffff;
   --ink: #0b0f0e;
@@ -378,7 +333,7 @@ body.tone-demo .choice-tile {
 }
 .lang-switch { display: inline-flex; gap: .2rem; }
 /* Compact toggles keep their own size (outside the 52px action-button system). */
-.lang-btn, .piano-key, .beat-btn, .choice-tile, .linear-tile { min-block-size: 0; font-weight: inherit; }
+.lang-btn, .piano-key, .beat-btn, .choice-tile { min-block-size: 0; font-weight: inherit; }
 .lang-btn {
   padding: .25rem .45rem !important;
   font-size: .75rem !important;
@@ -417,45 +372,6 @@ body.tone-demo .choice-tile {
   padding: .65rem .75rem;
   border-radius: 10px;
   border: 1px solid var(--line);
-}
-.topic-diagram {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  margin: 1.5rem 0 1rem;
-  position: relative;
-}
-.topic-diagram::before {
-  content: "";
-  position: absolute;
-  inset-block: 1.5rem;
-  inset-inline-start: 50%;
-  width: 3px;
-  transform: translateX(-50%);
-  background: color-mix(in srgb, var(--accent) 35%, var(--line));
-  border-radius: 999px;
-  /* The connector sits behind the station cards and never takes clicks. */
-  z-index: 0;
-  pointer-events: none;
-}
-.topic-station { width: min(100%, 340px); text-align: center; position: relative; z-index: 1; }
-.topic-box {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 1rem;
-}
-.topic-box h3 { margin: .35rem 0; font-size: 1.1rem; }
-.topic-arrow {
-  font-size: 1.4rem;
-  color: var(--muted);
-  line-height: 1;
-  margin: .15rem 0;
-}
-.topic-station.done .topic-box {
-  border-color: var(--ok);
-  background: var(--tint-ok);
 }
 .map-actions { justify-content: center; margin-top: 1rem; }
 .stats-grid {
@@ -783,13 +699,6 @@ body.platform:has(.home-layout) { max-width: 1120px; }
   color: var(--agent-ink);
   white-space: nowrap;
 }
-.here-badge {
-  display: inline-block;
-  font-size: .72rem;
-  font-weight: 700;
-  color: var(--accent);
-  white-space: nowrap;
-}
 .review-mix {
   margin: .5rem 0 .85rem;
   padding: .55rem .75rem;
@@ -815,78 +724,6 @@ body.platform:has(.home-layout) { max-width: 1120px; }
 .station-pill.current { color: var(--accent); }
 .station-line { margin: 0; color: var(--muted); }
 .station-name { color: var(--ink); font-weight: 600; }
-.map-summary { margin: .6rem 0 .25rem; }
-.mini-bar {
-  display: block;
-  height: 6px;
-  min-width: 3.5rem;
-  border-radius: 999px;
-  background: var(--track);
-  overflow: hidden;
-}
-.mini-fill { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
-.topic-box .mini-bar { margin: .35rem auto .6rem; max-width: 12rem; }
-.topic-station.current .topic-box { border-color: var(--accent); }
-/* Compact station list for long paths (more than 8 stations): one row each, open to see steps. */
-.station-list {
-  list-style: none;
-  margin: .75rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: .4rem;
-}
-.station > details {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--surface);
-  border-inline-start: 4px solid var(--line);
-}
-.station.started > details { border-inline-start-color: color-mix(in srgb, var(--accent) 45%, var(--surface)); }
-.station.current > details { border-color: var(--accent); border-inline-start-color: var(--accent); }
-.station.done > details { border-inline-start-color: var(--ok); background: var(--tint-ok); }
-.station.review > details { border-inline-start-color: var(--tint-agent-line); }
-.station.review.done > details { border-inline-start-color: var(--ok); }
-.station summary {
-  display: grid;
-  grid-template-columns: 1.9rem minmax(0, 1fr) 4.5rem;
-  gap: .55rem;
-  align-items: center;
-  padding: .55rem .7rem;
-  cursor: pointer;
-  list-style: none;
-}
-.station summary::-webkit-details-marker { display: none; }
-.station-num {
-  display: inline-grid;
-  place-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  border-radius: 50%;
-  background: var(--track);
-  font-weight: 700;
-  font-size: .85rem;
-}
-.station.current .station-num { background: var(--accent); color: var(--on-accent); }
-.station.done .station-num { background: var(--ok); color: var(--on-accent); }
-.station-main { display: grid; gap: .1rem; min-width: 0; }
-.station-title { font-weight: 650; overflow-wrap: anywhere; }
-.station-meta { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; color: var(--muted); }
-.station details[open] summary { border-bottom: 1px dashed var(--line); }
-.station details > form,
-.station details > .link-btn { margin: .5rem .7rem .7rem; display: inline-flex; }
-.step-list { list-style: none; margin: .4rem 0 0; padding: 0 .7rem; display: grid; gap: .2rem; }
-.step-row {
-  display: flex;
-  gap: .45rem;
-  align-items: baseline;
-  font-size: .92rem;
-  padding: .15rem 0;
-}
-.step-row .step-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.step-mark { color: var(--muted); width: 1rem; text-align: center; flex: none; }
-.step-row.done .step-mark { color: var(--ok); }
-.step-row.current { font-weight: 650; }
-.step-row.current .step-mark { color: var(--accent); }
 a.link-btn.small-btn { padding: .5rem 1rem; font-size: .95rem; }
 .read-only-choices { list-style: none; padding: 0; }
 .read-only-choices .choice-tile { cursor: default; opacity: .75; }
@@ -907,9 +744,6 @@ a.link-btn.small-btn { padding: .5rem 1rem; font-size: .95rem; }
   .step-card { padding: 1rem; }
   .shell-top { margin-bottom: 1rem; }
   .grid { grid-template-columns: minmax(0, 1fr); }
-  .station summary { grid-template-columns: 1.7rem minmax(0, 1fr) 3rem; gap: .45rem; padding: .5rem .55rem; }
-  .station-num { width: 1.7rem; height: 1.7rem; }
-  .mini-bar { min-width: 2.5rem; }
   .map-actions { flex-direction: column; align-items: stretch; }
   /* Keep the main call to action in reach while scrolling a long map on a phone. */
   .map-view .map-actions {
@@ -1066,99 +900,16 @@ a.continue-step { display: inline-flex; align-items: center; justify-content: ce
   .play *, .play *::before, .play *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
 
-/* --- Long map (#57): jump to the current station, narrow phones, review stations by shape --- */
-/* Fragment jumps (#here) and the scripted jump leave some earlier stations above for context. */
-.station#here, .topic-station#here { scroll-margin-block-start: 22vh; }
-.map-view .jump-here {
-  display: inline-flex;
-  align-items: center;
-  min-block-size: 24px;
-  text-decoration: none;
-}
-.map-view .jump-here:hover { text-decoration: underline; }
-.map-view .jump-here:focus-visible,
-.map-view .station summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
-/* Station rows are the main tap targets on the map: keep them 44px tall. */
-.map-view .station summary { min-block-size: 44px; }
-.map-view .station details > form button,
-.map-view .station details > .link-btn,
+/* --- Road page (map view): targets and motion. The timeline itself lives in road-timeline.css. --- */
 .map-view .map-actions button,
 .map-view .map-actions .link-btn { min-block-size: 44px; }
 .map-view .shell-top .back,
 .map-view .shell-top .settings-link { display: inline-flex; align-items: center; min-block-size: 24px; }
 .map-view .lock-link { display: inline-flex; align-items: center; min-block-size: 44px; }
-/* Review stations differ by shape and icon, not by color alone:
-   a square badge (understanding stations are round), a dashed start bar, and the 🔁 icon. */
-.station.review .station-num { border-radius: 5px; }
-.station.review > details { border-inline-start-style: dashed; }
-.topic-station.review .topic-box { border-style: dashed; }
-.review-icon { font-size: .9em; }
-/* Narrow containers (phones ~400px and below): each station shrinks to number/icon + title. */
-.station-list { container-type: inline-size; container-name: stations; }
-@container stations (max-width: 22rem) {
-  .station summary { grid-template-columns: 1.7rem minmax(0, 1fr); gap: .45rem; padding: .45rem .55rem; }
-  .station summary .mini-bar { display: none; }
-  .station-num { width: 1.7rem; height: 1.7rem; font-size: .8rem; }
-  .station-title { font-size: .95rem; line-height: 1.35; }
-  .station-meta { gap: .25rem; }
-  /* The step count stays for screen readers; the badges (here / review) stay visible. */
-  .station-meta .station-count {
-    position: absolute; inline-size: 1px; block-size: 1px; margin: -1px; padding: 0; border: 0;
-    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
-  }
-  .step-list { padding: 0 .55rem; }
-}
 @media (prefers-reduced-motion: reduce) {
   .map-view, .map-view * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
 
-/* English 5-unit roads: one centered tile per row. Other paths keep the station list or diagram. */
-.linear-rows {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .55rem;
-  margin: 1rem 0 1.25rem;
-}
-.linear-section {
-  width: min(100%, 28rem);
-  margin: .85rem 0 .15rem;
-  font-size: .95rem;
-  font-weight: 650;
-}
-.linear-part { color: var(--accent); }
-.linear-form { width: min(100%, 22rem); margin: 0; }
-.linear-tile {
-  width: min(100%, 22rem);
-  min-block-size: 52px;
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  text-align: start;
-  padding: .7rem .9rem;
-  border-radius: 16px;
-  border: 2px solid color-mix(in srgb, var(--accent) 40%, var(--line));
-  background: var(--surface);
-  color: inherit;
-  font: inherit;
-  box-shadow: var(--shadow);
-}
-button.linear-tile { cursor: pointer; }
-.linear-tile.current { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
-.linear-tile.done { border-style: solid; }
-.linear-tile.ahead { opacity: .55; box-shadow: none; }
-.linear-tile.review { border-style: dashed; }
-.linear-mark {
-  width: 1.7rem;
-  height: 1.7rem;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
-  flex: none;
-}
-.linear-copy { display: flex; flex-direction: column; min-width: 0; }
-.linear-title { font-weight: 650; }
 .series-banner .primary { display: inline-flex; margin-top: .4rem; }
 .series-chain { list-style: none; padding: 0; margin: 1rem auto 2rem; max-width: 40rem; display: flex; flex-direction: column; gap: .75rem; }
 .series-road {
@@ -1230,50 +981,6 @@ button.linear-tile { cursor: pointer; }
     --tint-agent: #241d38;
     --tint-agent-line: #4c3d7a;
     --agent-ink: #c4b5fd;
-    --world-bg: #0a0e0d;
-    --world-edge: rgba(255, 255, 255, .06);
-    --world-ink: #e9efed;
-    --world-muted: #b4bfbc;
-    --world-contour: rgba(255, 255, 255, .035);
-    --world-plate-a: #1b2523;
-    --world-plate-b: #0f1514;
-    --world-plate-cur-a: #173a36;
-    --world-plate-cur-b: #0f1a18;
-    --world-plate-line: rgba(255, 255, 255, .06);
-    --world-ring-track: #25302e;
-    --world-ring-full: #0f766e;
-    --world-teal: #14a093;
-    --world-road-off: #1f2a28;
-    --world-road-dash: #334240;
-    --world-stage: #5fd3c4;
-    --world-stage-lock: #8b9895;
-    --world-title: #ffffff;
-    --world-title-lock: #a3aeab;
-    --world-meta: #a3aeab;
-    --world-tile-done-a: #1aa596;
-    --world-tile-done-b: #0f766e;
-    --world-tile-done-lip: #0a4f49;
-    --world-tile-done-glyph: #ffffff;
-    --world-tile-open-a: #13302d;
-    --world-tile-open-b: #0f2624;
-    --world-tile-open-lip: #0a1a18;
-    --world-tile-open-glyph: #5fd3c4;
-    --world-tile-lock-a: #2a3432;
-    --world-tile-lock-b: #222b29;
-    --world-tile-lock-lip: #1a2220;
-    --world-tile-lock-glyph: #56625f;
-    --world-level-on: #5fd3c4;
-    --world-level-decay: #c9a227;
-    --world-level-off: #2a3432;
-    --world-check-ring: #f0c75e;
-    --world-here-ring: #5fd3c4;
-    --world-here-line: #ffffff;
-    --world-here-pill: #ffffff;
-    --world-here-ink: #0f766e;
-    --world-gold-a: #f6d77a;
-    --world-gold-b: #b8860b;
-    --world-gold-glyph: #ffffff;
-    --world-end-ink: #f6d77a;
     color-scheme: dark;
   }
 }
@@ -1308,50 +1015,6 @@ button.linear-tile { cursor: pointer; }
   --tint-agent: #241d38;
   --tint-agent-line: #4c3d7a;
   --agent-ink: #c4b5fd;
-  --world-bg: #0a0e0d;
-  --world-edge: rgba(255, 255, 255, .06);
-  --world-ink: #e9efed;
-  --world-muted: #b4bfbc;
-  --world-contour: rgba(255, 255, 255, .035);
-  --world-plate-a: #1b2523;
-  --world-plate-b: #0f1514;
-  --world-plate-cur-a: #173a36;
-  --world-plate-cur-b: #0f1a18;
-  --world-plate-line: rgba(255, 255, 255, .06);
-  --world-ring-track: #25302e;
-  --world-ring-full: #0f766e;
-  --world-teal: #14a093;
-  --world-road-off: #1f2a28;
-  --world-road-dash: #334240;
-  --world-stage: #5fd3c4;
-  --world-stage-lock: #8b9895;
-  --world-title: #ffffff;
-  --world-title-lock: #a3aeab;
-  --world-meta: #a3aeab;
-  --world-tile-done-a: #1aa596;
-  --world-tile-done-b: #0f766e;
-  --world-tile-done-lip: #0a4f49;
-  --world-tile-done-glyph: #ffffff;
-  --world-tile-open-a: #13302d;
-  --world-tile-open-b: #0f2624;
-  --world-tile-open-lip: #0a1a18;
-  --world-tile-open-glyph: #5fd3c4;
-  --world-tile-lock-a: #2a3432;
-  --world-tile-lock-b: #222b29;
-  --world-tile-lock-lip: #1a2220;
-  --world-tile-lock-glyph: #56625f;
-  --world-level-on: #5fd3c4;
-  --world-level-decay: #c9a227;
-  --world-level-off: #2a3432;
-  --world-check-ring: #f0c75e;
-  --world-here-ring: #5fd3c4;
-  --world-here-line: #ffffff;
-  --world-here-pill: #ffffff;
-  --world-here-ink: #0f766e;
-  --world-gold-a: #f6d77a;
-  --world-gold-b: #b8860b;
-  --world-gold-glyph: #ffffff;
-  --world-end-ink: #f6d77a;
   color-scheme: dark;
 }
 :root[data-theme="light"] { color-scheme: light; }
@@ -1382,31 +1045,6 @@ html[data-motion="reduce"] ::view-transition-new(*) { animation: none !important
 .learned-list span[aria-hidden] { color: var(--ok); font-weight: 700; }
 .stats-details { margin: 1rem 0; }
 .stats-details summary { cursor: pointer; padding: .65rem 0; font-weight: 600; }
-/* Map: floating "back to my station" (logical insets, so it sits on the reading-end side in RTL too). */
-.float-here {
-  position: fixed;
-  inset-inline-end: var(--space-3);
-  inset-block-end: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  min-height: 44px;
-  padding: .5rem 1rem;
-  border-radius: var(--btn-radius);
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--ink) 25%, transparent);
-}
-.float-here[hidden] { display: none; }
-.float-here:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
-@media (max-width: 480px) {
-  /* The sticky Start/Continue bar owns the bottom edge on phones. */
-  .float-here { inset-block-end: auto; inset-block-start: calc(var(--space-3) + env(safe-area-inset-top, 0px)); }
-}
-
 /* Player: "explanations are in Hebrew" notice for ar/en learners (explain-locale fallback). */
 .explain-lang-note { margin: 0 0 var(--space-3); padding: .5rem .85rem; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: var(--text-sm); }
 
@@ -1691,24 +1329,9 @@ html[data-motion="reduce"] .side { transition: none !important; }
 .user-row .uname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ibtn[aria-current="page"] { border-color: var(--accent); color: var(--accent); }
 
-/* Road world map (נתיב, approved option B). Follows the theme: a soft light surface in light,
-   a night surface in dark. All colors are --world-* tokens. */
-.world-map { margin-block: var(--space-3) var(--space-4, 1.5rem); padding: 1rem .5rem 1.25rem; border-radius: 24px; background: var(--world-bg); color: var(--world-ink); box-shadow: inset 0 0 0 1px var(--world-edge); overflow: hidden; }
-.world-map[hidden] { display: none; }
-.world-canvas { inline-size: 100%; }
-.world-canvas svg { display: block; margin-inline: auto; max-inline-size: 100%; height: auto; font-family: inherit; }
-.world-canvas .wm-tile { cursor: pointer; outline: none; }
-.world-canvas .wm-tile:focus-visible > g { filter: drop-shadow(0 0 4px var(--world-ink)); }
-.world-canvas .wm-tile:hover > g { opacity: .9; }
-.world-legend { display: flex; flex-wrap: wrap; gap: .6rem 1.1rem; justify-content: center; margin-top: 1rem; font-size: .8rem; color: var(--world-muted); }
-.world-legend span { display: inline-flex; align-items: center; gap: .35rem; }
-.world-sample { margin: 0 0 .5rem; text-align: center; font-size: .78rem; color: var(--world-muted); }
-.world-list { margin-block: var(--space-3); }
-.world-list > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
 .map-view .map-actions button, .map-view .map-actions .link-btn { min-height: 52px; border-radius: 14px; }
 @media (max-width: 480px) {
-  /* The sticky Start/Continue bar owns the bottom edge: keep room so it never covers the end of the card or the footer. */
-  .map-view .map-card { scroll-margin-block-end: 6.5rem; }
+  /* The sticky continue bar owns the bottom edge: keep room so it never covers the end of the road or the footer. */
   .map-view main { padding-block-end: 6.5rem; }
   html:has(body.map-view) { scroll-padding-block-end: 6.5rem; }
 }

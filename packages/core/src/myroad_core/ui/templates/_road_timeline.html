@@ -1,0 +1,90 @@
+{#- Road timeline (arena road-ui c1): the whole road on one vertical line.
+    `tl` comes from road_timeline() (road_timeline.py); `path_id` is the road id.
+    Each שלב is a node on the line with a strip of its משבצות that is always visible, so the
+    shape of the whole road reads at a glance. Opening a שלב lists its משבצות by name.
+    One next action: the head's continue button, mirrored by a sticky bar once it scrolls away. -#}
+{%- macro tile_mark(state) -%}
+<span class="tl-mark" aria-hidden="true">
+  {%- if state == 'done' %}<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>
+  {%- elif state == 'ahead' %}<svg viewBox="0 0 16 16"><rect x="4" y="7" width="8" height="6" rx="1.5"/><path d="M6 7V5.5a2 2 0 0 1 4 0V7"/></svg>
+  {%- endif -%}
+</span>
+{%- endmacro %}
+<section class="card road-tl{% if tl.linear %} is-linear{% endif %}{% if tl.readOnly %} is-view{% endif %}" aria-labelledby="track" data-map="{{ 'linear' if tl.linear else 'free' }}" data-stages="{{ tl.stagesTotal }}" data-tiles="{{ tl.total }}">
+  <header class="tl-top">
+    <h2 id="track" tabindex="-1">{{ t('path_map') }}</h2>
+    <p class="tl-sum"><span class="tl-sum-cells">{{ t('tl_cells', done='<bdi>%s</bdi>'|format(tl.done), total='<bdi>%s</bdi>'|format(tl.total))|safe }}</span>
+      <span class="tl-sum-stages">{{ t('tl_stages_done', done='<bdi>%s</bdi>'|format(tl.stagesDone), total='<bdi>%s</bdi>'|format(tl.stagesTotal))|safe }}</span></p>
+  </header>
+  <div class="tl-progress" role="progressbar" aria-label="{{ t('tl_progress_label') }}" aria-valuemin="0" aria-valuemax="{{ tl.total }}" aria-valuenow="{{ tl.done }}" aria-valuetext="{{ t('tl_cells', done=tl.done, total=tl.total) }}"><span style="inline-size: {{ tl.pct }}%"></span></div>
+  <p class="tl-lede tiny">{{ t('tl_lede_linear') if tl.linear else t('tl_lede') }}</p>
+
+  <ol class="tl">
+    {%- for s in tl.stages %}
+    {%- set here_stage = s.state == 'here' %}
+    <li class="tl-stage is-{{ s.state }}{% if s.review %} is-review{% endif %}" data-topic-id="{{ s.id }}"{% if here_stage %} id="here"{% endif %}>
+      <span class="tl-node" aria-hidden="true">{% if s.state == 'done' %}<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>{% else %}<bdi>{{ s.n }}</bdi>{% endif %}</span>
+      <details{% if s.open %} open{% endif %}>
+        <summary>
+          <span class="tl-kicker">{{ t('tl_stage_n', n=s.n) }}{% if s.review %} · {{ t('step_kind_review') }}{% endif %}{% if here_stage %} · <span class="tl-here-word">{{ t('tl_here') }}</span>{% endif %}{% if s.state == 'done' %}<span class="visually-hidden"> · {{ t('tl_done') }}</span>{% endif %}</span>
+          <span class="tl-title" dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</span>
+          <span class="tl-count tiny">{{ t('tl_cells', done='<bdi>%s</bdi>'|format(s.done), total='<bdi>%s</bdi>'|format(s.total))|safe }}</span>
+          <svg class="tl-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+          <span class="tl-dots" aria-hidden="true">{% for tile in s.tiles %}<i class="is-{{ tile.state }}{% if tile.check %} is-check{% endif %}"></i>{% endfor %}</span>
+        </summary>
+        <ol class="tl-tiles">
+          {%- for tile in s.tiles %}
+          {%- set word = t('tl_here') if tile.state == 'here' else '' %}
+          <li class="tl-tile is-{{ tile.state }}{% if tile.review %} is-review{% endif %}{% if tile.check %} is-check{% endif %}" data-block-id="{{ tile.id }}"{% if tile.state == 'here' %} aria-current="step"{% endif %}>
+            {%- if tile.state in ('ahead', 'view') %}
+            <div class="tl-row"{% if tile.state == 'ahead' %} aria-disabled="true"{% endif %}>
+              {{ tile_mark(tile.state) }}
+              <span class="tl-tile-title" dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>
+              {%- if tile.check %}<span class="tl-tag">{{ t('tl_check') }}</span>{% endif %}
+              {%- if tile.state == 'ahead' %}<span class="visually-hidden">{{ t('tl_ahead') }}</span>{% endif %}
+            </div>
+            {%- else %}
+            <form method="post" action="/play/{{ path_id }}/start">
+              <input type="hidden" name="node" value="{{ tile.id }}" />
+              <button type="submit" class="tl-row">
+                {{ tile_mark(tile.state) }}
+                <span class="tl-tile-title" dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>
+                {%- if tile.review %}<span class="tl-tag">{{ t('step_kind_review') }}</span>{% elif tile.check %}<span class="tl-tag">{{ t('tl_check') }}</span>{% endif %}
+                {%- if word %}<span class="tl-state">{{ word }}</span>{% endif %}
+                {%- if tile.state == 'done' %}<span class="visually-hidden">{{ t('tl_done') }}</span>{% endif %}
+              </button>
+            </form>
+            {%- endif %}
+          </li>
+          {%- endfor %}
+        </ol>
+        {%- if tl.readOnly %}
+        {#- Read only: a link per שלב (GET, writes nothing), never a start form. -#}
+        <a class="secondary link-btn small-btn tl-peek" href="/play/{{ path_id }}?topic={{ s.id }}">{{ t('read_only_open') }}</a>
+        {%- endif %}
+      </details>
+    </li>
+    {%- endfor %}
+  </ol>
+  <div class="tl-end{% if tl.finished %} is-done{% endif %}">
+    <span class="tl-node" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 14V2.5M4 3h7.5l-1.8 2.8L11.5 8.5H4"/></svg></span>
+    <p class="tl-end-copy"><span class="tl-kicker">{{ t('tl_end') }}</span>
+      <span class="tl-end-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>
+      {%- if tl.finished %}<span class="tl-count tiny">{{ t('tl_finished') }}</span>{% endif %}</p>
+  </div>
+</section>
+
+{%- if tl.next and not tl.readOnly %}
+{#- Sticky continue: platform.js shows it only while the head's continue button is off screen. -#}
+<div class="tl-continue" data-tl-continue hidden>
+  <a class="tl-continue-copy" href="#here">
+    <span class="tl-kicker">{{ t('tl_next') }} · {{ t('tl_stage_n', n=tl.next.stageN) }}</span>
+    <span class="tl-continue-title" dir="auto"{{ tl.next.titleLang|content_lang(locale) }}>{{ tl.next.title }}</span>
+    <span class="visually-hidden">{{ t('tl_jump_here') }}</span>
+  </a>
+  <form method="post" action="/play/{{ path_id }}/start">
+    <input type="hidden" name="node" value="{{ tl.next.id }}" />
+    <button type="submit" class="primary tl-continue-btn">{{ t('tl_continue') }}</button>
+  </form>
+</div>
+{%- endif %}

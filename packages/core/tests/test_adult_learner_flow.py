@@ -117,45 +117,44 @@ def _finish(store: PathStore, user_id: str, path_id: str) -> None:
                         correct_taps=0, incorrect_taps=0, completed_at="2026-01-01T00:00:00+00:00")
 
 
-# --- map: 20+ stations, compact and with progress per station ---
+# --- map: 20+ stages on one timeline, with progress per stage ---
 
-def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
+def test_long_map_is_one_timeline_with_progress(adult_app) -> None:
     app, _store = adult_app
     c = _client(app)
     page = c.get(f"/play/{LONG}")
     assert page.status_code == 200
     html = page.text
-    assert 'class="station-list" data-stations="22"' in html
-    assert html.count('<li class="station ') == N_TOPICS
-    assert "topic-diagram" not in html  # the big one-box-per-topic diagram is for short paths
-    # Week strip goal setting (#193) adds one more closed <details> in the path head.
+    assert 'data-stages="22"' in html
+    assert html.count('<li class="tl-stage ') == N_TOPICS
+    # Week strip goal setting (#193) adds closed <details> in the path head; only the current שלב is open.
     n_head = html.count('<details class="week-goal-set"') + html.count('<details class="goal-skills"')
-    assert html.count("<details") == N_TOPICS + 1 + n_head and html.count("<details open") == 1
-    assert '<details class="world-list" open>' in html  # the no-JS list under the world map
-    assert "Stage 1 of 22" in html and "0 of 22 stages done" in html
-    assert html.count('class="mini-bar"') == N_TOPICS
+    assert html.count("<details") == N_TOPICS + n_head and html.count("<details open") == 1
+    assert "<bdi>0</bdi> of <bdi>22</bdi> stages done" in html
+    assert html.count('class="tl-dots"') == N_TOPICS
 
-    # Finish the first station (learn + practice), then the map shows it done and opens the next.
+    # Finish the first stage (learn + practice), then the map shows it done and opens the next.
     c.post(f"/play/{LONG}/start")
     c.post(f"/play/{LONG}/ack")
     c.post(f"/play/{LONG}/answer", data={"choice": "a"})
     html = c.get(f"/play/{LONG}?view=map").text
     first = html[html.find('data-topic-id="t00"') - 40:html.find('data-topic-id="t01"')]
-    assert 'class="station done' in first and "2/2 steps" in first and 'aria-valuenow="100"' in first
+    assert 'class="tl-stage is-done' in first and "<bdi>2</bdi> of <bdi>2</bdi> tiles" in first
     second = html[html.find('data-topic-id="t01"') - 60:html.find('data-topic-id="t02"')]
-    assert "station current" in second and "<details open" in second and "0/2 steps" in second
-    assert "Stage 2 of 22" in html and "1 of 22 stages done" in html
-    # Steps inside a station are listed with their state.
-    assert first.count('class="step-row done') == 2
+    assert "tl-stage is-here" in second and "<details open" in second and "<bdi>0</bdi> of <bdi>2</bdi> tiles" in second
+    assert "<bdi>1</bdi> of <bdi>22</bdi> stages done" in html
+    # Tiles inside a stage are listed with their state.
+    assert first.count('class="tl-tile is-done') == 2
 
 
-def test_short_paths_keep_the_topic_diagram(adult_app) -> None:
+def test_short_paths_open_every_stage(adult_app) -> None:
     app, store = adult_app
     c = _client(app)
     _finish(store, _user_id(store), LONG)
     html = c.get(f"/play/{NEXT}").text
-    assert "topic-diagram" in html and "station-list" not in html
-    assert html.count('class="mini-bar"') == 2
+    assert html.count('<li class="tl-stage ') == 2 and html.count('class="tl-dots"') == 2
+    stages = html[html.index('<ol class="tl">'):html.index('class="tl-end')]
+    assert stages.count("<details open") == 2
 
 
 # --- review steps ---
@@ -179,9 +178,9 @@ def test_review_step_has_badge_and_lists_mixed_topics(adult_app) -> None:
 
     # Review stations are marked on the map too.
     html = c.get(f"/play/{LONG}?view=map").text
-    start = html.rfind('<li class="station', 0, html.find('data-topic-id="t05"'))
+    start = html.rfind('<li class="tl-stage', 0, html.find('data-topic-id="t05"'))
     station = html[start:html.find('data-topic-id="t06"')]
-    assert station.split(">", 1)[0].split('"')[1].split()[-1] == "review" and "review-badge" in station
+    assert "is-review" in station.split(">", 1)[0] and "· Review" in station
 
 
 @pytest.mark.parametrize("locale,word", [("he", "חזרה"), ("ar", "مراجعة")])
@@ -261,7 +260,7 @@ def test_finishing_a_path_shows_what_it_unlocked(adult_app) -> None:
     store.save_progress(uid2, LONG, version_id=None, node_index=0, mastered=set(), correct_taps=0, incorrect_taps=0)
     # Pretend everything but the last step is mastered, then finish it through the UI.
     sess_html = c2.get(f"/play/{LONG}?view=map").text
-    assert "station-list" in sess_html
+    assert 'class="card road-tl' in sess_html
     sess = next(s for s in app.state.play_sessions.values() if s["userId"] == uid2)
     doc = app.state.tools.get_version(actor_id="t", correlation_id="t", path_id=LONG, version_id=sess["versionId"]).data["document"]
     blocks = doc["blocks"]
@@ -313,8 +312,8 @@ def test_home_without_progress_keeps_default_group(adult_app) -> None:
 
 NEW_KEYS = (
     "locked_badge", "locked_title", "locked_finish_first", "locked_read_only", "read_only_badge",
-    "read_only_open", "read_only_blocked", "review_mixes", "station_of", "stations_done",
-    "map_long_lede", "station_current", "continue_step", "unlocked_next", "builder_match_why",
+    "read_only_open", "read_only_blocked", "review_mixes", "station_of", "tl_stages_done",
+    "tl_lede", "station_current", "continue_step", "unlocked_next", "builder_match_why",
 )
 
 
@@ -358,10 +357,10 @@ def test_real_adult_math_paths(tmp_path: Path) -> None:
     try:
         c = _client(app, locale="he")
         zero = c.get(f"/play/{ZERO}").text
-        assert zero.count('<li class="station ') == 19 and "lock-banner" not in zero
-        assert zero.count("review-badge") >= 3
+        assert zero.count('<li class="tl-stage ') == 19 and "lock-banner" not in zero
+        assert zero.count("tl-stage is-open is-review") + zero.count("tl-stage is-here is-review") >= 3
         bagrut = c.get(f"/play/{BAGRUT}").text
-        assert bagrut.count('<li class="station ') == 21
+        assert bagrut.count('<li class="tl-stage ') == 21
         assert "lock-banner" in bagrut and f'href="/play/{ZERO}"' in bagrut
         assert "מתמטיקה מאפס עד משוואה" in bagrut
         review = c.get(f"/play/{BAGRUT}?topic=t_review_tools").text

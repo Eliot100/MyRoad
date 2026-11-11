@@ -31,11 +31,11 @@ def contrast(a: str, b: str) -> float:
 
 
 def test_map_connector_is_behind_stations_and_ignores_clicks():
-    line = _rule(".topic-diagram::before")
-    assert "pointer-events: none" in line
-    assert "z-index: 0" in line
-    station = _rule(".topic-station")
-    assert "position: relative" in station and "z-index: 1" in station
+    road = (_STATIC / "road-timeline.css").read_text(encoding="utf-8")
+    line = re.search(r"\.road-tl \.tl-stage::before\s*\{([^}]*)\}", road).group(1)
+    assert "pointer-events: none" in line and "z-index: 0" in line
+    node = re.search(r"\.road-tl \.tl-node\s*\{([^}]*)\}", road).group(1)
+    assert "position: relative" in node and "z-index: 1" in node
 
 
 def test_one_accent_passes_aa_in_light_and_dark():
