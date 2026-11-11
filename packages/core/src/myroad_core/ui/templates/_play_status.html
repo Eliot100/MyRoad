@@ -18,7 +18,7 @@
     {% endfor %}
   </ol>
   {% endif %}
-  <div class="progress-wrap" aria-label="progress">
+  <div class="progress-wrap" aria-label="{{ t('metrics_progress') }}">
     <div class="progress-bar"><div class="progress-fill" style="width: {{ progress }}%"></div></div>
     {%- if sns.station %}
     {%- set cell_ids = sns.station.blockIds %}

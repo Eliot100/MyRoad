@@ -2411,8 +2411,22 @@ def register_platform_routes(
             mode == "voice" and not (transcript or "").strip()
         )
         if blank:
-            choice = ""
-        elif mode == "type":
+            # Not a miss: no answer event, no review note, and no revealed solution.
+            feedback = {
+                "blockId": block["blockId"],
+                "choice": "",
+                "ok": False,
+                "blank": True,
+                "text": t(locale, "answer_needed"),
+            }
+            sess.pop("wrong_on", None)
+            sess["last_result"] = {"ok": False, "text": feedback["text"], "blank": True}
+            sess["answer_feedback"] = feedback
+            _persist_progress(sess, completed=_maybe_done(sess, len(blocks)))
+            return _play_answer_response(
+                request, sess, doc, blocks, path_id, hx, False, feedback, answered_idx, locale
+            )
+        if mode == "type":
             scored = True
             ok = check_typed(kids, typed)
             choice = ""
@@ -2461,8 +2475,7 @@ def register_platform_routes(
             "ok": ok,
             "text": (kids.get("feedback_ok") or "✓") if ok else (kids.get("feedback_try") or t(locale, "gate_practice")),
         }
-        if not blank:
-            _step_event(sess, block, "answer", ok=ok)
+        _step_event(sess, block, "answer", ok=ok)
         if scored and _is_placement(sess["pathId"]):
             # #199: a placement counts wrong ITEMS by first try (from learner_events), not taps.
             try:

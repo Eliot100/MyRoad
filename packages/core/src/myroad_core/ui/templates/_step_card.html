@@ -73,7 +73,7 @@
   {%- set sp_key = 'myroad.scratch.' ~ ((learner.userId if learner else '') or 'anon') ~ '.' ~ doc.pathId ~ '.' ~ (block.blockId or kids.id or index) %}
   <div class="scratch-area">
     {#- After a wrong answer the method is shown open in the feedback (#215), not twice. -#}
-    {% if kids.worked_method and not (answer and not answer.ok) %}
+    {% if kids.worked_method and not (answer and not answer.ok and not answer.blank) %}
     <details class="worked-method">
       <summary>{{ t('worked_method_title') }}</summary>
       <p class="worked-method-text" dir="auto" lang="{{ explain_locale or 'he' }}">{{ kids.worked_method|bdi }}</p>
@@ -126,7 +126,7 @@
   </div>
   {% endif %}
   {#- No JS: a plain form post (303 back to the player). With htmx: only this card is swapped. -#}
-  {%- set sol = wrong_solution(kids, locale) if (answer and not answer.ok and wrong_solution is defined) else none %}
+  {%- set sol = wrong_solution(kids, locale) if (answer and not answer.ok and not answer.blank and wrong_solution is defined) else none %}
   <form method="post" action="/play/{{ doc.pathId }}/answer" class="choices" data-step-form
         hx-post="/play/{{ doc.pathId }}/answer" hx-target="#step-card" hx-swap="outerHTML"
         hx-sync="this:drop">
@@ -258,9 +258,11 @@
       (Hebrew today, PM decision). When the UI locale differs, mark that text with its own lang. -#}
   {%- set fb_from_content = answer and answer.text and answer.text in [kids.feedback_ok, kids.feedback_try] %}
   {%- set fb_lang = (explain_locale or 'he') if fb_from_content and locale != (explain_locale or 'he') else none %}
-  <div id="step-feedback" class="step-feedback{% if answer %}{% if answer.ok %} ok{% else %} try{% endif %}{% endif %}" dir="auto" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
+  <div id="step-feedback" class="step-feedback{% if answer %}{% if answer.ok %} ok{% elif not answer.blank %} try{% endif %}{% endif %}" dir="auto" role="status" aria-live="polite" aria-atomic="true" tabindex="-1">
     {%- if answer -%}
-    {%- if answer.ok %}
+    {%- if answer.blank %}
+    <p class="feedback-line">{{ answer.text|bdi }}</p>
+    {%- elif answer.ok %}
     {#- No authored feedback_ok: the server sends a bare mark; show the word, not a second ✓. -#}
     {%- set ok_text = answer.text if (answer.text and answer.text|trim not in ['✓', '']) else t('feedback_correct') %}
     {#- Authored feedback that already opens with the verdict word ("נכון. …") gets no hidden verdict, so a screen reader does not say it twice. -#}
@@ -294,7 +296,7 @@
     {%- set cando = can_do_line(eng_s, block.blockId, kids.can_do or (display.title if display is defined and display.title else block.title)) %}
     {%- if cando %}<p class="step-done-line"><span class="step-done-mark" aria-hidden="true">✓</span> {{ t('eng_now_you_can') }} <span class="step-done-what" dir="auto"{{ sl.title|content_lang(locale) }}>{{ cando|bdi }}</span></p>{% endif %}
     {%- endif %}
-    {%- if not answer.ok and not sol %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}
+    {%- if not answer.ok and not answer.blank and not sol %}<p class="feedback-hint tiny">{{ t('feedback_pick_again') }}</p>{% endif -%}
     {%- endif -%}
   </div>
   {% endif %}

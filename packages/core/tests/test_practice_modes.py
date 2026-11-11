@@ -157,7 +157,10 @@ def test_blank_typed_or_spoken_answer_is_not_a_first_try_miss(tmp_path: Path, mo
             c.post(f"/play/{PID}/ack")
             uid = store.get_learner_by_email("blank@example.com")["userId"]
             for data in ({"mode": "type", "typed": "  "}, {"mode": "voice", "transcript": ""}):
-                c.post(f"/play/{PID}/answer", data=data, headers=HX)
+                blank = c.post(f"/play/{PID}/answer", data=data, headers=HX)
+                assert "בחרו תשובה אחרת" not in blank.text
+                assert "צריך תשובה לפני הבדיקה" in blank.text
+                assert "step-feedback try" not in blank.text
             assert store.first_try_answers(uid, PID) == []
             assert store.first_try_wrong_count(uid, PID) == 0
             right = c.post(f"/play/{PID}/answer", data={"mode": "type", "typed": "8"}, headers=HX)
