@@ -39,6 +39,8 @@
   </section>
   {% endif %}
 
+  {% include "_road_place.html" %}
+
   {% set long_map = topics|length > 8 %}
   {% set use_linear = linear_rows|default(false) %}
   {% set gap = open_index|default(0) %}

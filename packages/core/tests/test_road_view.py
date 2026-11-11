@@ -2,12 +2,32 @@
 from datetime import datetime as date
 
 from myroad_core.ui.road_view import (
-    build_road, first_try, is_public_catalog, trend_svg_points, uses_road_view, weekly_progress,
+    build_road, first_try, is_public_catalog, place_on_road, trend_svg_points, uses_road_view, weekly_progress,
 )
 
 
 def _topics(n, per=2):
     return [{"id": f"t{i}", "title": f"T{i}", "blockIds": [f"b{i}_{k}" for k in range(per)]} for i in range(n)]
+
+
+def test_place_on_road_uses_mastered_steps_only():
+    topics = _topics(2, per=2)
+    blocks = [{"blockId": f"b{i}_{k}", "title": f"S{i}{k}"} for i in range(2) for k in range(2)]
+    empty = place_on_road(topics, blocks, set(), 0)
+    assert empty["status"] == "empty"
+    assert empty["here"]["blockId"] == "b0_0" and empty["here"]["stageTitle"] == "T0"
+    assert empty["next"]["blockId"] == "b0_1"
+    assert "pct" not in empty and "score" not in empty
+    mid = place_on_road(topics, blocks, {"b0_0", "b0_1"}, 2)
+    assert mid["status"] == "here"
+    assert mid["here"]["stageId"] == "t1" and mid["here"]["blockId"] == "b1_0"
+    assert mid["next"]["blockId"] == "b1_1"
+    assert [s["id"] for s in mid["doneStages"]] == ["t0"]
+    done = place_on_road(topics, blocks, {b["blockId"] for b in blocks}, 4)
+    assert done["status"] == "done" and done["here"] is None and done["next"] is None
+    assert len(done["doneStages"]) == 2
+    started = place_on_road(topics, blocks, set(), 1)
+    assert started["status"] == "here" and started["here"]["blockId"] == "b0_0"
 
 
 def test_only_full_five_unit_roads_get_it():

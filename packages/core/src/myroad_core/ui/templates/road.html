@@ -31,12 +31,13 @@
   </section>
 
   {% if not card.unavailable %}
+  {% include "_road_place.html" %}
   {% if topics %}
   <section class="tv-row" aria-labelledby="road-stages-h">
     <div class="tv-row-h"><h2 id="road-stages-h">{{ t('tv_stages_h') }}</h2><span>{{ t('tv_stages_sub') }}</span></div>
     <ul class="tv-shelf tv-stage-cards" tabindex="0" aria-labelledby="road-stages-h">
       {% for tp in topics %}
-      <li><b{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</b><span>{{ t('tv_cells', n=tp.stepCount) }}{% if loop.first %} · {{ t('tv_start_here') }}{% endif %}</span></li>
+      <li{% if place and place.status == 'here' and place.here and place.here.stageId == tp.id %} aria-current="step"{% endif %}><b{{ tp.titleLang|content_lang(locale) }}>{{ tp.title }}</b><span>{{ t('tv_cells', n=tp.stepCount) }}{% if place and place.status == 'here' and place.here and place.here.stageId == tp.id %} · {{ t('station_current') }}{% elif loop.first and (not place or place.status == 'empty') %} · {{ t('tv_start_here') }}{% endif %}</span></li>
       {% endfor %}
     </ul>
   </section>

@@ -1,0 +1,21 @@
+{# Where the learner is, from mastered steps only. No scores. #}
+{% if place %}
+<section class="road-place" aria-labelledby="road-place-h">
+  <h2 id="road-place-h" class="visually-hidden">{{ t('path_map') }}</h2>
+  {% if place.status == 'done' %}
+  <p class="road-place-status" role="status">{{ t('road_place_done') }}</p>
+  {% elif place.status == 'empty' %}
+  <p class="road-place-status" role="status">{{ t('road_place_empty') }}</p>
+  {% if place.here %}
+  <p><span class="road-place-k">{{ t('tv_start_here') }}</span> <bdi dir="auto"{{ place.here.stageLang|content_lang(locale) }}>{{ place.here.stageTitle or place.here.title }}</bdi></p>
+  {% endif %}
+  {% else %}
+  {% if place.here %}
+  <p><span class="road-place-k">{{ t('station_current') }}</span> <bdi dir="auto"{{ place.here.stageLang|content_lang(locale) }}>{{ place.here.stageTitle or place.here.title }}</bdi></p>
+  {% endif %}
+  {% if place.next %}
+  <p><span class="road-place-k">{{ t('road_place_next') }}</span> <bdi dir="auto"{{ place.next.stageLang|content_lang(locale) }}>{{ place.next.stageTitle or place.next.title }}</bdi></p>
+  {% endif %}
+  {% endif %}
+</section>
+{% endif %}

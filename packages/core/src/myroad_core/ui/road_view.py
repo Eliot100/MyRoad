@@ -291,6 +291,62 @@ def build_road(
     }
 
 
+def place_on_road(
+    topics: list[dict[str, Any]],
+    blocks: list[dict[str, Any]],
+    mastered: Iterable[str] | None,
+    node_index: int,
+) -> dict[str, Any]:
+    """Where the learner is on a road, from mastered steps only. No scores.
+
+    ``here`` is the first step that is not mastered. ``next`` is the unmastered
+    step after that. Nothing mastered and index 0 means there are no answers yet.
+    Every step mastered means the road is finished.
+    """
+    done = {str(x) for x in (mastered or [])}
+    topics = list(topics or [])
+    blocks = list(blocks or [])
+    stage_of: dict[str, dict[str, Any]] = {}
+    done_stages: list[dict[str, Any]] = []
+    for tp in topics:
+        ids = [str(b) for b in (tp.get("blockIds") or [])]
+        for bid in ids:
+            stage_of[bid] = tp
+        if ids and all(bid in done for bid in ids):
+            done_stages.append({
+                "id": tp.get("id"),
+                "title": tp.get("title") or "",
+                "titleLang": tp.get("titleLang") or "",
+            })
+
+    def spot(block: dict[str, Any], index: int) -> dict[str, Any]:
+        bid = str(block.get("blockId") or "")
+        tp = stage_of.get(bid) or {}
+        return {
+            "blockId": bid,
+            "index": index,
+            "title": block.get("title") or "",
+            "stageId": tp.get("id"),
+            "stageTitle": tp.get("title") or "",
+            "stageLang": tp.get("titleLang") or "",
+        }
+
+    unfinished = [(i, b) for i, b in enumerate(blocks) if str(b.get("blockId") or "") not in done]
+    started = bool(done) or int(node_index or 0) > 0
+    if not unfinished:
+        return {"status": "done" if blocks else "empty", "here": None, "next": None,
+                "doneStages": done_stages, "started": bool(blocks)}
+    here_i, here_b = unfinished[0]
+    nxt = spot(unfinished[1][1], unfinished[1][0]) if len(unfinished) > 1 else None
+    return {
+        "status": "here" if started else "empty",
+        "here": spot(here_b, here_i),
+        "next": nxt,
+        "doneStages": done_stages,
+        "started": started,
+    }
+
+
 def trend_svg_points(points: list[dict[str, Any]], width: int = 400, height: int = 130) -> str:
     """Polyline points for the accuracy chart, oldest on the left (as in mockup 01)."""
     if len(points) < 2:
@@ -301,5 +357,5 @@ def trend_svg_points(points: list[dict[str, Any]], width: int = 400, height: int
 
 __all__ = [
     "uses_road_view", "is_public_catalog", "first_try", "trend",
-    "build_road", "trend_svg_points", "weekly_progress", "LEVEL_COUNT", "PUBLIC_CATALOG_SUBJECTS",
+    "build_road", "trend_svg_points", "weekly_progress", "place_on_road", "LEVEL_COUNT", "PUBLIC_CATALOG_SUBJECTS",
 ]

@@ -74,7 +74,7 @@ from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
 from myroad_core.errors import NotFoundError
 from myroad_core.ui.metrics_view import build_metrics
-from myroad_core.ui.road_view import build_road, is_public_catalog, trend_svg_points, uses_road_view
+from myroad_core.ui.road_view import build_road, is_public_catalog, place_on_road, trend_svg_points, uses_road_view
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
 from myroad_core.ui.engagement_view import (
     can_do_line,
@@ -1851,6 +1851,13 @@ def register_platform_routes(
         reason = next((x["reason"] for x in _rec_items(visible, started, locale, limit=50) if x["pathId"] == path_id), "")
         prereq_list = [{"pathId": p, "title": prereq_titles.get(p, p)} for p in prereqs.get(path_id, [])]
         preview = preview_enabled()
+        prog = store.get_progress(learner["userId"], path_id) if learner else None
+        place = place_on_road(
+            topics,
+            blocks,
+            (prog or {}).get("mastered") or set(),
+            int((prog or {}).get("nodeIndex") or 0),
+        )
         return templates.TemplateResponse(
             request,
             "road.html",
@@ -1867,6 +1874,7 @@ def register_platform_routes(
                 ui_preview=preview,
                 sidebar=_sidebar_ctx(request, active_path=path_id),
                 continue_href=f"/play/{path_id}/continue" if learner else None,
+                place=place,
             ),
         )
 
@@ -2045,6 +2053,7 @@ def register_platform_routes(
                     st["done"] = st["blockId"] in mastered
                     st["current"] = st["blockId"] == current_bid
             open_index = next((i for i, b in enumerate(blocks) if b["blockId"] not in mastered), n)
+            place = place_on_road(topics, blocks, mastered, resume_index)
             if uses_road_view(path_id):
                 # Design D (Library mockups 12 + 10 + 01): real stages, states and answer events only.
                 events: list[dict[str, Any]] = []
@@ -2075,6 +2084,7 @@ def register_platform_routes(
                     engagement=_engagement(sess, doc, locale),
                     series_back=str(path_id).startswith("path_english_bagrut5_"),
                     sidebar=_sidebar_ctx(request, active_path=path_id),
+                    place=place,
                 )
                 response = templates.TemplateResponse(request, "road_map.html", ctx)
                 response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
@@ -2097,6 +2107,7 @@ def register_platform_routes(
                 linear_rows=str(path_id).startswith("path_english_bagrut5_"),
                 engagement=_engagement(sess, doc, locale),
                 sidebar=_sidebar_ctx(request, active_path=path_id),
+                place=place,
             )
             response = templates.TemplateResponse(request, "map.html", ctx)
             response.set_cookie("myroad_play", sess["sid"], httponly=True, samesite="lax")
