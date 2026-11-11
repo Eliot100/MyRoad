@@ -2050,3 +2050,124 @@ html[dir="ltr"] .back-arrow { transform: scaleX(-1); }
 .register-legal a { color: var(--accent); }
 .auth-card .lede.tiny.register-legal > a { display: inline; }
 
+
+/* --- Road dashboard (arena c3): next tile hero, progress, every שלב as a card -------------
+   Tokens only (light and dark come from the theme blocks above). Logical properties for RTL. */
+.road-dash-head { display: grid; gap: var(--space-4); padding: var(--space-5); }
+.road-dash-head .lede { max-inline-size: 60ch; }
+.road-hero.continue-card {
+  display: grid; gap: var(--space-4); align-items: center;
+  background: var(--tint-info); border-color: var(--tint-info-strong);
+  padding: var(--space-5); border-radius: var(--radius-md);
+}
+@media (min-width: 760px) { .road-hero.continue-card { grid-template-columns: minmax(0, 1fr) auto; } }
+.road-hero-copy { display: grid; gap: var(--space-2); min-inline-size: 0; }
+.road-hero-kicker { margin: 0; color: var(--accent); font-weight: 700; font-size: var(--text-sm); }
+.road-hero .road-hero-title { margin: 0; font-size: var(--text-xl); font-weight: 700; line-height: var(--leading-tight); color: var(--ink); overflow-wrap: anywhere; }
+.road-hero-where { margin: 0; color: var(--ink-2); display: grid; gap: 0; }
+.road-hero-where .road-hero-count { color: var(--muted); font-size: var(--text-sm); }
+.road-hero-where bdi { font-variant-numeric: tabular-nums; }
+.road-hero-set { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); margin-block-start: var(--space-1); }
+.road-hero-set .set-title, .road-hero-set .set-count { margin: 0; color: var(--muted); }
+.road-hero-set .set-dots { margin: 0; }
+.road-hero-action form { margin: 0; padding: 0; }
+.road-hero-action .continue-btn { margin: 0; }
+.road-hero-action .continue-btn { inline-size: 100%; }
+@media (min-width: 760px) { .road-hero-action .continue-btn { inline-size: auto; min-inline-size: 14rem; } }
+.road-hero.is-done .road-hero-kicker { color: var(--ok); }
+
+.road-progress { margin-block-end: var(--space-4); }
+.road-progress .eng-head { margin-block-start: 0; }
+@media (min-width: 760px) { .road-progress .week-strip { grid-column: auto; } }
+.goal-meter-cells { margin: var(--space-3) 0 0; font-weight: 600; color: var(--ink); }
+.goal-meter-cells bdi { font-variant-numeric: tabular-nums; }
+.road-progress .eng-links { margin-block-start: var(--space-2); }
+
+.road-stages-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-1) var(--space-3); }
+.road-stages-head h2 { margin: 0; }
+.road-stages-count { margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.road-stages > .lede { margin-block: var(--space-2) var(--space-4); }
+.stage-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 640px) { .stage-grid { grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); } }
+.stage-card {
+  border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface);
+  padding: var(--space-4); display: grid; gap: var(--space-3); min-inline-size: 0;
+}
+.stage-card.is-here { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--surface-2); }
+.stage-card.is-ahead { background: var(--surface-2); }
+.stage-card.is-review { border-style: dashed; }
+.stage-card.is-review .stage-num { border-radius: 5px; }
+.stage-card#here { scroll-margin-block-start: var(--space-5); }
+.stage-card.is-here.is-review { border-style: solid; }
+.stage-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-3); align-items: start; }
+.stage-num {
+  inline-size: 2rem; block-size: 2rem; border-radius: 50%; display: inline-grid; place-items: center;
+  border: 1.5px solid var(--line-strong); color: var(--ink-2); font-weight: 700; font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.stage-card.is-done .stage-num { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.stage-card.is-here .stage-num { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 3px var(--tint-info-strong); }
+.stage-main { min-inline-size: 0; }
+.stage-label { margin: 0; color: var(--muted); }
+.stage-title { margin: 0; font-size: var(--text-md); line-height: 1.4; overflow-wrap: anywhere; }
+.stage-pill { font-size: var(--text-xs); font-weight: 600; color: var(--muted); white-space: nowrap; padding-block-start: .15rem; }
+.stage-card.is-here .stage-pill { color: var(--accent); }
+.stage-card.is-done .stage-pill { color: var(--ok); }
+.stage-meter { display: flex; align-items: center; gap: var(--space-3); }
+.stage-meter .mini-bar { flex: 1 1 auto; margin: 0; }
+.stage-count { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.stage-note { margin: 0; color: var(--muted); }
+.stage-tiles > summary {
+  cursor: pointer; min-block-size: 44px; display: flex; align-items: center; gap: var(--space-1);
+  color: var(--accent); font-weight: 600; font-size: var(--text-sm); border-radius: var(--radius-sm);
+}
+.stage-tiles > summary:focus-visible, .tile-row:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.stage-tiles-n { color: var(--muted); font-weight: 400; }
+.tile-list { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: 2px; }
+.tile-item, .tile-form { margin: 0; }
+.tile-row {
+  inline-size: 100%; min-block-size: 44px; display: grid; grid-template-columns: 1.25rem 2rem minmax(0, 1fr) auto;
+  align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-2); text-align: start;
+  background: transparent; border: 0; border-radius: var(--radius-sm); color: var(--ink); font: inherit; font-size: var(--text-sm);
+  line-height: 1.45; font-weight: 400; cursor: pointer; position: relative;
+}
+button.tile-row:hover { background: var(--surface-3); }
+.tile-row.is-here { background: var(--tint-info); font-weight: 600; }
+.tile-row.is-ahead { color: var(--muted); cursor: default; }
+.tile-mark { color: var(--accent); text-align: center; }
+.tile-row.is-ahead .tile-mark, .tile-row.is-open .tile-mark { color: var(--line-strong); }
+.tile-n { color: var(--muted); font-variant-numeric: tabular-nums; font-size: var(--text-xs); }
+.tile-title { min-inline-size: 0; overflow-wrap: anywhere; }
+.tile-state { color: var(--muted); white-space: nowrap; }
+.tile-row.is-here .tile-state { color: var(--accent); }
+/* Narrow cards (3 to a row on desktop, or a phone): tile state words stay for screen readers
+   but leave the row, except on the current tile; the mark (check, dot, ring) carries it by shape. */
+.stage-card { container-type: inline-size; container-name: stage; }
+@container stage (max-width: 22rem) {
+  .tile-row { grid-template-columns: 1.25rem minmax(0, 1fr) auto; }
+  .tile-n { display: none; }
+  .tile-row:not(.is-here) .tile-state {
+    position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+}
+/* One column (phones): a quiet spine joins the stage numbers, so the list reads as one road. */
+@media (max-width: 639px) {
+  .stage-card { position: relative; padding: var(--space-3) var(--space-4); gap: var(--space-2); }
+  .stage-card:not(:last-child)::after {
+    content: ""; position: absolute; inset-block-start: 100%; inset-inline-start: calc(var(--space-4) + 1rem - 1px);
+    inline-size: 2px; block-size: var(--space-3); background: var(--line-strong); pointer-events: none;
+  }
+  .stage-card.is-done:not(:last-child)::after { background: var(--accent); }
+}
+@media (max-width: 420px) {
+  .road-dash-head { padding: var(--space-4); }
+  .road-hero.continue-card { padding: var(--space-4); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .stage-tiles[open] .tile-list { animation: rd-reveal .2s ease-out; }
+}
+@keyframes rd-reveal { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.stage-peek { justify-self: start; }
+span.tile-row { cursor: default; }
+.road-hero.continue-card.is-peek { background: var(--surface-2); border-color: var(--line-strong); }
+.road-hero.is-peek .lock-needs, .road-hero.is-peek .road-hero-note { margin: 0; }

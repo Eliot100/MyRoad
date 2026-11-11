@@ -66,6 +66,7 @@ from myroad_core.ui.agent_builder_routes import register_agent_builder_routes
 from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
+from myroad_core.ui.road_view import road_dashboard
 from myroad_core.ui.engagement_view import (
     can_do_line,
     engagement_view,
@@ -2077,11 +2078,19 @@ def register_platform_routes(
                     st["done"] = st["blockId"] in mastered
                     st["current"] = st["blockId"] == current_bid
             open_index = next((i for i, b in enumerate(blocks) if b["blockId"] not in mastered), n)
+            # A road with no topics still gets one שלב, so the dashboard never renders empty.
+            road_topics = topics or ([{"id": "all", "title": meta.get("title") or "", "titleLang": meta.get("titleLang") or "",
+                                       "steps": [{"blockId": b["blockId"], "index": i, "title": b.get("title") or "",
+                                                  "titleLang": _explain_locale(doc)} for i, b in enumerate(blocks)]}]
+                                     if blocks else [])
+            road = road_dashboard(road_topics, mastered, current_block=current_bid,
+                                  linear=str(path_id).startswith("path_english_bagrut5_") or is_math_series(path_id), read_only=read_only)
             ctx = _shell_ctx(
                 request,
                 doc=doc,
                 meta=meta,
                 topics=topics,
+                road=road,
                 mastered=mastered,
                 total=n,
                 progress=int(round(100 * len(mastered) / n)) if n else 0,

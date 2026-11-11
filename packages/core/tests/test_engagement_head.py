@@ -23,6 +23,8 @@ from auth_helpers import login
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
 from myroad_core.ui.engagement_view import can_do_line, derive_engagement, engagement_view
+from myroad_core.ui.i18n import content_lang
+from myroad_core.ui.road_view import road_dashboard
 
 _CORE = Path(__file__).resolve().parents[1]
 _TPL = _CORE / "src" / "myroad_core" / "ui" / "templates"
@@ -68,13 +70,14 @@ def _text(html: str) -> str:
 
 def test_map_head_empty_state_and_whole_road(client) -> None:
     html = client.get(f"/play/{PID}?view=map").text
-    assert 'class="goal-meter"' in html and 'class="continue-card"' in html
+    assert 'class="goal-meter"' in html and 'class="road-hero continue-card is-fresh"' in html
     assert "שלב <bdi>1</bdi> מתוך <bdi>2</bdi> בדרך" in html
     assert "עוד אין נקודת התחלה" in html
     assert "הנתיב הקצר הראשון" in html and "התחל את הדרך" in html
     assert html.count('<li class="is-next">') == 1 and "is-done" not in html[html.index("set-dots"):html.index("set-count")]
-    assert 'id="world-map"' in html and 'id="track"' in html  # the whole road stays on this screen
-    assert "%" not in _text(html[html.index("eng-head"):html.index("eng-links")])
+    assert 'class="stage-grid"' in html and 'id="track"' in html  # the whole road stays on this screen
+    assert html.count('class="primary big continue-btn"') == 1  # one primary action, in the hero
+    assert "%" not in _text(html[html.index("road-hero"):html.index("eng-links")])
 
 
 def test_map_head_after_progress_shows_dots_and_continue(client) -> None:
@@ -84,7 +87,7 @@ def test_map_head_after_progress_shows_dots_and_continue(client) -> None:
     dots = html[html.index('class="set-dots"'):html.index('class="set-count')]
     assert dots.count("is-done") == 1 and dots.count("is-next") == 1
     assert "<bdi>1</bdi> מתוך <bdi>4</bdi> בנתיב הזה" in html
-    assert "המשך בנתיב" in html and "הנתיב הקצר שלך" in html
+    assert "המשך למשבצת הזאת" in html and "הנתיב הקצר שלך" in html
 
 
 def test_right_answer_shows_step_done_line_in_flow(client) -> None:
@@ -107,12 +110,17 @@ def test_wrong_answer_has_no_step_done_line(client) -> None:
 
 
 def _render_head(engagement, locale: str = "he", meta=None) -> str:
+    """The road hero (next tile + short נתיב dots + the one button) and the progress head."""
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(_TPL)), autoescape=True)
     env.globals.update(engagement_view=engagement_view)
+    env.filters["content_lang"] = content_lang
     from myroad_core.ui.i18n import t
-    tpl = env.get_template("_path_head_engagement.html")
+    tpl = env.from_string(
+        '{% from "_road_dashboard.html" import road_hero with context %}'
+        '{% set eng = engagement_view(engagement, topics, mastered) %}'
+        '{{ road_hero(road, eng, doc.pathId, "he") }}{% include "_path_head_engagement.html" %}')
     return tpl.render(engagement=engagement, topics=[], mastered=set(), doc={"pathId": "p"}, meta=meta or {"title": "x"},
-                      t=lambda k, **kw: t(locale, k, **kw))
+                      road=road_dashboard([]), t=lambda k, **kw: t(locale, k, **kw))
 
 
 SERVER = {"session": {"no": 4, "steps": [{"id": f"s{i}", "title": f"T{i}", "done": i < 2, "right_first_time": i < 2} for i in range(6)],
@@ -131,7 +139,7 @@ def test_server_engagement_dict_wins() -> None:
     html = _render_head(SERVER)
     assert "שלב <bdi>4</bdi> מתוך <bdi>9</bdi>, היעד: <bdi>800</bdi>" in html
     assert "נקודת ההתחלה שלך: שלב <bdi>2</bdi>" in html
-    track = html[html.index("goal-track"):html.index("</ol>")]
+    track = html[html.index("goal-track"):html.index("</ol>", html.index("goal-track"))]
     assert track.count("is-done") == 3 and track.count("is-here") == 1 and track.count("is-start") == 1
     assert "<bdi>2</bdi> מתוך <bdi>6</bdi>" in html and 'data-derived="0"' in html
 
@@ -147,7 +155,7 @@ def test_server_empty_state() -> None:
 
 def test_absent_engagement_and_no_topics_renders_plain_button() -> None:
     html = _render_head(None)
-    assert "goal-meter" not in html and "התחל את הדרך" in html
+    assert "goal-meter" not in html and "התחל את הדרך" in html and html.count("<button") == 1
 
 
 def test_derive_and_can_do() -> None:

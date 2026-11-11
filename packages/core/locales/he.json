@@ -600,5 +600,21 @@
   "terms_privacy_h": "פרטיות",
   "terms_privacy_p": "מה נשמר ולמה כתוב בהודעת הפרטיות.",
   "terms_more_h": "עוד פרטים",
-  "terms_more_p": "מפעיל השירות: אליוט, בכתובת eli4056-3ery4h@mail.grokbot.com. הדין החל: דין מדינת ישראל, ומקום השיפוט בבתי המשפט בישראל."
+  "terms_more_p": "מפעיל השירות: אליוט, בכתובת eli4056-3ery4h@mail.grokbot.com. הדין החל: דין מדינת ישראל, ומקום השיפוט בבתי המשפט בישראל.",
+  "rd_next_kicker": "המשבצת הבאה",
+  "rd_first_kicker": "מתחילים כאן",
+  "rd_next_where": "שלב {n} · {stage}",
+  "rd_tile_of": "משבצת {n} מתוך {total}",
+  "rd_continue": "המשך למשבצת הזאת",
+  "rd_done_kicker": "הדרך הושלמה",
+  "rd_done_title": "כל {total} המשבצות בדרך הושלמו",
+  "rd_done_again": "פתיחת המשבצת הראשונה",
+  "rd_stats_h": "ההתקדמות בדרך",
+  "rd_stages_h": "השלבים בדרך",
+  "rd_stages_lede": "כל שלב הוא כמה משבצות. השלב שבו אתם נמצאים פתוח.",
+  "rd_stage_n": "שלב {n}",
+  "rd_stage_started": "בדרך",
+  "rd_stage_ahead": "נפתח אחרי השלב הקודם",
+  "rd_tiles_toggle": "המשבצות בשלב",
+  "rd_open_stage": "כניסה לשלב"
 }

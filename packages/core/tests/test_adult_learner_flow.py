@@ -125,14 +125,13 @@ def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
     page = c.get(f"/play/{LONG}")
     assert page.status_code == 200
     html = page.text
-    assert 'class="station-list" data-stations="22"' in html
-    assert html.count('<li class="station ') == N_TOPICS
-    assert "topic-diagram" not in html  # the big one-box-per-topic diagram is for short paths
+    # Road dashboard (arena c3): one stage grid for every road size, one card per stage.
+    assert 'class="stage-grid" data-stages="22"' in html
+    assert html.count('<li class="stage-card ') == N_TOPICS
     # Week strip goal setting (#193) adds one more closed <details> in the path head.
     n_head = html.count('<details class="week-goal-set"') + html.count('<details class="goal-skills"')
-    assert html.count("<details") == N_TOPICS + 1 + n_head and html.count("<details open") == 1
-    assert '<details class="world-list" open>' in html  # the no-JS list under the world map
-    assert "Stage 1 of 22" in html and "0 of 22 stages done" in html
+    assert html.count("<details") == N_TOPICS + n_head and html.count('<details class="stage-tiles" open') == 1
+    assert "Stage 1 of 22" in html and "<bdi>0</bdi> of <bdi>22</bdi> stages done" in html
     assert html.count('class="mini-bar"') == N_TOPICS
 
     # Finish the first station (learn + practice), then the map shows it done and opens the next.
@@ -141,12 +140,14 @@ def test_long_map_is_a_compact_station_list_with_progress(adult_app) -> None:
     c.post(f"/play/{LONG}/answer", data={"choice": "a"})
     html = c.get(f"/play/{LONG}?view=map").text
     first = html[html.find('data-topic-id="t00"') - 40:html.find('data-topic-id="t01"')]
-    assert 'class="station done' in first and "2/2 steps" in first and 'aria-valuenow="100"' in first
+    assert 'class="stage-card is-done' in first and "<bdi>2</bdi> of <bdi>2</bdi> tiles" in first
+    assert 'aria-valuemax="2" aria-valuenow="2"' in first
     second = html[html.find('data-topic-id="t01"') - 60:html.find('data-topic-id="t02"')]
-    assert "station current" in second and "<details open" in second and "0/2 steps" in second
-    assert "Stage 2 of 22" in html and "1 of 22 stages done" in html
-    # Steps inside a station are listed with their state.
-    assert first.count('class="step-row done') == 2
+    assert "stage-card is-here" in second and '<details class="stage-tiles" open' in second
+    assert "<bdi>0</bdi> of <bdi>2</bdi> tiles" in second
+    assert "Stage 2 of 22" in html and "<bdi>1</bdi> of <bdi>22</bdi> stages done" in html
+    # Tiles inside a stage are listed with their state.
+    assert first.count('class="tile-row is-done') == 2
 
 
 def test_short_paths_keep_the_topic_diagram(adult_app) -> None:
@@ -154,7 +155,7 @@ def test_short_paths_keep_the_topic_diagram(adult_app) -> None:
     c = _client(app)
     _finish(store, _user_id(store), LONG)
     html = c.get(f"/play/{NEXT}").text
-    assert "topic-diagram" in html and "station-list" not in html
+    assert 'class="stage-grid" data-stages="2"' in html  # same template as the long road
     assert html.count('class="mini-bar"') == 2
 
 
@@ -179,9 +180,9 @@ def test_review_step_has_badge_and_lists_mixed_topics(adult_app) -> None:
 
     # Review stations are marked on the map too.
     html = c.get(f"/play/{LONG}?view=map").text
-    start = html.rfind('<li class="station', 0, html.find('data-topic-id="t05"'))
+    start = html.rfind('<li class="stage-card', 0, html.find('data-topic-id="t05"'))
     station = html[start:html.find('data-topic-id="t06"')]
-    assert station.split(">", 1)[0].split('"')[1].split()[-1] == "review" and "review-badge" in station
+    assert "is-review" in station.split(">", 1)[0] and "review-badge" in station
 
 
 @pytest.mark.parametrize("locale,word", [("he", "חזרה"), ("ar", "مراجعة")])
@@ -261,7 +262,7 @@ def test_finishing_a_path_shows_what_it_unlocked(adult_app) -> None:
     store.save_progress(uid2, LONG, version_id=None, node_index=0, mastered=set(), correct_taps=0, incorrect_taps=0)
     # Pretend everything but the last step is mastered, then finish it through the UI.
     sess_html = c2.get(f"/play/{LONG}?view=map").text
-    assert "station-list" in sess_html
+    assert "stage-grid" in sess_html
     sess = next(s for s in app.state.play_sessions.values() if s["userId"] == uid2)
     doc = app.state.tools.get_version(actor_id="t", correlation_id="t", path_id=LONG, version_id=sess["versionId"]).data["document"]
     blocks = doc["blocks"]
@@ -358,10 +359,10 @@ def test_real_adult_math_paths(tmp_path: Path) -> None:
     try:
         c = _client(app, locale="he")
         zero = c.get(f"/play/{ZERO}").text
-        assert zero.count('<li class="station ') == 19 and "lock-banner" not in zero
+        assert zero.count('<li class="stage-card ') == 19 and "lock-banner" not in zero
         assert zero.count("review-badge") >= 3
         bagrut = c.get(f"/play/{BAGRUT}").text
-        assert bagrut.count('<li class="station ') == 21
+        assert bagrut.count('<li class="stage-card ') == 21
         assert "lock-banner" in bagrut and f'href="/play/{ZERO}"' in bagrut
         assert "מתמטיקה מאפס עד משוואה" in bagrut
         review = c.get(f"/play/{BAGRUT}?topic=t_review_tools").text

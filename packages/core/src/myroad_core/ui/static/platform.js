@@ -200,6 +200,7 @@
     var here = document.getElementById("here");
     if (!here || !document.body.classList.contains("map-view")) return;
     if (window.location.hash) return; // the browser already scrolled to the fragment
+    if (document.querySelector(".road-hero")) return; // road dashboard: the next tile is already at the top
     var nav = window.performance && performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
     if (nav && nav.type === "back_forward") return; // keep the restored scroll position
     var r = here.getBoundingClientRect();
@@ -214,9 +215,15 @@
     var here = document.getElementById("here");
     var btn = document.querySelector(".float-here");
     if (!here || !btn || !("IntersectionObserver" in window)) return;
-    new IntersectionObserver(function (entries) {
-      btn.hidden = entries[entries.length - 1].isIntersecting;
-    }).observe(here);
+    // Road dashboard: the hero names the next tile too, so the button waits until both are off screen.
+    var seen = new Map();
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { seen.set(en.target, en.isIntersecting); });
+      btn.hidden = Array.from(seen.values()).some(Boolean);
+    });
+    io.observe(here);
+    var hero = document.querySelector(".road-hero");
+    if (hero) io.observe(hero);
     btn.addEventListener("click", function (e) {
       e.preventDefault();
       var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : false;

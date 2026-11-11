@@ -1,7 +1,6 @@
 """Road world map (option B): real stages and tiles in, no game mechanics, sample levels only in preview."""
 from __future__ import annotations
 
-import html as _html
 import json
 import re
 from pathlib import Path
@@ -11,30 +10,21 @@ from test_adult_learner_flow import LONG, N_TOPICS, _client, adult_app  # noqa: 
 STATIC = Path(__file__).resolve().parents[1] / "src" / "myroad_core" / "ui" / "static"
 
 
-def _stages(page: str) -> list[dict]:
-    m = re.search(r'data-stages="([^"]*)"', page)
-    assert m, "world map data missing"
-    return json.loads(_html.unescape(m.group(1)))
+def _cards(page: str) -> list[str]:
+    grid = page[page.index('class="stage-grid"'):]
+    return re.findall(r'<li class="stage-card [^"]*"[^>]*>', grid)
 
 
-def test_world_map_uses_real_stages_and_tiles(adult_app, monkeypatch) -> None:  # noqa: F811
-    monkeypatch.delenv("MYROAD_UI_PREVIEW", raising=False)
+def test_road_dashboard_uses_real_stages_and_tiles(adult_app) -> None:  # noqa: F811
+    """The world map canvas is replaced by the road dashboard (arena c3): same real data, no JS needed."""
     app, _store = adult_app
     page = _client(app).get(f"/play/{LONG}").text
-    stages = _stages(page)
-    assert len(stages) == N_TOPICS
-    assert all(s["tiles"] and s["total"] == len(s["tiles"]) for s in stages)
-    assert stages[0]["state"] == "cur" and stages[0]["tiles"][0]["state"] == "cur"
-    assert 'data-preview="0"' in page and "world-sample" not in page
-    assert '<script src="/static/worldmap.js" defer></script>' in page
-    assert 'id="world-go"' in page  # tiles start through the existing POST /start form
-
-
-def test_world_map_preview_flag_only_with_env(adult_app, monkeypatch) -> None:  # noqa: F811
-    monkeypatch.setenv("MYROAD_UI_PREVIEW", "1")
-    app, _store = adult_app
-    page = _client(app).get(f"/play/{LONG}").text
-    assert 'data-preview="1"' in page and 'class="world-sample"' in page
+    cards = _cards(page)
+    assert len(cards) == N_TOPICS and f'data-stages="{N_TOPICS}"' in page
+    assert "is-here" in cards[0] and 'id="here"' in cards[0]
+    assert page.count('class="tile-row is-here"') == 1 and page.count('aria-current="step"') == 1
+    assert "worldmap.js" not in page and "world-map" not in page
+    assert 'name="node"' in page  # tiles start through the existing POST /start form
 
 
 def test_world_map_has_no_game_mechanics() -> None:

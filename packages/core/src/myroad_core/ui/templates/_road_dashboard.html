@@ -1,0 +1,149 @@
+{#- Road dashboard (arena c3). One template for every road shape: data comes from
+    road_view.road_dashboard (`road`) and engagement_view (`eng`). Import with
+    {% from "_road_dashboard.html" import road_hero, stage_grid %}.
+    Macros take everything they read as arguments, so a new road page can reuse them. -#}
+
+{#- A tile's state in words; states are never shown by colour alone. -#}
+{%- macro tile_state(state) -%}
+{%- if state == 'done' %}{{ t('linear_done') }}{% elif state == 'here' %}{{ t('station_current') }}{% elif state == 'ahead' %}{{ t('linear_ahead') }}{% else %}{{ t('linear_open') }}{% endif -%}
+{%- endmacro %}
+
+{%- macro stage_state(state) -%}
+{%- if state == 'done' %}{{ t('linear_done') }}{% elif state == 'here' %}{{ t('station_current') }}{% elif state == 'started' %}{{ t('rd_stage_started') }}{% elif state == 'ahead' %}{{ t('linear_ahead') }}{% else %}{{ t('linear_open') }}{% endif -%}
+{%- endmacro %}
+
+{#- The one primary action on the page: the next tile, named, with where it sits on the road. -#}
+{%- macro road_hero(road, eng, path_id, locale, locked_by=[]) -%}
+{%- set nx = road.next %}
+{%- set ss = eng.session or {} %}
+{%- set mode = 'peek' if road.read_only else ('done' if road.finished else ('fresh' if (not nx or nx.fresh) else 'next')) %}
+<section class="road-hero continue-card is-{{ mode }}{% if mode == 'peek' %} lock-banner{% endif %}" aria-labelledby="continue-title" data-mode="{{ mode }}"{% if mode == 'peek' %} data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}"{% endif %}>
+  <div class="road-hero-copy">
+    {%- if mode != 'peek' %}
+    <p class="road-hero-kicker">
+      {%- if mode == 'done' %}{{ t('rd_done_kicker') }}{% elif mode == 'fresh' %}{{ t('rd_first_kicker') }}{% else %}{{ t('rd_next_kicker') }}{% endif -%}
+    </p>
+    {%- endif %}
+    <h2 class="road-hero-title continue-title" id="continue-title">
+      {%- if mode == 'done' %}{{ t('rd_done_title', total='<bdi>%s</bdi>'|format(road.total))|safe }}
+      {%- elif mode == 'peek' %}{{ t('locked_title') }}
+      {%- elif nx %}<span dir="auto"{{ nx.titleLang|content_lang(locale) }}>{{ nx.title }}</span>
+      {%- else %}{{ t('start_path') }}{% endif -%}
+    </h2>
+    {%- if nx and mode in ('fresh', 'next') %}
+    <p class="road-hero-where">
+      <span>{{ t('rd_next_where', n='<bdi>%s</bdi>'|format(nx.stageN), stage='<bdi dir="auto"%s>%s</bdi>'|format(nx.stageLang|content_lang(locale), nx.stage|e))|safe }}</span>
+      <span class="road-hero-count">{{ t('rd_tile_of', n='<bdi>%s</bdi>'|format(nx.n), total='<bdi>%s</bdi>'|format(road.total))|safe }}</span>
+      {%- if nx.review %} <span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}
+    </p>
+    {%- endif %}
+    {%- if mode == 'peek' %}
+    {%- if locked_by %}
+    <p class="lock-needs">{{ t('locked_finish_first') }}
+      {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
+    </p>
+    {%- endif %}
+    <p class="tiny muted road-hero-note">{{ t('locked_read_only') }}</p>
+    {%- endif %}
+    {%- if ss.steps and mode in ('fresh', 'next') %}
+    <div class="road-hero-set">
+      <p class="set-title tiny">{{ t('eng_set_title') if eng.started else t('eng_set_first') }}</p>
+      <ol class="set-dots" aria-label="{{ t('eng_set_progress', done=ss.done_count, total=ss.size) }}">
+        {%- for s in ss.steps %}<li class="{% if s.done %}is-done{% elif loop.index0 == ss.done_count %}is-next{% endif %}"></li>{% endfor %}
+      </ol>
+      <p class="set-count tiny">{{ t('eng_set_progress', done='<bdi>%s</bdi>'|format(ss.done_count), total='<bdi>%s</bdi>'|format(ss.size))|safe }}</p>
+    </div>
+    {%- endif %}
+  </div>
+  <div class="road-hero-action">
+    {%- if mode == 'peek' %}
+    {#- Read-only roads use links, never start forms: nothing here may write progress. -#}
+    <a class="secondary big link-btn continue-btn" href="/play/{{ path_id }}?view=learn">{{ t('read_only_open') }}</a>
+    {%- elif mode == 'done' %}
+    <form method="post" action="/play/{{ path_id }}/start">
+      {%- if road.first %}<input type="hidden" name="node" value="{{ road.first }}" />{% endif %}
+      <button type="submit" class="secondary big continue-btn">{{ t('rd_done_again') }}</button>
+    </form>
+    {%- else %}
+    <form method="post" action="/play/{{ path_id }}/start">
+      {%- if nx %}<input type="hidden" name="node" value="{{ nx.blockId }}" />{% endif %}
+      <button type="submit" class="primary big continue-btn">{{ t('start_path') if mode == 'fresh' else t('rd_continue') }}</button>
+    </form>
+    {%- endif %}
+  </div>
+</section>
+{%- endmacro %}
+
+{#- One tile row. Ahead tiles on a linear road are not buttons: they cannot be opened yet. -#}
+{%- macro tile_row(st, path_id, locale, read_only=false) -%}
+<li class="tile-item">
+  {%- if st.state == 'ahead' or read_only %}
+  <span class="tile-row is-{{ st.state }}" data-block-id="{{ st.blockId }}"{% if not read_only %} aria-disabled="true"{% endif %}>
+    <span class="tile-mark" aria-hidden="true">{% if st.state == 'done' %}✓{% else %}○{% endif %}</span>
+    <span class="tile-n" aria-hidden="true"><bdi>{{ st.n }}</bdi></span>
+    <span class="tile-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
+    <span class="tile-state tiny">{{ tile_state(st.state) }}</span>
+  </span>
+  {%- else %}
+  <form method="post" action="/play/{{ path_id }}/start" class="tile-form">
+    <input type="hidden" name="node" value="{{ st.blockId }}" />
+    <button type="submit" class="tile-row is-{{ st.state }}{% if st.review %} is-review{% endif %}" data-block-id="{{ st.blockId }}"{% if st.state == 'here' %} aria-current="step"{% endif %}>
+      <span class="tile-mark" aria-hidden="true">{% if st.state == 'done' %}✓{% elif st.state == 'here' %}●{% else %}○{% endif %}</span>
+      <span class="tile-n" aria-hidden="true"><bdi>{{ st.n }}</bdi></span>
+      <span class="tile-title" dir="auto"{{ st.titleLang|content_lang(locale) }}>{{ st.title }}</span>
+      <span class="tile-state tiny">{% if st.check %}{{ t('world_check') }} · {% elif st.review %}{{ t('step_kind_review') }} · {% endif %}{{ tile_state(st.state) }}</span>
+    </button>
+  </form>
+  {%- endif %}
+</li>
+{%- endmacro %}
+
+{%- macro stage_card(s, path_id, locale, read_only=false) -%}
+{%- set here = s.state == 'here' %}
+<li class="stage-card is-{{ s.state }}{% if s.review %} is-review{% endif %}" data-topic-id="{{ s.id }}"{% if here %} id="here"{% endif %}>
+  <div class="stage-head">
+    <span class="stage-num" aria-hidden="true">{% if s.state == 'done' %}✓{% else %}<bdi>{{ s.n }}</bdi>{% endif %}</span>
+    <div class="stage-main">
+      <p class="stage-label tiny">{{ t('rd_stage_n', n=s.n) }}{% if s.review %} <span class="review-badge">{{ t('step_kind_review') }}</span>{% endif %}</p>
+      <h3 class="stage-title" dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</h3>
+    </div>
+    {#- Only states worth reading out loud get a pill; an untouched open שלב stays quiet. -#}
+    {%- if not read_only and s.state != 'open' %}<span class="stage-pill">{{ stage_state(s.state) }}</span>{% else %}<span></span>{% endif %}
+  </div>
+  <div class="stage-meter">
+    <span class="mini-bar" role="progressbar" aria-valuemin="0" aria-valuemax="{{ s.total }}" aria-valuenow="{{ s.done }}"
+          aria-valuetext="{{ t('world_cells', done=s.done, total=s.total) }}" aria-label="{{ s.title }}"><span class="mini-fill" style="inline-size: {{ (100 * s.done / s.total)|round|int if s.total else 0 }}%"></span></span>
+    <span class="stage-count tiny">{{ t('world_cells', done='<bdi>%s</bdi>'|format(s.done), total='<bdi>%s</bdi>'|format(s.total))|safe }}</span>
+  </div>
+  {%- if s.state == 'ahead' %}<p class="stage-note tiny">{{ t('rd_stage_ahead') }}</p>{% endif %}
+  {%- if s.steps %}
+  <details class="stage-tiles"{% if s.expanded %} open{% endif %}>
+    <summary>{{ t('rd_tiles_toggle') }} <span class="stage-tiles-n">(<bdi>{{ s.total }}</bdi>)</span></summary>
+    <ol class="tile-list">
+      {%- for st in s.steps %}{{ tile_row(st, path_id, locale, read_only) }}{% endfor %}
+    </ol>
+  </details>
+  {%- endif %}
+  {%- if read_only %}
+  <a class="secondary link-btn small-btn stage-peek" href="/play/{{ path_id }}?topic={{ s.id }}">{{ t('read_only_open') }}</a>
+  {%- endif %}
+</li>
+{%- endmacro %}
+
+{#- The whole road on one screen (lessons: never filtered by stage). -#}
+{%- macro stage_grid(road, path_id, locale) -%}
+<section class="card map-card road-stages" aria-labelledby="track">
+  <div class="road-stages-head">
+    <h2 id="track" tabindex="-1">{{ t('rd_stages_h') }}</h2>
+    <p class="road-stages-count map-summary tiny">
+      {#- Works without JS: the pill jumps to the שלב the learner is on (#here). -#}
+      {%- if road.here_stage %}<a class="station-pill current jump-here" href="#here">{{ t('station_of', n=road.here_stage, total=road.stages_total) }}<span class="visually-hidden"> · {{ t('map_jump_here') }}</span></a>{% endif %}
+      <span class="station-pill">{{ t('stations_done', done='<bdi>%s</bdi>'|format(road.stages_done), total='<bdi>%s</bdi>'|format(road.stages_total))|safe }}</span>
+    </p>
+  </div>
+  {%- if road.here_stage %}<p class="lede">{{ t('rd_stages_lede') }}</p>{% endif %}
+  <ol class="stage-grid" data-stages="{{ road.stages_total }}"{% if road.linear %} data-map="linear"{% endif %}>
+    {%- for s in road.stages %}{{ stage_card(s, path_id, locale, road.read_only) }}{% endfor %}
+  </ol>
+</section>
+{%- endmacro %}

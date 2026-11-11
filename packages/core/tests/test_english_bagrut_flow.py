@@ -88,11 +88,12 @@ def test_bagrut_map_is_one_tile_per_row_not_stations(bagrut_app) -> None:
     app, _store = bagrut_app
     client = _client(app)
     html = client.get(f"/play/{ZERO}").text
-    assert 'data-map="linear"' in html
-    assert "station-list" not in html
-    assert "topic-diagram" not in html
-    assert "חלק 1" in html and "חלק 2" in html
-    assert html.count('name="node"') >= 1
+    assert 'data-map="linear"' in html  # the stage grid, in linear mode: tiles past the gap are not buttons
+    assert "שלב 1" in html and "שלב 2" in html  # the same word the goal meter uses
+    # ZERO is still locked here (no placement yet): every tile is listed, and each part opens
+    # read-only through a link, never a start form (one rule for every read-only road).
+    assert html.count('data-block-id="') >= 1 and f'href="/play/{ZERO}?topic=' in html
+    assert f'action="/play/{ZERO}/start"' not in html
     assert "חזרה לשרשרת" in html
 
 

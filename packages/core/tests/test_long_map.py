@@ -100,8 +100,9 @@ def _go_to_station(c: TestClient, n: int) -> None:
 
 
 def _station(html: str, tid: str) -> str:
-    start = html.rfind('<li class="station', 0, html.find(f'data-topic-id="{tid}"'))
-    return html[start:html.find("</li>", html.find(f'data-topic-id="{tid}"'))]
+    """One שלב card on the road dashboard (arena c3)."""
+    start = html.rfind('<li class="stage-card', 0, html.find(f'data-topic-id="{tid}"'))
+    return html[start:html.find('<li class="stage-card', html.find(f'data-topic-id="{tid}"'))]
 
 
 @pytest.mark.parametrize("locale", ["he", "en", "ar"])
@@ -112,10 +113,12 @@ def test_current_station_is_the_jump_target_with_aria_current(app, locale) -> No
     assert html.count('aria-current="step"') == 1 and html.count('id="here"') == 1
     here = _station(html, "s14")
     head = here.split(">", 1)[0]
-    assert 'class="station current' in head and 'id="here"' in head and 'aria-current="step"' in head
-    assert "<details open" in here and "here-badge" in here
-    # Done and upcoming stations are not marked.
-    assert 'aria-current' not in _station(html, "s13") and 'aria-current' not in _station(html, "s15")
+    assert 'class="stage-card is-here' in head and 'id="here"' in head
+    # The stage is open, and the current tile inside it is the one marked step.
+    assert "<details class=\"stage-tiles\" open" in here and 'aria-current="step"' in here
+    # Done and upcoming stations are not marked, and their tile lists stay closed.
+    for other in ("s13", "s15"):
+        assert 'aria-current' not in _station(html, other) and " open>" not in _station(html, other)
     # A jump link that works without JS, with an accessible name in the UI language.
     jump = re.search(r'<a class="station-pill current jump-here" href="#here">(.*?)</a>', html).group(1)
     expected = {"he": "מעבר למשבצת הנוכחית", "en": "go to your current tile", "ar": "الانتقال إلى مربعك الحالي"}
@@ -148,7 +151,7 @@ def test_jump_script_respects_reduced_motion_and_restored_scroll() -> None:
 def test_read_only_map_has_no_current_marker(app) -> None:
     c = _client(app)
     html = c.get(f"/play/{LOCKED}?view=map").text
-    assert "lock-banner" in html and "station-list" in html
+    assert "lock-banner" in html and "stage-grid" in html
     main = html.split('<nav class="side"')[0]  # the road picker marks the open road, not a station
     assert 'aria-current' not in main and 'id="here"' not in html and "jump-here" not in html
 
@@ -158,45 +161,48 @@ def test_short_map_marks_the_current_station_too(app) -> None:
     c.post(f"/play/{SHORT}/start")
     c.post(f"/play/{SHORT}/ack")
     html = c.get(f"/play/{SHORT}?view=map").text
-    assert "topic-diagram" in html and html.count('aria-current="step"') == 1
-    current = re.search(r'<div class="topic-station[^"]*"[^>]*data-topic-id="b"[^>]*>', html).group(0)
-    assert "current" in current and 'id="here"' in current and 'aria-current="step"' in current
+    # Short and long roads share one template: the same stage grid, the same marker.
+    assert "stage-grid" in html and html.count('aria-current="step"') == 1
+    current = re.search(r'<li class="stage-card[^"]*"[^>]*data-topic-id="b"[^>]*>', html).group(0)
+    assert "is-here" in current and 'id="here"' in current
 
 
 def test_review_stations_differ_by_shape_and_icon(app) -> None:
     c = _client(app)
     html = c.get(f"/play/{LONG}?view=map").text
     review = _station(html, "s03")
-    assert review.split(">", 1)[0].split('"')[1].split()[-1] == "review"
-    # No decorative emoji (#shell): the text badge + square number + dashed edge carry "review".
+    assert "is-review" in review.split(">", 1)[0]
+    # No decorative emoji (#shell): the text label + square number + dashed edge carry "review".
     assert "review-badge" in review and "🔁" not in review
     assert "review-badge" not in _station(html, "s02")
     css = (_STATIC / "platform.css").read_text(encoding="utf-8")
-    assert re.search(r"\.station-num \{[^}]*border-radius: 50%", css)
-    assert re.search(r"\.station\.review \.station-num \{[^}]*border-radius: 5px", css)
-    assert re.search(r"\.station\.review > details \{[^}]*border-inline-start-style: dashed", css)
+    assert re.search(r"\.stage-num \{[^}]*border-radius: 50%", css)
+    assert re.search(r"\.stage-card\.is-review \.stage-num \{[^}]*border-radius: 5px", css)
+    assert re.search(r"\.stage-card\.is-review \{[^}]*border-style: dashed", css)
 
 
-def test_narrow_containers_shrink_stations_to_number_and_title() -> None:
+def test_narrow_cards_shrink_tiles_to_mark_title_and_state() -> None:
     css = (_STATIC / "platform.css").read_text(encoding="utf-8")
-    assert re.search(r"\.station-list \{[^}]*container-type: inline-size;[^}]*container-name: stations", css)
-    block = css[css.index("@container stations (max-width: 22rem)"):]
+    sect = css[css.index("/* --- Road dashboard (arena c3)"):]
+    assert re.search(r"\.stage-card \{ container-type: inline-size; container-name: stage; \}", sect)
+    block = sect[sect.index("@container stage (max-width: 22rem)"):]
     block = block[:block.index("\n}\n")]
-    assert re.search(r"\.station summary \{[^}]*grid-template-columns: 1\.7rem minmax\(0, 1fr\)", block)
-    assert re.search(r"\.station summary \.mini-bar \{ display: none; \}", block)
-    # The step count is hidden visually but stays readable for screen readers.
-    count = re.search(r"\.station-meta \.station-count \{([^}]*)\}", block).group(1)
-    assert "clip-path: inset(50%)" in count and "display: none" not in count
+    assert ".tile-row { grid-template-columns: 1.25rem minmax(0, 1fr) auto; }" in block
+    assert ".tile-n { display: none; }" in block  # the tile number is aria-hidden, so nothing is lost
+    # State words leave the row visually but stay readable for screen readers; the current one stays.
+    hidden = re.search(r"\.tile-row:not\(\.is-here\) \.tile-state \{([^}]*)\}", block).group(1)
+    assert "clip-path: inset(50%)" in hidden and "display: none" not in hidden
 
 
 def test_map_targets_focus_and_motion_rules() -> None:
     css = (_STATIC / "platform.css").read_text(encoding="utf-8")
-    sect = css[css.index("/* --- Long map (#57)"):]
-    assert ".map-view .station summary { min-block-size: 44px; }" in sect
-    assert re.search(r"\.map-view \.jump-here \{[^}]*min-block-size: 24px", sect)
-    assert re.search(r"\.map-view \.station summary:focus-visible \{[^}]*outline: 3px solid", sect)
+    sect = css[css.index("/* --- Road dashboard (arena c3)"):]
+    assert re.search(r"\.stage-tiles > summary \{[^}]*min-block-size: 44px", sect)
+    assert re.search(r"\.tile-row \{[^}]*min-block-size: 44px", sect)
+    assert re.search(r"\.map-view \.jump-here \{[^}]*min-block-size: 24px", css)
+    assert re.search(r"\.stage-tiles > summary:focus-visible, \.tile-row:focus-visible \{[^}]*outline: 3px solid", sect)
     assert "scroll-margin-block-start" in sect
-    assert "@media (prefers-reduced-motion: reduce)" in sect
+    assert "prefers-reduced-motion: no-preference" in sect  # the tile list reveal is motion-safe only
     assert not re.search(r"(border|padding|margin)-(left|right)\b|[^-]\b(left|right):", sect)
 
 

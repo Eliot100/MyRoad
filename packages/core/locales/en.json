@@ -600,5 +600,21 @@
   "terms_privacy_h": "Privacy",
   "terms_privacy_p": "What we keep and why is in the privacy notice.",
   "terms_more_h": "More details",
-  "terms_more_p": "Operator: Eliot, at eli4056-3ery4h@mail.grokbot.com. Governing law: the law of the State of Israel, and the courts of Israel."
+  "terms_more_p": "Operator: Eliot, at eli4056-3ery4h@mail.grokbot.com. Governing law: the law of the State of Israel, and the courts of Israel.",
+  "rd_next_kicker": "Next tile",
+  "rd_first_kicker": "Start here",
+  "rd_next_where": "Stage {n} · {stage}",
+  "rd_tile_of": "Tile {n} of {total}",
+  "rd_continue": "Continue to this tile",
+  "rd_done_kicker": "Road complete",
+  "rd_done_title": "All {total} tiles on this road are done",
+  "rd_done_again": "Open the first tile",
+  "rd_stats_h": "Progress on this road",
+  "rd_stages_h": "Stages on this road",
+  "rd_stages_lede": "Each stage is a few tiles. The stage you are on is open.",
+  "rd_stage_n": "Stage {n}",
+  "rd_stage_started": "Under way",
+  "rd_stage_ahead": "Opens after the stage before it",
+  "rd_tiles_toggle": "Tiles in this stage",
+  "rd_open_stage": "Enter this stage"
 }

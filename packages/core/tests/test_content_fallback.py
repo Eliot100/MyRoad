@@ -185,7 +185,7 @@ def test_bagrut_ar_station_titles_fall_back_to_hebrew_not_english(bagrut_app) ->
     for t in topics:
         assert t["titles"]["en"] not in page, t["id"]
         assert t["titles"]["he"] in page, t["id"]
-    stations = re.findall(r'<span class="station-title"([^>]*)>', page)
+    stations = re.findall(r'<h3 class="stage-title"([^>]*)>', page)
     assert len(stations) == len(topics)
     assert all('dir="auto"' in s and 'lang="he"' in s for s in stations)
     h1 = _attrs(page, "מתמטיקה 3 יחידות")
@@ -199,12 +199,12 @@ def test_bagrut_en_uses_english_titles_and_marks_hebrew_only_steps(bagrut_app) -
     c = _client(bagrut_app, "en")
     c.post(f"/play/{BAGRUT}/start")
     page = c.get(f"/play/{BAGRUT}?view=map").text
-    stations = re.findall(r'<span class="station-title"([^>]*)>', page)
+    stations = re.findall(r'<h3 class="stage-title"([^>]*)>', page)
     assert len(stations) == len(topics)
     assert all('lang=' not in s for s in stations)  # English exists, shown as-is
     for t in topics:
         assert t["titles"]["en"] in page
-    step_rows = re.findall(r'<span class="step-title" dir="auto"([^>]*)>', page)
+    step_rows = re.findall(r'<span class="tile-title" dir="auto"([^>]*)>', page)
     assert step_rows and all('lang="he"' in s for s in step_rows)  # step titles are Hebrew-only
     play = c.get(f"/play/{BAGRUT}?view=learn").text
     assert re.search(r'<h2 id="step-title" tabindex="-1" dir="auto" lang="he">', play)
