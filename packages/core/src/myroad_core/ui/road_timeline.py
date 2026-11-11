@@ -8,6 +8,8 @@ that cannot skip ahead of the פער. Nothing touches the store; the route passe
 
 Tile states:  done | here | open | ahead (linear chain, past the פער) | view (read only)
 Stage states: done | here | started | open | ahead | view
+A stage is ``walked`` once the learner's position is past it (the line behind them is solid,
+the line ahead is dashed); a finished road is walked end to end, a read-only road not at all.
 """
 
 from __future__ import annotations
@@ -107,8 +109,12 @@ def road_timeline(
         })
 
     open_all = total <= OPEN_ALL_MAX_TILES
+    finished = total > 0 and done_total == total
+    here_n = next_tile["stageN"] if next_tile else None
     for st in stages:
         st["open"] = open_all or st["state"] == "here" or (read_only and st["n"] == 1)
+        st["pct"] = round(100 * st["done"] / st["total"]) if st["total"] else 0
+        st["walked"] = finished or (here_n is not None and st["n"] < here_n)
     stages_done = sum(1 for st in stages if st["state"] == "done")
     return {
         "stages": stages,
@@ -118,8 +124,9 @@ def road_timeline(
         "pct": round(100 * done_total / total) if total else 0,
         "stagesDone": stages_done,
         "stagesTotal": len(stages),
-        "hereStage": next_tile["stageN"] if next_tile else None,
-        "finished": total > 0 and done_total == total,
+        "hereStage": here_n,
+        "finished": finished,
+        "first": ordered[0].get("blockId") if ordered else None,
         "linear": linear,
         "readOnly": read_only,
     }

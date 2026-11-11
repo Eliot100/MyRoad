@@ -1,4 +1,4 @@
-"""Road page timeline (arena road-ui c1): one template for every road shape.
+"""Road page timeline (arena road-ui final, base c1 + grafts from c2 and c3): one template for every road shape.
 
 The road page draws the whole road as one vertical line of שלבים (topics), each with its
 משבצות (steps). Checks: the view model (road_timeline.py) on few, many, linear and read
@@ -6,6 +6,9 @@ only roads; the rendered page keeps every שלב and every משבצת on one scr
 שלב is the jump target (id="here") and the current משבצת carries aria-current="step"; one
 next action (a sticky continue bar that JS shows only while the head button is off screen);
 review differs by shape and word, not color alone; CSS is logical, themed and has 44px targets.
+Grafts: a sticky overview bar (one segment per שלב sized by its משבצות), the line solid behind
+the learner and dashed ahead, alternating sides on wide screens, and one message + one action
+in the head for a finished road and for a locked road.
 Replaces test_long_map.py, test_map_float_here.py and test_world_map.py (#57, #68, world map).
 """
 from __future__ import annotations
@@ -179,6 +182,18 @@ def test_view_model_handles_empty_and_one_stage_roads() -> None:
     assert one["stagesTotal"] == 1 and one["next"]["id"] == "n0" and one["stages"][0]["open"]
 
 
+def test_view_model_walked_stages_stage_pct_and_first_tile() -> None:
+    topics = _topics([("a", ["a1", "a2"]), ("b", ["b1", "b2"]), ("c", ["c1", "c2"])])
+    tl = road_timeline(topics, mastered={"a1", "a2", "b1"}, current_block="b2")
+    assert [s["walked"] for s in tl["stages"]] == [True, False, False]
+    assert [s["pct"] for s in tl["stages"]] == [100, 50, 0] and tl["first"] == "a1"
+    done = road_timeline(topics, mastered={"a1", "a2", "b1", "b2", "c1", "c2"}, current_block=None)
+    assert all(s["walked"] for s in done["stages"]) and done["finished"]
+    peek = road_timeline(topics, mastered=set(), current_block=None, read_only=True)
+    assert not any(s["walked"] for s in peek["stages"])
+    assert road_timeline([], mastered=None, current_block=None)["first"] is None
+
+
 def test_view_model_handles_a_97_tile_road() -> None:
     sizes = [3, 8, 6, 7, 7, 7, 7, 7, 7, 7, 6, 8, 6, 9, 2]  # the AMIRNET road's shape
     spec, n = [], 0
@@ -234,7 +249,81 @@ def test_one_next_action_sticky_bar_targets_the_next_tile(app) -> None:
     fn = js[js.index("function stickyContinue"):]
     fn = fn[:fn.index("\n  }\n") + 4]
     assert "IntersectionObserver" in fn and ".continue-btn" in fn and "bar.hidden" in fn
-    assert "myroadReduceMotion" in fn
+    links = js[js.index("function hereLinks"):]
+    links = links[:links.index("\n  }\n") + 4]
+    assert 'a[href="#here"]' in links and "myroadReduceMotion" in links and ".focus(" in links
+
+
+def test_overview_bar_has_a_segment_per_stage_sized_by_its_tiles(app) -> None:
+    c = _client(app)
+    _go_to_station(c, 15)
+    html = c.get(f"/play/{LONG}?view=map").text
+    ov = html[html.index('class="tl-overview"'):html.index('<ol class="tl">')]
+    assert ov.count('class="tl-seg ') == N and ov.count('style="flex-grow: 1"') == N
+    assert ov.count("tl-seg is-here") == 1 and ov.count("tl-seg is-done") == 14
+    assert 'class="tl-sum-here" href="#here"' in ov and "שלב <bdi>15</bdi> מתוך <bdi>20</bdi>" in ov
+    assert 'role="progressbar"' in ov and 'aria-valuenow="14"' in ov and 'aria-valuemax="20"' in ov
+    assert re.search(r"\.road-tl \.tl-overview \{[^}]*position: sticky", _CSS)
+    assert re.search(r"\.road-tl \.tl-overview \{[^}]*background: var\(--card\)", _CSS)  # opaque over the line
+
+
+def test_line_is_solid_behind_the_learner_and_dashed_ahead(app) -> None:
+    c = _client(app)
+    _go_to_station(c, 3)
+    html = c.get(f"/play/{LONG}?view=map").text
+    assert "is-walked" in _stage(html, "s00").split(">", 1)[0] and "is-walked" in _stage(html, "s01").split(">", 1)[0]
+    assert "is-walked" not in _stage(html, "s02").split(">", 1)[0]  # the current שלב
+    assert "is-walked" not in _stage(html, "s05").split(">", 1)[0]
+    assert re.search(r"\.road-tl \.tl-stage::before \{[^}]*background: var\(--tl-dash\)", _CSS)
+    assert re.search(r"\.road-tl \.tl-stage\.is-walked::before \{[^}]*var\(--tl-line-done\)", _CSS)
+
+
+def test_wide_screens_alternate_sides_around_a_centered_line() -> None:
+    wide = _CSS[_CSS.index("@container tl (min-width: 720px)"):]
+    assert "minmax(0, 1fr) var(--tl-gutter) minmax(0, 1fr)" in wide
+    assert re.search(r"\.road-tl \.tl-stage > details \{ grid-column: 1; grid-row: 1; \}", wide)
+    assert re.search(r"\.tl-stage:nth-child\(even\) > details,[^{]*\{ grid-column: 3;", wide)
+    assert "inset-inline-start: calc(50% - var(--tl-w) / 2)" in wide
+
+
+def test_head_names_the_next_tile_first_and_its_button_opens_that_tile(app) -> None:
+    c = _client(app)
+    _go_to_station(c, 3)
+    html = c.get(f"/play/{LONG}?view=map").text
+    assert html.index('class="continue-card"') < html.index('class="goal-meter"')  # action before stats
+    card = html[html.index('class="continue-card"'):]
+    card = card[:card.index("</section>")]
+    assert 'name="node" value="blk_002_' in card and card.count('class="primary big continue-btn"') == 1
+
+
+def test_finished_road_head_has_one_message_and_a_secondary_way_back(app) -> None:
+    c = _client(app)
+    c.post(f"/play/{SHORT}/start")
+    c.post(f"/play/{SHORT}/ack")
+    c.post(f"/play/{SHORT}/ack")
+    html = c.get(f"/play/{SHORT}?view=map").text
+    card = html[html.index('class="continue-card is-finished"'):]
+    card = card[:card.index("</section>")]
+    assert "כל <bdi>2</bdi> המשבצות בדרך הושלמו" in card and "הדרך הושלמה" in card
+    assert 'class="secondary big continue-btn"' in card and 'name="node" value="' in card
+    assert 'class="primary big' not in html.split('<nav class="side"')[0]
+    assert "data-tl-continue" not in html and 'class="tl-end is-done is-walked"' in html
+
+
+def test_locked_road_head_has_one_message_and_one_action(app) -> None:
+    c = _client(app)
+    html = c.get(f"/play/{LOCKED}?view=map").text
+    head = html[html.index('class="card path-head'):html.index('class="card road-tl')]
+    assert 'class="continue-card lock-banner"' in head and f'data-locked-by="{SHORT}"' in head
+    assert head.count("continue-btn") == 1 and f'href="/play/{LOCKED}?view=learn"' in head
+    assert "map-actions" not in html and html.count("lock-banner") == 1
+
+
+def test_road_page_title_has_no_dash(app) -> None:
+    c = _client(app)
+    html = c.get(f"/play/{LONG}?view=map").text
+    title = re.search(r"<title>(.*?)</title>", html, re.S).group(1)
+    assert "מפה ארוכה" in title and "—" not in title and "–" not in title
 
 
 def test_map_links_carry_the_fragment_and_load_the_jump_script(app) -> None:

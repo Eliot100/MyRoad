@@ -593,5 +593,10 @@
   "tl_check": "Check",
   "tl_end": "End of the road",
   "tl_finished": "Every tile on this road is done.",
-  "tl_jump_here": "To my tile"
+  "tl_jump_here": "To my tile",
+  "tl_stage_of": "Stage {n} of {total}",
+  "tl_done_kicker": "Road complete",
+  "tl_done_title": "All {total} tiles on this road are done",
+  "tl_done_note": "Every tile stays open in the track below, to revisit any time.",
+  "tl_again": "Open the first tile"
 }

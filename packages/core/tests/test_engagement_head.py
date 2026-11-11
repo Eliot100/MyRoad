@@ -131,7 +131,7 @@ def test_server_engagement_dict_wins() -> None:
     html = _render_head(SERVER)
     assert "שלב <bdi>4</bdi> מתוך <bdi>9</bdi>, היעד: <bdi>800</bdi>" in html
     assert "נקודת ההתחלה שלך: שלב <bdi>2</bdi>" in html
-    track = html[html.index("goal-track"):html.index("</ol>")]
+    track = html[html.index("goal-track"):html.index("</ol>", html.index("goal-track"))]
     assert track.count("is-done") == 3 and track.count("is-here") == 1 and track.count("is-start") == 1
     assert "<bdi>2</bdi> מתוך <bdi>6</bdi>" in html and 'data-derived="0"' in html
 

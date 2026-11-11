@@ -1,5 +1,5 @@
 {% extends "_base.html" %}
-{% block title %}{{ product }} — {{ meta.title }}{% endblock %}
+{% block title %}{{ meta.title }} · {{ product }}{% endblock %}
 {% block head_extra %}
   <link rel="stylesheet" href="/static/transitions.css" />
   <link rel="stylesheet" href="/static/road-timeline.css" />
@@ -21,7 +21,19 @@
     <p class="kicker">{{ meta.subjectLabel or subject_label_fn(meta.subject) }}</p>
     <h1><span class="path-title" dir="auto"{{ meta.titleLang|content_lang(locale) }}>{{ meta.title }}</span>{% if doc.demo %} <span class="status-pill demo">{{ t('demo_badge') }}</span>{% endif %}{% if read_only %} <span class="status-pill locked">{{ t('locked_badge') }}</span>{% endif %}</h1>
     <p class="lede" dir="auto"{{ meta.blurbLang|content_lang(locale) }}>{{ meta.blurb }}</p>
-    {% if not read_only %}
+    {% if read_only %}
+    {#- Locked road: one message and one action in the head (a read-only peek, GET only). -#}
+    <section class="continue-card lock-banner" role="note" aria-labelledby="continue-title" data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}">
+      <h2 class="continue-title lock-title" id="continue-title">{{ t('locked_title') }}</h2>
+      {%- if locked_by %}
+      <p class="lock-needs">{{ t('locked_finish_first') }}
+        {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
+      </p>
+      {%- endif %}
+      <p class="tiny muted">{{ t('locked_read_only') }}</p>
+      <a class="primary big link-btn continue-btn" href="/play/{{ doc.pathId }}?view=learn">{{ t('read_only_open') }}</a>
+    </section>
+    {% else %}
     {% include "_path_head_engagement.html" %}
     <div class="row road-actions eng-links">
       <a class="text-link" href="#track">{{ t('view_track') }}</a>
@@ -30,23 +42,8 @@
     {% endif %}
   </section>
 
-  {% if read_only %}
-  <section class="card lock-banner" role="note" data-locked-by="{{ locked_by|map(attribute='pathId')|join(',') }}">
-    <h2 class="lock-title">{{ t('locked_title') }}</h2>
-    <p class="lock-needs">{{ t('locked_finish_first') }}
-      {% for p in locked_by %}<a class="lock-link" href="/play/{{ p.pathId }}"><bdi{{ p.titleLang|content_lang(locale) }}>{{ p.title }}</bdi></a>{% if not loop.last %}, {% endif %}{% endfor %}
-    </p>
-    <p class="tiny muted">{{ t('locked_read_only') }}</p>
-  </section>
-  {% endif %}
-
   {% include "_road_timeline.html" %}
 
-  {% if read_only %}
-  <div class="row map-actions">
-    <a class="primary big link-btn" href="/play/{{ doc.pathId }}?view=learn">{{ t('read_only_open') }}</a>
-  </div>
-  {% endif %}
   </main>
 {% include "_footer.html" %}
   <script src="/static/platform.js" defer></script>

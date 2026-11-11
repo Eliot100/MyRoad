@@ -219,9 +219,14 @@
     new IntersectionObserver(function (entries) {
       bar.hidden = entries[entries.length - 1].isIntersecting;
     }).observe(head);
-    var link = bar.querySelector('a[href="#here"]');
+  }
+  // Links to the current שלב (sticky bar, overview "שלב n מתוך m"): open it, scroll, and move
+  // focus to the current משבצת. Without JS they are plain #here fragment links.
+  function hereLinks() {
     var here = document.getElementById("here");
-    if (link && here) {
+    if (!here) return;
+    var links = document.querySelectorAll('[data-tl-continue] a[href="#here"], .road-tl a[href="#here"]');
+    Array.prototype.forEach.call(links, function (link) {
       link.addEventListener("click", function (e) {
         e.preventDefault();
         var d = here.querySelector("details");
@@ -231,12 +236,14 @@
         var f = here.querySelector('[aria-current="step"] button') || here.querySelector("summary");
         if (f) f.focus({ preventScroll: true });
       });
-    }
+    });
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", stickyContinue);
+    document.addEventListener("DOMContentLoaded", hereLinks);
   } else {
     stickyContinue();
+    hereLinks();
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", jumpToCurrentStation);
