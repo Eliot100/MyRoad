@@ -87,7 +87,11 @@ def server():
 def browser_context(server):
     """One Chromium and one context for the whole run; tests change viewport/theme on the page."""
     with playwright_sync.sync_playwright() as p:
-        browser = p.chromium.launch()
+        chrome = os.environ.get("MYROAD_CHROME")
+        launch_kw = {"args": ["--no-sandbox"]} if chrome else {}
+        if chrome:
+            launch_kw["executable_path"] = chrome
+        browser = p.chromium.launch(**launch_kw)
         context = browser.new_context(base_url=server[0], locale="he-IL")
         yield context
         context.close()

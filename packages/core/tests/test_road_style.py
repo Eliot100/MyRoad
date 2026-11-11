@@ -272,7 +272,7 @@ def test_orientation_persists_and_applies(app) -> None:
             assert pg.evaluate("document.documentElement.getAttribute('data-road-orientation')") == "horizontal"
             assert pg.locator(".road-jy").first.is_visible()
             assert pg.locator(".road-jy.is-horizontal").count() == 1
-            assert pg.locator('input[name="jy_orient"][value="horizontal"]').is_checked()
+            assert pg.locator('[data-jy-orient="horizontal"]').get_attribute("aria-pressed") == "true"
             boxes = pg.evaluate("""() => {
               const steps = [...document.querySelectorAll('.jy-step')];
               if (steps.length < 2) return null;
@@ -296,9 +296,9 @@ def test_orientation_persists_and_applies(app) -> None:
             # (or they share the visible frame if the path is short). Reading direction is right to left.
             assert boxes["firstX"] >= boxes["lastX"] - 2
             assert boxes["hereInView"] is True
-            # On-page toggle switches back to vertical (click the label; the radio is visually hidden).
+            # On-page toggle switches back to vertical.
             pg.locator(".jy-orient").scroll_into_view_if_needed()
-            pg.locator('label.jy-orient-opt:has(input[value="vertical"])').click()
+            pg.locator('[data-jy-orient="vertical"]').click()
             pg.wait_for_timeout(300)
             assert pg.evaluate("localStorage.getItem('myroad.roadOrientation')") == "vertical"
             assert pg.locator(".road-jy.is-horizontal").count() == 0

@@ -159,6 +159,28 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 }
 .road-jy .jy-sum-here:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
 
+/* Overall and per-stage meters: teal only, for real progress (graft from C1). */
+.road-jy .jy-progress { margin: 0; }
+.road-jy .jy-meter-overall,
+.road-jy .jy-meter {
+  display: block;
+  block-size: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 70%, var(--jy-terrace));
+  overflow: hidden;
+}
+.road-jy .jy-meter-overall { block-size: 8px; max-inline-size: 36rem; margin-block-start: var(--space-2); }
+.road-jy .jy-meter { margin-block-start: 6px; inline-size: 100%; block-size: 4px; }
+.road-jy .jy-meter-fill {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  min-inline-size: 0;
+}
+.road-jy .jy-stage.is-done .jy-meter-fill { inline-size: 100%; }
+.road-jy .jy-stage.is-ahead .jy-meter-fill { background: var(--line-strong); }
+
 /* Orientation toggle: only on wide screens, only for this style. */
 .road-jy .jy-orient {
   display: none;
@@ -170,50 +192,35 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   gap: 2px;
   flex: none;
 }
-.road-jy .jy-orient legend {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
 @media (min-width: 1024px) {
   .road-jy .jy-orient { display: inline-flex; }
 }
-.road-jy .jy-orient-opt {
-  display: inline-flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-}
-.road-jy .jy-orient-opt input {
-  position: absolute;
-  opacity: 0;
-  width: 1px;
-  height: 1px;
-  pointer-events: none;
-}
-.road-jy .jy-orient-opt span {
+.road-jy .jy-orient-btn {
+  appearance: none;
+  -webkit-appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
   min-block-size: 44px;
   min-inline-size: 4.5rem;
   padding: 0 var(--space-3);
+  border: 0;
   border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
   font-size: var(--text-sm);
   font-weight: 650;
-  color: var(--muted);
+  cursor: pointer;
+  line-height: 1.2;
 }
-.road-jy .jy-orient-opt:has(input:checked) span {
-  background: var(--tint-info);
-  color: var(--accent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+.road-jy .jy-orient-btn[aria-pressed="true"] {
+  background: var(--bg, var(--surface));
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--line-strong, var(--line));
 }
-.road-jy .jy-orient-opt:has(input:focus-visible) span {
+.road-jy .jy-orient-btn:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 1px;
 }
@@ -250,8 +257,21 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   overflow: visible;
 }
 .road-jy .jy-worn-ahead,
-.road-jy .jy-worn-done { stroke-width: 16px; opacity: 0.38; }
-.road-jy .jy-worn-done { opacity: 0.55; }
+.road-jy .jy-worn-done { stroke-width: 16px; opacity: 0.32; }
+.road-jy .jy-worn-done { opacity: 0.42; }
+.road-jy .jy-glow-halo {
+  stroke: color-mix(in srgb, var(--accent) 38%, transparent);
+  stroke-width: 14px;
+}
+.road-jy .jy-glow-core {
+  stroke: var(--accent);
+  stroke-width: 3px;
+  opacity: 0.92;
+}
+@media (prefers-reduced-motion: reduce) {
+  .road-jy .jy-glow-halo { stroke-width: 10px; }
+}
+html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
 
 /* ---- Path and stones: no-JS fallback is a centred column (or row, if horizontal). ---- */
 .road-jy .jy-path,
@@ -406,17 +426,32 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 /* Open (not current, not locked): a quiet empty well, inviting. */
 .road-jy .jy-step.is-open .jy-icon { opacity: 0.45; }
 
-/* Walked: sun-warmed, with a carved accent check. */
+/* Walked: limestone still, but clearly lit — teal tint, teal check, a quiet glow.
+   Grain and chamfer stay; this is not a filled teal pad. */
 .road-jy .jy-step.is-done .jy-stone {
-  background: linear-gradient(145deg, color-mix(in srgb, var(--jy-stone-edge-lit) 80%, #efe4c4), var(--jy-stone-done-2));
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--accent) 22%, var(--jy-stone-edge-lit)),
+    color-mix(in srgb, var(--accent) 18%, var(--jy-stone-done-2)));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35),
+    0 2px 2px rgba(40, 48, 28, 0.2),
+    0 8px 14px rgba(40, 48, 28, 0.16),
+    0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent),
+    0 0 16px color-mix(in srgb, var(--accent) 32%, transparent);
 }
 .road-jy .jy-step.is-done .jy-face {
   background:
-    linear-gradient(150deg, rgba(255, 250, 230, 0.42) 0%, rgba(255, 255, 255, 0.08) 28%, transparent 50%),
-    linear-gradient(150deg, transparent 52%, rgba(40, 32, 18, 0.18) 100%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 28%, transparent 50%),
+    linear-gradient(150deg, transparent 52%, rgba(40, 32, 18, 0.16) 100%),
     var(--jy-grain-stone),
-    linear-gradient(165deg, var(--jy-stone-done) 0%, var(--jy-stone-done-2) 100%);
+    linear-gradient(165deg,
+      color-mix(in srgb, var(--accent) 22%, var(--jy-stone-done)) 0%,
+      color-mix(in srgb, var(--accent) 30%, var(--jy-stone-done-2)) 100%);
   background-size: auto, auto, 64px 64px, auto;
+}
+.road-jy .jy-step.is-done .jy-icon {
+  color: var(--accent);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 45%, transparent));
 }
 
 /* Current: slightly lifted, a soft pool of light in the grass, כאן עכשיו. */
@@ -465,7 +500,8 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 .road-jy .jy-step.is-ahead .jy-icon,
 .road-jy .jy-step.is-view .jy-icon { color: var(--jy-stone-ahead-ink); opacity: 0.85; }
 
-/* Captions: a small plaque next to the current stone; others on hover/focus. */
+/* Titles: a single unwrapped line, only on hover or focus. The current stone
+   uses a כאן עכשיו pill instead, so a wrapping English title never sits on it. */
 .road-jy .jy-caption {
   position: absolute;
   inset-block-start: 50%;
@@ -475,33 +511,31 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   color: var(--jy-plaque-ink);
   border: 1px solid var(--jy-plaque-line);
   border-radius: 10px;
-  padding: 6px 10px;
+  padding: 5px 10px;
   box-shadow: 0 2px 8px rgba(30, 36, 20, 0.12);
-  display: grid;
-  gap: 1px;
   text-align: start;
-  min-inline-size: 7rem;
-  max-inline-size: 12rem;
+  inline-size: 10rem;
+  max-inline-size: 10rem;
   pointer-events: none;
   z-index: 4;
   line-height: 1.35;
+  opacity: 0;
+  visibility: hidden;
 }
 .road-jy .jy-tile-title {
   font-weight: 650;
   font-size: var(--text-xs);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 .road-jy .jy-tag {
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--accent);
 }
-.road-jy .jy-step:not(.is-here) .jy-caption {
-  opacity: 0;
-  visibility: hidden;
-}
-.road-jy .jy-step:not(.is-here):is(:hover, :focus-within) .jy-caption,
-.road-jy .jy-step.is-ahead:is(:hover, :focus-within) .jy-caption {
+.road-jy .jy-step:is(:hover, :focus-within) .jy-caption {
   opacity: 1;
   visibility: visible;
 }
@@ -509,6 +543,30 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   inset-inline-start: auto;
   inset-inline-end: calc(100% + 10px);
   text-align: end;
+}
+
+/* One "כאן עכשיו" marker: a nowrap pill above the current stone, never on the stage plaque. */
+.road-jy .jy-here-flag {
+  position: absolute;
+  inset-block-end: calc(100% + 8px);
+  inset-inline-start: 50%;
+  translate: -50% 0;
+  z-index: 5;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--on-accent);
+  background: var(--accent);
+  border-radius: 999px;
+  padding: 0.18rem 0.58rem;
+  line-height: 1.3;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent);
+  pointer-events: none;
+}
+.road-jy .jy-step.is-here {
+  scroll-margin-block: 1.25rem 7.5rem;
+  scroll-margin-inline: 18%;
 }
 .road-jy .jy-stone:focus-visible {
   outline: 3px solid var(--accent);
@@ -587,15 +645,20 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   position: absolute;
 }
 
-/* Horizontal on wide screens: the field becomes a sideways scrollport. */
+/* Horizontal on wide screens: a tall sideways field, labels above the stones. */
 @media (min-width: 1024px) {
   html[data-road-orientation="horizontal"] .road-jy .jy-field {
     overflow-x: auto;
     overflow-y: hidden;
-    block-size: 28rem;
-    max-block-size: 70vh;
-    scroll-padding-inline: 20%;
+    block-size: 34rem;
+    min-block-size: 34rem;
+    max-block-size: 78vh;
+    scroll-padding-inline: 24%;
     scrollbar-color: color-mix(in srgb, var(--jy-stone-2) 70%, transparent) transparent;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-field:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: -3px;
   }
   html[data-road-orientation="horizontal"] .road-jy:not(.is-laid) .jy-path,
   html[data-road-orientation="horizontal"] .road-jy:not(.is-laid) .jy-stones,
@@ -608,7 +671,14 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   html[data-road-orientation="horizontal"] .road-jy.is-laid .jy-canvas {
     block-size: 100%;
   }
+  html[data-road-orientation="horizontal"] .road-jy .jy-here-flag {
+    inset-block-end: auto;
+    inset-block-start: calc(100% + 14px);
+  }
 }
+
+/* Room to scroll the last stones and plaques above the sticky המשך bar. */
+.road-jy .jy-field { padding-block-end: 5.5rem; }
 
 /* Laid-out labels get a max size so they sit beside the path, not over it. */
 .road-jy.is-laid .jy-stage-label {
@@ -617,7 +687,8 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 
 /* Reduced motion: no lift, no smooth transitions. */
 @media (prefers-reduced-motion: reduce) {
-  .road-jy .jy-stone { transition: none; }
+  .road-jy .jy-stone,
+  .road-jy .jy-meter-fill { transition: none; }
   .road-jy .jy-step.is-here .jy-stone { transform: none; }
   .road-jy .jy-step:not(.is-ahead):not(.is-view) .jy-stone:hover { transform: none; }
 }

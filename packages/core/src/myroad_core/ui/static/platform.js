@@ -202,6 +202,11 @@
     if (window.location.hash) return; // the browser already scrolled to the fragment
     var nav = window.performance && performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
     if (nav && nav.type === "back_forward") return; // keep the restored scroll position
+    // Journey has its own sticky-bar-aware scroll, aimed at the current stone.
+    if ((document.documentElement.getAttribute("data-road-style") || "timeline") === "journey") {
+      if (window.myroadScrollJourneyHere) window.myroadScrollJourneyHere();
+      return;
+    }
     var r = here.getBoundingClientRect();
     var fits = r.top >= 0 && r.bottom <= (window.innerHeight || document.documentElement.clientHeight);
     if (fits) return; // already on screen: do not move the page
@@ -213,7 +218,7 @@
   // IntersectionObserver) the bar stays hidden and the head button does the job.
   function currentRoadHere() {
     var style = document.documentElement.getAttribute("data-road-style") || "timeline";
-    if (style === "journey") return document.getElementById("jy-here");
+    if (style === "journey") return document.querySelector("[data-jy-current]") || document.getElementById("jy-here");
     return document.getElementById("here");
   }
   function roadStylePanel() {
@@ -242,8 +247,12 @@
         var d = here.querySelector("details");
         if (d) d.open = true;
         var reduce = window.myroadReduceMotion ? window.myroadReduceMotion() : false;
-        here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
-        var f = here.querySelector('[aria-current="step"]') || here.querySelector("summary");
+        if ((document.documentElement.getAttribute("data-road-style") || "timeline") === "journey" && window.myroadScrollJourneyHere) {
+          window.myroadScrollJourneyHere();
+        } else {
+          here.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+        }
+        var f = here.querySelector('[aria-current="step"]') || here.querySelector("summary") || (here.matches && here.matches("button, [tabindex]") ? here : here.querySelector("button"));
         if (f) f.focus({ preventScroll: true });
       });
     });
