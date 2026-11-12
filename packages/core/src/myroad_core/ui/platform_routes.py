@@ -67,6 +67,7 @@ from myroad_core.ui.arabic import letter_forms
 from myroad_core.ui.bidi import bidi_isolate
 from myroad_core.ui.placement_result_view import domain_labels, placement_result_view
 from myroad_core.ui.road_timeline import road_timeline
+from myroad_core.ui.road_hopscotch import road_hopscotch
 from myroad_core.ui.engagement_view import (
     can_do_line,
     engagement_view,
@@ -2079,6 +2080,14 @@ def register_platform_routes(
                     current_block=blocks[resume_index]["blockId"] if 0 <= resume_index < n else None,
                     linear=linear,
                     read_only=read_only,
+                ),
+                hop=road_hopscotch(
+                    topics,
+                    mastered=mastered,
+                    current_block=blocks[resume_index]["blockId"] if 0 <= resume_index < n else None,
+                    linear=linear,
+                    read_only=read_only,
+                    path_title=(meta or {}).get("title") or "",
                 ),
                 can_resume=bool(mastered) or resume_index > 0,
                 locked_by=locked_by,
