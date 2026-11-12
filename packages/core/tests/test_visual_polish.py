@@ -31,11 +31,11 @@ def contrast(a: str, b: str) -> float:
 
 
 def test_map_connector_is_behind_stations_and_ignores_clicks():
-    line = _rule(".topic-diagram::before")
-    assert "pointer-events: none" in line
-    assert "z-index: 0" in line
-    station = _rule(".topic-station")
-    assert "position: relative" in station and "z-index: 1" in station
+    road = (_STATIC / "road-timeline.css").read_text(encoding="utf-8")
+    line = re.search(r"\.road-tl \.tl-stage::before\s*\{([^}]*)\}", road).group(1)
+    assert "pointer-events: none" in line and "z-index: 0" in line
+    node = re.search(r"\.road-tl \.tl-node\s*\{([^}]*)\}", road).group(1)
+    assert "position: relative" in node and "z-index: 1" in node
 
 
 def test_one_accent_passes_aa_in_light_and_dark():
@@ -159,12 +159,13 @@ def test_login_footer_stacks_under_card():
     assert "flex-direction: column" in rule
 
 
-def test_map_primary_action_sticks_to_bottom_on_phones():
-    phone = CSS[CSS.index("@media (max-width: 480px)"):]
-    rule = re.search(r"\.map-view \.map-actions\s*\{([^}]*)\}", phone).group(1)
-    assert "position: sticky" in rule and "inset-block-end: 0" in rule
+def test_road_next_action_sticks_to_bottom_on_long_roads():
+    # The road page's one next action stays in reach while scrolling (road-timeline.css sticky bar).
+    tl_css = (Path(__file__).resolve().parents[1] / "src" / "myroad_core" / "ui" / "static" / "road-timeline.css").read_text(encoding="utf-8")
+    rule = re.search(r"\.tl-continue\s*\{([^}]*)\}", tl_css).group(1)
+    assert "position: sticky" in rule and "inset-block-end" in rule
     assert "safe-area-inset-bottom" in rule
-    assert "background: var(--card)" in rule  # opaque so stations scroll beneath it
+    assert "background: var(--surface)" in rule  # opaque so the road scrolls beneath it
 
 
 def test_type_scale_drives_headings_and_heading_order_is_not_inverted():

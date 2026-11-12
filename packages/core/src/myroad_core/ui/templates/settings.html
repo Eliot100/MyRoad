@@ -1,4 +1,7 @@
 {% extends "_base.html" %}
+{% block head_extra %}
+  <link rel="stylesheet" href="/static/road-journey.css" />
+{% endblock %}
 {% block title %}{{ product }} — {{ t('settings_title') }}{% endblock %}
 {% block body_attrs %} class="platform"{% endblock %}
 {% block body %}
@@ -125,6 +128,61 @@
           try { localStorage.setItem("myroad.theme", e.target.value); } catch (err) {}
           d.setAttribute("data-theme", e.target.value);
           msg.textContent = {{ t('settings_saved')|tojson }};
+        });
+      })();
+      </script>
+    </section>
+
+    <section class="settings-road-style" aria-labelledby="settings-road-style">
+      <h2 id="settings-road-style">{{ t('road_style_h') }}</h2>
+      <form class="reading-prefs" id="road-style-prefs" hidden onsubmit="return false">
+        <fieldset class="road-style-opts">
+          <legend>{{ t('road_style_legend') }}</legend>
+          <label class="rs-opt">
+            <input type="radio" name="road_style" value="timeline" />
+            <span><span class="rs-name">{{ t('road_style_timeline') }}</span><span class="rs-note">{{ t('road_style_timeline_note') }}</span></span>
+          </label>
+          <label class="rs-opt">
+            <input type="radio" name="road_style" value="journey" />
+            <span><span class="rs-name">{{ t('road_style_journey') }}</span><span class="rs-note">{{ t('road_style_journey_note') }}</span></span>
+          </label>
+        </fieldset>
+        <fieldset class="road-style-opts road-orient-opts">
+          <legend>{{ t('road_orient_legend') }}</legend>
+          <label class="rs-opt">
+            <input type="radio" name="road_orientation" value="vertical" />
+            <span><span class="rs-name">{{ t('road_orient_vertical') }}</span><span class="rs-note">{{ t('road_orient_vertical_note') }}</span></span>
+          </label>
+          <label class="rs-opt">
+            <input type="radio" name="road_orientation" value="horizontal" />
+            <span><span class="rs-name">{{ t('road_orient_horizontal') }}</span><span class="rs-note">{{ t('road_orient_horizontal_note') }}</span></span>
+          </label>
+        </fieldset>
+        <p class="lede tiny">{{ t('reading_prefs_note') }} {{ t('road_orient_narrow_note') }}</p>
+        <p class="flash ok" role="status" aria-live="polite" id="road-style-saved"></p>
+      </form>
+      <script>
+      (function () {
+        var f = document.getElementById("road-style-prefs"), d = document.documentElement, msg = document.getElementById("road-style-saved");
+        if (!f) return;
+        f.hidden = false;
+        var cur = window.myroadRoadStyle ? window.myroadRoadStyle() : "timeline";
+        f.querySelectorAll('input[name="road_style"]').forEach(function (r) { r.checked = r.value === cur; });
+        var ori = window.myroadRoadOrientation ? window.myroadRoadOrientation() : "vertical";
+        f.querySelectorAll('input[name="road_orientation"]').forEach(function (r) { r.checked = r.value === ori; });
+        f.addEventListener("change", function (e) {
+          if (e.target.name === "road_style") {
+            var v = e.target.value === "journey" ? "journey" : "timeline";
+            try { localStorage.setItem("myroad.roadStyle", v); } catch (err) {}
+            d.setAttribute("data-road-style", v);
+            msg.textContent = {{ t('settings_saved')|tojson }};
+          } else if (e.target.name === "road_orientation") {
+            var o = e.target.value === "horizontal" ? "horizontal" : "vertical";
+            try { localStorage.setItem("myroad.roadOrientation", o); } catch (err) {}
+            d.setAttribute("data-road-orientation", o);
+            msg.textContent = {{ t('settings_saved')|tojson }};
+            if (window.myroadDrawJourneyRoad) window.myroadDrawJourneyRoad();
+          }
         });
       })();
       </script>

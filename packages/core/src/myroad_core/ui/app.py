@@ -31,11 +31,13 @@ from myroad_core.ui.events_api import register_events_api
 from myroad_core.ui.placement_api import register_placement_api
 from myroad_core.ui.pwa import register_pwa_routes
 from myroad_core.ui.platform_routes import register_platform_routes
+from myroad_core.ui.road_hopscotch import road_hopscotch
 
 UI_DIR = Path(__file__).resolve().parent
 TEMPLATES = Jinja2Templates(directory=str(UI_DIR / "templates"))
 # #208: the client batcher is only served when analytics is on (MYROAD_ANALYTICS).
 TEMPLATES.env.globals["analytics_enabled"] = analytics_enabled
+TEMPLATES.env.globals["road_hopscotch"] = road_hopscotch
 
 ACTOR_LEARNER = "user_learner_poc"
 ACTOR_HUMAN = "user_owner_poc"

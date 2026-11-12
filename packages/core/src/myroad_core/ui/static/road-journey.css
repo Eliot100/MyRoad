@@ -1,0 +1,981 @@
+/* Journey style: hopscotch stepping stones in a grass field (Eliot, 2026-11-12).
+   Tokens have light and dark values. Logical properties only. */
+
+/* Which style is on: default is the timeline (no attribute, or timeline). */
+html:not([data-road-style="journey"]) [data-road-style-panel="journey"],
+html:not([data-road-style="journey"]) [data-road-copy="journey"] { display: none !important; }
+html[data-road-style="journey"] [data-road-style-panel="timeline"],
+html[data-road-style="journey"] [data-road-copy="timeline"] { display: none !important; }
+
+.road-jy {
+  /* Lawn: a living field, rich but not a toy green. */
+  --jy-lawn: #3f8d3a;
+  --jy-lawn-2: #347832;
+  --jy-lawn-3: #4ea046;
+  --jy-lawn-shade: rgba(20, 50, 16, 0.28);
+  --jy-lawn-sun: rgba(255, 245, 180, 0.14);
+  --jy-lawn-vignette: rgba(18, 46, 14, 0.32);
+  /* Clean rounded-square stones, close to the approved concept. */
+  --jy-stone: #eceae4;
+  --jy-stone-ink: #2a2a28;
+  --jy-walked: #2a9d8f;
+  --jy-walked-2: #1f8a7e;
+  --jy-walked-ink: #f4fffc;
+  --jy-here: #f6f3ea;
+  --jy-here-ring: rgba(255, 236, 150, 0.95);
+  --jy-here-glow: rgba(255, 228, 120, 0.62);
+  --jy-stone-ahead: #b8b8b0;
+  --jy-stone-ahead-ink: #3d3d38;
+  --jy-line: rgba(255, 255, 255, 0.94);
+  --jy-line-crossed: #d8fff6;
+  --jy-label-bg: rgba(18, 42, 16, 0.62);
+  --jy-label-ink: #f5f8f2;
+  --jy-ring-track: rgba(255, 255, 255, 0.3);
+  --jy-ring-fill: #7ff6e2;
+  --jy-shadow: 0 8px 18px rgba(16, 40, 12, 0.32), 0 2px 4px rgba(16, 40, 12, 0.2);
+  --jy-stone-size: 80px;
+  --jy-gap: 16px;
+  --jy-row-gap: 36px;
+  --jy-pad: 28px;
+  --jy-radius: 22%;
+  --jy-terrace: transparent;
+  --jy-plaque: color-mix(in srgb, #f7f4ec 94%, transparent);
+  --jy-plaque-ink: #1c1a16;
+  --jy-plaque-line: rgba(50, 46, 38, 0.14);
+  --jy-side: 0px;
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  background: var(--jy-lawn);
+  color: var(--jy-label-ink);
+  border-color: color-mix(in srgb, var(--jy-lawn-2) 55%, var(--line));
+}
+@media (min-width: 720px) {
+  .road-jy { --jy-stone-size: 88px; --jy-gap: 20px; --jy-row-gap: 42px; --jy-pad: 40px; }
+}
+@media (min-width: 1024px) {
+  .road-jy { --jy-side: 7.75rem; --jy-pad: 48px; }
+}
+
+/* Dark: a quiet evening lawn. Tokens sit near the selector so existing
+   tests find --jy-lawn and --jy-stone within 900 characters. */
+:root[data-theme="dark"] .road-jy {
+  --jy-lawn: #1c3a1c;
+  --jy-lawn-2: #152c16;
+  --jy-lawn-3: #254c24;
+  --jy-lawn-shade: rgba(0, 8, 0, 0.45);
+  --jy-lawn-sun: rgba(180, 210, 150, 0.07);
+  --jy-lawn-vignette: rgba(0, 0, 0, 0.46);
+  --jy-stone: #d4d2cb;
+  --jy-stone-ink: #1c1c1a;
+  --jy-walked: #2fafa0;
+  --jy-walked-2: #238f83;
+  --jy-walked-ink: #f2fffc;
+  --jy-here: #efebe0;
+  --jy-here-ring: rgba(255, 230, 140, 0.9);
+  --jy-here-glow: rgba(255, 214, 90, 0.42);
+  --jy-stone-ahead: #6e7168;
+  --jy-stone-ahead-ink: #e4e6e0;
+  --jy-line: rgba(236, 240, 230, 0.86);
+  --jy-line-crossed: #8fe8d8;
+  --jy-label-bg: rgba(6, 14, 8, 0.72);
+  --jy-label-ink: #eef3ea;
+  --jy-ring-track: rgba(255, 255, 255, 0.25);
+  --jy-ring-fill: #7ff6e2;
+  --jy-shadow: 0 8px 18px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --jy-terrace: transparent;
+  --jy-plaque: color-mix(in srgb, #161a14 92%, transparent);
+  --jy-plaque-ink: #eef2f1;
+  --jy-plaque-line: rgba(220, 230, 214, 0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .road-jy {
+    --jy-lawn: #1c3a1c;
+    --jy-lawn-2: #152c16;
+    --jy-lawn-3: #254c24;
+    --jy-lawn-shade: rgba(0, 8, 0, 0.45);
+    --jy-lawn-sun: rgba(180, 210, 150, 0.07);
+    --jy-lawn-vignette: rgba(0, 0, 0, 0.46);
+    --jy-stone: #d4d2cb;
+    --jy-stone-ink: #1c1c1a;
+    --jy-walked: #2fafa0;
+    --jy-walked-2: #238f83;
+    --jy-walked-ink: #f2fffc;
+    --jy-here: #efebe0;
+    --jy-here-ring: rgba(255, 230, 140, 0.9);
+    --jy-here-glow: rgba(255, 214, 90, 0.42);
+    --jy-stone-ahead: #6e7168;
+    --jy-stone-ahead-ink: #e4e6e0;
+    --jy-line: rgba(236, 240, 230, 0.86);
+    --jy-line-crossed: #8fe8d8;
+    --jy-label-bg: rgba(6, 14, 8, 0.72);
+    --jy-label-ink: #eef3ea;
+    --jy-ring-track: rgba(255, 255, 255, 0.2);
+    --jy-ring-fill: #7ff6e2;
+    --jy-shadow: 0 8px 18px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0, 0, 0, 0.3);
+    --jy-terrace: transparent;
+    --jy-plaque: color-mix(in srgb, #161a14 92%, transparent);
+    --jy-plaque-ink: #eef2f1;
+    --jy-plaque-line: rgba(220, 230, 214, 0.12);
+  }
+}
+
+/* ---- Head: a thin, translucent strip on the lawn. No global progress bar. ---- */
+.road-jy .jy-head {
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in srgb, var(--jy-lawn-2) 35%, transparent);
+  color: var(--jy-label-ink);
+  border-block-end: 1px solid rgba(255, 255, 255, 0.12);
+}
+.road-jy .jy-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.road-jy > .jy-head > h2,
+.road-jy .jy-head-row > h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  flex: 1 1 auto;
+  color: var(--jy-label-ink);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* Orientation toggle: only on wide screens, only for this style. */
+.road-jy .jy-orient {
+  display: none;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 12px;
+  background: var(--jy-label-bg);
+  gap: 2px;
+  flex: none;
+}
+@media (min-width: 1024px) {
+  .road-jy .jy-orient { display: inline-flex; }
+}
+.road-jy .jy-orient-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--jy-label-ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 9px;
+  min-block-size: 36px;
+  cursor: pointer;
+}
+.road-jy .jy-orient-btn[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.2);
+}
+.road-jy .jy-orient-btn:focus-visible {
+  outline: 3px solid var(--jy-here-ring);
+  outline-offset: 2px;
+}
+
+/* ---- The field ---- */
+.road-jy .jy-field {
+  position: relative;
+  padding: var(--jy-pad) 12px calc(var(--jy-pad) + 6.5rem);
+  overflow-x: hidden;
+  overflow-y: visible;
+  background-color: var(--jy-lawn);
+  background-image:
+    radial-gradient(ellipse at 28% 12%, var(--jy-lawn-sun), transparent 55%),
+    radial-gradient(ellipse at 78% 88%, var(--jy-lawn-shade), transparent 50%),
+    linear-gradient(180deg, transparent 0%, var(--jy-lawn-vignette) 100%),
+    repeating-linear-gradient(92deg, transparent, transparent 2px, rgba(0, 30, 0, 0.045) 2px, rgba(0, 30, 0, 0.045) 3px),
+    repeating-linear-gradient(8deg, transparent, transparent 3px, rgba(255, 255, 255, 0.035) 3px, rgba(255, 255, 255, 0.035) 4px),
+    repeating-linear-gradient(-18deg, transparent, transparent 4px, rgba(20, 70, 16, 0.07) 4px, rgba(20, 70, 16, 0.07) 5px),
+    linear-gradient(180deg, var(--jy-lawn-3), var(--jy-lawn) 38%, var(--jy-lawn-2));
+  background-size: auto;
+}
+.road-jy .jy-canvas {
+  position: relative;
+  isolation: isolate;
+  min-block-size: 12rem;
+  padding-inline: var(--jy-side);
+}
+.road-jy .jy-path,
+.road-jy .jy-rows,
+.road-jy .jy-stones,
+.road-jy .jy-block,
+.road-jy .jy-row {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.road-jy .jy-path {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  gap: 4px;
+}
+.road-jy .jy-block {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 10px;
+  padding-block: 8px;
+}
+.road-jy .jy-rows {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: var(--jy-row-gap);
+  width: 100%;
+}
+.road-jy .jy-row,
+.road-jy .jy-stones {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--jy-gap);
+  width: max-content;
+  max-width: 100%;
+  margin-inline: auto; /* center the row on the vertical midline */
+}
+
+/* ---- Stones: clean rounded squares, soft shadows, teal when walked. ---- */
+.road-jy .jy-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--jy-stone-size);
+  width: var(--jy-stone-size);
+  height: var(--jy-stone-size);
+  max-inline-size: var(--jy-stone-size);
+  max-block-size: var(--jy-stone-size);
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+.road-jy .jy-hit { margin: 0; display: block; width: 100%; height: 100%; }
+.road-jy .jy-stone {
+  appearance: none;
+  -webkit-appearance: none;
+  display: grid;
+  place-items: center;
+  width: var(--jy-stone-size);
+  height: var(--jy-stone-size);
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--jy-radius);
+  background: linear-gradient(180deg, #f7f6f1 0%, var(--jy-stone) 100%);
+  color: var(--jy-stone-ink);
+  box-shadow: var(--jy-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  position: relative;
+  transition: transform 180ms ease-out, box-shadow 180ms ease-out;
+}
+.road-jy .jy-face {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 -3px 6px rgba(40, 40, 30, 0.08);
+}
+.road-jy .jy-mark {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  padding: 8px 5px 7px;
+  box-sizing: border-box;
+  text-align: center;
+  pointer-events: none;
+}
+.road-jy .jy-symbol {
+  font-family: "Noto Sans", "DejaVu Sans", "Assistant", ui-sans-serif, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  color: inherit;
+}
+.road-jy .jy-caption {
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: 0;
+  max-inline-size: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  color: inherit;
+}
+.road-jy .jy-stage-symbol,
+.road-jy .jy-block-mark {
+  font-family: "Noto Sans", "DejaVu Sans", ui-sans-serif, sans-serif;
+  font-weight: 700;
+  font-size: 1em;
+  margin-inline-end: 0.15em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -0.1em;
+  flex: none;
+  unicode-bidi: isolate;
+}
+.road-jy .jy-mark-svg {
+  block-size: 1.15rem;
+  inline-size: 1.15rem;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.road-jy .jy-block-mark .jy-mark-svg {
+  block-size: 0.95em;
+  inline-size: 0.95em;
+}
+.road-jy .jy-step.is-leveled .jy-mark,
+.road-jy .jy-step.is-done .jy-mark {
+  padding-block-end: 16px;
+}
+.road-jy .jy-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42%;
+  height: 42%;
+  color: inherit;
+}
+.road-jy .jy-step.is-ahead .jy-icon,
+.road-jy .jy-step.is-view .jy-icon {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: 4px;
+  inset-inline-end: 4px;
+  width: 13px;
+  height: 13px;
+  opacity: 0.9;
+}
+.road-jy .jy-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Leveled-up stones: same family as open upcoming stones, a richer
+   tier finish and a level badge. No check mark, no "done-and-gone" fill. */
+.road-jy .jy-step.is-done .jy-stone,
+.road-jy .jy-step.is-leveled .jy-stone {
+  background: linear-gradient(145deg, #f3e7c6 0%, #e4cc94 52%, #c9ae78 100%);
+  color: #2a2416;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55),
+    0 2px 2px rgba(40, 48, 28, 0.2),
+    0 8px 14px rgba(40, 48, 28, 0.16),
+    0 0 0 2px color-mix(in srgb, #b07a22 78%, transparent),
+    0 0 12px color-mix(in srgb, #c9a44a 30%, transparent),
+    inset 0 1.5px 0 rgba(255, 248, 220, 0.85),
+    inset 0 -5px 8px rgba(90, 60, 10, 0.18);
+}
+.road-jy .jy-step.is-leveled[data-jy-badge="2"] .jy-stone {
+  background: linear-gradient(145deg, #f0dfb0 0%, #dcc07a 52%, #c09a4e 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55),
+    0 2px 2px rgba(40, 48, 28, 0.2),
+    0 8px 14px rgba(40, 48, 28, 0.18),
+    0 0 0 2.5px color-mix(in srgb, #a06c18 82%, transparent),
+    0 0 14px color-mix(in srgb, #c9a44a 36%, transparent),
+    inset 0 1.5px 0 rgba(255, 248, 220, 0.88),
+    inset 0 -5px 8px rgba(80, 50, 8, 0.2);
+}
+.road-jy .jy-step.is-leveled[data-jy-badge="3"] .jy-stone {
+  background: linear-gradient(145deg, #edd496 0%, #d4b05e 52%, #b48a38 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.58),
+    0 2px 2px rgba(40, 48, 28, 0.22),
+    0 8px 14px rgba(40, 48, 28, 0.2),
+    0 0 0 2.5px color-mix(in srgb, #8e5e10 85%, transparent),
+    0 0 16px color-mix(in srgb, #c9a44a 40%, transparent),
+    inset 0 1.5px 0 rgba(255, 248, 220, 0.9),
+    inset 0 -5px 8px rgba(70, 42, 6, 0.22);
+}
+.road-jy .jy-step.is-done .jy-icon,
+.road-jy .jy-step.is-leveled .jy-icon { display: none; }
+.road-jy .jy-badge {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: auto;
+  inset-block-end: 5px;
+  inset-inline: 5px;
+  margin-inline: auto;
+  width: max-content;
+  max-inline-size: calc(100% - 8px);
+  font-size: 0.58rem;
+  font-weight: 750;
+  line-height: 1.15;
+  padding: 0.12rem 0.32rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #f6e6b4 90%, #fff);
+  color: #3a2a0c;
+  border: 1px solid color-mix(in srgb, #b07a22 60%, transparent);
+  letter-spacing: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+/* Exactly one recommended stone: lift, glow, pulse. Nothing else competes. */
+.road-jy .jy-step.is-here,
+.road-jy .jy-step.is-recommended { z-index: 6; }
+.road-jy .jy-step.is-here .jy-stone,
+.road-jy .jy-step.is-recommended .jy-stone {
+  background: linear-gradient(180deg, #fffdf6 0%, var(--jy-here) 100%);
+  color: var(--jy-stone-ink);
+  box-shadow:
+    0 0 0 5px var(--jy-here-ring),
+    0 0 42px 16px var(--jy-here-glow),
+    0 16px 26px rgba(16, 40, 12, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  animation: jy-recommend 2.2s ease-in-out infinite;
+  transform: translateY(-7px);
+}
+.road-jy .jy-step.is-here .jy-icon,
+.road-jy .jy-step.is-recommended .jy-icon { display: none; }
+.road-jy .jy-step.is-ahead .jy-stone,
+.road-jy .jy-step.is-view .jy-stone {
+  background: linear-gradient(180deg, #c8c8c0 0%, var(--jy-stone-ahead) 100%);
+  color: var(--jy-stone-ahead-ink);
+  box-shadow: 0 4px 10px rgba(16, 40, 12, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  cursor: default;
+  opacity: 0.86;
+}
+.road-jy .jy-stone:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+.road-jy .jy-step:not(.is-ahead):not(.is-view):not(.is-here):not(.is-recommended) .jy-stone:hover {
+  transform: translateY(-2px);
+}
+.road-jy .jy-here-flag {
+  position: absolute;
+  z-index: 7;
+  inset: auto;
+  inset-block-end: calc(100% + 6px);
+  inset-inline: 0;
+  margin-inline: auto;
+  width: max-content;
+  height: max-content;
+  background: #fff;
+  color: #1a1a18;
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: 0;
+  padding: 5px 9px;
+  border-radius: 999px;
+  box-shadow: 0 3px 12px rgba(20, 20, 10, 0.28);
+  white-space: normal;
+  text-align: center;
+  pointer-events: none;
+  max-inline-size: calc(var(--jy-stone-size) + 36px);
+}
+html[data-road-orientation="horizontal"] .road-jy .jy-row,
+html[data-road-orientation="horizontal"] .road-jy .jy-stones,
+.road-jy.is-horizontal .jy-row,
+.road-jy.is-horizontal .jy-stones {
+  gap: 36px; /* room for the recommended flag above a stone in a column */
+}
+@keyframes jy-recommend {
+  0%, 100% {
+    box-shadow: 0 0 0 5px var(--jy-here-ring), 0 0 34px 12px var(--jy-here-glow), 0 16px 26px rgba(16, 40, 12, 0.42), inset 0 1px 0 rgba(255,255,255,0.95);
+    transform: translateY(-7px);
+  }
+  50% {
+    box-shadow: 0 0 0 6px var(--jy-here-ring), 0 0 46px 18px var(--jy-here-glow), 0 16px 26px rgba(16, 40, 12, 0.4), inset 0 1px 0 rgba(255,255,255,0.95);
+    transform: translateY(-8px);
+  }
+}
+
+/* ---- Stage plaque: linen (dark in dark mode). On a phone it sits in
+   flow at the visual start (bottom) of the block, above the sticky bar.
+   At ≥1024px vertical it lives in the side gutter. In horizontal it is
+   a full unclipped card at the top of the field. ---- */
+.road-jy .jy-block { position: relative; }
+.road-jy .jy-block-head {
+  background: var(--jy-plaque);
+  color: var(--jy-plaque-ink);
+  border: 1px solid var(--jy-plaque-line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 2px rgba(30, 36, 20, 0.08), 0 6px 16px rgba(30, 36, 20, 0.08);
+  backdrop-filter: blur(8px);
+  display: grid;
+  gap: 3px;
+  text-align: start;
+  max-inline-size: min(16rem, 100%);
+  min-inline-size: 0;
+  z-index: 2;
+  margin-inline: auto;
+  margin-block: 4px 8px;
+}
+.road-jy .jy-block-label,
+.road-jy .jy-block-head .jy-kicker {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+  color: var(--jy-plaque-ink);
+  white-space: normal;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3em;
+}
+.road-jy .jy-block-words { font-weight: 700; }
+.road-jy .jy-block-head .jy-count {
+  color: color-mix(in srgb, var(--jy-plaque-ink) 70%, transparent);
+  font-weight: 500;
+}
+.road-jy .jy-meter {
+  display: block;
+  margin-block-start: 4px;
+  inline-size: 100%;
+  max-inline-size: 9.5rem;
+  block-size: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--jy-plaque-ink) 12%, transparent);
+  overflow: hidden;
+}
+.road-jy .jy-meter-fill {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: #1c7a70;
+}
+.road-jy .jy-block.is-ahead .jy-meter-fill,
+.road-jy .jy-block.is-view .jy-meter-fill { background: #8a867c; }
+.road-jy .jy-block.is-here .jy-block-head {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #1c7a70 45%, transparent),
+    0 1px 2px rgba(30, 36, 20, 0.08),
+    0 6px 16px rgba(30, 36, 20, 0.1);
+}
+.road-jy .jy-block.is-ahead .jy-block-head { opacity: 0.78; }
+@media (min-width: 1024px) {
+  .road-jy.is-vertical .jy-block-head,
+  .road-jy:not(.is-horizontal) .jy-block-head {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 50%;
+    transform: translateY(50%);
+    inline-size: calc(var(--jy-side) - 8px);
+    max-inline-size: calc(var(--jy-side) - 8px);
+    margin: 0;
+  }
+  .road-jy.is-vertical .jy-canvas,
+  .road-jy:not(.is-horizontal) .jy-canvas { padding-inline: 0; }
+  .road-jy.is-vertical .jy-path,
+  .road-jy:not(.is-horizontal) .jy-path { padding-inline: var(--jy-side); }
+}
+
+.road-jy .jy-boundary-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--jy-label-ink);
+}
+.road-jy .jy-boundary-copy {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  background: var(--jy-label-bg);
+  padding-block: 5px; padding-inline: 8px 12px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.road-jy .jy-kicker-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.road-jy .jy-kicker {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: var(--jy-label-ink);
+}
+.road-jy .jy-stage-symbol {
+  flex: none;
+  unicode-bidi: isolate;
+}
+.road-jy .jy-count { color: color-mix(in srgb, var(--jy-label-ink) 80%, transparent); }
+.road-jy .jy-boundary-title {
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  max-inline-size: 14rem;
+}
+
+/* Ring meter: small, teal, replaces the global top bar. */
+.road-jy .jy-ring {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  color: var(--jy-ring-fill);
+}
+.road-jy .jy-ring-bg {
+  stroke: var(--jy-ring-track);
+  color: var(--jy-ring-track);
+}
+.road-jy .jy-ring-fg {
+  stroke: var(--jy-ring-fill);
+  color: var(--jy-ring-fill);
+  transition: stroke-dasharray 240ms ease-out;
+}
+
+/* ---- Stage and level-up lines, crisp and full-width, label at the side. ---- */
+.road-jy .jy-boundary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  padding-block: 18px 22px;
+  min-block-size: 56px;
+}
+.road-jy .jy-line {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 50%;
+  height: 0;
+  border-block-start: 2px solid var(--jy-line);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+.road-jy .jy-boundary.is-crossed .jy-line {
+  border-color: var(--jy-walked);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--jy-walked) 70%, white),
+              0 0 16px 2px color-mix(in srgb, var(--jy-walked) 55%, transparent);
+}
+.road-jy .jy-boundary.is-level-up {
+  padding-block: 26px 30px;
+}
+.road-jy .jy-boundary.is-level-up .jy-line {
+  border-block-start-width: 2.5px;
+}
+.road-jy .jy-boundary-label {
+  position: relative;
+  z-index: 2;
+  margin-inline: 8px 4px;
+  max-inline-size: calc(100% - 16px);
+}
+.road-jy .jy-boundary.is-locked { opacity: 0.92; }
+.road-jy .jy-boundary.is-locked .jy-kicker { opacity: 0.95; }
+
+/* ---- End of the road ---- */
+.road-jy .jy-end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-block: 20px 8px;
+  color: var(--jy-label-ink);
+}
+.road-jy .jy-end-stone {
+  display: grid;
+  place-items: center;
+  width: calc(var(--jy-stone-size) * 0.86);
+  height: calc(var(--jy-stone-size) * 0.86);
+  border-radius: var(--jy-radius);
+  background: linear-gradient(180deg, #f7f6f1 0%, var(--jy-stone) 70%);
+  box-shadow: var(--jy-shadow);
+  color: var(--jy-stone-ink);
+  opacity: 0.7;
+}
+.road-jy .jy-end.is-done .jy-end-stone {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--jy-walked) 82%, white), var(--jy-walked-2));
+  color: var(--jy-walked-ink);
+  opacity: 1;
+}
+.road-jy .jy-end-mark {
+  width: 48%;
+  height: 48%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.road-jy .jy-end-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  background: var(--jy-label-bg);
+  padding: 6px 12px;
+  border-radius: 14px;
+  text-align: center;
+}
+.road-jy .jy-end-title { font-weight: 650; overflow-wrap: anywhere; font-size: var(--text-sm); }
+.road-jy .jy-peek { margin-block-start: 6px; }
+
+/* ---- Horizontal: hopscotch rotated 90° (rows become columns, RTL starts on the right). ---- */
+@media (min-width: 1024px) {
+  html[data-road-orientation="horizontal"] .road-jy .jy-field,
+  .road-jy.is-horizontal .jy-field {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 36px 56px;
+    padding-inline: 56px 112px; /* last column / סוף הדרך not clipped */
+    min-block-size: 28rem;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-field:focus-visible,
+  .road-jy.is-horizontal .jy-field:focus-visible {
+    outline: 3px solid var(--jy-here-ring);
+    outline-offset: -3px;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-path,
+  .road-jy.is-horizontal .jy-path {
+    flex-direction: row; /* inline-start = right in RTL: first block starts on the right */
+    align-items: center;
+    min-inline-size: max-content;
+    gap: 8px;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-block,
+  .road-jy.is-horizontal .jy-block {
+    flex-direction: column; /* plaque (first in the DOM) sits at the top, in flow */
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    padding-block: 0;
+    gap: 14px;
+    block-size: auto;
+    min-block-size: 100%;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-block-head,
+  .road-jy.is-horizontal .jy-block-head {
+    position: static;
+    transform: none;
+    inset: auto;
+    inline-size: max-content;
+    max-inline-size: 16rem;
+    margin: 0 auto 4px;
+    flex: none;
+    z-index: 3;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-rows,
+  .road-jy.is-horizontal .jy-rows {
+    flex-direction: row; /* first row at inline-start */
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-row,
+  html[data-road-orientation="horizontal"] .road-jy .jy-stones,
+  .road-jy.is-horizontal .jy-row,
+  .road-jy.is-horizontal .jy-stones {
+    flex-direction: column-reverse; /* first stone of a row sits at the bottom */
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-boundary,
+  .road-jy.is-horizontal .jy-boundary {
+    flex-direction: column;
+    justify-content: flex-start;
+    width: auto;
+    min-inline-size: 5.5rem;
+    min-block-size: 18rem;
+    padding: 8px 18px;
+    align-items: center;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-line,
+  .road-jy.is-horizontal .jy-line {
+    inset-block: 0;
+    inset-inline-start: 50%;
+    inset-inline-end: auto;
+    inset-block-start: 0;
+    width: 0;
+    height: 100%;
+    border-block-start: 0;
+    border-inline-start: 2px solid var(--jy-line);
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-boundary.is-level-up .jy-line,
+  .road-jy.is-horizontal .jy-boundary.is-level-up .jy-line {
+    border-inline-start-width: 2.5px;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-here-flag,
+  .road-jy.is-horizontal .jy-here-flag {
+    /* still centered on the stone */
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-end,
+  .road-jy.is-horizontal .jy-end {
+    padding-inline-start: 20px;
+    min-inline-size: 8rem;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-end,
+  .road-jy.is-horizontal .jy-end {
+    padding-inline: 28px 24px;
+    min-inline-size: 9rem;
+    flex: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .road-jy .jy-stone,
+  .road-jy .jy-ring-fg { transition: none; }
+  .road-jy .jy-step.is-here .jy-stone,
+  .road-jy .jy-step.is-recommended .jy-stone {
+    animation: none;
+    transform: translateY(-7px);
+  }
+  .road-jy .jy-step:not(.is-ahead):not(.is-view):not(.is-here):not(.is-recommended) .jy-stone:hover { transform: none; }
+}
+html[data-motion="reduce"] .road-jy .jy-stone { transition: none; }
+html[data-motion="reduce"] .road-jy .jy-step.is-here .jy-stone,
+html[data-motion="reduce"] .road-jy .jy-step.is-recommended .jy-stone {
+  animation: none;
+  transform: translateY(-7px);
+}
+html[data-motion="reduce"] .road-jy .jy-step:not(.is-ahead):not(.is-view):not(.is-here):not(.is-recommended) .jy-stone:hover { transform: none; }
+
+/* Continue bar at 375: C2 wording ("שלב N · topic · רמה X") with
+   C1 wrapping — the stage/level clause stays on one line. */
+.jy-continue .tl-kicker,
+.continue-next .tiny[data-road-copy="journey"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.35em;
+  row-gap: 1px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.jy-continue .jy-bar-stage,
+.continue-next .jy-bar-stage {
+  white-space: nowrap;
+}
+
+/* Dark: C1's richer bronze-bezel on leveled stones, gold-on-slate. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .road-jy .jy-step.is-done .jy-stone,
+  :root:not([data-theme="light"]) .road-jy .jy-step.is-leveled .jy-stone {
+    background: linear-gradient(145deg, #6a5a38, #4a3e28);
+    color: #f6edd4;
+    box-shadow:
+      0 1px 0 rgba(255, 230, 180, 0.18),
+      0 2px 2px rgba(0, 0, 0, 0.3),
+      0 8px 14px rgba(0, 0, 0, 0.28),
+      0 0 0 2px color-mix(in srgb, #d4a84a 70%, transparent),
+      0 0 12px color-mix(in srgb, #d4a84a 28%, transparent),
+      inset 0 1.5px 0 rgba(255, 230, 180, 0.16),
+      inset 0 -5px 8px rgba(0, 0, 0, 0.28);
+  }
+  :root:not([data-theme="light"]) .road-jy .jy-step.is-leveled[data-jy-badge="2"] .jy-stone {
+    background: linear-gradient(145deg, #7a683e, #53452c);
+    box-shadow:
+      0 1px 0 rgba(255, 230, 180, 0.2),
+      0 2px 2px rgba(0, 0, 0, 0.3),
+      0 8px 14px rgba(0, 0, 0, 0.3),
+      0 0 0 2.5px color-mix(in srgb, #e0b44e 78%, transparent),
+      0 0 14px color-mix(in srgb, #d4a84a 34%, transparent),
+      inset 0 1.5px 0 rgba(255, 230, 180, 0.18),
+      inset 0 -5px 8px rgba(0, 0, 0, 0.3);
+  }
+  :root:not([data-theme="light"]) .road-jy .jy-badge {
+    color: #2a2416;
+    background: color-mix(in srgb, #e8d49a 88%, #fff);
+    border-color: color-mix(in srgb, #d4a84a 55%, transparent);
+  }
+}
+html[data-theme="dark"] .road-jy .jy-step.is-done .jy-stone,
+html[data-theme="dark"] .road-jy .jy-step.is-leveled .jy-stone {
+  background: linear-gradient(145deg, #6a5a38, #4a3e28);
+  color: #f6edd4;
+  box-shadow:
+    0 1px 0 rgba(255, 230, 180, 0.18),
+    0 2px 2px rgba(0, 0, 0, 0.3),
+    0 8px 14px rgba(0, 0, 0, 0.28),
+    0 0 0 2px color-mix(in srgb, #d4a84a 70%, transparent),
+    0 0 12px color-mix(in srgb, #d4a84a 28%, transparent),
+    inset 0 1.5px 0 rgba(255, 230, 180, 0.16),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.28);
+}
+html[data-theme="dark"] .road-jy .jy-step.is-leveled[data-jy-badge="2"] .jy-stone {
+  background: linear-gradient(145deg, #7a683e, #53452c);
+  box-shadow:
+    0 1px 0 rgba(255, 230, 180, 0.2),
+    0 2px 2px rgba(0, 0, 0, 0.3),
+    0 8px 14px rgba(0, 0, 0, 0.3),
+    0 0 0 2.5px color-mix(in srgb, #e0b44e 78%, transparent),
+    0 0 14px color-mix(in srgb, #d4a84a 34%, transparent),
+    inset 0 1.5px 0 rgba(255, 230, 180, 0.18),
+    inset 0 -5px 8px rgba(0, 0, 0, 0.3);
+}
+html[data-theme="dark"] .road-jy .jy-badge {
+  color: #2a2416;
+  background: color-mix(in srgb, #e8d49a 88%, #fff);
+  border-color: color-mix(in srgb, #d4a84a 55%, transparent);
+}
+
+/* Settings: two-option road style picker (and the orientation picker, same pattern). */
+.road-style-opts {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.road-style-opts legend { font-weight: 600; padding: 0; margin-block-end: var(--space-2); }
+.road-style-opts .rs-opt {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2) var(--space-3);
+  align-items: start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  min-block-size: 52px;
+  cursor: pointer;
+  background: var(--surface);
+}
+.road-style-opts .rs-opt:has(input:checked) {
+  border-color: var(--accent);
+  border-width: 2px;
+  padding: calc(var(--space-3) - 1px) calc(var(--space-4) - 1px);
+  background: var(--tint-info);
+}
+.road-style-opts .rs-opt:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.road-style-opts .rs-opt input { margin-block-start: .35rem; inline-size: 1.15rem; block-size: 1.15rem; accent-color: var(--accent); }
+.road-style-opts .rs-name { font-weight: 650; display: block; }
+.road-style-opts .rs-note { color: var(--muted); font-size: var(--text-sm); line-height: 1.5; display: block; margin-block-start: 2px; }
+@media (min-width: 560px) {
+  .road-style-opts { grid-template-columns: 1fr 1fr; }
+  .road-style-opts legend { grid-column: 1 / -1; }
+}
+.settings-road-style .road-orient-opts { margin-block-start: var(--space-5); }

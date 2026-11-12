@@ -1,8 +1,10 @@
-{#- Path head (#193): goal meter in שלבים + continue card for the current short נתיב.
+{#- Path head (#193): continue card for the current short נתיב, then the goal meter in שלבים.
     `eng` comes from ctx['engagement'] (#192) or engagement_view's derived fallback.
     Later slots (week strip, set end) attach below the card; nothing here assumes they exist. -#}
 {%- set eng = engagement_view(engagement if engagement is defined else none, topics, mastered) %}
 {%- set gm = eng.goal_meter or {} %}
+{#- A road with progress says continue, even when today's short נתיב has not started yet. -#}
+{%- set started = eng.started or can_resume|default(false) %}
 {%- set ss = eng.session or {} %}
 {#- #192: goal_meter.stage counts finished שלבים; the head names the one the learner is on. -#}
 {%- set g_done = [gm.stage or 0, gm.stages_total or 0]|min %}
@@ -10,6 +12,38 @@
 {%- set g_target = gm.target_label if gm.target_label and gm.target_label != (meta.title if meta is defined else none) else none %}
 {%- if gm.stages_total %}
 <div class="eng-head" data-derived="{{ 1 if eng.derived else 0 }}">
+  {#- The one next action comes first, so a long road blurb never pushes it off a phone's first screen.
+      Finished road: one calm message and a secondary way back in, no primary button. -#}
+  {%- set road_done = tl is defined and tl and tl.finished %}
+  <section class="continue-card{% if road_done %} is-finished{% endif %}" aria-labelledby="continue-title">
+    {%- if road_done %}
+    <p class="continue-kicker tiny">{{ t('tl_done_kicker') }}</p>
+    <h2 class="continue-title" id="continue-title">{{ t('tl_done_title', total='<bdi>%s</bdi>'|format(tl.total))|safe }}</h2>
+    <p class="continue-note tiny">{{ t('tl_done_note') }}</p>
+    <form method="post" action="/play/{{ doc.pathId }}/start">
+      {%- if tl.first %}<input type="hidden" name="node" value="{{ tl.first }}" />{% endif %}
+      <button type="submit" class="secondary big continue-btn">{{ t('tl_again') }}</button>
+    </form>
+    {%- else %}
+    <h2 class="continue-title" id="continue-title">{{ t('eng_set_title') if started else t('eng_set_first') }}</h2>
+    {%- if ss.steps %}
+    <ol class="set-dots" aria-label="{{ t('eng_set_progress', done=ss.done_count, total=ss.size) }}">
+      {%- for s in ss.steps %}<li class="{% if s.done %}is-done{% elif loop.index0 == ss.done_count %}is-next{% endif %}"></li>{% endfor %}
+    </ol>
+    <p class="set-count tiny">{{ t('eng_set_progress', done='<bdi>%s</bdi>'|format(ss.done_count), total='<bdi>%s</bdi>'|format(ss.size))|safe }}</p>
+    {%- endif %}
+    {#- Road page timeline (road_timeline.py): name the one next משבצת; the button opens exactly that one. -#}
+    {%- set nx = tl.next if tl is defined and tl else none %}
+    {%- if nx %}
+    {% include "_road_next.html" %}
+    {%- endif %}
+    <form method="post" action="/play/{{ doc.pathId }}/start">
+      {%- if nx %}<input type="hidden" name="node" value="{{ nx.id }}" />{% endif %}
+      <button type="submit" class="primary big continue-btn">{{ t('eng_continue') if started else t('start_path') }}</button>
+    </form>
+    {%- endif %}
+  </section>
+
   <section class="goal-meter" aria-labelledby="goal-meter-title">
     <p class="goal-meter-title" id="goal-meter-title">
       {%- if g_target %}{{ t('eng_meter_goal', n='<bdi>%s</bdi>'|format(g_cur), total='<bdi>%s</bdi>'|format(gm.stages_total), target='<bdi>%s</bdi>'|format(g_target|e))|safe }}
@@ -38,18 +72,6 @@
     {%- endif %}
   </section>
 
-  <section class="continue-card" aria-labelledby="continue-title">
-    <h2 class="continue-title" id="continue-title">{{ t('eng_set_title') if eng.started else t('eng_set_first') }}</h2>
-    {%- if ss.steps %}
-    <ol class="set-dots" aria-label="{{ t('eng_set_progress', done=ss.done_count, total=ss.size) }}">
-      {%- for s in ss.steps %}<li class="{% if s.done %}is-done{% elif loop.index0 == ss.done_count %}is-next{% endif %}"></li>{% endfor %}
-    </ol>
-    <p class="set-count tiny">{{ t('eng_set_progress', done='<bdi>%s</bdi>'|format(ss.done_count), total='<bdi>%s</bdi>'|format(ss.size))|safe }}</p>
-    {%- endif %}
-    <form method="post" action="/play/{{ doc.pathId }}/start">
-      <button type="submit" class="primary big continue-btn">{{ t('eng_continue') if eng.started else t('start_path') }}</button>
-    </form>
-  </section>
   {%- set wk = week_view(eng.week, locale if locale is defined else 'he') if week_view is defined else none %}
   {% include "_week_strip.html" %}
 </div>

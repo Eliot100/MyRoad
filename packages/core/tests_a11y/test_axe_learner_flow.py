@@ -105,6 +105,27 @@ def test_map_view(page):
     scan(page, "map")
 
 
+def test_map_view_journey(page):
+    """Journey style (winding road) on the same road, both themes, axe clean."""
+    page.goto(STEP_PATH + "?view=map")
+    page.evaluate("localStorage.setItem('myroad.roadStyle', 'journey')")
+    page.reload()
+    page.locator(".road-jy").wait_for()
+    scan(page, "map-journey")
+    page.evaluate("localStorage.setItem('myroad.theme', 'dark'); document.documentElement.setAttribute('data-theme', 'dark')")
+    page.reload()
+    page.locator(".road-jy").wait_for()
+    scan(page, "map-journey-dark")
+    # Horizontal orientation on a wide screen, still axe-clean (region, keyboard target).
+    page.set_viewport_size({"width": 1280, "height": 800})
+    page.evaluate("localStorage.setItem('myroad.roadOrientation', 'horizontal'); document.documentElement.setAttribute('data-road-orientation', 'horizontal')")
+    page.reload()
+    page.locator(".road-jy").wait_for()
+    scan(page, "map-journey-horizontal")
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.evaluate("localStorage.setItem('myroad.roadStyle', 'timeline'); localStorage.removeItem('myroad.theme'); localStorage.removeItem('myroad.roadOrientation')")
+
+
 def test_path_head_session_card(page):
     """After starting, the head shows the engagement session card (.eng-head) when present."""
     page.goto(STEP_PATH)

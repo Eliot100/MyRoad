@@ -73,7 +73,7 @@ def test_map_head_empty_state_and_whole_road(client) -> None:
     assert "עוד אין נקודת התחלה" in html
     assert "הנתיב הקצר הראשון" in html and "התחל את הדרך" in html
     assert html.count('<li class="is-next">') == 1 and "is-done" not in html[html.index("set-dots"):html.index("set-count")]
-    assert 'id="world-map"' in html and 'id="track"' in html  # the whole road stays on this screen
+    assert 'class="card road-tl' in html and 'id="track"' in html  # the whole road stays on this screen
     assert "%" not in _text(html[html.index("eng-head"):html.index("eng-links")])
 
 
@@ -131,7 +131,7 @@ def test_server_engagement_dict_wins() -> None:
     html = _render_head(SERVER)
     assert "שלב <bdi>4</bdi> מתוך <bdi>9</bdi>, היעד: <bdi>800</bdi>" in html
     assert "נקודת ההתחלה שלך: שלב <bdi>2</bdi>" in html
-    track = html[html.index("goal-track"):html.index("</ol>")]
+    track = html[html.index("goal-track"):html.index("</ol>", html.index("goal-track"))]
     assert track.count("is-done") == 3 and track.count("is-here") == 1 and track.count("is-start") == 1
     assert "<bdi>2</bdi> מתוך <bdi>6</bdi>" in html and 'data-derived="0"' in html
 

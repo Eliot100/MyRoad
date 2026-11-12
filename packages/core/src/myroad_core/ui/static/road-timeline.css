@@ -1,0 +1,252 @@
+/* Road timeline (arena road-ui final): the road page as one line of שלבים.
+   Base: candidate 1 (vertical timeline). Ported from candidate 2: the sticky overview bar,
+   the solid line behind the learner and dashed line ahead, and the alternating sides on
+   wide screens. Theme tokens only (light and dark come from platform.css), logical
+   properties only, so RTL and LTR share every rule. Shapes, not color alone, carry state:
+   done = filled with a check, here = ring, open = outline, ahead = dashed with a lock,
+   review = rounded square. */
+.road-tl {
+  --tl-node: 2.5rem;           /* stage node size; the line runs through its center */
+  --tl-gutter: 3.25rem;        /* node column */
+  --tl-line-done: var(--accent);
+  --tl-w: 2px;                 /* line width; the walked part is thicker */
+  /* The line ahead of the learner: quiet dashes. Behind them: solid accent. */
+  --tl-dash: repeating-linear-gradient(to bottom, var(--line-strong) 0 6px, transparent 6px 12px);
+  --tl-pad: 1.15rem;           /* the card's inline padding, so the overview spans edge to edge */
+  container: tl / inline-size;
+}
+@media (max-width: 480px) { .road-tl { --tl-pad: .9rem; } }
+.road-tl > h2 { margin: 0; }
+.road-tl .tl-lede { margin: var(--space-1) 0 var(--space-2); color: var(--muted); }
+
+/* Overview: where you are on the whole road, sticky while the line scrolls under it. */
+.road-tl .tl-overview {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 4;
+  margin-inline: calc(-1 * var(--tl-pad));
+  margin-block-end: var(--space-3);
+  padding: var(--space-2) var(--tl-pad) var(--space-3);
+  background: var(--card);
+  border-block-end: 1px solid var(--line);
+}
+.road-tl .tl-sum { margin: 0 0 var(--space-2); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); color: var(--muted); font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.road-tl .tl-sum-here { display: inline-block; padding-block: .15rem; min-block-size: 24px; color: var(--accent); font-weight: 650; text-decoration: none; }
+.road-tl .tl-sum-here:hover { text-decoration: underline; }
+.road-tl .tl-sum-here:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.road-tl .tl-sum-cells { color: var(--ink); font-weight: 600; }
+.road-tl .tl-bar { display: flex; gap: 3px; block-size: 8px; }
+.road-tl .tl-seg { flex: 1 1 0; min-inline-size: 4px; border-radius: 999px; background: var(--track); overflow: hidden; }
+.road-tl .tl-seg > i { display: block; block-size: 100%; background: var(--accent); }
+.road-tl .tl-seg.is-done > i { opacity: .55; }
+.road-tl .tl-seg.is-here { outline: 2px solid var(--accent); outline-offset: 1px; }
+.road-tl .tl-seg.is-review { border-radius: 2px; }
+
+/* The line: one list, each שלב draws its own segment so state can color it. */
+.road-tl .tl { list-style: none; margin: 0; padding: 0; }
+.road-tl .tl-stage,
+.road-tl .tl-end { position: relative; display: grid; grid-template-columns: var(--tl-gutter) minmax(0, 1fr); align-items: start; }
+.road-tl .tl-stage::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(var(--tl-node) / 2 - var(--tl-w) / 2);
+  inset-block: 0;
+  inline-size: var(--tl-w);
+  background: var(--tl-dash);
+  /* The line sits behind the nodes and never takes clicks. */
+  z-index: 0;
+  pointer-events: none;
+}
+.road-tl .tl-stage:first-child::before { inset-block-start: calc(var(--tl-node) / 2 + .5rem); }
+/* Behind the learner the line is solid; at the current שלב it reaches the node, then dashes on. */
+.road-tl .tl-stage.is-walked { --tl-w: 3px; }
+.road-tl .tl-stage.is-walked::before { background: var(--tl-line-done); }
+.road-tl .tl-stage.is-here::before {
+  background: linear-gradient(to bottom, var(--tl-line-done) 0 calc(var(--tl-node) / 2 + .5rem), transparent 0), var(--tl-dash);
+}
+.road-tl .tl-stage.is-here:first-child::before { background: var(--tl-dash); }
+
+.road-tl .tl-node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  inline-size: var(--tl-node);
+  block-size: var(--tl-node);
+  margin-block-start: .5rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.road-tl .tl-node svg { inline-size: 1.1rem; block-size: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.road-tl .is-done > .tl-node { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.road-tl .is-here > .tl-node { border: 3px solid var(--accent); color: var(--accent); box-shadow: 0 0 0 4px var(--tint-info-strong); }
+.road-tl .is-ahead > .tl-node { border-style: dashed; color: var(--muted); }
+.road-tl .is-review > .tl-node { border-radius: 10px; }
+
+/* A שלב: a disclosure whose closed face still shows every משבצת as a dot. */
+.road-tl .tl-stage > details { min-inline-size: 0; padding-block-end: var(--space-3); }
+.road-tl .tl-stage summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "kicker chev" "title chev" "count chev" "dots chev";
+  column-gap: var(--space-3);
+  row-gap: 2px;
+  min-block-size: 44px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+}
+.road-tl .tl-stage summary::-webkit-details-marker { display: none; }
+.road-tl .tl-chev {
+  grid-area: chev;
+  align-self: center;
+  inline-size: 1rem;
+  block-size: 1rem;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform .2s ease-out;
+}
+.road-tl .tl-stage details[open] > summary .tl-chev { transform: rotate(180deg); }
+.road-tl .tl-stage summary:hover { background: var(--surface-2); }
+.road-tl .tl-stage summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.road-tl .tl-stage.is-here summary { background: var(--tint-info); }
+.road-tl .tl-kicker { grid-area: kicker; color: var(--muted); font-size: var(--text-xs); font-weight: 600; }
+.road-tl .tl-here-word { color: var(--accent); }
+.road-tl .tl-end-title { font-weight: 600; }
+.road-tl .tl-title { grid-area: title; font-weight: 600; font-size: var(--text-md); line-height: 1.4; overflow-wrap: anywhere; }
+.road-tl .is-ahead .tl-title, .road-tl .is-view .tl-title { color: var(--ink-2); }
+.road-tl .tl-count { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.road-tl summary .tl-count { grid-area: count; }
+.road-tl .tl-dots { grid-area: dots; display: flex; flex-wrap: wrap; align-items: center; gap: 3px; padding-block: .3rem; }
+.road-tl .tl-dots i { inline-size: 9px; block-size: 6px; border-radius: 3px; background: var(--track); }
+.road-tl .tl-dots i.is-done { background: var(--accent); }
+.road-tl .tl-dots i.is-here { inline-size: 13px; background: var(--surface); box-shadow: inset 0 0 0 2px var(--accent); }
+.road-tl .tl-dots i.is-ahead { background: transparent; box-shadow: inset 0 0 0 1px var(--line-strong); }
+.road-tl .tl-dots i.is-check { border-radius: 1px; }
+
+/* משבצות inside an open שלב. */
+.road-tl .tl-tiles { list-style: none; margin: var(--space-1) 0 0; padding: 0; display: grid; gap: 2px; }
+.road-tl .tl-tile form { margin: 0; }
+.road-tl .tl-row {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-3);
+  min-block-size: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: start;
+}
+button.tl-row:hover { background: var(--surface-2); }
+button.tl-row:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.road-tl .tl-tile.is-here .tl-row { background: var(--tint-info); font-weight: 600; box-shadow: inset calc(3px * var(--tl-dir, 1)) 0 0 var(--accent); }
+[dir="rtl"] .road-tl { --tl-dir: -1; }
+.road-tl .tl-tile.is-ahead .tl-row, .road-tl .tl-tile.is-view .tl-row { color: var(--muted); }
+.road-tl .tl-tile-title { flex: 0 1 auto; min-inline-size: 0; overflow-wrap: anywhere; }
+.road-tl .tl-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  inline-size: 1.4rem;
+  block-size: 1.4rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+}
+.road-tl .tl-mark svg { inline-size: .85rem; block-size: .85rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.road-tl .tl-tile.is-done .tl-mark { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.road-tl .tl-tile.is-here .tl-mark { border: 2px solid var(--accent); background: radial-gradient(circle, var(--accent) 0 32%, transparent 36%); }
+.road-tl .tl-tile.is-ahead .tl-mark { border-style: dashed; color: var(--muted); }
+.road-tl .tl-tile.is-review .tl-mark, .road-tl .tl-tile.is-check .tl-mark { border-radius: 6px; }
+.road-tl .tl-tag { flex: none; padding: 0 .4rem; border: 1px solid var(--line-strong); border-radius: 6px; color: var(--muted); font-size: var(--text-xs); font-weight: 600; }
+.road-tl .tl-peek { margin-block-start: var(--space-2); margin-inline-start: var(--space-3); }
+.road-tl .tl-state { flex: none; margin-inline-start: auto; color: var(--muted); font-size: var(--text-xs); font-weight: 600; }
+.road-tl .tl-tile.is-here .tl-state { color: var(--accent); }
+
+/* End of the road: the last milestone on the line. */
+.road-tl .tl-end-copy { margin: 0; padding: var(--space-2) var(--space-3); display: grid; gap: 2px; }
+.road-tl .tl-end-copy .tl-kicker { grid-area: auto; color: var(--muted); }
+.road-tl .tl-end .tl-node { border-style: dashed; }
+.road-tl .tl-end.is-done .tl-node { border-style: solid; }
+
+/* Fragment and scripted jumps leave room above the current שלב; keyboard focus never hides under the overview. */
+html:has(.road-tl) { scroll-padding-block-start: 6rem; }
+.road-tl .tl-stage#here { scroll-margin-block: 6.5rem 7rem; }
+
+/* Medium: the meta row sits beside the title, dots get the room. */
+@container tl (min-width: 560px) and (max-width: 719.98px) {
+  .road-tl .tl-stage summary {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: "kicker kicker chev" "title count chev" "dots dots chev";
+  }
+  .road-tl summary .tl-count { align-self: center; }
+}
+
+/* Wide: the line runs down the middle and שלבים alternate sides, so the road fills the width.
+   Text keeps its natural reading alignment on both sides; only the placement alternates. */
+@container tl (min-width: 720px) {
+  .road-tl .tl-stage,
+  .road-tl .tl-end { grid-template-columns: minmax(0, 1fr) var(--tl-gutter) minmax(0, 1fr); column-gap: var(--space-2); }
+  .road-tl .tl-stage::before { inset-inline-start: calc(50% - var(--tl-w) / 2); }
+  .road-tl .tl-stage > .tl-node,
+  .road-tl .tl-end > .tl-node { grid-column: 2; grid-row: 1; justify-self: center; }
+  /* The first שלב sits on the reading start side, then they alternate. */
+  .road-tl .tl-stage > details { grid-column: 1; grid-row: 1; }
+  .road-tl .tl-stage:nth-child(even) > details,
+  .road-tl .tl-end > .tl-end-copy { grid-column: 3; grid-row: 1; }
+}
+
+/* The head's continue card names the next משבצת (shared with the sticky bar). */
+.continue-next { margin: var(--space-2) 0 var(--space-3); display: grid; gap: 2px; }
+.continue-next .tiny { color: var(--muted); font-weight: 600; }
+.continue-next-title { font-weight: 600; overflow-wrap: anywhere; }
+
+/* Finished road and locked road (from candidate 3): one message and one action in the head. */
+.continue-kicker { margin: 0; color: var(--accent); font-weight: 600; }
+.continue-note { margin: 0; color: var(--muted); line-height: 1.5; }
+.continue-card > .continue-btn { margin-block-start: auto; }
+.path-head .continue-card.lock-banner { margin-block-start: var(--space-4); }
+.continue-card.lock-banner p { margin: 0; }
+
+/* Sticky continue: the one next action stays one tap away on a long road. */
+.tl-continue {
+  position: sticky;
+  inset-block-end: max(.75rem, env(safe-area-inset-bottom));
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-start: var(--space-4);
+  padding: var(--space-2);
+  padding-inline-start: var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.tl-continue[hidden] { display: none; }
+.tl-continue-copy { flex: 1 1 auto; min-inline-size: 0; display: grid; color: var(--ink); text-decoration: none; }
+.tl-continue-copy .tl-kicker { color: var(--muted); font-size: var(--text-xs); font-weight: 600; }
+.tl-continue-title { font-weight: 600; font-size: var(--text-sm); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tl-continue-copy:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.tl-continue form { margin: 0; flex: none; }
+.tl-continue-btn { min-block-size: 48px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .road-tl .tl-chev { transition: none; }
+}
