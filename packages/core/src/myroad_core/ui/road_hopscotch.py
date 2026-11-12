@@ -104,82 +104,103 @@ def _pick_current(members: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 # Two-line short title at a ~80px stone, legible at 375px.
-_SHORT_MAX = 16
+# Exercise numbers stay ("משוואה לינארית 5"); only a leading "רמה N," is trimmed.
+_SHORT_MAX = 18
+_LEVEL_PREFIX = re.compile(
+    r"^(?:רמה|Level|المستوى)\s*\d+\s*[,،.]?\s*",
+    re.IGNORECASE,
+)
 
-# Deterministic keyword → symbol maps. First match wins. These are marks,
-# not invented lesson content: the session title itself is always shown.
-_MATH_RULES: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(r"אינטגרל|integral|קדומה|\bint_"), "∫"),
-    (re.compile(r"נגזרת|derivative|קיצון|extrema"), "f′"),
-    (re.compile(r"שורש|sqrt|\broot\b"), "√"),
-    (re.compile(r"אחוז|percent|%"), "%"),
-    (re.compile(r"הסתברות|probability|\bprb_"), "%"),
-    (re.compile(r"שבר|שברים|fraction|חצי"), "½"),
-    (re.compile(r"זווית|angle|סינוס|קוסינוס|טנגנס|\bsin\b|\bcos\b|\btan\b|\btrg_|טריגונ"), "∠"),
-    (re.compile(r"חזק|ריבוע|square|power"), "x²"),
-    (re.compile(r"לוג|log|מעריכ|exp_log|\bexp_"), "eˣ"),
-    (re.compile(r"וקטור|vector|\bvec_"), "→"),
-    (re.compile(r"מרוכב|complex|\bcpx_|\bcmp_"), "i"),
-    (re.compile(r"סדרה|סדרות|sequence|אינדוק|\bseq_"), "aₙ"),
-    (re.compile(r"פונקצ|function|\bfun_"), "f(x)"),
-    (re.compile(r"מעגל|circle"), "○"),
-    (re.compile(r"משוואה|equation|לינאר|אלגבר|\balg_"), "x"),
-    (re.compile(r"גיאומטר|geometry|\bgeo_|analytic|\banl_"), "∠"),
-    (re.compile(r"שיפוע|slope"), "m"),
-]
+# Subject-scoped mark rules from C3, with a few extra English reading
+# needles so a literature topic still gets a book. Kind is "text",
+# "book" or "speech" (the last two are line-drawn SVGs in the template).
+_MARK_RULES: tuple[tuple[tuple[str, ...] | None, tuple[str, ...], str, str], ...] = (
+    (("math",), ("אינטגר", "integral", "antideriv", "קדומה"), "∫", "text"),
+    (("math",), ("נגזרת", "derivativ", "extrema", "קיצון"), "f′", "text"),
+    (("math",), ("שורש", "sqrt"), "√", "text"),
+    (("math",), ("אחוז", "percent", "הסתברות", "probab", "סיכוי"), "%", "text"),
+    (("math",), ("שברים", "שבר", "fraction"), "½", "text"),
+    (("math",), ("זווית", "טריגו", "trig", "סינוס", "קוסינוס", "טנגנס", "sine", "cosine"), "∠", "text"),
+    (("math",), ("ריבועית", "ריבועיות", "ריבועים", "quadrat", "parabola", "פרבול"), "x²", "text"),
+    (("math",), ("חזקות", "חזקה"), "xⁿ", "text"),
+    (("math",), ("מלבן", "rectangle"), "□", "text"),
+    (("math",), ("משולש", "triangle"), "△", "text"),
+    (("math",), ("מעגל", "circle"), "○", "text"),
+    (("math",), ("גיאומט", "geo_", "geometry"), "△", "text"),
+    (("math",), ("וקטור", "vector"), "→", "text"),
+    (("math",), ("מרוכב", "complex"), "i", "text"),
+    (("math",), ("לוגרית", "מעריכ", "logarithm", "exp_log", "exp_"), "eˣ", "text"),
+    (("math",), ("פונקצי", "function", "fun_"), "f", "text"),
+    (("math",), ("סדרות", "seq_", "sequence", "אינדוק"), "aₙ", "text"),
+    (("math",), ("סדרה",), "aₙ", "text"),
+    (("math",), ("אנליט", "analytic"), "xy", "text"),
+    (("math",), ("מערכת", "systems"), "xy", "text"),
+    (("math",), ("אי שוויון", "אי-שוויון", "inequal"), "<", "text"),
+    (("math",), ("כפל", "muldiv", "multiply"), "×", "text"),
+    (("math",), ("חילוק", "division"), "÷", "text"),
+    (("math",), ("חיבור", "addsub", "addition"), "+", "text"),
+    (("math",), ("חיסור", "subtract"), "−", "text"),
+    (("math",), ("סדר פעול",), "( )", "text"),
+    (("math",), ("מספר", "ספרה", "numbers"), "n", "text"),
+    (("math",), ("משווא", "אלגבר", "algebra", "alg_", "לינאר", "שוויון"), "x", "text"),
+    # English: book and speech are drawn as line SVGs, not emoji.
+    (("english",), (
+        "הבנת הנקרא", "reading", "passage", "קטע קריאה", "קריאה",
+        "סיפור", "ספרות", "שיר", "poem", "story", "literature", "essay",
+        "חיבור", "קטע", "text", "book", "ספר",
+    ), "book", "book"),
+    (("english",), ("listening", "האזנה", "שמיעה", "listen", "speak", "oral", "אמרו", "דיבור", "speech", "קול", "שיחה", "פנייה"), "speech", "speech"),
+    (("english",), ("אוצר מילים", "vocab", "vocabulary", "מילים"), "Aa", "text"),
+    (("english",), ("אותיות", "letters", "letter"), "Aa", "text"),
+    (("english",), (
+        "דקדוק", "grammar", "tense", "הווה", "am is are", "שלילה",
+        "present", "simple", "past", "future", "דיוק", "accuracy", "משפט",
+        "there is", "don't", "doesn't", "always", "question", "שאל", "תדירות",
+    ), "Aa", "text"),
+    (("english",), ("השלמת משפט", "sentence complet", "restat", "ניסוח", "משפטים"), "…", "text"),
+    (("english",), ("כתב", "writing", "write"), "Aa", "text"),
+    (("arabic",), ("אותיות", "letters", "script", "כתב", "الحرف"), "ع", "text"),
+)
 
-# Topic-stem marks used when a session title has no keyword of its own.
-_STEM_SYMBOL = {
-    "alg": "x", "geo": "∠", "trg": "∠", "seq": "aₙ", "prb": "%",
-    "fun": "f(x)", "ext": "f′", "int": "∫", "anl": "∠", "vec": "→",
-    "cpx": "i", "cmp": "i", "exp": "eˣ",
+_SUBJECT_DEFAULT: dict[str, tuple[str, str]] = {
+    "math": ("x", "text"),
+    "english": ("Aa", "text"),
+    "arabic": ("ع", "text"),
 }
 
-_EN_RULES: list[tuple[re.Pattern[str], str]] = [
-    (re.compile(
-        r"listen|האזנ|שמע|oral|speak|דיבור|speech|קול|spoken|שיחה|פנייה",
-        re.I,
-    ), "💬"),
-    (re.compile(
-        r"read|קריאה|literature|ספרות|story|סיפור|poem|שיר|essay|חיבור|קטע|"
-        r"text|book|ספר",
-        re.I,
-    ), "📖"),
-    (re.compile(r"vocab|מילים|אוצר|word|letter|אות|אבג", re.I), "Aa"),
-    (re.compile(
-        r"grammar|present|tense|question|שאל|שלילה|תדירות|there is|simple|"
-        r"past|future|דיוק|accuracy|משפט|don't|doesn't|always",
-        re.I,
-    ), "Aa"),
-]
+_STEM_SYMBOL = {
+    "alg": ("x", "text"), "geo": ("△", "text"), "trg": ("∠", "text"),
+    "seq": ("aₙ", "text"), "prb": ("%", "text"), "fun": ("f", "text"),
+    "ext": ("f′", "text"), "int": ("∫", "text"), "anl": ("xy", "text"),
+    "vec": ("→", "text"), "cpx": ("i", "text"), "cmp": ("i", "text"),
+    "exp": ("eˣ", "text"),
+}
 
 
 def shorten_title(title: str, max_chars: int = _SHORT_MAX) -> str:
-    """A clean two-line short form of a real title. Never invents words."""
-    raw = " ".join((title or "").split())
-    text = re.sub(r"\s+\d+$", "", raw)
-    text = re.sub(r"\s*\([^)]{0,24}\)\s*", " ", text)
-    text = " ".join(text.split())
-    if not text:
-        text = raw
+    """A clean two-line short form of a real title. Keeps exercise numbers."""
+    raw = _LEVEL_PREFIX.sub("", " ".join((title or "").split())).strip()
+    if not raw:
+        raw = " ".join((title or "").split())
+    # Drop a short parenthetical variant (בלי שמע) but keep "משוואה לינארית 5".
+    text = re.sub(r"\s*\([^)]{0,24}\)\s*", " ", raw)
+    text = " ".join(text.split()) or raw
     if len(text) <= max_chars:
         return text
-    cut = text[:max_chars]
-    if " " in cut:
-        word = cut.rsplit(" ", 1)[0]
-        if len(word) >= min(4, max_chars // 2):
-            return word
-    return cut.rstrip(".,;:·-–—") + "…"
+    window = text[: max_chars + 1]
+    for sep in (" ", ",", "،", ":", "·"):
+        i = window.rfind(sep)
+        if i >= max(4, max_chars // 2):
+            return text[:i].rstrip(" ,،:·")
+    return text[:max_chars].rstrip(".,;:·-–—")
 
 
 def first_letters(title: str) -> str:
     """Safe fallback mark: first letters of the real title, nothing invented."""
-    words = [w for w in re.split(r"\s+", (title or "").strip()) if w]
+    raw = _LEVEL_PREFIX.sub("", (title or "").strip()).strip()
+    words = [w for w in re.split(r"\s+", raw) if w]
     cleaned: list[str] = []
     for word in words:
-        chars = "".join(c for c in word if c.isalpha() or ("\u0590" <= c <= "\u05ff") or ("\u0600" <= c <= "\u06ff"))
-        # isalpha already covers Hebrew/Arabic in Python 3; keep digits out so
-        # a title that is only a number does not become a numeric-only mark.
         chars = "".join(c for c in word if c.isalpha())
         if chars:
             cleaned.append(chars)
@@ -220,6 +241,51 @@ def _hay(*parts: str) -> str:
     return " ".join(p for p in parts if p)
 
 
+def stone_mark(
+    title: str = "",
+    *,
+    subject: str = "",
+    topic_id: str = "",
+    tile_id: str = "",
+    topic_title: str = "",
+    path_title: str = "",
+    path_id: str = "",
+    session_type: str = "",
+) -> tuple[str, str]:
+    """Deterministic (mark, kind) from real data. Never invented, never blank.
+
+    Kind is ``text``, ``book`` or ``speech``. Book and speech are line SVGs.
+    Closest text wins: session, then topic, then path.
+    """
+    subj = infer_subject(subject, path_id=path_id, path_title=path_title, topic_id=topic_id)
+    stype = (session_type or "").strip().lower()
+    if stype == "speak" and subj in ("english", ""):
+        return "speech", "speech"
+    layers = (
+        _hay(title, tile_id, session_type),
+        _hay(topic_title, topic_id),
+        _hay(path_title, path_id),
+    )
+    for hay in layers:
+        if not hay:
+            continue
+        hay_l = hay.lower()
+        for subjects, needles, mark, kind in _MARK_RULES:
+            if subjects is not None and subj and subj not in subjects:
+                continue
+            if subjects is not None and not subj and subjects in (("english",), ("arabic",)):
+                continue
+            if any(needle.lower() in hay_l for needle in needles):
+                return mark, kind
+    stem = parse_topic(topic_id).get("stem") or ""
+    if stem in _STEM_SYMBOL:
+        return _STEM_SYMBOL[stem]
+    if subj in _SUBJECT_DEFAULT:
+        return _SUBJECT_DEFAULT[subj]
+    initials = first_letters(title) or first_letters(topic_title) or first_letters(path_title)
+    return (initials or "·"), "text"
+
+
 def map_symbol(
     title: str = "",
     *,
@@ -229,28 +295,20 @@ def map_symbol(
     topic_title: str = "",
     path_title: str = "",
     path_id: str = "",
+    session_type: str = "",
 ) -> str:
-    """Subject-fitting symbol from a deterministic keyword map, else first letters."""
-    subj = infer_subject(subject, path_id=path_id, path_title=path_title, topic_id=topic_id)
-    # Closest text wins: session title, then topic, then path. A path named
-    # "ספרות ודיבור" must not override a session called "סיפור קצר".
-    layers = (
-        _hay(title, tile_id),
-        _hay(topic_title, topic_id),
-        _hay(path_title, path_id),
+    """Mark glyph (or 'book' / 'speech' kind token) for tests and labels."""
+    mark, _kind = stone_mark(
+        title,
+        subject=subject,
+        topic_id=topic_id,
+        tile_id=tile_id,
+        topic_title=topic_title,
+        path_title=path_title,
+        path_id=path_id,
+        session_type=session_type,
     )
-    rules = _MATH_RULES if subj == "math" else _EN_RULES if subj == "english" else ()
-    for hay in layers:
-        if not hay:
-            continue
-        for pat, sym in rules:
-            if pat.search(hay):
-                return sym
-    if subj == "math":
-        stem = parse_topic(topic_id).get("stem") or ""
-        if stem in _STEM_SYMBOL:
-            return _STEM_SYMBOL[stem]
-    return first_letters(title) or first_letters(topic_title) or first_letters(path_title)
+    return mark
 
 
 def face_for(
@@ -262,10 +320,11 @@ def face_for(
     topic_title: str = "",
     path_title: str = "",
     path_id: str = "",
+    session_type: str = "",
 ) -> dict[str, str]:
-    """Short title + symbol for a stone. Full title stays in ``title`` / aria."""
+    """Short title + mark for a stone. Full title stays in ``title`` / aria."""
     full = " ".join((title or "").split())
-    symbol = map_symbol(
+    mark, kind = stone_mark(
         full,
         subject=subject,
         topic_id=topic_id,
@@ -273,13 +332,20 @@ def face_for(
         topic_title=topic_title,
         path_title=path_title,
         path_id=path_id,
+        session_type=session_type,
     )
     short = shorten_title(full)
     if not short or re.fullmatch(r"\d+", short):
-        short = symbol or first_letters(full) or first_letters(topic_title)
-    if not symbol:
-        symbol = first_letters(full) or (short[:2] if short else "")
-    return {"shortTitle": short, "symbol": symbol, "fullTitle": full}
+        short = (mark if kind == "text" else "") or first_letters(full) or first_letters(topic_title)
+    if not mark:
+        mark, kind = (first_letters(full) or (short[:2] if short else "·")), "text"
+    return {
+        "shortTitle": short,
+        "symbol": mark,
+        "mark": mark,
+        "markKind": kind,
+        "fullTitle": full,
+    }
 
 
 def _decorate_tiles(
@@ -311,6 +377,7 @@ def _decorate_tiles(
             topic_title=topic_title,
             path_title=path_title,
             path_id=path_id,
+            session_type=str(item.get("type") or ""),
         )
         item.update(face)
         out.append(item)
@@ -379,7 +446,7 @@ def road_hopscotch(
             path_title=path_title,
             path_id=path_id,
         )
-        symbol = map_symbol(
+        mark, mark_kind = stone_mark(
             title,
             subject=subject,
             topic_id=str(src.get("id") or ""),
@@ -387,6 +454,7 @@ def road_hopscotch(
             path_title=path_title,
             path_id=path_id,
         )
+        symbol = mark
         rows = chunk_rows(tiles)
         done = int(src.get("done") or 0)
         total = int(src.get("total") or len(tiles))
@@ -410,6 +478,8 @@ def road_hopscotch(
                 "title": title,
                 "titleLang": title_lang,
                 "symbol": symbol,
+                "mark": mark,
+                "markKind": mark_kind,
                 "crossed": prev_block["state"] == "done",
                 "open": state in ("here", "started", "open", "done"),
             }
@@ -424,6 +494,8 @@ def road_hopscotch(
             "title": title,
             "titleLang": title_lang,
             "symbol": symbol,
+            "mark": mark,
+            "markKind": mark_kind,
             "topicTitle": src.get("title") or "",
             "topicTitleLang": src.get("titleLang") or "",
             "review": kind == "review" or bool(src.get("review")),

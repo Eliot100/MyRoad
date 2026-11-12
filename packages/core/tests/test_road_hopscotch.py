@@ -207,8 +207,8 @@ def test_locale_keys_for_levels_in_all_three():
 
 def test_shorten_title_is_clean_and_keeps_real_words():
     assert shorten_title("משוואה לינארית") == "משוואה לינארית"
-    assert shorten_title("משוואה לינארית 5") == "משוואה לינארית"
-    assert shorten_title("יחסים במשולש ישר זווית") == "יחסים במשולש"
+    assert shorten_title("משוואה לינארית 5") == "משוואה לינארית 5"
+    assert shorten_title("יחסים במשולש ישר זווית") == "יחסים במשולש ישר"
     assert first_letters("משוואה לינארית") == "מל"
     assert first_letters("Present Simple") == "PS"
     assert first_letters("חזקות") == "חז"
@@ -219,7 +219,7 @@ def test_shorten_title_is_clean_and_keeps_real_words():
 def test_math_and_english_symbols_from_real_titles():
     cases = {
         ("משוואה לינארית", "math"): "x",
-        ("חזקות", "math"): "x²",
+        ("חזקות", "math"): "xⁿ",
         ("הפרש ריבועים", "math"): "x²",
         ("שורש ריבועי", "math"): "√",
         ("זווית חיצונית", "math"): "∠",
@@ -228,18 +228,19 @@ def test_math_and_english_symbols_from_real_titles():
         ("שברים", "math"): "½",
         ("סינוס במשולש", "math"): "∠",
         ("Present Simple", "english"): "Aa",
-        ("סיפור קצר", "english"): "📖",
-        ("דיבור", "english"): "💬",
+        ("סיפור קצר", "english"): "book",
+        ("דיבור", "english"): "speech",
         ("אוצר מילים", "english"): "Aa",
-        ("האזנה", "english"): "💬",
+        ("האזנה", "english"): "speech",
     }
     for (title, subject), exp in cases.items():
         assert map_symbol(title, subject=subject) == exp, (title, subject)
     # Fallback is first letters of the real title, nothing invented.
-    assert map_symbol("בדיקה כללית", subject="math") == "בכ"
+    assert map_symbol("בדיקה כללית", subject="math") == "x"
+    assert map_symbol("בדיקה כללית") == "בכ"  # no subject: initials
     face = face_for("משוואה לינארית 3", subject="math")
     assert face["symbol"] == "x"
-    assert face["shortTitle"] == "משוואה לינארית"
+    assert face["shortTitle"] == "משוואה לינארית 3"
     assert face["fullTitle"] == "משוואה לינארית 3"
 
 
@@ -269,7 +270,8 @@ def test_every_stone_and_stage_has_a_readable_face():
         assert not re.fullmatch(r"\d+", tile["symbol"])
     assert block["tiles"][0]["symbol"] == "x"
     assert "משוואה" in block["tiles"][0]["shortTitle"]
-    assert block["tiles"][1]["symbol"] == "x²"
+    assert block["tiles"][1]["symbol"] == "xⁿ"
+    assert block["tiles"][1]["markKind"] == "text"
     # English: book / Aa / speech, with the session title.
     en = {
         "n": 1, "id": "t_story", "title": "סיפור קצר", "titleLang": "he",
@@ -278,8 +280,9 @@ def test_every_stone_and_stage_has_a_readable_face():
     }
     eh = road_hopscotch({"stages": [en], "total": 1}, path_title="ספרות ודיבור",
                         subject="english", path_id="path_english_bagrut5_07_literature_oral")
-    assert eh["blocks"][0]["symbol"] == "📖"
-    assert eh["blocks"][0]["tiles"][0]["symbol"] == "📖"
+    assert eh["blocks"][0]["markKind"] == "book"
+    assert eh["blocks"][0]["symbol"] == "book"
+    assert eh["blocks"][0]["tiles"][0]["markKind"] == "book"
     assert eh["blocks"][0]["tiles"][0]["shortTitle"] == "סיפור קצר"
 
 
@@ -299,9 +302,13 @@ def test_no_global_progress_bar_in_journey_template_or_css():
     assert "prefers-reduced-motion" in css
     assert 'data-jy-boundary="level-up"' not in html
     assert "jy-symbol" in html and "jy-caption" in html
-    assert "jy-stage-symbol" in html
+    assert "jy-block-head" in html and "jy_glyph" in html
+    assert "jy-stage-symbol" in html or "jy-block-mark" in html
     assert ".jy-symbol" in css and ".jy-caption" in css
+    assert ".jy-block-head" in css and ".jy-meter" in css
     assert "11px" in css  # legible short title at 375
+    assert "📖" not in html and "💬" not in html
+    assert "jy-mark-svg" in html
 
 
 @pytest.fixture
@@ -334,7 +341,8 @@ def test_journey_html_has_rows_rings_and_no_top_bar(app):
         assert 'id="journey-track"' in html
         assert "jy-meter-overall" not in html
         assert 'class="jy-row"' in html or "jy-row" in html
-        assert "jy-ring" in html
+        assert "jy-meter" in html or "jy-ring" in html
+        assert "jy-block-head" in html
         assert "מסע" not in html
         # Level labels appear on a real-level path; level-1 labels on others.
         assert "רמה" in html or "שלב" in html
@@ -351,9 +359,11 @@ def test_journey_html_has_rows_rings_and_no_top_bar(app):
             assert "M5 13l4.5 4.5L19 7" not in html
             # Every stone and the stage label show a real title and/or a symbol.
             assert "jy-symbol" in html and "jy-caption" in html
-            assert "jy-stage-symbol" in html
+            assert "jy-block-head" in html and "jy-meter" in html
+            assert "jy-stage-symbol" in html or "jy-block-mark" in html
             assert "משוואה" in html
-            assert ">x</span>" in html or ">x²</span>" in html
+            assert ">x</span>" in html or ">x²</span>" in html or ">xⁿ</span>" in html
+            assert "📖" not in html and "💬" not in html
 
 
 def _free_port() -> int:
@@ -411,7 +421,8 @@ def test_hopscotch_layout_375_and_horizontal(app):
             pg.wait_for_timeout(400)
             assert pg.locator(".road-jy").count() == 1
             assert pg.locator(".jy-meter-overall").count() == 0
-            assert pg.locator(".jy-ring").count() >= 1
+            assert pg.locator(".jy-block-head").count() >= 1
+            assert pg.locator(".jy-meter").count() >= 1
             geo = pg.evaluate("""() => {
               const steps = [...document.querySelectorAll('.jy-step')];
               if (steps.length < 2) return null;
@@ -475,7 +486,8 @@ def test_hopscotch_layout_375_and_horizontal(app):
             if "algebra" in play:
                 # One stage, current level only: no level-up line between levels.
                 assert pg.locator('[data-jy-boundary="level-up"]').count() == 0
-                assert "רמה" in pg.locator(".jy-kicker").first.inner_text()
+                kicker = pg.locator(".jy-block-head, .jy-kicker").first.inner_text()
+                assert "רמה" in kicker
             faces = pg.evaluate("""() => {
               const steps = [...document.querySelectorAll('.jy-step')];
               return steps.map(s => {
@@ -496,7 +508,8 @@ def test_hopscotch_layout_375_and_horizontal(app):
             if labeled:
                 assert min(f["fontPx"] for f in labeled) >= 10
             if "algebra" in play:
-                assert pg.locator(".jy-stage-symbol").count() >= 1
+                assert pg.locator(".jy-stage-symbol, .jy-block-mark").count() >= 1
+                assert pg.locator(".jy-block-head").count() >= 1
                 text = " ".join(f["caption"] + f["symbol"] for f in faces)
                 assert "משוואה" in text or "חזק" in text or "x" in text
             # Reduced motion: the recommended stone keeps a static lift, no pulse.

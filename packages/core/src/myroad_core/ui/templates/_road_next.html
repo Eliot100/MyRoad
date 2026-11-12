@@ -1,3 +1,23 @@
-{#- The one next משבצת on the road page, named above the head's continue button (road_timeline.py `tl.next`). -#}
-<p class="continue-next"><span class="tiny">{{ t('tl_next') }} · {{ t('tl_stage_n', n=tl.next.stageN) }}</span>
-  <span class="continue-next-title" dir="auto"{{ tl.next.titleLang|content_lang(locale) }}>{{ tl.next.title }}</span></p>
+{#- The one next משבצת on the road page, named above the head's continue button.
+    Timeline wording uses the timeline stage number. Journey wording uses the
+    hopscotch block (שלב N · <topic> · רמה X) so a later level of the same
+    topic never looks like the next stage. The topic is wrapped with dir/lang
+    so Hebrew titles stay marked when the UI is English or Arabic.
+    Use data-road-copy (not data-road-style-panel) so tests that slice the
+    two road panels by that attribute are not confused. -#}
+{%- set hop_next = road_hopscotch(tl, path_title=meta.title|default(''), path_title_lang=meta.titleLang|default(''), subject=meta.subject|default(''), path_id=path_id|default('')) if tl is defined and tl else none %}
+{%- set nb = hop_next.nextBlock if hop_next else none %}
+{%- macro _jy_next_words(block) -%}
+  {%- if block.kind == 'review' -%}
+    {{ t('tl_stage_n', n=block.stageN) }} · <span dir="auto"{{ block.titleLang|content_lang(locale) }}>{{ block.title }}</span> · {{ t('step_kind_review') }}
+  {%- elif block.levelN -%}
+    {{ t('tl_stage_n', n=block.stageN) }} · <span dir="auto"{{ block.titleLang|content_lang(locale) }}>{{ block.title }}</span> · {{ t('jy_level_badge', n=block.levelN) }}
+  {%- else -%}
+    {{ t('tl_stage_n', n=block.stageN) }}
+  {%- endif -%}
+{%- endmacro %}
+<p class="continue-next">
+  <span class="tiny" data-road-copy="timeline">{{ t('tl_next') }} · {{ t('tl_stage_n', n=tl.next.stageN) }}</span>
+  <span class="tiny" data-road-copy="journey">{{ t('tl_next') }} · <span class="jy-bar-stage">{%- if nb -%}{{ _jy_next_words(nb) }}{%- else -%}{{ t('tl_stage_n', n=tl.next.stageN) }}{%- endif -%}</span></span>
+  <span class="continue-next-title" dir="auto"{{ tl.next.titleLang|content_lang(locale) }}>{{ tl.next.title }}</span>
+</p>
