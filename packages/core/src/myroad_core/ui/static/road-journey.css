@@ -290,24 +290,71 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.road-jy .jy-step.is-done .jy-stone {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--jy-walked) 82%, white) 0%, var(--jy-walked-2) 100%);
-  color: var(--jy-walked-ink);
-  box-shadow: var(--jy-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+/* Leveled-up stones: same family as open upcoming stones, a richer
+   tier finish and a level badge. No check mark, no "done-and-gone" fill. */
+.road-jy .jy-step.is-done .jy-stone,
+.road-jy .jy-step.is-leveled .jy-stone {
+  background: linear-gradient(180deg, #fff8ea 0%, #f3e6c8 52%, #e6d3a6 100%);
+  color: #3a3220;
+  box-shadow:
+    var(--jy-shadow),
+    0 0 0 2px #c9a65a,
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -5px 8px rgba(140, 100, 30, 0.16);
 }
-.road-jy .jy-step.is-done .jy-icon svg { stroke-width: 2.8; }
-.road-jy .jy-step.is-here { z-index: 4; }
-.road-jy .jy-step.is-here .jy-stone {
+.road-jy .jy-step.is-leveled[data-jy-badge="2"] .jy-stone {
+  background: linear-gradient(180deg, #fff3d6 0%, #ecd59c 52%, #d4b56a 100%);
+  box-shadow:
+    var(--jy-shadow),
+    0 0 0 2px #b8923a,
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -5px 8px rgba(120, 85, 20, 0.18);
+}
+.road-jy .jy-step.is-leveled[data-jy-badge="3"] .jy-stone {
+  background: linear-gradient(180deg, #ffefc8 0%, #e4c47a 52%, #c9a048 100%);
+  box-shadow:
+    var(--jy-shadow),
+    0 0 0 2px #a07c28,
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -5px 8px rgba(100, 70, 10, 0.2);
+}
+.road-jy .jy-step.is-done .jy-icon,
+.road-jy .jy-step.is-leveled .jy-icon { display: none; }
+.road-jy .jy-badge {
+  position: absolute;
+  z-index: 2;
+  inset-block-end: 7px;
+  inset-inline: 5px;
+  margin-inline: auto;
+  width: max-content;
+  max-inline-size: calc(100% - 8px);
+  font-size: 0.62rem;
+  font-weight: 750;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(58, 42, 12, 0.88);
+  color: #fff6dc;
+  letter-spacing: 0;
+  pointer-events: none;
+}
+/* Exactly one recommended stone: lift, glow, pulse. Nothing else competes. */
+.road-jy .jy-step.is-here,
+.road-jy .jy-step.is-recommended { z-index: 6; }
+.road-jy .jy-step.is-here .jy-stone,
+.road-jy .jy-step.is-recommended .jy-stone {
   background: linear-gradient(180deg, #fffdf6 0%, var(--jy-here) 100%);
   color: var(--jy-stone-ink);
   box-shadow:
-    0 0 0 3px var(--jy-here-ring),
-    0 0 28px 10px var(--jy-here-glow),
-    var(--jy-shadow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  animation: jy-glow 2.4s ease-in-out infinite;
+    0 0 0 4px var(--jy-here-ring),
+    0 0 36px 14px var(--jy-here-glow),
+    0 14px 22px rgba(16, 40, 12, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  animation: jy-recommend 2.2s ease-in-out infinite;
+  transform: translateY(-6px);
 }
-.road-jy .jy-step.is-here .jy-icon { display: none; }
+.road-jy .jy-step.is-here .jy-icon,
+.road-jy .jy-step.is-recommended .jy-icon { display: none; }
 .road-jy .jy-step.is-ahead .jy-stone,
 .road-jy .jy-step.is-view .jy-stone {
   background: linear-gradient(180deg, #c8c8c0 0%, var(--jy-stone-ahead) 100%);
@@ -320,32 +367,39 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   outline: 3px solid #fff;
   outline-offset: 3px;
 }
-.road-jy .jy-step:not(.is-ahead):not(.is-view) .jy-stone:hover {
+.road-jy .jy-step:not(.is-ahead):not(.is-view):not(.is-here):not(.is-recommended) .jy-stone:hover {
   transform: translateY(-2px);
 }
 .road-jy .jy-here-flag {
   position: absolute;
-  z-index: 5;
+  z-index: 7;
   inset: 0;
   margin: auto;
   width: max-content;
   height: max-content;
   background: #fff;
   color: #1a1a18;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1.25;
   letter-spacing: 0;
   padding: 5px 9px;
   border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(20, 20, 10, 0.22);
-  white-space: nowrap;
+  box-shadow: 0 3px 12px rgba(20, 20, 10, 0.28);
+  white-space: normal;
+  text-align: center;
   pointer-events: none;
-  max-inline-size: calc(var(--jy-stone-size) + 20px);
+  max-inline-size: calc(var(--jy-stone-size) + 36px);
 }
-@keyframes jy-glow {
-  0%, 100% { box-shadow: 0 0 0 3px var(--jy-here-ring), 0 0 22px 8px var(--jy-here-glow), var(--jy-shadow), inset 0 1px 0 rgba(255,255,255,0.9); }
-  50% { box-shadow: 0 0 0 4px var(--jy-here-ring), 0 0 34px 14px var(--jy-here-glow), var(--jy-shadow), inset 0 1px 0 rgba(255,255,255,0.9); }
+@keyframes jy-recommend {
+  0%, 100% {
+    box-shadow: 0 0 0 4px var(--jy-here-ring), 0 0 28px 10px var(--jy-here-glow), 0 14px 22px rgba(16, 40, 12, 0.38), inset 0 1px 0 rgba(255,255,255,0.95);
+    transform: translateY(-6px);
+  }
+  50% {
+    box-shadow: 0 0 0 6px var(--jy-here-ring), 0 0 46px 18px var(--jy-here-glow), 0 16px 26px rgba(16, 40, 12, 0.4), inset 0 1px 0 rgba(255,255,255,0.95);
+    transform: translateY(-8px);
+  }
 }
 
 /* ---- Block start label + ring (first block, at the visual bottom). ---- */
@@ -577,12 +631,20 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 @media (prefers-reduced-motion: reduce) {
   .road-jy .jy-stone,
   .road-jy .jy-ring-fg { transition: none; }
-  .road-jy .jy-step.is-here .jy-stone { animation: none; transform: none; }
-  .road-jy .jy-step:not(.is-ahead):not(.is-view) .jy-stone:hover { transform: none; }
+  .road-jy .jy-step.is-here .jy-stone,
+  .road-jy .jy-step.is-recommended .jy-stone {
+    animation: none;
+    transform: translateY(-6px);
+  }
+  .road-jy .jy-step:not(.is-ahead):not(.is-view):not(.is-here):not(.is-recommended) .jy-stone:hover { transform: none; }
 }
 html[data-motion="reduce"] .road-jy .jy-stone { transition: none; }
-html[data-motion="reduce"] .road-jy .jy-step.is-here .jy-stone { animation: none; transform: none; }
-html[data-motion="reduce"] .road-jy .jy-step:not(.is-ahead):not(.is-view) .jy-stone:hover { transform: none; }
+html[data-motion="reduce"] .road-jy .jy-step.is-here .jy-stone,
+html[data-motion="reduce"] .road-jy .jy-step.is-recommended .jy-stone {
+  animation: none;
+  transform: translateY(-6px);
+}
+html[data-motion="reduce"] .road-jy .jy-step:not(.is-ahead):not(.is-view):not(.is-here):not(.is-recommended) .jy-stone:hover { transform: none; }
 
 /* Settings: two-option road style picker (and the orientation picker, same pattern). */
 .road-style-opts {

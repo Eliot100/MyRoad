@@ -616,5 +616,9 @@
   "jy_stage_level": "المرحلة {n} · المستوى {level}",
   "jy_stage_review": "المرحلة {n} · مراجعة",
   "jy_level_up": "المرحلة {stage} · المستوى {n}",
-  "jy_stage_arrive": "المرحلة {n}"
+  "jy_stage_arrive": "المرحلة {n}",
+  "jy_stage_topic_level": "المرحلة {n} · {topic} · المستوى {level}",
+  "jy_stage_topic_review": "المرحلة {n} · {topic} · مراجعة",
+  "jy_level_badge": "المستوى {n}",
+  "jy_recommended": "موصى به للتدرّب"
 }

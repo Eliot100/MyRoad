@@ -616,5 +616,9 @@
   "jy_stage_level": "Stage {n} · Level {level}",
   "jy_stage_review": "Stage {n} · Review",
   "jy_level_up": "Stage {stage} · Level {n}",
-  "jy_stage_arrive": "Stage {n}"
+  "jy_stage_arrive": "Stage {n}",
+  "jy_stage_topic_level": "Stage {n} · {topic} · Level {level}",
+  "jy_stage_topic_review": "Stage {n} · {topic} · Review",
+  "jy_level_badge": "Level {n}",
+  "jy_recommended": "Recommended practice"
 }

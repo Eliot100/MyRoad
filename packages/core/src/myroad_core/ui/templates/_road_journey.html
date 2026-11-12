@@ -1,13 +1,13 @@
 {#- Journey style: a hopscotch board of square stepping stones in a grass field
-    (Eliot's sketch, 2026-11-12). Same `tl` view model as the timeline; `hop`
-    is derived from it (real `_lN` levels only). Unique ids (jy-here, journey-track)
-    so the timeline's #here stays unique. Style and orientation are set on <html>
-    from localStorage before paint. -#}
+    (Eliot's sketch, 2026-11-12; correction 2: one block per stage, current
+    level only). Same `tl` view model as the timeline; `hop` is derived from
+    it. Unique ids (jy-here, journey-track) so the timeline's #here stays
+    unique. Style and orientation are set on <html> from localStorage before
+    paint. -#}
 {%- set hop = road_hopscotch(tl, path_title=meta.title, path_title_lang=meta.titleLang|default('')) %}
 {%- macro jy_icon(state) -%}
 <span class="jy-icon" aria-hidden="true">
-  {%- if state == 'done' %}<svg viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19 7"/></svg>
-  {%- elif state == 'here' %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.6"/></svg>
+  {%- if state == 'here' %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.6"/></svg>
   {%- elif state == 'ahead' %}<svg viewBox="0 0 24 24"><rect x="8" y="11" width="8" height="8" rx="1.6"/><path d="M9.6 11V8.8a2.4 2.4 0 0 1 4.8 0V11"/></svg>
   {%- else %}<span class="jy-icon-empty"></span>
   {%- endif -%}
@@ -25,16 +25,16 @@
 {%- endmacro %}
 {%- macro jy_block_words(block) -%}
   {%- if block.kind == 'review' -%}
-    {{ t('jy_stage_review', n=block.stageN) }}
+    {{ t('jy_stage_topic_review', n=block.stageN, topic=block.title) }}
   {%- elif block.levelN -%}
-    {{ t('jy_stage_level', n=block.stageN, level=block.levelN) }}
+    {{ t('jy_stage_topic_level', n=block.stageN, topic=block.title, level=block.levelN) }}
   {%- else -%}
     {{ t('tl_stage_n', n=block.stageN) }}
   {%- endif -%}
 {%- endmacro %}
 {%- macro jy_stone_tile(tile) -%}
-  {%- set here_tile = tile.state == 'here' %}
-  <li class="jy-step is-{{ tile.state }}{% if tile.review %} is-review{% endif %}{% if tile.check %} is-check{% endif %}" data-block-id="{{ tile.id }}"{% if here_tile %} id="jy-here" data-jy-current="step"{% endif %}>
+  {%- set here_tile = tile.state == 'here' or tile.recommended %}
+  <li class="jy-step is-{{ tile.state }}{% if tile.review %} is-review{% endif %}{% if tile.check %} is-check{% endif %}{% if tile.leveled %} is-leveled{% endif %}{% if tile.recommended %} is-recommended{% endif %}" data-block-id="{{ tile.id }}"{% if tile.levelBadge %} data-jy-badge="{{ tile.levelBadge }}"{% endif %}{% if here_tile %} id="jy-here" data-jy-current="step"{% endif %}>
     {%- if tile.state in ('ahead', 'view') %}
     <div class="jy-stone"{% if tile.state == 'ahead' %} aria-disabled="true"{% endif %}>
       <span class="jy-face" aria-hidden="true"></span>
@@ -47,15 +47,18 @@
       <button type="submit" class="jy-stone"{% if here_tile %} aria-current="step"{% endif %}>
         <span class="jy-face" aria-hidden="true"></span>
         {{ jy_icon(tile.state) }}
-        <span class="visually-hidden">{% if here_tile %}{{ t('tl_here') }} · {% endif %}<span dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>{% if tile.state == 'done' %} · {{ t('tl_done') }}{% endif %}{% if tile.review %} · {{ t('step_kind_review') }}{% elif tile.check %} · {{ t('tl_check') }}{% endif %}</span>
+        {%- if tile.leveled and tile.levelBadge %}
+        <span class="jy-badge" aria-hidden="true">{{ t('jy_level_badge', n=tile.levelBadge) }}</span>
+        {%- endif %}
+        <span class="visually-hidden">{% if here_tile %}{{ t('jy_recommended') }} · {% endif %}{% if tile.leveled and tile.levelBadge %}{{ t('jy_level_badge', n=tile.levelBadge) }} · {% endif %}<span dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>{% if tile.leveled %} · {{ t('tl_done') }}{% endif %}{% if tile.review %} · {{ t('step_kind_review') }}{% elif tile.check %} · {{ t('tl_check') }}{% endif %}</span>
       </button>
     </form>
-    {%- if here_tile %}<span class="jy-here-flag" aria-hidden="true">{{ t('tl_here') }}</span>{% endif %}
+    {%- if here_tile %}<span class="jy-here-flag" aria-hidden="true">{{ t('jy_recommended') }}</span>{% endif %}
     {%- endif %}
   </li>
 {%- endmacro %}
 
-<section class="card road-jy{% if tl.linear %} is-linear{% endif %}{% if tl.readOnly %} is-view{% endif %}" aria-labelledby="journey-track" data-map="{{ 'linear' if tl.linear else 'free' }}" data-stages="{{ tl.stagesTotal }}" data-tiles="{{ tl.total }}" data-pct="{{ tl.pct }}">
+<section class="card road-jy{% if tl.linear %} is-linear{% endif %}{% if tl.readOnly %} is-view{% endif %}" aria-labelledby="journey-track" data-map="{{ 'linear' if tl.linear else 'free' }}" data-stages="{{ hop.stageCount }}" data-tiles="{{ tl.total }}" data-pct="{{ tl.pct }}">
   <header class="jy-head">
     <div class="jy-head-row">
       <h2 id="journey-track" tabindex="-1">{{ t('path_map') }}</h2>
@@ -77,28 +80,15 @@
           <div class="jy-boundary-copy">
             {{ jy_ring(block) }}
             <div class="jy-kicker-stack">
-            {%- if block.boundary.kind == 'level-up' %}
-            <span class="jy-kicker">{% if block.boundary.review %}{{ t('jy_stage_review', n=block.boundary.stageN) }}{% else %}{{ t('jy_level_up', n=block.boundary.levelN, stage=block.boundary.stageN) }}{% endif %}</span>
-            {%- else %}
             <span class="jy-kicker">{{ t('jy_stage_arrive', n=block.boundary.stageN) }}</span>
             <span class="jy-boundary-title" dir="auto"{{ block.boundary.titleLang|content_lang(locale) }}>{{ block.boundary.title }}</span>
-            {%- endif %}
             </div>
           </div>
         </div>
-        <span class="visually-hidden">
-          {%- if block.boundary.kind == 'level-up' %}
-            {%- if block.boundary.review %}{{ t('jy_stage_review', n=block.boundary.stageN) }}
-            {%- else %}{{ t('jy_level_up', n=block.boundary.levelN, stage=block.boundary.stageN) }}
-            {%- endif %}
-          {%- else %}{{ t('jy_stage_arrive', n=block.boundary.stageN) }} · <span dir="auto"{{ block.boundary.titleLang|content_lang(locale) }}>{{ block.boundary.title }}</span>
-          {%- endif %}
-          {%- if block.boundary.crossed %} · {{ t('tl_done') }}{% elif not block.boundary.open %} · {{ t('tl_ahead') }}{% endif %}
-        </span>
+        <span class="visually-hidden">{{ t('jy_stage_arrive', n=block.boundary.stageN) }} · <span dir="auto"{{ block.boundary.titleLang|content_lang(locale) }}>{{ block.boundary.title }}</span>{% if block.boundary.crossed %} · {{ t('tl_done') }}{% elif not block.boundary.open %} · {{ t('tl_ahead') }}{% endif %}</span>
       </li>
       {%- endif %}
       <li class="jy-block jy-stage is-{{ block.state }}{% if block.walked %} is-walked{% endif %}{% if block.review %} is-review{% endif %}" data-jy-topic="{{ block.id }}" data-jy-pct="{{ block.pct }}" data-jy-stage="{{ block.stageN }}" data-jy-level="{{ block.levelN if block.levelN is not none else '' }}">
-        {%- if loop.first %}
         <div class="jy-block-meta jy-block-start">
           <div class="jy-block-copy">
             {{ jy_ring(block) }}
@@ -111,7 +101,6 @@
           <a class="secondary link-btn small-btn jy-peek" href="/play/{{ path_id }}?topic={{ block.id }}">{{ t('read_only_open') }}</a>
           {%- endif %}
         </div>
-        {%- endif %}
         <ol class="jy-rows">
           {%- for row in block.rows %}
           <li class="jy-row" data-jy-span="{{ row|length }}">

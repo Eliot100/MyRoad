@@ -81,7 +81,7 @@ def test_parse_topic_real_levels_only():
     assert parse_topic("t_numbers")["level"] is None
 
 
-def test_algebra_style_path_groups_one_stage_with_levels():
+def test_algebra_shows_only_the_current_level_as_one_block():
     stages = [
         _stage(1, "alg_l1", "רמה 1, בסיס", 16, done=3, here=3),
         _stage(2, "alg_l2", "רמה 2, יישום", 16),
@@ -92,20 +92,41 @@ def test_algebra_style_path_groups_one_stage_with_levels():
     hop = road_hopscotch(tl, path_title="אלגברה", path_title_lang="he")
     assert hop["hasRealLevels"] is True
     assert hop["stageCount"] == 1
-    assert len(hop["blocks"]) == 4
-    assert [b["levelN"] for b in hop["blocks"]] == [1, 2, 3, None]
-    assert [b["kind"] for b in hop["blocks"]] == ["level", "level", "level", "review"]
-    assert all(b["stageN"] == 1 for b in hop["blocks"])
-    assert all(b["title"] == "אלגברה" for b in hop["blocks"])
-    assert hop["blocks"][0]["boundary"] is None
-    assert hop["blocks"][1]["boundary"]["kind"] == "level-up"
-    assert hop["blocks"][1]["boundary"]["levelN"] == 2
-    assert hop["blocks"][2]["boundary"]["kind"] == "level-up"
-    assert hop["blocks"][3]["boundary"]["kind"] == "level-up"
-    assert hop["blocks"][3]["boundary"]["review"] is True
-    assert [len(r) for r in hop["blocks"][0]["rows"]] == [1, 3, 3, 3, 3, 3]
-    assert hop["blocks"][0]["ring"]["pct"] == hop["blocks"][0]["pct"]
-    assert hop["blocks"][0]["ring"]["offset"] < hop["blocks"][0]["ring"]["c"]
+    # Correction 2: one block for the whole stage, only the current (lowest unfinished) level.
+    assert len(hop["blocks"]) == 1
+    block = hop["blocks"][0]
+    assert block["levelN"] == 1 and block["id"] == "alg_l1"
+    assert block["kind"] == "level" and block["title"] == "אלגברה"
+    assert block["total"] == 16 and block["done"] == 3
+    assert block["boundary"] is None  # a later level is not a new stage
+    assert all((b.get("boundary") or {}).get("kind") != "level-up" for b in hop["blocks"])
+    assert [len(r) for r in block["rows"]] == [1, 3, 3, 3, 3, 3]
+    assert block["ring"]["pct"] == block["pct"]
+    # Done stones are leveled up with a level badge, no "finished-and-gone" check.
+    leveled = [t for t in block["tiles"] if t["state"] == "done"]
+    assert len(leveled) == 3
+    assert all(t["leveled"] and t["levelBadge"] == 1 for t in leveled)
+    recommended = [t for t in block["tiles"] if t["recommended"]]
+    assert len(recommended) == 1 and recommended[0]["state"] == "here"
+
+
+def test_algebra_advances_to_level_2_after_level_1_is_complete():
+    stages = [
+        _stage(1, "alg_l1", "רמה 1, בסיס", 16, done=16),
+        _stage(2, "alg_l2", "רמה 2, יישום", 16, done=2, here=2),
+        _stage(3, "alg_l3", "רמה 3, שליטה", 16),
+        _stage(4, "alg_review", "חזרה מעורבת", 6),
+    ]
+    hop = road_hopscotch({"stages": stages, "stagesTotal": 4, "total": 54}, path_title="אלגברה")
+    assert hop["stageCount"] == 1 and len(hop["blocks"]) == 1
+    block = hop["blocks"][0]
+    assert block["id"] == "alg_l2" and block["levelN"] == 2
+    assert block["total"] == 16 and block["done"] == 2
+    assert block["boundary"] is None
+    assert all(t["levelBadge"] == 2 for t in block["tiles"] if t["leveled"])
+    # The completed level 1 is not rendered as its own block or line.
+    ids = [b["id"] for b in hop["blocks"]]
+    assert "alg_l1" not in ids and "alg_l3" not in ids
 
 
 def test_unleveled_path_is_level_1_blocks_with_stage_boundaries():
@@ -138,11 +159,12 @@ def test_road_hopscotch_uses_timeline_states_unchanged():
     ]
     tl = road_timeline(topics, mastered=["a0", "a1"], current_block="a2", linear=True)
     hop = road_hopscotch(tl, path_title="אלגברה")
-    # States come from the timeline: linear locks anything past the gap.
-    flat = [t["state"] for b in hop["blocks"] for t in b["tiles"]]
+    # Only the current level (l1, unfinished) is shown; l2 is not a second block.
+    assert len(hop["blocks"]) == 1
+    flat = [t["state"] for t in hop["blocks"][0]["tiles"]]
     assert flat[:3] == ["done", "done", "here"]
     assert all(s == "ahead" for s in flat[3:])
-    assert hop["blocks"][1]["boundary"]["kind"] == "level-up"
+    assert hop["blocks"][0]["boundary"] is None
     assert hop["nextBlock"] is hop["blocks"][0] or hop["nextBlock"]["id"] == "alg_l1"
     assert hop["nextBlock"]["stageN"] == 1 and hop["nextBlock"]["levelN"] == 1
     # Timeline itself is untouched (still two stages, original titles).
@@ -165,14 +187,17 @@ def test_row_mates_for_any_order_documentation():
 def test_locale_keys_for_levels_in_all_three():
     for code in ("he", "en", "ar"):
         j = json.loads((_CORE / "locales" / f"{code}.json").read_text(encoding="utf-8"))
-        for k in ("jy_stage_level", "jy_stage_review", "jy_level_up", "jy_stage_arrive"):
+        for k in ("jy_stage_level", "jy_stage_review", "jy_level_up", "jy_stage_arrive",
+                  "jy_stage_topic_level", "jy_stage_topic_review", "jy_level_badge", "jy_recommended"):
             assert j[k] and "—" not in j[k] and "–" not in j[k]
             assert "מסע" not in j[k]
-        assert "{n}" in j["jy_stage_level"] and "{level}" in j["jy_stage_level"]
-        assert "{n}" in j["jy_level_up"] and "{stage}" in j["jy_level_up"]
+        assert "{n}" in j["jy_stage_topic_level"] and "{level}" in j["jy_stage_topic_level"]
+        assert "{topic}" in j["jy_stage_topic_level"]
+        assert "{n}" in j["jy_level_badge"]
     he = json.loads((_CORE / "locales" / "he.json").read_text(encoding="utf-8"))
-    assert "רמה" in he["jy_stage_level"]
-    assert "חזרה" in he["jy_stage_review"]
+    assert "רמה" in he["jy_stage_topic_level"] and "רמה" in he["jy_level_badge"]
+    assert "חזרה" in he["jy_stage_topic_review"]
+    assert "מומלץ" in he["jy_recommended"]
 
 
 def test_no_global_progress_bar_in_journey_template_or_css():
@@ -182,9 +207,14 @@ def test_no_global_progress_bar_in_journey_template_or_css():
     assert "jy-progress" not in html
     assert "jy-ring" in html and "jy-boundary" in html
     assert "road_hopscotch" in html
+    assert "jy-badge" in html and "jy_recommended" in html
+    assert "M5 13l4.5 4.5L19 7" not in html  # no check-mark on done stones
     assert "מסע" not in html
-    assert ".jy-ring" in css
+    assert ".jy-ring" in css and ".jy-badge" in css
     assert "jy-meter-overall" not in css
+    assert "jy-recommend" in css
+    assert "prefers-reduced-motion" in css
+    assert 'data-jy-boundary="level-up"' not in html
 
 
 @pytest.fixture
@@ -222,14 +252,16 @@ def test_journey_html_has_rows_rings_and_no_top_bar(app):
         # Level labels appear on a real-level path; level-1 labels on others.
         assert "רמה" in html or "שלב" in html
         if "path_math_bagrut5_01_algebra" in href:
-            assert "jy-boundary" in html
-            assert 'data-jy-boundary="level-up"' in html
-            assert "רמה 2" in html
-            assert "רמה 3" in html
-            # 16 tiles → 1-3-3-3-3-3 (leftover 1 opens the block, same size, centered).
-            assert 'data-jy-span="3"' in html
+            # Fresh learner: only level 1 of the one stage, no level-up line.
+            assert 'data-jy-boundary="level-up"' not in html
+            assert html.count('class="jy-block') >= 1
             assert 'data-jy-level="1"' in html
-            assert 'data-jy-level="2"' in html
+            assert 'data-jy-level="2"' not in html
+            assert "אלגברה" in html and "רמה 1" in html
+            assert 'data-jy-span="3"' in html
+            # No check-mark icon on done stones (none are done yet, but the
+            # template must not draw a check for the done state).
+            assert "M5 13l4.5 4.5L19 7" not in html
 
 
 def _free_port() -> int:
@@ -349,9 +381,10 @@ def test_hopscotch_layout_375_and_horizontal(app):
                 assert max(rg["widths"]) - min(rg["widths"]) < 3
                 assert max(rg["heights"]) - min(rg["heights"]) < 3
             if "algebra" in play:
-                assert geo["hasBoundary"] is True
-                assert pg.locator('[data-jy-boundary="level-up"]').count() >= 1
-                assert "רמה" in pg.locator(".jy-boundary").first.inner_text()
+                # One stage, current level only: no level-up line between levels.
+                assert pg.locator('[data-jy-boundary="level-up"]').count() == 0
+                assert "רמה" in pg.locator(".jy-kicker").first.inner_text()
+            # Reduced motion: the recommended stone keeps a static lift, no pulse.
             # Horizontal on a wide screen: first stone is to the right (RTL).
             pg.set_viewport_size({"width": 1280, "height": 800})
             pg.evaluate("localStorage.setItem('myroad.roadOrientation','horizontal'); document.documentElement.setAttribute('data-road-orientation','horizontal')")

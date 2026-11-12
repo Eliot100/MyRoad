@@ -1,15 +1,15 @@
 """Hopscotch view of the journey-style road.
 
-Turns the timeline view model into rows of stepping stones, grouped into
-level blocks when the content uses the real ``{stem}_lN`` topic ids
-(documented in ``stage_metrics.py``). A path with no level ids is shown as
-level-1 blocks only; nothing is invented.
+One block per stage (topic). Its stones are the steps of the learner's
+current level: the lowest ``_lN`` topic not yet completed (the convention
+in ``stage_metrics.py``). Paths with no level ids are shown as רמה 1
+blocks only; nothing is invented. Level 2 is not a separate block and
+does not get its own line; only a new topic gets a stage boundary.
 
 Rows follow the data, not a decorative diamond: consecutive sessions in a
-block fill rows of at most ``MAX_ROW`` (3). A leftover of 1 or 2 ends the
-block as a shorter centered row. Every row is centered on the vertical
-midline; stone size is fixed, so a lone stone is the same size as a stone
-in a row of three (Eliot, 2026-11-12).
+block fill rows of at most ``MAX_ROW`` (3). A leftover of 1 or 2 opens
+the block, still centered. Every row is centered on the vertical midline;
+stone size is fixed (Eliot, 2026-11-12).
 
 The timeline view model is not modified. Unlock rules stay those of the
 timeline: this module only arranges tiles that already have a state.
@@ -86,12 +86,35 @@ def _ring(pct: int) -> dict[str, float | int]:
     }
 
 
-def _same_stage(prev: dict[str, Any] | None, parsed: dict[str, Any]) -> bool:
-    if not prev:
+def _same_stage(prev_parsed: dict[str, Any] | None, parsed: dict[str, Any]) -> bool:
+    if not prev_parsed:
         return False
-    if not prev["parsed"]["real"] or not parsed["real"]:
+    if not prev_parsed["real"] or not parsed["real"]:
         return False
-    return prev["parsed"]["stem"] == parsed["stem"]
+    return prev_parsed["stem"] == parsed["stem"]
+
+
+def _pick_current(members: list[dict[str, Any]]) -> dict[str, Any]:
+    """The lowest level not yet completed; if all are done, the last member."""
+    for member in members:
+        if member["src"].get("state") != "done":
+            return member
+    return members[-1]
+
+
+def _decorate_tiles(tiles: list[dict[str, Any]], *, level_n: int | None, review: bool) -> list[dict[str, Any]]:
+    out = []
+    for tile in tiles:
+        item = dict(tile)
+        if item.get("state") == "done":
+            item["leveled"] = True
+            item["levelBadge"] = None if review else level_n
+        else:
+            item["leveled"] = False
+            item["levelBadge"] = None
+        item["recommended"] = item.get("state") == "here"
+        out.append(item)
+    return out
 
 
 def road_hopscotch(
@@ -100,33 +123,40 @@ def road_hopscotch(
     path_title: str = "",
     path_title_lang: str = "",
 ) -> dict[str, Any]:
-    """Group timeline stages into hopscotch blocks with rows and boundaries.
+    """One hopscotch block per stage, showing only the current level's steps.
 
-    A run of ``{stem}_l1``, ``_l2``, … plus an optional ``{stem}_review`` is one
-    שלב (the path title is the topic name). Each other topic is its own שלב at
-    רמה 1. Between levels of the same שלב the boundary is a level-up; between
-    שלבים it is a stage boundary carrying the next topic name.
+    A run of ``{stem}_l1``, ``_l2``, … plus an optional ``{stem}_review`` is
+    one שלב. The stones are those of the lowest level that is not fully
+    done. A later level is never drawn as its own block or line; only a
+    new topic produces a stage boundary.
     """
     tl = tl or {}
     stages = list(tl.get("stages") or [])
-    blocks: list[dict[str, Any]] = []
-    stage_n = 0
-    prev: dict[str, Any] | None = None
-    has_real_levels = False
 
+    groups: list[dict[str, Any]] = []
+    has_real_levels = False
     for src in stages:
         parsed = parse_topic(src.get("id"))
         if parsed["real"] and parsed["level"] is not None:
             has_real_levels = True
-        continues = _same_stage(prev, parsed)
-        if not continues:
-            stage_n += 1
+        member = {"src": src, "parsed": parsed}
+        if groups and _same_stage(groups[-1]["members"][-1]["parsed"], parsed):
+            groups[-1]["members"].append(member)
+        else:
+            groups.append({"members": [member]})
+
+    blocks: list[dict[str, Any]] = []
+    prev_block: dict[str, Any] | None = None
+    for stage_n, group in enumerate(groups, start=1):
+        current = _pick_current(group["members"])
+        src = current["src"]
+        parsed = current["parsed"]
         if parsed["real"] and not parsed["review"]:
             title = path_title or src.get("title") or ""
             title_lang = path_title_lang or src.get("titleLang") or ""
             level_n = parsed["level"]
             kind = "level"
-        elif parsed["review"] and (continues or parsed["real"]):
+        elif parsed["review"]:
             title = path_title or src.get("title") or ""
             title_lang = path_title_lang or src.get("titleLang") or ""
             level_n = None
@@ -137,37 +167,36 @@ def road_hopscotch(
             level_n = 1
             kind = "review" if src.get("review") else "level"
 
-        tiles = [dict(t) for t in (src.get("tiles") or [])]
+        tiles = _decorate_tiles(
+            [dict(t) for t in (src.get("tiles") or [])],
+            level_n=level_n,
+            review=kind == "review",
+        )
         rows = chunk_rows(tiles)
         done = int(src.get("done") or 0)
         total = int(src.get("total") or len(tiles))
         pct = int(src.get("pct") or 0)
         state = src.get("state") or "open"
 
+        # Highest completed real level in this stage, for the "leveled up" reading.
+        completed_level = 0
+        for member in group["members"]:
+            p = member["parsed"]
+            if p["real"] and p["level"] is not None and member["src"].get("state") == "done":
+                completed_level = max(completed_level, p["level"])
+
         boundary: dict[str, Any] | None = None
-        if prev is not None:
-            if continues:
-                boundary = {
-                    "kind": "level-up",
-                    "stageN": stage_n,
-                    "levelN": level_n,
-                    "review": kind == "review",
-                    "title": title,
-                    "titleLang": title_lang,
-                    "crossed": prev["state"] == "done",
-                    "open": state in ("here", "started", "open", "done"),
-                }
-            else:
-                boundary = {
-                    "kind": "stage",
-                    "stageN": stage_n,
-                    "levelN": level_n if level_n is not None else 1,
-                    "review": kind == "review",
-                    "title": title,
-                    "titleLang": title_lang,
-                    "crossed": prev["state"] == "done",
-                    "open": state in ("here", "started", "open", "done"),
-                }
+        if prev_block is not None:
+            boundary = {
+                "kind": "stage",
+                "stageN": stage_n,
+                "levelN": level_n if level_n is not None else 1,
+                "review": kind == "review",
+                "title": title,
+                "titleLang": title_lang,
+                "crossed": prev_block["state"] == "done",
+                "open": state in ("here", "started", "open", "done"),
+            }
 
         block = {
             "n": src.get("n"),
@@ -191,9 +220,13 @@ def road_hopscotch(
             "walked": bool(src.get("walked")),
             "open": bool(src.get("open")),
             "boundary": boundary,
+            "completedLevel": completed_level,
+            "levelCount": sum(
+                1 for m in group["members"] if m["parsed"]["real"] and m["parsed"]["level"] is not None
+            ),
         }
         blocks.append(block)
-        prev = {"parsed": parsed, "state": state, "stageN": stage_n}
+        prev_block = block
 
     next_tile = tl.get("next")
     next_block = None
@@ -207,7 +240,7 @@ def road_hopscotch(
         "blocks": blocks,
         "stagesTotal": int(tl.get("stagesTotal") or len(stages)),
         "blockTotal": len(blocks),
-        "stageCount": stage_n,
+        "stageCount": len(groups),
         "hasRealLevels": has_real_levels,
         "done": int(tl.get("done") or 0),
         "total": int(tl.get("total") or 0),

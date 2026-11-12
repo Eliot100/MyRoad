@@ -616,5 +616,9 @@
   "jy_stage_level": "שלב {n} · רמה {level}",
   "jy_stage_review": "שלב {n} · חזרה",
   "jy_level_up": "שלב {stage} · רמה {n}",
-  "jy_stage_arrive": "שלב {n}"
+  "jy_stage_arrive": "שלב {n}",
+  "jy_stage_topic_level": "שלב {n} · {topic} · רמה {level}",
+  "jy_stage_topic_review": "שלב {n} · {topic} · חזרה",
+  "jy_level_badge": "רמה {n}",
+  "jy_recommended": "מומלץ לתרגל"
 }
