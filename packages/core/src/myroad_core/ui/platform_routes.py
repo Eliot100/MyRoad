@@ -2088,6 +2088,7 @@ def register_platform_routes(
                     linear=linear,
                     read_only=read_only,
                     path_title=(meta or {}).get("title") or "",
+                    subject=(meta or {}).get("subject") or "",
                 ),
                 can_resume=bool(mastered) or resume_index > 0,
                 locked_by=locked_by,

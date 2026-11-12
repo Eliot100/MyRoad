@@ -1,10 +1,12 @@
-"""Journey hopscotch road: centered rows, real levels, no global bar.
+"""Journey hopscotch road: centered rows, current-level blocks, titled stones.
 
 Row grouping follows Eliot's 2026-11-12 correction: symmetry is around the
 vertical center line, not a 1-2-3-2-1 diamond. Any-order peers share a row
 of at most 3; stone size is fixed; each row is centered. Levels come only
-from topic ids ending in ``_lN``. The timeline style and ``road_timeline``
-are left untouched.
+from topic ids ending in ``_lN``. Correction 2: one current-level block per
+stage, no gateways, done stones are leveled-up (no check). Correction 3:
+every stone and stage label shows a real title and/or a subject symbol.
+The timeline style and ``road_timeline`` are left untouched.
 """
 from __future__ import annotations
 
@@ -27,9 +29,13 @@ from auth_helpers import login, login_with_code
 from myroad_core.store import PathStore
 from myroad_core.ui.app import create_learner_app
 from myroad_core.ui.road_hopscotch import (
+    current_level_block,
     hop_rows,
     pack_row_counts,
     road_hopscotch,
+    short_title,
+    stone_mark,
+    title_initials,
     topic_level,
 )
 from myroad_core.ui.road_timeline import road_timeline
@@ -124,26 +130,39 @@ def test_road_hopscotch_uses_real_levels_and_does_not_invent() -> None:
     topics = _topics(spec, types=types, titles=titles)
     hop = road_hopscotch(
         topics, mastered={"alg_l1_0", "alg_l1_1"}, current_block="alg_l1_2",
-        path_title="אלגברה",
+        path_title="אלגברה", subject="math",
     )
     assert hop["hasLevels"] is True
     assert hop["stagesTotal"] == 1
     stage = hop["stages"][0]
     assert stage["id"] == "alg" and stage["title"] == "אלגברה" and stage["n"] == 1
-    assert [b["kind"] for b in stage["blocks"]] == ["level", "level", "level", "review"]
-    assert [b["level"] for b in stage["blocks"]] == [1, 2, 3, None]
-    assert stage["blocks"][0]["gateway"]["kind"] == "levelup"
-    assert stage["blocks"][0]["gateway"]["toLevel"] == 2
-    assert stage["blocks"][0]["gateway"]["state"] == "locked"
-    assert stage["blocks"][2]["gateway"] is None  # review is not a level-up
+    # One block: the current (lowest unfinished) level. No gateways.
+    assert [b["kind"] for b in stage["blocks"]] == ["level"]
+    assert stage["blocks"][0]["level"] == 1
+    assert stage["blocks"][0]["gateway"] is None
+    assert stage["currentLevel"] == 1
     assert hop["hereStage"] == 1 and hop["hereLevel"] == 1
     assert "מסע" not in (stage["title"] or "")
+    # Done stones of the current level are "leveled", with a level badge, no check.
+    done_tiles = [t for t in stage["blocks"][0]["tiles"] if t["state"] == "done"]
+    assert done_tiles and all(t["leveled"] and t["badgeLevel"] == 1 for t in done_tiles)
+    # Every visible stone has a short title and a mark (never blank).
+    for t in stage["blocks"][0]["tiles"]:
+        assert t["shortTitle"] and t["mark"] and t["fullTitle"]
+        assert t["markKind"] in ("text", "book", "speech")
 
-    # Finishing level 1 opens the gateway; current in level 2 marks it passed.
+    # Finishing level 1 shows level 2 in place (not as the next stage).
     done = {f"alg_l1_{i}" for i in range(5)}
-    opened = road_hopscotch(topics, mastered=done, current_block="alg_l2_0", path_title="אלגברה")
+    opened = road_hopscotch(
+        topics, mastered=done, current_block="alg_l2_0",
+        path_title="אלגברה", subject="math",
+    )
     assert opened["hereLevel"] == 2
-    assert opened["stages"][0]["blocks"][0]["gateway"]["state"] == "passed"
+    assert opened["stages"][0]["currentLevel"] == 2
+    vis = opened["stages"][0]["blocks"]
+    assert len(vis) == 1 and vis[0]["level"] == 2 and vis[0]["gateway"] is None
+    assert all(t["id"].startswith("alg_l2_") for t in vis[0]["tiles"])
+    assert vis[0]["tiles"][0]["badgeLevel"] == 2
 
     # A road with no _lN data: one level-1 block per topic, never a fake level 2.
     plain = _topics(
@@ -151,7 +170,7 @@ def test_road_hopscotch_uses_real_levels_and_does_not_invent() -> None:
         types={"v1": "learn", "v2": "practice", "v3": "practice", "s1": "learn"},
         titles={"vocab": "אוצר מילים", "sent": "השלמת משפטים"},
     )
-    hop2 = road_hopscotch(plain, mastered=set(), current_block="v1")
+    hop2 = road_hopscotch(plain, mastered=set(), current_block="v1", subject="english")
     assert hop2["hasLevels"] is False
     assert hop2["stagesTotal"] == 2
     assert all(b["level"] == 1 and b["kind"] == "level" for s in hop2["stages"] for b in s["blocks"])
@@ -171,6 +190,71 @@ def test_hopscotch_states_match_the_untouched_timeline() -> None:
     assert hop["linear"] is True and hop["done"] == tl["done"]
 
 
+
+def test_current_level_block_picks_lowest_unfinished() -> None:
+    blocks = [
+        {"kind": "level", "level": 1, "state": "done", "tiles": []},
+        {"kind": "level", "level": 2, "state": "here", "tiles": []},
+        {"kind": "level", "level": 3, "state": "ahead", "tiles": []},
+        {"kind": "review", "level": None, "state": "ahead", "tiles": []},
+    ]
+    assert current_level_block(blocks)["level"] == 2
+    blocks[1]["state"] = "done"
+    assert current_level_block(blocks)["level"] == 3
+    blocks[2]["state"] = "done"
+    assert current_level_block(blocks)["kind"] == "review"
+    blocks[3]["state"] = "done"
+    assert current_level_block(blocks)["kind"] == "review"  # last, all done
+
+
+def test_stone_mark_maps_real_titles_deterministically() -> None:
+    def m(**kw):
+        defaults = dict(subject="", topic_id="", topic_title="", session_id="", session_title="", session_type="")
+        defaults.update(kw)
+        return stone_mark(**defaults)
+
+    assert m(subject="math", topic_id="alg_l1", session_id="alg_l1_learn",
+             session_title="משוואה לינארית", session_type="learn") == ("x", "text")
+    assert m(subject="math", session_title="משוואה ריבועית 1") == ("x²", "text")
+    assert m(subject="math", session_title="הפרש ריבועים") == ("x²", "text")
+    assert m(subject="math", session_title="חזקות") == ("xⁿ", "text")
+    assert m(subject="math", session_title="מקדם לשוויון שורשים") == ("√", "text")
+    assert m(subject="math", session_title="היקף מלבן") == ("□", "text")
+    assert m(subject="math", session_title="חזרה, אי שוויון") == ("<", "text")
+    assert m(subject="math", session_title="חיבור עם העברה") == ("+", "text")
+    assert m(subject="math", session_title="לוח הכפל") == ("×", "text")
+    assert m(subject="math", session_title="חילוק עם שארית") == ("÷", "text")
+    assert m(subject="math", topic_title="הסתברות") == ("%", "text")
+    assert m(subject="math", session_title="בלונים בפארק") == ("x", "text")  # subject default
+    assert m(subject="english", topic_title="אוצר מילים אקדמי",
+             session_title="מילים בהקשר, לא ברשימה") == ("Aa", "text")
+    assert m(subject="english", topic_title="הבנת הנקרא", session_title="קטע קצר") == ("book", "book")
+    assert m(subject="english", session_type="speak", session_title="אמרו תודה") == ("speech", "speech")
+    assert m(subject="english", topic_title="אותיות", session_title="אותיות") == ("Aa", "text")
+    assert m(subject="arabic", topic_title="שש אותיות ראשונות", session_title="איזו אות?") == ("ع", "text")
+    # Fallback: first letters of the real title, never blank, never invented.
+    mark, kind = m(subject="history", session_title="מלחמת העולם")
+    assert mark == "מה" and kind == "text"
+    empty, ekind = m()
+    assert empty == "·" and ekind == "text"
+    # Deterministic: same inputs, same output.
+    a = m(subject="math", session_title="משוואה ריבועית 1")
+    b = m(subject="math", session_title="משוואה ריבועית 1")
+    assert a == b == ("x²", "text")
+
+
+def test_short_title_truncates_cleanly_and_strips_level_prefix() -> None:
+    assert short_title("משוואה לינארית") == "משוואה לינארית"
+    assert short_title("רמה 1, בסיס") == "בסיס"
+    long = short_title("ריבועיות, מערכות ואי שוויון")
+    assert long and len(long) <= 18
+    assert long[-1] not in " ,،:"
+    assert "ואי שוויון" not in long or len("ריבועיות, מערכות ואי שוויון") <= 18
+    assert title_initials("מלחמת העולם") == "מה"
+    assert title_initials("") == "·"
+    assert title_initials("רמה 2, יישום") == "יי" or title_initials("רמה 2, יישום")[0] == "י"
+
+
 # --- rendered page -----------------------------------------------------------
 
 def _leveled_doc() -> dict:
@@ -182,12 +266,19 @@ def _leveled_doc() -> dict:
             "titles": {"he": f"רמה {lvl}, בסיס", "en": f"Level {lvl}", "ar": f"المستوى {lvl}"},
             "node_ids": ids,
         })
-        nodes.append({"id": ids[0], "type": "learn", "title": f"הסבר {lvl}", "body_he": "הסבר"})
-        for pid in ids[1:]:
+        learn_titles = {1: "משוואה לינארית", 2: "ריבועיות, מערכות ואי שוויון", 3: "מילה, פרמטר ותחום"}
+        practice_base = {1: "משוואה לינארית", 2: "משוואה ריבועית", 3: "תרגול"}
+        nodes.append({"id": ids[0], "type": "learn", "title": learn_titles[lvl], "body_he": "הסבר"})
+        mid = ids[1:-1]
+        for i, pid in enumerate(mid, start=1):
             nodes.append({
-                "id": pid, "type": "practice", "title": pid, "body_he": "כמה זה 2+2?",
+                "id": pid, "type": "practice", "title": f"{practice_base[lvl]} {i}", "body_he": "כמה זה 2+2?",
                 "choices": [{"id": "a", "label": "4"}, {"id": "b", "label": "5"}], "correct": "a",
             })
+        nodes.append({
+            "id": ids[-1], "type": "practice", "title": f"בדיקה {lvl}", "body_he": "כמה זה 2+2?",
+            "choices": [{"id": "a", "label": "4"}, {"id": "b", "label": "5"}], "correct": "a",
+        })
     topics.append({
         "id": "alg_review",
         "titles": {"he": "חזרה מעורבת", "en": "Mixed review", "ar": "مراجعة"},
@@ -259,15 +350,26 @@ def test_journey_html_has_levels_rows_and_no_global_bar(app) -> None:
     jy = html[html.index('data-road-style-panel="journey"'):]
     assert 'id="journey-track"' in jy
     assert 'class="jy-meter-overall"' not in jy  # no global top bar
-    assert "שלב 1 · רמה 1" in jy and "שלב 1 · רמה 2" in jy and "שלב 1 · רמה 3" in jy
+    # One current-level block: שלב N · topic · רמה X. Level 2 is not a separate block.
     assert "אלגברה" in jy
-    assert 'data-jy-levelup="2"' in jy and 'data-jy-levelup="3"' in jy
-    assert 'data-jy-tier="1"' in jy and 'data-jy-tier="2"' in jy
+    assert "שלב 1" in jy and "רמה 1" in jy
+    assert "רמה 2" not in jy and "רמה 3" not in jy
+    assert 'data-jy-levelup' not in jy
+    assert 'data-jy-tier="1"' in jy
+    assert 'data-jy-tier="2"' not in jy
     assert 'data-has-levels="1"' in jy
-    # Review is a review block, not a fourth level-up.
-    assert "חזרה" in jy
-    assert 'data-jy-kind="review"' in jy
+    assert 'data-jy-kind="review"' not in jy  # review waits until every level is done
     assert "מסע" not in jy
+    # No check marks, no generic numbers. Every stone has a title and/or a mark.
+    assert "jy-check" not in jy
+    assert 'class="jy-num"' not in jy
+    assert "משוואה לינארית" in jy
+    assert 'class="jy-mark"' in jy and 'class="jy-short"' in jy
+    assert 'class="jy-block-mark"' in jy
+    assert jy.count('class="jy-identity"') >= 5
+    assert 'data-jy-mark="' in jy
+    # Recommended stone is marked once.
+    assert jy.count('is-recommended') == 1 or jy.count('id="jy-here"') == 1
     # Rows exist and are marked with their stone count (1-3).
     counts = [int(x) for x in re.findall(r'data-jy-count="(\d+)"', jy)]
     assert counts and all(1 <= n <= 3 for n in counts)
@@ -285,12 +387,14 @@ def test_plain_road_is_level_1_only_with_a_stage_boundary(app) -> None:
     html = c.get(f"/play/{PLAIN}?view=map").text
     jy = html[html.index('data-road-style-panel="journey"'):]
     assert 'data-has-levels="0"' in jy
-    assert "שלב 1 · רמה 1" in jy
-    assert "שלב 2 · רמה 1" in jy
+    assert "שלב 1" in jy and "רמה 1" in jy
+    assert "שלב 2" in jy and "משפטים" in jy
     assert 'data-jy-boundary="2"' in jy
-    assert "משפטים" in jy
     assert 'data-jy-levelup=' not in jy  # no invented level-up
     assert "מסע" not in jy
+    assert 'class="jy-mark"' in jy and 'class="jy-short"' in jy
+    assert "תרגול" in jy or "הסבר" in jy or "מילים" in jy
+    assert 'class="jy-block-mark"' in jy
 
 
 def test_new_locale_keys_have_no_dashes_and_no_masa() -> None:
@@ -364,8 +468,25 @@ def test_rows_are_centered_with_equal_stone_size(app) -> None:
             pg.wait_for_timeout(300)
             assert pg.locator(".road-jy").first.is_visible()
             assert pg.locator(".jy-meter-overall").count() == 0
-            assert pg.locator("[data-jy-levelup]").count() >= 2
-            assert "שלב 1 · רמה 1" in (pg.locator(".jy-block-label").first.inner_text() or "")
+            assert pg.locator("[data-jy-levelup]").count() == 0
+            label = pg.locator(".jy-block-label").first.inner_text() or ""
+            assert "שלב 1" in label and "אלגברה" in label and "רמה 1" in label
+            # Every stone shows a title and/or a symbol; none are blank or a bare number.
+            identities = pg.evaluate("""() => {
+              return [...document.querySelectorAll('.jy-stone')].map(s => {
+                const short = (s.querySelector('.jy-short')||{}).textContent || '';
+                const mark = s.querySelector('.jy-mark');
+                const markText = (mark||{}).textContent || '';
+                const hasSvg = !!(mark && mark.querySelector('svg'));
+                return {short: short.trim(), mark: markText.trim(), hasSvg, title: s.getAttribute('title') || ''};
+              });
+            }""")
+            assert identities and all(
+                (i["short"] or i["mark"] or i["hasSvg"]) and i["title"]
+                for i in identities
+            ), identities
+            assert pg.locator(".jy-num").count() == 0
+            assert pg.locator(".jy-block-mark").count() >= 1
             metrics = pg.evaluate("""() => {
               const field = document.querySelector('.jy-field');
               const fr = field.getBoundingClientRect();
@@ -374,11 +495,14 @@ def test_rows_are_centered_with_equal_stone_size(app) -> None:
               const sizes = [];
               const centers = [];
               for (const row of rows) {
-                const stones = [...row.querySelectorAll('.jy-stone')].map(s => s.getBoundingClientRect());
-                if (!stones.length) continue;
-                const widths = stones.map(s => s.width);
-                const leftmost = Math.min(...stones.map(s => s.left));
-                const rightmost = Math.max(...stones.map(s => s.right));
+                const els = [...row.querySelectorAll('.jy-stone')];
+                if (!els.length) continue;
+                const boxes = els.map(s => s.getBoundingClientRect());
+                // Layout size (offsetWidth) is equal across stones; visual
+                // getBoundingClientRect includes the recommended stone's scale.
+                const widths = els.map(s => s.offsetWidth);
+                const leftmost = Math.min(...boxes.map(s => s.left));
+                const rightmost = Math.max(...boxes.map(s => s.right));
                 centers.push((leftmost + rightmost) / 2);
                 sizes.push(...widths);
               }
