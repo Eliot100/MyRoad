@@ -31,9 +31,9 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   --jy-ring-track: rgba(255, 255, 255, 0.3);
   --jy-ring-fill: #7ff6e2;
   --jy-shadow: 0 8px 18px rgba(16, 40, 12, 0.32), 0 2px 4px rgba(16, 40, 12, 0.2);
-  --jy-stone-size: 68px;
+  --jy-stone-size: 80px;
   --jy-gap: 16px;
-  --jy-row-gap: 18px;
+  --jy-row-gap: 36px;
   --jy-pad: 28px;
   --jy-radius: 22%;
   --jy-terrace: transparent;
@@ -45,7 +45,7 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   border-color: color-mix(in srgb, var(--jy-lawn-2) 55%, var(--line));
 }
 @media (min-width: 720px) {
-  .road-jy { --jy-stone-size: 80px; --jy-gap: 20px; --jy-row-gap: 22px; --jy-pad: 40px; }
+  .road-jy { --jy-stone-size: 88px; --jy-gap: 20px; --jy-row-gap: 42px; --jy-pad: 40px; }
 }
 
 /* Dark: a quiet evening lawn. Tokens sit near the selector so existing
@@ -272,6 +272,50 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   pointer-events: none;
   box-shadow: inset 0 -3px 6px rgba(40, 40, 30, 0.08);
 }
+.road-jy .jy-mark {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 100%;
+  padding: 8px 5px 7px;
+  box-sizing: border-box;
+  text-align: center;
+  pointer-events: none;
+}
+.road-jy .jy-symbol {
+  font-family: "Noto Sans", "DejaVu Sans", "Assistant", ui-sans-serif, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  color: inherit;
+}
+.road-jy .jy-caption {
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: 0;
+  max-inline-size: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  color: inherit;
+}
+.road-jy .jy-stage-symbol {
+  font-family: "Noto Sans", "DejaVu Sans", ui-sans-serif, sans-serif;
+  font-weight: 700;
+  font-size: 1em;
+  margin-inline-end: 0.15em;
+}
 .road-jy .jy-icon {
   position: relative;
   z-index: 1;
@@ -280,6 +324,16 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   width: 42%;
   height: 42%;
   color: inherit;
+}
+.road-jy .jy-step.is-ahead .jy-icon,
+.road-jy .jy-step.is-view .jy-icon {
+  position: absolute;
+  z-index: 3;
+  inset-block-start: 4px;
+  inset-inline-end: 4px;
+  width: 13px;
+  height: 13px;
+  opacity: 0.9;
 }
 .road-jy .jy-icon svg {
   width: 100%;
@@ -323,15 +377,16 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 .road-jy .jy-badge {
   position: absolute;
   z-index: 2;
-  inset-block-end: 7px;
+  inset-block-end: auto;
+  inset-block-start: -8px;
   inset-inline: 5px;
   margin-inline: auto;
   width: max-content;
   max-inline-size: calc(100% - 8px);
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 750;
   line-height: 1;
-  padding: 3px 7px;
+  padding: 2px 6px;
   border-radius: 999px;
   background: rgba(58, 42, 12, 0.88);
   color: #fff6dc;
@@ -373,8 +428,10 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 .road-jy .jy-here-flag {
   position: absolute;
   z-index: 7;
-  inset: 0;
-  margin: auto;
+  inset: auto;
+  inset-block-end: calc(100% + 6px);
+  inset-inline: 0;
+  margin-inline: auto;
   width: max-content;
   height: max-content;
   background: #fff;
@@ -390,6 +447,12 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   text-align: center;
   pointer-events: none;
   max-inline-size: calc(var(--jy-stone-size) + 36px);
+}
+html[data-road-orientation="horizontal"] .road-jy .jy-row,
+html[data-road-orientation="horizontal"] .road-jy .jy-stones,
+.road-jy.is-horizontal .jy-row,
+.road-jy.is-horizontal .jy-stones {
+  gap: 36px; /* room for the recommended flag above a stone in a column */
 }
 @keyframes jy-recommend {
   0%, 100% {
@@ -431,11 +494,19 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   gap: 1px;
 }
 .road-jy .jy-kicker {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35em;
   font-size: 0.86rem;
   font-weight: 700;
   line-height: 1.3;
   white-space: nowrap;
   color: var(--jy-label-ink);
+}
+.road-jy .jy-stage-symbol {
+  flex: none;
+  unicode-bidi: isolate;
 }
 .road-jy .jy-count { color: color-mix(in srgb, var(--jy-label-ink) 80%, transparent); }
 .road-jy .jy-boundary-title {

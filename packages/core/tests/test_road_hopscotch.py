@@ -14,9 +14,13 @@ import pytest
 from myroad_core.ui.road_hopscotch import (
     MAX_ROW,
     chunk_rows,
+    face_for,
+    first_letters,
+    map_symbol,
     parse_topic,
     road_hopscotch,
     row_mates,
+    shorten_title,
 )
 from myroad_core.ui.road_timeline import road_timeline
 
@@ -200,6 +204,85 @@ def test_locale_keys_for_levels_in_all_three():
     assert "מומלץ" in he["jy_recommended"]
 
 
+
+def test_shorten_title_is_clean_and_keeps_real_words():
+    assert shorten_title("משוואה לינארית") == "משוואה לינארית"
+    assert shorten_title("משוואה לינארית 5") == "משוואה לינארית"
+    assert shorten_title("יחסים במשולש ישר זווית") == "יחסים במשולש"
+    assert first_letters("משוואה לינארית") == "מל"
+    assert first_letters("Present Simple") == "PS"
+    assert first_letters("חזקות") == "חז"
+    # A title that is only a number does not become a numeric-only mark.
+    assert first_letters("12") == ""
+
+
+def test_math_and_english_symbols_from_real_titles():
+    cases = {
+        ("משוואה לינארית", "math"): "x",
+        ("חזקות", "math"): "x²",
+        ("הפרש ריבועים", "math"): "x²",
+        ("שורש ריבועי", "math"): "√",
+        ("זווית חיצונית", "math"): "∠",
+        ("אינטגרל מסוים", "math"): "∫",
+        ("אחוזים", "math"): "%",
+        ("שברים", "math"): "½",
+        ("סינוס במשולש", "math"): "∠",
+        ("Present Simple", "english"): "Aa",
+        ("סיפור קצר", "english"): "📖",
+        ("דיבור", "english"): "💬",
+        ("אוצר מילים", "english"): "Aa",
+        ("האזנה", "english"): "💬",
+    }
+    for (title, subject), exp in cases.items():
+        assert map_symbol(title, subject=subject) == exp, (title, subject)
+    # Fallback is first letters of the real title, nothing invented.
+    assert map_symbol("בדיקה כללית", subject="math") == "בכ"
+    face = face_for("משוואה לינארית 3", subject="math")
+    assert face["symbol"] == "x"
+    assert face["shortTitle"] == "משוואה לינארית"
+    assert face["fullTitle"] == "משוואה לינארית 3"
+
+
+def test_every_stone_and_stage_has_a_readable_face():
+    tiles = [
+        {"id": "alg_l1_learn", "title": "משוואה לינארית", "titleLang": "he", "state": "done"},
+        {"id": "alg_l1_p7", "title": "חזקות", "titleLang": "he", "state": "here"},
+        {"id": "alg_l1_p9", "title": "עוד משוואה 1", "titleLang": "he", "state": "open"},
+    ]
+    stage = {
+        "n": 1, "id": "alg_l1", "title": "רמה 1, בסיס", "titleLang": "he",
+        "tiles": tiles, "done": 1, "total": 3, "pct": 33, "state": "here",
+        "walked": False, "open": True,
+    }
+    hop = road_hopscotch(
+        {"stages": [stage], "total": 3},
+        path_title="אלגברה", subject="math", path_id="path_math_bagrut5_01_algebra",
+    )
+    block = hop["blocks"][0]
+    assert block["symbol"] == "x"
+    assert block["title"] == "אלגברה"
+    for tile in block["tiles"]:
+        assert tile["symbol"]
+        assert tile["shortTitle"]
+        assert tile["fullTitle"]
+        assert not re.fullmatch(r"\d+", tile["shortTitle"])
+        assert not re.fullmatch(r"\d+", tile["symbol"])
+    assert block["tiles"][0]["symbol"] == "x"
+    assert "משוואה" in block["tiles"][0]["shortTitle"]
+    assert block["tiles"][1]["symbol"] == "x²"
+    # English: book / Aa / speech, with the session title.
+    en = {
+        "n": 1, "id": "t_story", "title": "סיפור קצר", "titleLang": "he",
+        "tiles": [{"id": "s1", "title": "סיפור קצר", "titleLang": "he", "state": "here"}],
+        "done": 0, "total": 1, "pct": 0, "state": "here", "open": True,
+    }
+    eh = road_hopscotch({"stages": [en], "total": 1}, path_title="ספרות ודיבור",
+                        subject="english", path_id="path_english_bagrut5_07_literature_oral")
+    assert eh["blocks"][0]["symbol"] == "📖"
+    assert eh["blocks"][0]["tiles"][0]["symbol"] == "📖"
+    assert eh["blocks"][0]["tiles"][0]["shortTitle"] == "סיפור קצר"
+
+
 def test_no_global_progress_bar_in_journey_template_or_css():
     html = (_UI / "templates" / "_road_journey.html").read_text(encoding="utf-8")
     css = (_UI / "static" / "road-journey.css").read_text(encoding="utf-8")
@@ -215,6 +298,10 @@ def test_no_global_progress_bar_in_journey_template_or_css():
     assert "jy-recommend" in css
     assert "prefers-reduced-motion" in css
     assert 'data-jy-boundary="level-up"' not in html
+    assert "jy-symbol" in html and "jy-caption" in html
+    assert "jy-stage-symbol" in html
+    assert ".jy-symbol" in css and ".jy-caption" in css
+    assert "11px" in css  # legible short title at 375
 
 
 @pytest.fixture
@@ -262,6 +349,11 @@ def test_journey_html_has_rows_rings_and_no_top_bar(app):
             # No check-mark icon on done stones (none are done yet, but the
             # template must not draw a check for the done state).
             assert "M5 13l4.5 4.5L19 7" not in html
+            # Every stone and the stage label show a real title and/or a symbol.
+            assert "jy-symbol" in html and "jy-caption" in html
+            assert "jy-stage-symbol" in html
+            assert "משוואה" in html
+            assert ">x</span>" in html or ">x²</span>" in html
 
 
 def _free_port() -> int:
@@ -384,6 +476,29 @@ def test_hopscotch_layout_375_and_horizontal(app):
                 # One stage, current level only: no level-up line between levels.
                 assert pg.locator('[data-jy-boundary="level-up"]').count() == 0
                 assert "רמה" in pg.locator(".jy-kicker").first.inner_text()
+            faces = pg.evaluate("""() => {
+              const steps = [...document.querySelectorAll('.jy-step')];
+              return steps.map(s => {
+                const sym = s.querySelector('.jy-symbol');
+                const cap = s.querySelector('.jy-caption');
+                const cs = cap ? getComputedStyle(cap) : null;
+                return {
+                  symbol: (sym && sym.textContent || '').trim(),
+                  caption: (cap && cap.textContent || '').trim(),
+                  fontPx: cs ? parseFloat(cs.fontSize) : 0,
+                  blank: !((sym && sym.textContent.trim()) || (cap && cap.textContent.trim())),
+                };
+              });
+            }""")
+            assert faces and all(not f["blank"] for f in faces), faces
+            assert all(not re.fullmatch(r"\d+", (f["caption"] or f["symbol"] or "")) for f in faces)
+            labeled = [f for f in faces if f["caption"]]
+            if labeled:
+                assert min(f["fontPx"] for f in labeled) >= 10
+            if "algebra" in play:
+                assert pg.locator(".jy-stage-symbol").count() >= 1
+                text = " ".join(f["caption"] + f["symbol"] for f in faces)
+                assert "משוואה" in text or "חזק" in text or "x" in text
             # Reduced motion: the recommended stone keeps a static lift, no pulse.
             # Horizontal on a wide screen: first stone is to the right (RTL).
             pg.set_viewport_size({"width": 1280, "height": 800})
