@@ -2079,6 +2079,8 @@ def register_platform_routes(
                     current_block=blocks[resume_index]["blockId"] if 0 <= resume_index < n else None,
                     linear=linear,
                     read_only=read_only,
+                    subject=str(meta.get("subject") or ""),
+                    path_title=str(meta.get("title") or ""),
                 ),
                 can_resume=bool(mastered) or resume_index > 0,
                 locked_by=locked_by,

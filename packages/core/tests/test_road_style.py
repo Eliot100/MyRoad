@@ -50,7 +50,9 @@ def test_locale_keys_in_all_three() -> None:
         for k in ("road_style_timeline_note", "road_style_journey_note", "jy_lede",
                   "road_orient_h", "road_orient_legend", "road_orient_vertical",
                   "road_orient_vertical_note", "road_orient_horizontal",
-                  "road_orient_horizontal_note", "road_orient_narrow_note"):
+                  "road_orient_horizontal_note", "road_orient_narrow_note",
+                  "jy_block_label", "jy_block_review", "jy_level_n", "jy_level_up",
+                  "jy_stage_bound", "jy_recommend"):
             assert j[k] and "—" not in j[k] and "–" not in j[k]
         assert "מסע" not in j["jy_lede"] and "מסע" not in j["road_style_journey_note"]
 
@@ -311,7 +313,7 @@ def test_orientation_persists_and_applies(app) -> None:
             pg.wait_for_timeout(400)
             assert pg.evaluate("localStorage.getItem('myroad.roadOrientation')") == "horizontal"
             assert pg.locator(".road-jy.is-horizontal").count() == 0
-            # Stones are stacked (first is above the last).
+            # Hopscotch reads bottom to top: the first stone sits below the last.
             stacked = pg.evaluate("""() => {
               const steps = [...document.querySelectorAll('.jy-step')];
               if (steps.length < 2) return null;
@@ -319,7 +321,7 @@ def test_orientation_persists_and_applies(app) -> None:
               const b = steps[steps.length - 1].getBoundingClientRect();
               return { firstY: a.y, lastY: b.y };
             }""")
-            assert stacked and stacked["lastY"] > stacked["firstY"]
+            assert stacked and stacked["lastY"] < stacked["firstY"]
             # The on-page orientation control is not shown on a narrow screen.
             assert pg.locator(".jy-orient").first.is_visible() is False
             br.close()

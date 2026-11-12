@@ -612,5 +612,11 @@
   "road_orient_vertical_note": "גוללים מלמעלה למטה.",
   "road_orient_horizontal": "אופקי",
   "road_orient_horizontal_note": "במסך רחב הדרך נפרשת לצד וגוללים לאורכה.",
-  "road_orient_narrow_note": "במסך צר הדרך תמיד אנכית."
+  "road_orient_narrow_note": "במסך צר הדרך תמיד אנכית.",
+  "jy_block_label": "שלב {n} · רמה {level}",
+  "jy_block_review": "שלב {n} · חזרה",
+  "jy_level_n": "רמה {n}",
+  "jy_level_up": "רמה {n}",
+  "jy_stage_bound": "שלב {n}",
+  "jy_recommend": "מומלץ לתרגל"
 }

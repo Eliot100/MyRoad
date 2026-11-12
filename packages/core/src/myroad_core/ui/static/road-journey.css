@@ -36,8 +36,9 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   --jy-plaque-ink: #1c1a16;
   --jy-plaque-line: rgba(50, 46, 38, 0.12);
   --jy-terrace: #f4f0e6;
-  --jy-stone-size: 56px;
-  --jy-gap: 28px;
+  --jy-stone-size: 76px;
+  --jy-stone-h: 92px;
+  --jy-gap: 18px;
   --jy-pad: 48px;
   --jy-radius: 11px;
   --jy-amp: 56px;
@@ -49,7 +50,7 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
   border-color: color-mix(in srgb, var(--jy-lawn-2) 35%, var(--line));
 }
 @media (min-width: 720px) {
-  .road-jy { --jy-stone-size: 68px; --jy-gap: 32px; --jy-amp: 80px; --jy-pad: 64px; }
+  .road-jy { --jy-stone-size: 84px; --jy-stone-h: 102px; --jy-gap: 28px; --jy-amp: 80px; --jy-pad: 64px; }
 }
 
 /* Dark: a quiet evening lawn, moonlit slate. */
@@ -273,8 +274,13 @@ html[data-road-style="journey"] [data-road-style-panel="timeline"] { display: no
 }
 html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
 
-/* ---- Path and stones: no-JS fallback is a centred column (or row, if horizontal). ---- */
+/* ---- Path and stones: centred on the vertical midline, read bottom to top
+   (column-reverse). Row counts come from the data (1–3). No-JS already looks
+   right; JS only handles orientation, keyboard and scroll-to-here. Equal gaps,
+   one fixed stone size, every row centred. ---- */
 .road-jy .jy-path,
+.road-jy .jy-rows,
+.road-jy .jy-row,
 .road-jy .jy-stones {
   list-style: none;
   margin: 0;
@@ -284,26 +290,56 @@ html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
   position: relative;
   z-index: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
-  gap: var(--jy-gap);
+  gap: calc(var(--jy-gap) + 8px);
   padding-block: var(--jy-pad);
   padding-inline: var(--space-4);
 }
 .road-jy .jy-stage {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: var(--space-3);
+  inline-size: 100%;
+  max-inline-size: 36rem;
+  position: relative;
+}
+.road-jy .jy-rows {
+  display: flex;
+  flex-direction: column-reverse;
   align-items: center;
   gap: var(--jy-gap);
   inline-size: 100%;
-  position: relative;
 }
+.road-jy .jy-row,
 .road-jy .jy-stones {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
   gap: var(--jy-gap);
+  /* Row width = count × fixed stone size + gaps; the row itself does not stretch. */
+  inline-size: max-content;
+  flex: none;
 }
+/* Fixed stone size across every row: a lone stone is not giant, a row of 3 is not tiny.
+   Symmetry is the vertical centre line (parent align-items: center). */
+.road-jy .jy-step {
+  flex: 0 0 var(--jy-stone-size);
+  inline-size: var(--jy-stone-size);
+  block-size: var(--jy-stone-h, var(--jy-stone-size));
+  max-inline-size: var(--jy-stone-size);
+  max-block-size: var(--jy-stone-h, var(--jy-stone-size));
+}
+.road-jy .jy-end {
+  /* sits visually at the top (last in DOM, column-reverse). */
+  margin-block: var(--space-2);
+}
+
+/* Hide the shared path-head goal meter on the journey style only: progress
+   lives on each block. The timeline is unchanged. */
+html[data-road-style="journey"] .goal-meter { display: none; }
 
 /* Stage plaques: a quiet linen card beside (or above) the first stone. */
 .road-jy .jy-stage-label {
@@ -346,9 +382,11 @@ html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
 /* The stone itself: a cut square of limestone or slate, sitting on the lawn. */
 .road-jy .jy-step {
   position: relative;
-  flex: none;
+  flex: 0 0 var(--jy-stone-size);
   inline-size: var(--jy-stone-size);
-  block-size: var(--jy-stone-size);
+  block-size: var(--jy-stone-h, var(--jy-stone-size));
+  max-inline-size: var(--jy-stone-size);
+  max-block-size: var(--jy-stone-h, var(--jy-stone-size));
   z-index: 1;
 }
 .road-jy .jy-hit {
@@ -361,14 +399,17 @@ html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
   appearance: none;
   -webkit-appearance: none;
   display: grid;
-  place-items: center;
+  grid-template-rows: auto 1fr auto;
+  align-items: center;
+  justify-items: center;
+  gap: 1px;
   position: relative;
   inline-size: 100%;
   block-size: 100%;
   min-inline-size: 44px;
   min-block-size: 44px;
   margin: 0;
-  padding: 0;
+  padding: 5px 3px 4px;
   border: 0;
   border-radius: var(--jy-radius);
   font: inherit;
@@ -426,57 +467,93 @@ html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
 /* Open (not current, not locked): a quiet empty well, inviting. */
 .road-jy .jy-step.is-open .jy-icon { opacity: 0.45; }
 
-/* Walked: limestone still, but clearly lit — teal tint, teal check, a quiet glow.
-   Grain and chamfer stay; this is not a filled teal pad. */
+/* Walked: a richer finish in the same limestone family — a warm polished
+   face and a thin bronze rim — not a teal fill and not a check mark.
+   The רמה badge on the stone is the "leveled up" signal. */
 .road-jy .jy-step.is-done .jy-stone {
-  background: linear-gradient(145deg,
-    color-mix(in srgb, var(--accent) 22%, var(--jy-stone-edge-lit)),
-    color-mix(in srgb, var(--accent) 18%, var(--jy-stone-done-2)));
+  background: linear-gradient(145deg, #f0e4c4, #c9ae78);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.5),
     0 2px 2px rgba(40, 48, 28, 0.2),
     0 8px 14px rgba(40, 48, 28, 0.16),
-    0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent),
-    0 0 16px color-mix(in srgb, var(--accent) 32%, transparent);
+    0 0 0 2px color-mix(in srgb, #b07a22 75%, transparent),
+    0 0 12px color-mix(in srgb, #c9a44a 30%, transparent);
+  color: #2a2416;
 }
 .road-jy .jy-step.is-done .jy-face {
   background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 28%, transparent 50%),
-    linear-gradient(150deg, transparent 52%, rgba(40, 32, 18, 0.16) 100%),
+    linear-gradient(150deg, rgba(255, 248, 220, 0.55) 0%, rgba(255, 255, 255, 0.1) 28%, transparent 50%),
+    linear-gradient(150deg, transparent 52%, rgba(70, 48, 12, 0.18) 100%),
     var(--jy-grain-stone),
-    linear-gradient(165deg,
-      color-mix(in srgb, var(--accent) 22%, var(--jy-stone-done)) 0%,
-      color-mix(in srgb, var(--accent) 30%, var(--jy-stone-done-2)) 100%);
+    linear-gradient(165deg, #efe0b8 0%, #d4b87a 100%);
   background-size: auto, auto, 64px 64px, auto;
 }
-.road-jy .jy-step.is-done .jy-icon {
-  color: var(--accent);
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 45%, transparent));
+.road-jy .jy-level-badge {
+  position: relative;
+  z-index: 2;
+  font-size: 0.58rem;
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: #3a2a0c;
+  background: color-mix(in srgb, #f6e6b4 90%, #fff);
+  border: 1px solid color-mix(in srgb, #b07a22 60%, transparent);
+  border-radius: 999px;
+  padding: 0.1rem 0.28rem;
+  max-inline-size: calc(100% - 2px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Current: slightly lifted, a soft pool of light in the grass, כאן עכשיו. */
-.road-jy .jy-step.is-here { z-index: 3; }
-.road-jy .jy-step.is-here .jy-stone {
-  background: linear-gradient(145deg, #f0e8d4, var(--jy-stone-here-2));
-  transform: translateY(-2px);
+/* Current / recommended: the single stone that stands out. A slightly
+   larger lift, a bright ring in the grass, and a pulse (static glow when
+   motion is reduced). Nothing else on the field competes with it. */
+.road-jy .jy-step.is-here,
+.road-jy .jy-step.is-recommended { z-index: 4; }
+.road-jy .jy-step.is-here .jy-stone,
+.road-jy .jy-step.is-recommended .jy-stone {
+  background: linear-gradient(145deg, #f3ebd6, var(--jy-stone-here-2));
+  transform: translateY(-5px);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.4),
-    0 3px 4px rgba(40, 48, 28, 0.22),
-    0 12px 20px rgba(40, 48, 28, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    0 4px 6px rgba(40, 48, 28, 0.24),
+    0 14px 24px rgba(40, 48, 28, 0.24),
     0 0 0 7px var(--jy-stone-here-ring),
-    0 0 28px 4px var(--jy-stone-here-ring);
+    0 0 32px 6px var(--jy-stone-here-ring);
+  animation: jy-recommend-pulse 2s ease-in-out infinite;
+  color: var(--jy-stone-ink);
 }
-.road-jy .jy-step.is-here .jy-face {
+.road-jy .jy-step.is-here .jy-face,
+.road-jy .jy-step.is-recommended .jy-face {
   background:
-    linear-gradient(150deg, rgba(255, 250, 230, 0.55) 0%, rgba(255, 255, 255, 0.1) 30%, transparent 52%),
+    linear-gradient(150deg, rgba(255, 250, 230, 0.62) 0%, rgba(255, 255, 255, 0.12) 30%, transparent 52%),
     linear-gradient(150deg, transparent 52%, rgba(40, 32, 18, 0.16) 100%),
     var(--jy-grain-stone),
     linear-gradient(165deg, var(--jy-stone-here) 0%, var(--jy-stone-here-2) 100%);
   background-size: auto, auto, 64px 64px, auto;
 }
-.road-jy .jy-step.is-here .jy-icon { color: var(--accent); }
+@keyframes jy-recommend-pulse {
+  0%, 100% {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.5),
+      0 4px 6px rgba(40, 48, 28, 0.24),
+      0 14px 24px rgba(40, 48, 28, 0.24),
+      0 0 0 6px var(--jy-stone-here-ring),
+      0 0 24px 4px var(--jy-stone-here-ring);
+  }
+  50% {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.5),
+      0 4px 6px rgba(40, 48, 28, 0.24),
+      0 14px 24px rgba(40, 48, 28, 0.24),
+      0 0 0 11px color-mix(in srgb, var(--jy-stone-here-ring) 80%, transparent),
+      0 0 40px 10px var(--jy-stone-here-ring);
+  }
+}
 
-/* Locked: flattened, cooler, slightly sunk into the lawn. */
+/* Locked: flattened, cooler, slightly sunk into the lawn. Title and
+   symbol stay visible, just quieter. The lock sits in a corner. */
 .road-jy .jy-step.is-ahead .jy-stone,
 .road-jy .jy-step.is-view .jy-stone {
   cursor: default;
@@ -498,52 +575,74 @@ html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
   filter: saturate(0.7);
 }
 .road-jy .jy-step.is-ahead .jy-icon,
-.road-jy .jy-step.is-view .jy-icon { color: var(--jy-stone-ahead-ink); opacity: 0.85; }
-
-/* Titles: a single unwrapped line, only on hover or focus. The current stone
-   uses a כאן עכשיו pill instead, so a wrapping English title never sits on it. */
-.road-jy .jy-caption {
+.road-jy .jy-step.is-view .jy-icon {
   position: absolute;
-  inset-block-start: 50%;
-  inset-inline-start: calc(100% + 10px);
-  transform: translateY(-50%);
-  background: var(--jy-plaque);
-  color: var(--jy-plaque-ink);
-  border: 1px solid var(--jy-plaque-line);
-  border-radius: 10px;
-  padding: 5px 10px;
-  box-shadow: 0 2px 8px rgba(30, 36, 20, 0.12);
-  text-align: start;
-  inline-size: 10rem;
-  max-inline-size: 10rem;
-  pointer-events: none;
-  z-index: 4;
-  line-height: 1.35;
-  opacity: 0;
-  visibility: hidden;
+  inset-block-start: 3px;
+  inset-inline-end: 3px;
+  inline-size: 0.8rem;
+  block-size: 0.8rem;
+  color: var(--jy-stone-ahead-ink);
+  opacity: 0.75;
+  z-index: 2;
 }
-.road-jy .jy-tile-title {
+.road-jy .jy-step.is-ahead .jy-icon svg,
+.road-jy .jy-step.is-view .jy-icon svg {
+  inline-size: 0.8rem;
+  block-size: 0.8rem;
+}
+
+/* On-stone title and subject symbol: always visible, never only on hover.
+   Two lines of the real session title, truncated cleanly; the full title
+   is in the accessible name and the title attribute. */
+.road-jy .jy-mark {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-block-size: 1.1em;
+  font-size: 1.12rem;
   font-weight: 650;
-  font-size: var(--text-xs);
-  white-space: nowrap;
+  line-height: 1;
+  font-family: "STIX Two Math", "Cambria Math", "Times New Roman", "David", ui-serif, serif;
+  color: inherit;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.28));
+  pointer-events: none;
+}
+.road-jy .jy-mark-svg {
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+}
+.road-jy .jy-short {
+  position: relative;
+  z-index: 1;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  max-inline-size: 100%;
+  padding-inline: 2px;
+  color: inherit;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  pointer-events: none;
 }
-.road-jy .jy-tag {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--accent);
+.road-jy .jy-stage-label .jy-mark,
+.road-jy .jy-bound-label .jy-mark {
+  display: inline-grid;
+  font-size: 1.05em;
+  margin-inline-end: 0.28em;
+  vertical-align: middle;
+  filter: none;
+  color: var(--jy-plaque-ink);
 }
-.road-jy .jy-step:is(:hover, :focus-within) .jy-caption {
-  opacity: 1;
-  visibility: visible;
-}
-.road-jy .jy-step.label-towards-start .jy-caption {
-  inset-inline-start: auto;
-  inset-inline-end: calc(100% + 10px);
-  text-align: end;
-}
+.road-jy .jy-kicker .jy-mark { margin-inline-end: 0.28em; }
 
 /* One "כאן עכשיו" marker: a nowrap pill above the current stone, never on the stage plaque. */
 .road-jy .jy-here-flag {
@@ -630,24 +729,197 @@ html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
 }
 .road-jy .jy-end-title { font-weight: 650; overflow-wrap: anywhere; font-size: var(--text-sm); }
 
-/* JS-laid: stones are placed along a gentle meander; stages and lists collapse. */
-.road-jy.is-laid .jy-path {
-  display: block;
-  padding: 0;
+/* JS ready flag only: layout is CSS, not absolute placement. */
+.road-jy.is-laid .jy-path { /* keep flex hopscotch */ }
+
+/* ---- Level-up: a widened limestone landing under a shallow stone lintel. ---- */
+.road-jy .jy-levelup {
+  display: flex;
+  flex-direction: column-reverse; /* landing toward the finished level (visual bottom) */
+  align-items: center;
+  gap: 10px;
+  inline-size: 100%;
+  max-inline-size: 20rem;
+  padding-block: var(--space-3);
+  position: relative;
+  z-index: 2;
 }
-.road-jy.is-laid .jy-stage,
-.road-jy.is-laid .jy-stones {
-  display: contents;
+.road-jy .jy-landing-wrap {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  inline-size: calc(var(--jy-stone-size) * 2.35);
 }
-.road-jy.is-laid .jy-step,
-.road-jy.is-laid .jy-stage-label,
-.road-jy.is-laid .jy-end {
-  position: absolute;
+.road-jy .jy-arch {
+  display: grid;
+  grid-template-columns: 14px 1fr 14px;
+  grid-template-rows: 14px 22px;
+  inline-size: 100%;
+  block-size: 36px;
+  margin-block-end: -6px; /* posts rest on the landing */
+  z-index: 1;
+  pointer-events: none;
+}
+.road-jy .jy-arch-lintel,
+.road-jy .jy-arch-post {
+  position: relative;
+  background: linear-gradient(145deg, var(--jy-stone-edge-lit), var(--jy-stone-edge-shade));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28),
+    0 2px 4px rgba(40, 48, 28, 0.2);
+}
+.road-jy .jy-arch-lintel {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  border-radius: 16px 16px 5px 5px;
+  min-block-size: 14px;
+}
+.road-jy .jy-arch-post {
+  grid-row: 1 / -1;
+  border-radius: 5px 5px 3px 3px;
+}
+.road-jy .jy-arch-post.is-start { grid-column: 1; }
+.road-jy .jy-arch-post.is-end { grid-column: 3; }
+.road-jy .jy-arch-lintel .jy-face,
+.road-jy .jy-arch-post .jy-face {
+  inset: 2px;
+  border-radius: inherit;
+}
+.road-jy .jy-landing {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: var(--jy-stone-size);
+  min-block-size: 44px;
+  border-radius: 14px;
+  color: var(--jy-stone-ink);
+  background: linear-gradient(145deg, var(--jy-stone-edge-lit), var(--jy-stone-edge-shade));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28),
+    0 2px 2px rgba(40, 48, 28, 0.22),
+    0 8px 14px rgba(40, 48, 28, 0.2);
+  z-index: 2;
+}
+.road-jy .jy-landing .jy-face {
+  inset: 4px;
+  border-radius: 10px;
+}
+.road-jy .jy-landing-mark {
+  position: relative;
+  z-index: 1;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--jy-stone-ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.road-jy .jy-levelup.is-walked .jy-landing,
+.road-jy .jy-levelup.is-here .jy-landing {
+  background: linear-gradient(145deg,
+    color-mix(in srgb, var(--accent) 22%, var(--jy-stone-edge-lit)),
+    color-mix(in srgb, var(--accent) 18%, var(--jy-stone-done-2)));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35),
+    0 2px 2px rgba(40, 48, 28, 0.2),
+    0 8px 14px rgba(40, 48, 28, 0.16),
+    0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent),
+    0 0 16px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.road-jy .jy-levelup.is-walked .jy-landing .jy-face,
+.road-jy .jy-levelup.is-here .jy-landing .jy-face {
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.08) 28%, transparent 50%),
+    linear-gradient(150deg, transparent 52%, rgba(40, 32, 18, 0.16) 100%),
+    var(--jy-grain-stone),
+    linear-gradient(165deg,
+      color-mix(in srgb, var(--accent) 22%, var(--jy-stone-done)) 0%,
+      color-mix(in srgb, var(--accent) 30%, var(--jy-stone-done-2)) 100%);
+  background-size: auto, auto, 64px 64px, auto;
+}
+.road-jy .jy-levelup.is-walked .jy-landing-mark,
+.road-jy .jy-levelup.is-here .jy-landing-mark {
+  color: var(--accent);
+}
+.road-jy .jy-levelup.is-ahead .jy-landing,
+.road-jy .jy-levelup.is-ahead .jy-arch-lintel,
+.road-jy .jy-levelup.is-ahead .jy-arch-post {
+  background: linear-gradient(145deg, var(--jy-stone-ahead), var(--jy-stone-ahead-2));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(40, 48, 28, 0.2),
+    0 3px 6px rgba(40, 48, 28, 0.14);
+  color: var(--jy-stone-ahead-ink);
+}
+.road-jy .jy-levelup.is-ahead .jy-landing .jy-face,
+.road-jy .jy-levelup.is-ahead .jy-arch-lintel .jy-face,
+.road-jy .jy-levelup.is-ahead .jy-arch-post .jy-face {
+  filter: saturate(0.7);
+}
+.road-jy .jy-levelup.is-ahead { opacity: 0.88; }
+.road-jy .jy-levelup .jy-icon {
+  position: relative;
+  z-index: 1;
+  inline-size: 1.2rem;
+  block-size: 1.2rem;
+  color: var(--jy-stone-ahead-ink);
+}
+.road-jy .jy-levelup .jy-icon svg {
+  inline-size: 1.15rem;
+  block-size: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* Horizontal on wide screens: a tall sideways field, labels above the stones. */
+/* ---- Stage (new topic) and review boundaries: a thin line across the lawn. ---- */
+.road-jy .jy-stage-bound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  max-inline-size: 28rem;
+  padding-block: var(--space-3);
+  position: relative;
+  z-index: 2;
+}
+.road-jy .jy-bound-line {
+  display: block;
+  inline-size: 100%;
+  block-size: 1px;
+  background: color-mix(in srgb, var(--jy-plaque) 70%, var(--jy-stone-edge-lit));
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--jy-lawn-shade) 35%, transparent);
+  opacity: 0.95;
+}
+.road-jy .jy-bound-label {
+  background: var(--jy-plaque);
+  color: var(--jy-plaque-ink);
+  border: 1px solid var(--jy-plaque-line);
+  border-radius: 12px;
+  padding: 6px 14px;
+  box-shadow: 0 1px 2px rgba(30, 36, 20, 0.08), 0 6px 16px rgba(30, 36, 20, 0.08);
+  backdrop-filter: blur(8px);
+  display: grid;
+  gap: 1px;
+  text-align: center;
+  max-inline-size: 16rem;
+  min-inline-size: 0;
+}
+.road-jy .jy-stage-bound.is-ahead { opacity: 0.78; }
+.road-jy .jy-stage-bound.is-walked .jy-bound-line {
+  background: color-mix(in srgb, var(--accent) 45%, var(--jy-plaque));
+}
+
+/* Horizontal: the hopscotch rotates 90 degrees. Rows become columns.
+   Reading direction is along the inline axis (RTL starts on the right). */
 @media (min-width: 1024px) {
-  html[data-road-orientation="horizontal"] .road-jy .jy-field {
+  html[data-road-orientation="horizontal"] .road-jy .jy-field,
+  .road-jy.is-horizontal .jy-field {
     overflow-x: auto;
     overflow-y: hidden;
     block-size: 34rem;
@@ -656,45 +928,167 @@ html[data-motion="reduce"] .road-jy .jy-glow-halo { stroke-width: 10px; }
     scroll-padding-inline: 24%;
     scrollbar-color: color-mix(in srgb, var(--jy-stone-2) 70%, transparent) transparent;
   }
-  html[data-road-orientation="horizontal"] .road-jy .jy-field:focus-visible {
+  html[data-road-orientation="horizontal"] .road-jy .jy-field:focus-visible,
+  .road-jy.is-horizontal .jy-field:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: -3px;
   }
-  html[data-road-orientation="horizontal"] .road-jy:not(.is-laid) .jy-path,
-  html[data-road-orientation="horizontal"] .road-jy:not(.is-laid) .jy-stones,
-  html[data-road-orientation="horizontal"] .road-jy:not(.is-laid) .jy-stage {
-    flex-direction: row;
+  html[data-road-orientation="horizontal"] .road-jy .jy-canvas,
+  .road-jy.is-horizontal .jy-canvas {
+    block-size: 100%;
+    min-inline-size: max-content;
+    display: flex;
+    align-items: center;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-path,
+  .road-jy.is-horizontal .jy-path {
+    flex-direction: row; /* inline-start = start of the road */
     align-items: center;
     min-inline-size: max-content;
+    min-block-size: 100%;
+    padding-inline: var(--jy-pad);
+    padding-block: var(--space-4);
+    gap: calc(var(--jy-gap) + 16px);
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-stage,
+  html[data-road-orientation="horizontal"] .road-jy .jy-rows,
+  .road-jy.is-horizontal .jy-stage,
+  .road-jy.is-horizontal .jy-rows {
+    flex-direction: row;
+    max-inline-size: none;
     block-size: 100%;
   }
-  html[data-road-orientation="horizontal"] .road-jy.is-laid .jy-canvas {
-    block-size: 100%;
+  html[data-road-orientation="horizontal"] .road-jy .jy-row,
+  html[data-road-orientation="horizontal"] .road-jy .jy-stones,
+  .road-jy.is-horizontal .jy-row,
+  .road-jy.is-horizontal .jy-stones {
+    flex-direction: column; /* a hopscotch row is now a column, first at the top */
   }
-  html[data-road-orientation="horizontal"] .road-jy .jy-here-flag {
+  html[data-road-orientation="horizontal"] .road-jy .jy-levelup,
+  html[data-road-orientation="horizontal"] .road-jy .jy-landing-wrap,
+  .road-jy.is-horizontal .jy-levelup,
+  .road-jy.is-horizontal .jy-landing-wrap {
+    flex-direction: row; /* landing at inline-start, arch toward the next level */
+    max-inline-size: none;
+    inline-size: auto;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-landing-wrap,
+  .road-jy.is-horizontal .jy-landing-wrap {
+    inline-size: auto;
+    block-size: calc(var(--jy-stone-size) * 2.15);
+    flex-direction: row;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-landing,
+  .road-jy.is-horizontal .jy-landing {
+    inline-size: var(--jy-stone-size);
+    block-size: calc(var(--jy-stone-size) * 2.15);
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-arch,
+  .road-jy.is-horizontal .jy-arch {
+    grid-template-columns: 22px 14px;
+    grid-template-rows: 14px 1fr 14px;
+    inline-size: 36px;
+    block-size: 100%;
+    margin-block-end: 0;
+    margin-inline-start: -6px;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-arch-lintel,
+  .road-jy.is-horizontal .jy-arch-lintel {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    border-radius: 5px 16px 16px 5px;
+    min-block-size: 0;
+    min-inline-size: 14px;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-arch-post.is-start,
+  .road-jy.is-horizontal .jy-arch-post.is-start { grid-column: 1; grid-row: 1; }
+  html[data-road-orientation="horizontal"] .road-jy .jy-arch-post.is-end,
+  .road-jy.is-horizontal .jy-arch-post.is-end { grid-column: 1; grid-row: 3; }
+  html[data-road-orientation="horizontal"] .road-jy .jy-stage-bound,
+  .road-jy.is-horizontal .jy-stage-bound {
+    flex-direction: row;
+    max-inline-size: none;
+    inline-size: auto;
+    min-block-size: 70%;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-bound-line,
+  .road-jy.is-horizontal .jy-bound-line {
+    inline-size: 1px;
+    block-size: 80%;
+    min-block-size: 12rem;
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-here-flag,
+  .road-jy.is-horizontal .jy-here-flag {
     inset-block-end: auto;
     inset-block-start: calc(100% + 14px);
+  }
+  html[data-road-orientation="horizontal"] .road-jy .jy-stage-label,
+  .road-jy.is-horizontal .jy-stage-label {
+    max-inline-size: 11rem;
   }
 }
 
 /* Room to scroll the last stones and plaques above the sticky המשך bar. */
 .road-jy .jy-field { padding-block-end: 5.5rem; }
+.road-jy.is-horizontal .jy-field { padding-block-end: 0; padding-inline-end: 5.5rem; }
 
-/* Laid-out labels get a max size so they sit beside the path, not over it. */
-.road-jy.is-laid .jy-stage-label {
-  max-inline-size: 13.5rem;
+/* Stage plaques: compact, at the start of each block (visual bottom). */
+.road-jy .jy-stage-label {
+  text-align: center;
+  justify-items: center;
+  max-inline-size: 14rem;
 }
 
-/* Reduced motion: no lift, no smooth transitions. */
+/* Reduced motion: no lift, no pulse; the recommended stone keeps a static glow. */
 @media (prefers-reduced-motion: reduce) {
   .road-jy .jy-stone,
   .road-jy .jy-meter-fill { transition: none; }
-  .road-jy .jy-step.is-here .jy-stone { transform: none; }
+  .road-jy .jy-step.is-here .jy-stone,
+  .road-jy .jy-step.is-recommended .jy-stone {
+    transform: none;
+    animation: none;
+  }
   .road-jy .jy-step:not(.is-ahead):not(.is-view) .jy-stone:hover { transform: none; }
 }
 html[data-motion="reduce"] .road-jy .jy-stone { transition: none; }
-html[data-motion="reduce"] .road-jy .jy-step.is-here .jy-stone { transform: none; }
+html[data-motion="reduce"] .road-jy .jy-step.is-here .jy-stone,
+html[data-motion="reduce"] .road-jy .jy-step.is-recommended .jy-stone {
+  transform: none;
+  animation: none;
+}
 html[data-motion="reduce"] .road-jy .jy-step:not(.is-ahead):not(.is-view) .jy-stone:hover { transform: none; }
+
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .road-jy .jy-level-badge,
+  :root:not([data-theme="light"]) .road-jy .jy-step.is-done .jy-stone {
+    color: #f6edd4;
+  }
+  :root:not([data-theme="light"]) .road-jy .jy-level-badge {
+    color: #2a2416;
+    background: color-mix(in srgb, #e8d49a 88%, #fff);
+  }
+  :root:not([data-theme="light"]) .road-jy .jy-step.is-done .jy-stone {
+    background: linear-gradient(145deg, #6a5a38, #4a3e28);
+    box-shadow:
+      0 1px 0 rgba(255, 230, 180, 0.18),
+      0 2px 2px rgba(0, 0, 0, 0.3),
+      0 8px 14px rgba(0, 0, 0, 0.28),
+      0 0 0 2px color-mix(in srgb, #d4a84a 70%, transparent),
+      0 0 12px color-mix(in srgb, #d4a84a 28%, transparent);
+  }
+}
+html[data-theme="dark"] .road-jy .jy-level-badge { color: #2a2416; background: color-mix(in srgb, #e8d49a 88%, #fff); }
+html[data-theme="dark"] .road-jy .jy-step.is-done .jy-stone {
+  background: linear-gradient(145deg, #6a5a38, #4a3e28);
+  color: #f6edd4;
+  box-shadow:
+    0 1px 0 rgba(255, 230, 180, 0.18),
+    0 2px 2px rgba(0, 0, 0, 0.3),
+    0 8px 14px rgba(0, 0, 0, 0.28),
+    0 0 0 2px color-mix(in srgb, #d4a84a 70%, transparent),
+    0 0 12px color-mix(in srgb, #d4a84a 28%, transparent);
+}
 
 /* Settings: two-option road style picker (and the orientation picker, same pattern). */
 .road-style-opts {

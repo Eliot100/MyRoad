@@ -612,5 +612,11 @@
   "road_orient_vertical_note": "Scroll from top to bottom.",
   "road_orient_horizontal": "Horizontal",
   "road_orient_horizontal_note": "On a wide screen the path runs sideways and you scroll along it.",
-  "road_orient_narrow_note": "On a narrow screen the path stays vertical."
+  "road_orient_narrow_note": "On a narrow screen the path stays vertical.",
+  "jy_block_label": "Stage {n} · Level {level}",
+  "jy_block_review": "Stage {n} · Review",
+  "jy_level_n": "Level {n}",
+  "jy_level_up": "Level {n}",
+  "jy_stage_bound": "Stage {n}",
+  "jy_recommend": "Recommended practice"
 }
