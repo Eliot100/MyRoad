@@ -612,5 +612,9 @@
   "road_orient_vertical_note": "تمرير من الأعلى إلى الأسفل.",
   "road_orient_horizontal": "أفقي",
   "road_orient_horizontal_note": "على شاشة واسعة يمتد الطريق جانباً ويُمرَّر بطوله.",
-  "road_orient_narrow_note": "على شاشة ضيقة يبقى الطريق عمودياً دائماً."
+  "road_orient_narrow_note": "على شاشة ضيقة يبقى الطريق عمودياً دائماً.",
+  "jy_stage_level": "المرحلة {n} · المستوى {level}",
+  "jy_stage_review": "المرحلة {n} · مراجعة",
+  "jy_level_up": "المرحلة {stage} · المستوى {n}",
+  "jy_stage_arrive": "المرحلة {n}"
 }

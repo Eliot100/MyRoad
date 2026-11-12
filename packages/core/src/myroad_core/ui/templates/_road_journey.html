@@ -1,18 +1,60 @@
-{#- Journey style: a centered path of square stepping stones in a grass field
-    (Eliot, 2026-11-12), with grafts from the arena: C1 meters and keyboard,
-    C3 walked-path glow and sticky-bar-aware scroll. Same `tl` view model as
-    the timeline. Unique ids (jy-here, journey-track) so the timeline's #here
-    and aria-current stay unique. Style and orientation are set on <html>
+{#- Journey style: a hopscotch board of square stepping stones in a grass field
+    (Eliot's sketch, 2026-11-12). Same `tl` view model as the timeline; `hop`
+    is derived from it (real `_lN` levels only). Unique ids (jy-here, journey-track)
+    so the timeline's #here stays unique. Style and orientation are set on <html>
     from localStorage before paint. -#}
+{%- set hop = road_hopscotch(tl, path_title=meta.title, path_title_lang=meta.titleLang|default('')) %}
 {%- macro jy_icon(state) -%}
 <span class="jy-icon" aria-hidden="true">
   {%- if state == 'done' %}<svg viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19 7"/></svg>
-  {%- elif state == 'here' %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/></svg>
-  {%- elif state == 'ahead' %}<svg viewBox="0 0 24 24"><rect x="7.2" y="11" width="9.6" height="7.2" rx="1.5"/><path d="M9.2 11V8.7a2.8 2.8 0 0 1 5.6 0V11"/></svg>
-  {%- else %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none"/></svg>
+  {%- elif state == 'here' %}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.6"/></svg>
+  {%- elif state == 'ahead' %}<svg viewBox="0 0 24 24"><rect x="8" y="11" width="8" height="8" rx="1.6"/><path d="M9.6 11V8.8a2.4 2.4 0 0 1 4.8 0V11"/></svg>
+  {%- else %}<span class="jy-icon-empty"></span>
   {%- endif -%}
 </span>
 {%- endmacro %}
+{%- macro jy_ring(block) -%}
+<svg class="jy-ring" viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+  <circle class="jy-ring-bg" cx="18" cy="18" r="14" fill="none" pathLength="100"
+    stroke="currentColor" stroke-width="4"/>
+  <circle class="jy-ring-fg" cx="18" cy="18" r="14" fill="none" pathLength="100"
+    stroke="currentColor" stroke-width="4" stroke-linecap="round"
+    stroke-dasharray="{{ block.pct }} 100"
+    transform="rotate(-90 18 18)"/>
+</svg>
+{%- endmacro %}
+{%- macro jy_block_words(block) -%}
+  {%- if block.kind == 'review' -%}
+    {{ t('jy_stage_review', n=block.stageN) }}
+  {%- elif block.levelN -%}
+    {{ t('jy_stage_level', n=block.stageN, level=block.levelN) }}
+  {%- else -%}
+    {{ t('tl_stage_n', n=block.stageN) }}
+  {%- endif -%}
+{%- endmacro %}
+{%- macro jy_stone_tile(tile) -%}
+  {%- set here_tile = tile.state == 'here' %}
+  <li class="jy-step is-{{ tile.state }}{% if tile.review %} is-review{% endif %}{% if tile.check %} is-check{% endif %}" data-block-id="{{ tile.id }}"{% if here_tile %} id="jy-here" data-jy-current="step"{% endif %}>
+    {%- if tile.state in ('ahead', 'view') %}
+    <div class="jy-stone"{% if tile.state == 'ahead' %} aria-disabled="true"{% endif %}>
+      <span class="jy-face" aria-hidden="true"></span>
+      {{ jy_icon(tile.state) }}
+      <span class="visually-hidden"><span dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>{% if tile.state == 'ahead' %} · {{ t('tl_ahead') }}{% endif %}{% if tile.check %} · {{ t('tl_check') }}{% endif %}</span>
+    </div>
+    {%- else %}
+    <form class="jy-hit" method="post" action="/play/{{ path_id }}/start">
+      <input type="hidden" name="node" value="{{ tile.id }}" />
+      <button type="submit" class="jy-stone"{% if here_tile %} aria-current="step"{% endif %}>
+        <span class="jy-face" aria-hidden="true"></span>
+        {{ jy_icon(tile.state) }}
+        <span class="visually-hidden">{% if here_tile %}{{ t('tl_here') }} · {% endif %}<span dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>{% if tile.state == 'done' %} · {{ t('tl_done') }}{% endif %}{% if tile.review %} · {{ t('step_kind_review') }}{% elif tile.check %} · {{ t('tl_check') }}{% endif %}</span>
+      </button>
+    </form>
+    {%- if here_tile %}<span class="jy-here-flag" aria-hidden="true">{{ t('tl_here') }}</span>{% endif %}
+    {%- endif %}
+  </li>
+{%- endmacro %}
+
 <section class="card road-jy{% if tl.linear %} is-linear{% endif %}{% if tl.readOnly %} is-view{% endif %}" aria-labelledby="journey-track" data-map="{{ 'linear' if tl.linear else 'free' }}" data-stages="{{ tl.stagesTotal }}" data-tiles="{{ tl.total }}" data-pct="{{ tl.pct }}">
   <header class="jy-head">
     <div class="jy-head-row">
@@ -22,76 +64,62 @@
         <button type="button" class="jy-orient-btn" data-jy-orient="horizontal" aria-pressed="false">{{ t('road_orient_horizontal') }}</button>
       </div>
     </div>
-    <p class="jy-lede tiny">{{ t('jy_lede') }}</p>
-    <div class="jy-progress">
-      <p class="jy-sum">
-        {%- if tl.hereStage %}<a class="jy-sum-here" href="#jy-here">{{ t('tl_stage_of', n='<bdi>%s</bdi>'|format(tl.hereStage), total='<bdi>%s</bdi>'|format(tl.stagesTotal))|safe }}<span class="visually-hidden"> · {{ t('tl_jump_here') }}</span></a>{% endif %}
-        <span>{{ t('tl_cells', done='<bdi>%s</bdi>'|format(tl.done), total='<bdi>%s</bdi>'|format(tl.total))|safe }}</span>
-        <span>{{ t('tl_stages_done', done='<bdi>%s</bdi>'|format(tl.stagesDone), total='<bdi>%s</bdi>'|format(tl.stagesTotal))|safe }}</span>
-      </p>
-      <div class="jy-meter-overall" aria-hidden="true">
-        <span class="jy-meter-fill" style="inline-size: {{ tl.pct }}%"></span>
-      </div>
-    </div>
   </header>
 
   <div class="jy-field" aria-labelledby="journey-track">
     <div class="jy-canvas">
-      <svg class="jy-ground" aria-hidden="true" focusable="false" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="jy-worn-g" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="var(--jy-worn-lit)"/>
-            <stop offset="1" stop-color="var(--jy-worn)"/>
-          </linearGradient>
-          <filter id="jy-bloom" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <path class="jy-worn-ahead" fill="none" stroke="var(--jy-worn-ahead)" stroke-linecap="round" stroke-linejoin="round"/>
-        <path class="jy-worn-done" fill="none" stroke="url(#jy-worn-g)" stroke-linecap="round" stroke-linejoin="round"/>
-        <path class="jy-glow-halo" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        <path class="jy-glow-core" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#jy-bloom)"/>
-      </svg>
       <ol class="jy-path">
-      {%- for s in tl.stages %}
-      {%- set here_stage = s.state == 'here' %}
-      <li class="jy-stage is-{{ s.state }}{% if s.walked %} is-walked{% endif %}{% if s.review %} is-review{% endif %}" data-jy-topic="{{ s.id }}" data-jy-pct="{{ s.pct }}">
-        <div class="jy-stage-label">
-          <span class="jy-kicker">{{ t('tl_stage_n', n=s.n) }}{% if s.review %} · {{ t('step_kind_review') }}{% endif %}{% if s.state == 'done' %}<span class="visually-hidden"> · {{ t('tl_done') }}</span>{% endif %}</span>
-          <span class="jy-title" dir="auto"{{ s.titleLang|content_lang(locale) }}>{{ s.title }}</span>
-          <span class="jy-count tiny">{{ t('tl_cells', done='<bdi>%s</bdi>'|format(s.done), total='<bdi>%s</bdi>'|format(s.total))|safe }}</span>
-          <span class="jy-meter" aria-hidden="true"><span class="jy-meter-fill" style="inline-size: {{ s.pct }}%"></span></span>
+      {%- for block in hop.blocks %}
+      {%- if block.boundary %}
+      <li class="jy-boundary is-{{ block.boundary.kind }}{% if block.boundary.crossed %} is-crossed{% endif %}{% if block.boundary.open %} is-open{% else %} is-locked{% endif %}" data-jy-boundary="{{ block.boundary.kind }}">
+        <span class="jy-line" aria-hidden="true"></span>
+        <div class="jy-boundary-label">
+          <div class="jy-boundary-copy">
+            {{ jy_ring(block) }}
+            <div class="jy-kicker-stack">
+            {%- if block.boundary.kind == 'level-up' %}
+            <span class="jy-kicker">{% if block.boundary.review %}{{ t('jy_stage_review', n=block.boundary.stageN) }}{% else %}{{ t('jy_level_up', n=block.boundary.levelN, stage=block.boundary.stageN) }}{% endif %}</span>
+            {%- else %}
+            <span class="jy-kicker">{{ t('jy_stage_arrive', n=block.boundary.stageN) }}</span>
+            <span class="jy-boundary-title" dir="auto"{{ block.boundary.titleLang|content_lang(locale) }}>{{ block.boundary.title }}</span>
+            {%- endif %}
+            </div>
+          </div>
+        </div>
+        <span class="visually-hidden">
+          {%- if block.boundary.kind == 'level-up' %}
+            {%- if block.boundary.review %}{{ t('jy_stage_review', n=block.boundary.stageN) }}
+            {%- else %}{{ t('jy_level_up', n=block.boundary.levelN, stage=block.boundary.stageN) }}
+            {%- endif %}
+          {%- else %}{{ t('jy_stage_arrive', n=block.boundary.stageN) }} · <span dir="auto"{{ block.boundary.titleLang|content_lang(locale) }}>{{ block.boundary.title }}</span>
+          {%- endif %}
+          {%- if block.boundary.crossed %} · {{ t('tl_done') }}{% elif not block.boundary.open %} · {{ t('tl_ahead') }}{% endif %}
+        </span>
+      </li>
+      {%- endif %}
+      <li class="jy-block jy-stage is-{{ block.state }}{% if block.walked %} is-walked{% endif %}{% if block.review %} is-review{% endif %}" data-jy-topic="{{ block.id }}" data-jy-pct="{{ block.pct }}" data-jy-stage="{{ block.stageN }}" data-jy-level="{{ block.levelN if block.levelN is not none else '' }}">
+        {%- if loop.first %}
+        <div class="jy-block-meta jy-block-start">
+          <div class="jy-block-copy">
+            {{ jy_ring(block) }}
+            <div class="jy-kicker-stack">
+            <span class="jy-kicker">{{ jy_block_words(block) }}</span>
+            <span class="jy-count tiny">{{ t('tl_cells', done='<bdi>%s</bdi>'|format(block.done), total='<bdi>%s</bdi>'|format(block.total))|safe }}</span>
+            </div>
+          </div>
           {%- if tl.readOnly %}
-          <a class="secondary link-btn small-btn jy-peek" href="/play/{{ path_id }}?topic={{ s.id }}">{{ t('read_only_open') }}</a>
+          <a class="secondary link-btn small-btn jy-peek" href="/play/{{ path_id }}?topic={{ block.id }}">{{ t('read_only_open') }}</a>
           {%- endif %}
         </div>
-        <ol class="jy-stones">
-          {%- for tile in s.tiles %}
-          {%- set here_tile = tile.state == 'here' %}
-          <li class="jy-step is-{{ tile.state }}{% if tile.review %} is-review{% endif %}{% if tile.check %} is-check{% endif %}" data-block-id="{{ tile.id }}"{% if here_tile %} id="jy-here" data-jy-current="step"{% endif %}>
-            {%- if tile.state in ('ahead', 'view') %}
-            <div class="jy-stone"{% if tile.state == 'ahead' %} aria-disabled="true"{% endif %}>
-              <span class="jy-face" aria-hidden="true"></span>
-              {{ jy_icon(tile.state) }}
-              <span class="visually-hidden"><span dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>{% if tile.state == 'ahead' %} · {{ t('tl_ahead') }}{% endif %}{% if tile.check %} · {{ t('tl_check') }}{% endif %}</span>
-              <span class="jy-caption" aria-hidden="true"><span class="jy-tile-title" dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span></span>
-            </div>
-            {%- else %}
-            <form class="jy-hit" method="post" action="/play/{{ path_id }}/start">
-              <input type="hidden" name="node" value="{{ tile.id }}" />
-              <button type="submit" class="jy-stone"{% if here_tile %} aria-current="step"{% endif %}>
-                <span class="jy-face" aria-hidden="true"></span>
-                {{ jy_icon(tile.state) }}
-                <span class="visually-hidden">{% if here_tile %}{{ t('tl_here') }} · {% endif %}<span dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span>{% if tile.state == 'done' %} · {{ t('tl_done') }}{% endif %}{% if tile.review %} · {{ t('step_kind_review') }}{% elif tile.check %} · {{ t('tl_check') }}{% endif %}</span>
-                <span class="jy-caption" aria-hidden="true"><span class="jy-tile-title" dir="auto"{{ tile.titleLang|content_lang(locale) }}>{{ tile.title }}</span></span>
-              </button>
-            </form>
-            {%- if here_tile %}<span class="jy-here-flag" aria-hidden="true">{{ t('tl_here') }}</span>{% endif %}
-            {%- endif %}
+        {%- endif %}
+        <ol class="jy-rows">
+          {%- for row in block.rows %}
+          <li class="jy-row" data-jy-span="{{ row|length }}">
+            <ol class="jy-stones">
+              {%- for tile in row %}
+              {{ jy_stone_tile(tile) }}
+              {%- endfor %}
+            </ol>
           </li>
           {%- endfor %}
         </ol>
@@ -116,7 +144,7 @@
 {%- if tl.next and not tl.readOnly %}
 <div class="tl-continue jy-continue" data-tl-continue data-jy-continue hidden>
   <a class="tl-continue-copy" href="#jy-here">
-    <span class="tl-kicker">{{ t('tl_next') }} · {{ t('tl_stage_n', n=tl.next.stageN) }}</span>
+    <span class="tl-kicker">{{ t('tl_next') }} · {% if hop.nextBlock %}{{ jy_block_words(hop.nextBlock) }}{% else %}{{ t('tl_stage_n', n=tl.next.stageN) }}{% endif %}</span>
     <span class="tl-continue-title" dir="auto"{{ tl.next.titleLang|content_lang(locale) }}>{{ tl.next.title }}</span>
     <span class="visually-hidden">{{ t('tl_jump_here') }}</span>
   </a>

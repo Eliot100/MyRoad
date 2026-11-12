@@ -311,7 +311,7 @@ def test_orientation_persists_and_applies(app) -> None:
             pg.wait_for_timeout(400)
             assert pg.evaluate("localStorage.getItem('myroad.roadOrientation')") == "horizontal"
             assert pg.locator(".road-jy.is-horizontal").count() == 0
-            # Stones are stacked (first is above the last).
+            # Hopscotch is read bottom to top: the first stone sits below the last.
             stacked = pg.evaluate("""() => {
               const steps = [...document.querySelectorAll('.jy-step')];
               if (steps.length < 2) return null;
@@ -319,7 +319,7 @@ def test_orientation_persists_and_applies(app) -> None:
               const b = steps[steps.length - 1].getBoundingClientRect();
               return { firstY: a.y, lastY: b.y };
             }""")
-            assert stacked and stacked["lastY"] > stacked["firstY"]
+            assert stacked and stacked["firstY"] > stacked["lastY"]
             # The on-page orientation control is not shown on a narrow screen.
             assert pg.locator(".jy-orient").first.is_visible() is False
             br.close()

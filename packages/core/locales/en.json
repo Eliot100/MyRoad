@@ -612,5 +612,9 @@
   "road_orient_vertical_note": "Scroll from top to bottom.",
   "road_orient_horizontal": "Horizontal",
   "road_orient_horizontal_note": "On a wide screen the path runs sideways and you scroll along it.",
-  "road_orient_narrow_note": "On a narrow screen the path stays vertical."
+  "road_orient_narrow_note": "On a narrow screen the path stays vertical.",
+  "jy_stage_level": "Stage {n} · Level {level}",
+  "jy_stage_review": "Stage {n} · Review",
+  "jy_level_up": "Stage {stage} · Level {n}",
+  "jy_stage_arrive": "Stage {n}"
 }
